@@ -1,0 +1,61 @@
+{
+  "T3.1": {
+    "ref": "SELECT * FROM gate_log WHERE ts >= '2026-12-12 18:00:00';",
+    "traps": []
+  },
+  "T3.2": {
+    "ref": "SELECT * FROM gate_log WHERE gate <> 'MAIN';",
+    "traps": []
+  },
+  "T3.3a": {
+    "ref": "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH%';",
+    "traps": [
+      {
+        "id": "exact_match",
+        "sql": "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH';"
+      }
+    ]
+  },
+  "T3.3b": {
+    "ref": "SELECT * FROM gate_log WHERE vehicle_no LIKE '%EX';",
+    "traps": []
+  },
+  "T3.3c": {
+    "ref": "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH 4471 E_';",
+    "traps": [
+      {
+        "id": "percent_instead_of_underscore",
+        "sql": "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH 44% E%';"
+      }
+    ]
+  },
+  "T3.4": {
+    "ref": "SELECT * FROM gate_log WHERE person_name LIKE '%Arora%';",
+    "traps": []
+  },
+  "T3.5": {
+    "ref": "SELECT * FROM gate_log WHERE gate = 'SERVICE' AND direction = 'OUT' AND ts >= '2026-12-12 18:00:00';",
+    "traps": []
+  },
+  "T3.6": {
+    "ref": "SELECT * FROM gate_log WHERE gate = 'SERVICE' OR gate = 'STAFF';",
+    "traps": []
+  },
+  "T3.7": {
+    "ref": "SELECT * FROM gate_log WHERE NOT vehicle_no LIKE 'HTL%';",
+    "traps": []
+  },
+  "T3.8": {
+    "ref": "SELECT * FROM gate_log WHERE vehicle_colour = 'Grey' AND (gate = 'SERVICE' OR gate = 'STAFF');",
+    "traps": [
+      {
+        "id": "precedence",
+        "sql": "SELECT * FROM gate_log WHERE vehicle_colour = 'Grey' AND gate = 'SERVICE' OR gate = 'STAFF';"
+      }
+    ]
+  },
+  "T3.9": {
+    "ref": "SELECT * FROM vehicles WHERE vehicle_no = '26 BH 4471 EX';",
+    "traps": []
+  }
+}

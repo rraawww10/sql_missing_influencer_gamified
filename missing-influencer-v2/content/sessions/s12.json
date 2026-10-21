@@ -1,0 +1,949 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 12,
+  "title": "The Edited Contract",
+  "story_clock": "2026-12-12 23:30:00",
+  "course_topic_id": "eedd3130-8dd7-4042-a3f5-05ff5123e356",
+  "snapshot": "s12",
+  "est_minutes": 55,
+  "reading_materials": [
+    {
+      "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+      "role": "primary",
+      "rm": 35,
+      "learning_resource_id": "3d5104b8-ac44-424e-88d8-c906096dedb9"
+    },
+    {
+      "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+      "role": "primary",
+      "rm": 36,
+      "learning_resource_id": "899181a1-526f-49e8-a649-79b925f73539"
+    },
+    {
+      "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+      "role": "primary",
+      "rm": 37,
+      "learning_resource_id": "3526add8-e14d-4d84-a9cf-74b9bbab9f6b"
+    },
+    {
+      "unit_id": "1603fce6-36ce-4b12-831e-fe37794f87d1",
+      "role": "subset",
+      "rm": 34,
+      "learning_resource_id": "70d380bb-d275-4e22-ba1e-d54a078ba2c4"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S12-C1",
+      "S12-C2"
+    ],
+    "required_beats": [
+      "S12.3",
+      "S12.4",
+      "S12.5",
+      "S12.6",
+      "S12.9",
+      "S12.9c",
+      "S12.12",
+      "S12.14",
+      "S12.16",
+      "S12.18",
+      "S12.19",
+      "S12.19b",
+      "S12.20",
+      "S12.21",
+      "S12.24"
+    ]
+  },
+  "minutes_estimate": 52.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    },
+    {
+      "session": 9,
+      "clue_id": "S9-C1",
+      "title": "Booking B-88",
+      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    },
+    {
+      "session": 10,
+      "clue_id": "S10-C1",
+      "title": "The SUV is the manager's",
+      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 — S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
+    },
+    {
+      "session": 11,
+      "clue_id": "S11-C1",
+      "title": "Out to the outskirts and back",
+      "body": "Your three-table join: the SUV crossed **Ring Road Toll Plaza** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+    },
+    {
+      "session": 11,
+      "clue_id": "S11-C2",
+      "title": "Same tower, same minute",
+      "body": "Your self join: Tara's watch and Dev's phone pinged **RRO-17** at the **same six minutes** — 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    }
+  },
+  "beats": [
+    {
+      "id": "S12.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "The label sent its system data: `contracts`, `label_payments` and `txn_log` (every change made to the contracts). We need a court-ready timeline — and the truth about that contract."
+    },
+    {
+      "id": "S12.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "View"
+      },
+      "see_also": [
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "Views"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "Create View"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "user table"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "product table"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "orderproduct table"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "orderdetails table"
+        }
+      ],
+      "body": "A **view** is a saved query you can use like a table:\n```sql\nCREATE VIEW view_name AS SELECT …;\n```\nViews are generally **read only** — you can't insert, update or delete through them.\n"
+    },
+    {
+      "id": "S12.3",
+      "type": "task",
+      "task_id": "T12.1",
+      "ask": "Create the view `suv_timeline` with columns `source`, `ts`, `place`, combining (with `UNION ALL`):\n- `'gate'`, `ts`, `gate` from `gate_log` for vehicle `'26 BH 4471 EX'`\n- `'toll'`, `ts`, `plaza` from `toll_crossings` for `'26 BH 4471 EX'`\n- `'tower'`, `ts`, `tower_area` from `tower_pings` for `'Dev Arora'`\n",
+      "grading": {
+        "inspect": "SELECT source, COUNT(*) FROM suv_timeline GROUP BY source;",
+        "expected_hash": "sha256:5acbf6608fd673dedde254c9e88ced2b0e2b6d43344c2c83ae96893080b0d3b5"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "Create View"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE VIEW suv_timeline AS\nSELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '26 BH 4471 EX'\nUNION ALL SELECT 'toll', ts, plaza FROM ____ WHERE vehicle_no = '26 BH 4471 EX'\nUNION ALL SELECT 'tower', ts, tower_area FROM ____ WHERE device_owner = 'Dev Arora';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.1"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S12.4",
+      "type": "task",
+      "task_id": "T12.2",
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "Querying Using View"
+      },
+      "ask": "Query your view: all its columns, **without** the tower rows (`source <> 'tower'`), in time order.",
+      "setup": [
+        "CREATE VIEW suv_timeline AS SELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'toll', ts, plaza FROM toll_crossings WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'tower', ts, tower_area FROM tower_pings WHERE device_owner = 'Dev Arora';"
+      ],
+      "grading": {
+        "ordered": true,
+        "expect_rows": 4,
+        "expected_hash": "sha256:f93a293b69c836aa1ea8e0d7839faa6ea122a15a5379bc3657737e6024baab0c"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "Querying Using View"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM ____ WHERE source <> 'tower' ORDER BY ts;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.2"
+        }
+      ],
+      "traps": [
+        {
+          "id": "write_view",
+          "match": {
+            "error_regex": "because it is a view"
+          },
+          "reply": "Views are **read only**. To change data, change the base tables — the view shows it automatically.",
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "View"
+          }
+        }
+      ],
+      "reply_on_pass": "Out by the service gate 18:12 → toll out 18:41 → toll in 19:30 → back at the hotel 19:52."
+    },
+    {
+      "id": "S12.5",
+      "type": "task",
+      "task_id": "T12.3",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "List All Available Views"
+      },
+      "ask": "List every view in the database: `name` from `sqlite_master` where `type = 'view'`.",
+      "setup": [
+        "CREATE VIEW suv_timeline AS SELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'toll', ts, plaza FROM toll_crossings WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'tower', ts, tower_area FROM tower_pings WHERE device_owner = 'Dev Arora';"
+      ],
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:174a0a78acc67763a16b14e83f4fa9ee974b67aefcbadb53cd118a0ce354320f"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "List All Available Views"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT name FROM ____ WHERE type = 'view';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.3"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S12.6",
+      "type": "task",
+      "task_id": "T12.4",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "Delete View"
+      },
+      "ask": "An old draft view `draft_suspects` is still lying around. Delete it.",
+      "grading": {
+        "inspect": "SELECT COUNT(*) FROM sqlite_master WHERE type = 'view' AND name = 'draft_suspects';",
+        "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "Delete View"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "____ VIEW draft_suspects;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.4"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S12.7",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "Advantages"
+      },
+      "body": "Views keep **complex queries** (joins, group by…) ready to reuse, and **restrict access** — Ira shares a view with the organiser that hides personal data."
+    },
+    {
+      "id": "S12.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+        "heading": "1. Introduction to Subquery"
+      },
+      "see_also": [
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "2. Why Do We Use Subqueries?"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "3. Example-The Problem with Aggregate Functions in WHERE"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "The Problem"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Why Does This Error Occur?"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Use a Subquery"
+        }
+      ],
+      "body": "A **subquery** is a query inside another query, in brackets. It answers a question the outer query needs — like *what is the average?*"
+    },
+    {
+      "id": "S12.9",
+      "type": "task",
+      "task_id": "T12.5",
+      "ask": "Which label payments are **above the average** payment? Show `payer`, `payee`, `amount`.",
+      "grading": {
+        "expect_rows": 9,
+        "expected_hash": "sha256:1703e772117a9d74ad8735546b4e138ce2b24fe8c54663dd80e3f931f132437b"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "Use a Subquery"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT payer, payee, amount FROM label_payments WHERE amount > (SELECT ____ FROM label_payments);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.5"
+        }
+      ],
+      "traps": [
+        {
+          "id": "aggregate_in_where",
+          "match": {
+            "error_regex": "misuse of aggregate"
+          },
+          "reply": "`WHERE` checks one row at a time, so it can't use `AVG(...)` of all rows. Put the average in a **subquery**: `(SELECT AVG(amount) FROM label_payments)`.",
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "Why Does This Error Occur?"
+          }
+        },
+        {
+          "id": "two_columns_where",
+          "match": {
+            "error_regex": "row value misused"
+          },
+          "reply": "A subquery used in a comparison must return **exactly one value** — one column, one row.",
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "Mistake in WHERE Clause"
+          }
+        }
+      ],
+      "reply_on_pass": "Nine payments above average — and one towers over the rest: **Skyline Records → Dev Arora, ₹2,00,000** (the *advance* from S5-C3). Every other payment here is a normal label fee."
+    },
+    {
+      "id": "S12.9b",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Dev's lawyer says the contract lets her **choose** to skip shows. Let's read the contract itself.\n`contracts` has one row per artist: the label, the `missed_show_clause`, and the `manager_bonus` paid if that clause triggers.\n"
+    },
+    {
+      "id": "S12.9c",
+      "type": "task",
+      "task_id": "T12.5b",
+      "minutes": 2,
+      "ask": "Tara's contract: **all columns** of `contracts` where `artist_name` = `'Tara Sen'`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:2211d7d57b4229c9fd924d5719af9252046162b105d08def1c59e0161bf60cfa"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "6. Subquery with WHERE Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM contracts WHERE artist_name = '____';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.5b"
+        }
+      ],
+      "on_pass": {
+        "clue": "S12-C1"
+      },
+      "reply_on_pass": "`missed_show_clause` = **Applicable**, `manager_bonus` = **2500000**. If she misses tonight's show, her manager gets ₹25 lakh. Did she really agree to that? The system log will tell us when this row was written.",
+      "traps": []
+    },
+    {
+      "id": "S12.10",
+      "type": "clue",
+      "clue_id": "S12-C1",
+      "requires_task": "T12.5b",
+      "title": "A rival label's advance",
+      "body": "Your queries: Skyline Records paid Dev **₹2,00,000** (*advance*, 11 Dec) — the only label payment far above average. And Tara's contract row says *missed-show clause*: **Applicable**, *manager bonus*: **₹25,00,000**. If she misses the show, he is paid twice."
+    },
+    {
+      "id": "S12.11",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+        "heading": "4. Usage of Subquery with Other Clauses"
+      },
+      "see_also": [
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "5. Subquery with SELECT Clause"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "6. Subquery with WHERE Clause"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Database Schema"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step-by-Step Solution"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Understanding Nested Queries"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Solution"
+        }
+      ],
+      "body": "Subqueries work in `WHERE`, `SELECT`, `FROM`, `HAVING` and more."
+    },
+    {
+      "id": "S12.12",
+      "type": "task",
+      "task_id": "T12.6",
+      "ask": "How far is each payment from the average? Show `payment_id`, `payer`, `payee`, and `amount` minus the average as `above_avg`.",
+      "grading": {
+        "expect_rows": 17,
+        "expected_hash": "sha256:52025db865c2310e4f352164fb3e9e5211c9d7af7184c65c9f9a380cd8003ef1"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "5. Subquery with SELECT Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT payment_id, payer, payee, amount - (SELECT ____ FROM label_payments) AS above_avg FROM label_payments;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.6"
+        }
+      ],
+      "traps": [
+        {
+          "id": "two_columns_select",
+          "match": {
+            "error_regex": "sub-select returns 2 columns"
+          },
+          "reply": "In a calculation the subquery must return **one** value. You asked for two columns.",
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "Mistake in SELECT Clause"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S12.13",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+        "heading": "7. Possible Mistakes"
+      },
+      "see_also": [
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Mistake in SELECT Clause"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Mistake in WHERE Clause"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Correct Rule"
+        }
+      ],
+      "body": "**Correct rule:** a subquery used in a calculation, comparison or SELECT expression must return **exactly one value** (one column, one row)."
+    },
+    {
+      "id": "S12.14",
+      "type": "task",
+      "task_id": "T12.7",
+      "rm_ref": {
+        "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+        "heading": "Question 1 – Order Value Tags"
+      },
+      "ask": "Tag every payment: show `payment_id` and `tag` — **'Above Average'** if `amount` is above the average, else **'Below Average'**.",
+      "grading": {
+        "expect_rows": 17,
+        "expected_hash": "sha256:ba3796ff17fa2688132496abadb0dd81fae5f652a8c4826048548c52f65abafc"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "Step 4 – Replace Placeholder with the Subquery (Final Query)"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT payment_id, CASE WHEN amount > (SELECT AVG(amount) FROM label_payments) THEN '____' ELSE '____' END AS tag FROM label_payments;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.7"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S12.15",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+        "heading": "8. Problem Solving"
+      },
+      "see_also": [
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Question 1 – Order Value Tags"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Understanding the Question"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step-by-Step Approach"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step 1 – Get the Average Total Amount"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step 2 – Get All Orders with Their Total Amounts"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step 3 – Categorise Using CASE (with placeholder)"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step 4 – Replace Placeholder with the Subquery (Final Query)"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Question 2 – Monthly Average Order Amount per User"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step 1 – Get Customers and Months of Orders in 2021"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step 2 – Get Customer-wise, Month-wise Sum of Total Amount (monthlytotals)"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Step 3 – Use monthlytotals in FROM Clause (Final Query)"
+        },
+        {
+          "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+          "heading": "Summary"
+        }
+      ],
+      "body": "A subquery in `FROM` acts like a temporary table — give it a name with `AS` and query it."
+    },
+    {
+      "id": "S12.16",
+      "type": "task",
+      "task_id": "T12.8",
+      "rm_ref": {
+        "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+        "heading": "Question 2 – Monthly Average Order Amount per User"
+      },
+      "ask": "Average **monthly** total per payee: first total `amount` per `payee` per month (`strftime('%m', ts)`) in a subquery named `monthly_totals`, then `AVG(monthly_total)` per payee.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+            "heading": "Step 3 – Use monthlytotals in FROM Clause (Final Query)"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT payee, AVG(monthly_total) FROM (SELECT payee, strftime('%m', ts) AS month, SUM(amount) AS monthly_total FROM label_payments GROUP BY payee, month) AS ____ GROUP BY payee;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.8"
+        }
+      ],
+      "reply_on_pass": "Dev's average jumps to ₹58,000 a month — because of one ₹2 lakh payment in December.",
+      "grading": {
+        "expected_hash": "sha256:7167343cc5347a44fa73f25ed4845177aded610cfcc71075d93a6044233dc84a"
+      },
+      "traps": []
+    },
+    {
+      "id": "S12.17",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+        "heading": "Transactions"
+      },
+      "see_also": [
+        {
+          "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+          "heading": "Atomicity"
+        },
+        {
+          "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+          "heading": "Consistency"
+        },
+        {
+          "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+          "heading": "Isolation"
+        },
+        {
+          "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+          "heading": "Durability"
+        }
+      ],
+      "body": "A **transaction** is a group of SQL statements that belong together. Every transaction is **ACID**:\n- **Atomicity** — all statements are applied, or **none**.\n- **Consistency** — the database is always left in a consistent state.\n- **Isolation** — many transactions can run at once without harming each other.\n- **Durability** — once committed, changes **survive a crash**.\n"
+    },
+    {
+      "id": "S12.18",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+        "heading": "Atomicity"
+      },
+      "prompt": "Which ACID property is the label system relying on?",
+      "pairs": [
+        {
+          "left": "The bonus and the contract change are saved together — or not at all",
+          "right": "Atomicity"
+        },
+        {
+          "left": "A contract can never end up half-edited and invalid",
+          "right": "Consistency"
+        },
+        {
+          "left": "The legal team and the manager edit at the same time without clashing",
+          "right": "Isolation"
+        },
+        {
+          "left": "A committed change is still there after the server crashes",
+          "right": "Durability"
+        }
+      ]
+    },
+    {
+      "id": "S12.19",
+      "type": "task",
+      "task_id": "T12.9",
+      "ask": "Read the label system's log: all columns of `txn_log` for transactions `'T7'` and `'T9'`, **or** the `'CRASH'` entry, in `lsn` order.",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 7,
+        "expected_hash": "sha256:451d96b2a6b5f3bdab8c33e479fd1127cb1afa339f49c45a6007c673170b205e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+            "heading": "Transactions"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM txn_log WHERE txn_id IN ('T7', 'T9') ____ entry_type = 'CRASH' ORDER BY lsn;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.9"
+        }
+      ],
+      "reply_on_pass": "Seven rows. Read `user_name`, `old_value`, `new_value` and `ts` of the WRITE rows — and where the CRASH sits between them.",
+      "traps": []
+    },
+    {
+      "id": "S12.19b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+        "heading": "Transactions"
+      },
+      "prompt": "Who changed `contract_C12.missed_show_clause`, from what, to what — and when?",
+      "options": [
+        {
+          "text": "User darora: Not Applicable → Applicable at 18:05 (T7), the server crashed at 18:07, then again at 18:20 (T9) with the bonus set to 2500000",
+          "correct": true
+        },
+        {
+          "text": "User legal_team at 17:50 — a routine edit"
+        },
+        {
+          "text": "Nobody — the clause was always Applicable"
+        }
+      ],
+      "explain": "lsn 5: T7 WRITE by **darora** 18:05:40, old value **Not Applicable**. lsn 6: CRASH 18:07. lsn 11–12: T9 WRITE by darora 18:20:30 (clause) and 18:20:40 (bonus 0 → 2500000). lsn 13: T9 COMMIT 18:21. The original value was *Not Applicable* — she had not agreed to anything."
+    },
+    {
+      "id": "S12.20",
+      "type": "task",
+      "task_id": "T12.10",
+      "ask": "Which transactions **started** but never **committed**? `txn_id` of `'START'` entries **except** those with a `'COMMIT'` entry.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:20911293487e7ec76defa1d5b2e0829638208e28a4908cfb2b422bc0b1161ae0"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+            "heading": "Atomicity"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT txn_id FROM txn_log WHERE entry_type = 'START' ____ SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.10"
+        }
+      ],
+      "on_pass": {
+        "clue": "S12-C2"
+      },
+      "traps": []
+    },
+    {
+      "id": "S12.21",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+        "heading": "Durability"
+      },
+      "prompt": "Apply ACID to the log.",
+      "pairs": [
+        {
+          "left": "T7 never committed before the crash",
+          "right": "Atomicity: none of T7 was applied"
+        },
+        {
+          "left": "T9 committed at 18:21",
+          "right": "Durability: T9's change survived"
+        }
+      ]
+    },
+    {
+      "id": "S12.22",
+      "type": "clue",
+      "clue_id": "S12-C2",
+      "requires_task": "T12.10",
+      "title": "The edited contract",
+      "body": "Your log queries: the missed-show clause was **Not Applicable** until user **darora** wrote *Applicable* at 18:05 (T7 — lost in the 18:07 crash) and again at **18:20** (T9 — **committed**, with the bonus set to ₹25 lakh). Both writes came **after** she left the hotel in his SUV at 18:12 (S3-C1). She never agreed to skip the show."
+    },
+    {
+      "id": "S12.23",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+        "heading": "Indexes"
+      },
+      "body": "An **index** is like the index of a dictionary: the database finds rows fast without reading the whole table."
+    },
+    {
+      "id": "S12.24",
+      "type": "demo",
+      "rm_ref": {
+        "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+        "heading": "Indexes"
+      },
+      "prompt": "Kabir loads last month's **1 lakh** tower pings and searches for one person at one tower — first without an index, then with one. Press run and compare.",
+      "steps": [
+        {
+          "label": "Search 1 lakh rows — no index",
+          "sql": "SELECT COUNT(*) FROM tower_pings_archive WHERE device_owner = 'Anita Fernandes' AND tower_id = 'MGR-04';",
+          "repeat": 20
+        },
+        {
+          "label": "Create an index on (device_owner, tower_id)",
+          "sql": "CREATE INDEX idx_owner_tower ON tower_pings_archive (device_owner, tower_id);",
+          "repeat": 1
+        },
+        {
+          "label": "Same search — with the index",
+          "sql": "SELECT COUNT(*) FROM tower_pings_archive WHERE device_owner = 'Anita Fernandes' AND tower_id = 'MGR-04';",
+          "repeat": 20
+        }
+      ],
+      "feedback": "Same answer, far less work — the index lets the database jump straight to the matching rows.",
+      "script": "-- S12 index demo: fills tower_pings_archive with 1 lakh deterministic rows inside the learner's\n-- browser sandbox (run by the engine, never shown to the learner). Keeps the s12 download small.\nCREATE TABLE tower_pings_archive (\n  ping_id INTEGER NOT NULL PRIMARY KEY,\n  device_owner VARCHAR(200),\n  device_type VARCHAR(10),\n  tower_id VARCHAR(10),\n  tower_area VARCHAR(100),\n  ts DATETIME\n);\nCREATE TEMP TABLE demo_towers AS\n  SELECT ROW_NUMBER() OVER (ORDER BY tower_id) - 1 AS k, tower_id, tower_area\n  FROM (SELECT DISTINCT tower_id, tower_area FROM tower_pings);\nCREATE TEMP TABLE demo_owners AS\n  SELECT ROW_NUMBER() OVER (ORDER BY person_id) - 1 AS k, name FROM people WHERE role = 'public';\nWITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < 100000)\nINSERT INTO tower_pings_archive\nSELECT\n  n.x,\n  o.name,\n  CASE n.x % 3 WHEN 0 THEN 'WATCH' ELSE 'PHONE' END,\n  t.tower_id,\n  t.tower_area,\n  printf('2026-11-%02d %02d:%02d:%02d', 1 + (n.x * 7) % 30, (n.x * 13) % 24, (n.x * 17) % 60, (n.x * 31) % 60)\nFROM n\nJOIN demo_towers AS t ON t.k = (n.x * 11) % (SELECT COUNT(*) FROM demo_towers)\nJOIN demo_owners AS o ON o.k = (n.x * 7) % (SELECT COUNT(*) FROM demo_owners);\nDROP TABLE demo_towers;\nDROP TABLE demo_owners;\n"
+    },
+    {
+      "id": "S12.25",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+        "heading": "Atomicity"
+      },
+      "prompt": "A transaction crashed **before COMMIT**. Which ACID property says none of its changes are applied?",
+      "options": [
+        {
+          "text": "Atomicity",
+          "correct": true
+        },
+        {
+          "text": "Durability"
+        },
+        {
+          "text": "Isolation"
+        }
+      ],
+      "explain": "Atomicity: all of a transaction's statements are applied, or none."
+    },
+    {
+      "id": "S12.26",
+      "type": "hook",
+      "speaker": "system",
+      "body": "📻 Ring Road unit: *\"We're at Green Acres Farm Stays. We have her. She's okay. She's asking — **is the show still on?**\"*"
+    }
+  ]
+}

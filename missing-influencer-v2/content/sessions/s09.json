@@ -1,0 +1,853 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 9,
+  "title": "The Case Board",
+  "story_clock": "2026-12-12 22:00:00",
+  "course_topic_id": "6f955426-d78c-4ec1-a33d-91ea8feb2667",
+  "snapshot": "s09",
+  "est_minutes": 45,
+  "reading_materials": [
+    {
+      "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+      "role": "primary",
+      "rm": 26,
+      "learning_resource_id": "62c91d3c-e57d-4c4b-b88f-056b5e9d5f0f"
+    },
+    {
+      "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+      "role": "primary",
+      "rm": 28,
+      "learning_resource_id": "2a70196a-9c13-44a1-a53a-d019d1f0974c"
+    },
+    {
+      "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+      "role": "primary",
+      "rm": 29,
+      "learning_resource_id": "c524d83b-82e1-42ab-871c-097630e02024"
+    },
+    {
+      "unit_id": "21b08636-88d8-4a75-9a69-8b45d3be7318",
+      "role": "subset",
+      "rm": 27,
+      "learning_resource_id": "36b1d8cc-2383-4983-87b8-77463ab2f728"
+    },
+    {
+      "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+      "role": "primary",
+      "rm": 30,
+      "learning_resource_id": "25ac533c-e909-4a5a-953d-72cad4122fa9"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S9-C1"
+    ],
+    "required_beats": [
+      "S9.3",
+      "S9.5",
+      "S9.7",
+      "S9.10",
+      "S9.12",
+      "S9.13",
+      "S9.14",
+      "S9.15",
+      "S9.17",
+      "S9.19",
+      "S9.20",
+      "S9.21",
+      "S9.21b",
+      "S9.23"
+    ]
+  },
+  "minutes_estimate": 45.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S9.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Photos, red strings, sticky notes… Our board is a mess. Let's turn it into an **ER model** — then into real tables."
+    },
+    {
+      "id": "S9.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+        "heading": "Core Concepts in ER Model"
+      },
+      "see_also": [
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Modelling Databases: Part 1"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Entity"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Attributes of an Entity"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Key Attribute"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Entity Type"
+        }
+      ],
+      "body": "- An **entity** is a real-world thing (a person, a farm stay, a booking).\n- **Attributes** describe it (name, area, check-in time).\n- A **key attribute** identifies each entity uniquely (an id).\n- An **entity type** is the group of similar entities (all persons).\n"
+    },
+    {
+      "id": "S9.3",
+      "type": "activity",
+      "kind": "sort_into",
+      "rm_ref": {
+        "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+        "heading": "Attributes of an Entity"
+      },
+      "prompt": "Sort the sticky notes: is each one an **entity type** or an **attribute**?",
+      "buckets": [
+        "Entity type",
+        "Attribute"
+      ],
+      "items": [
+        {
+          "text": "Person",
+          "bucket": "Entity type"
+        },
+        {
+          "text": "Property (farm stay)",
+          "bucket": "Entity type"
+        },
+        {
+          "text": "Booking",
+          "bucket": "Entity type"
+        },
+        {
+          "text": "check-in time",
+          "bucket": "Attribute"
+        },
+        {
+          "text": "area",
+          "bucket": "Attribute"
+        },
+        {
+          "text": "name",
+          "bucket": "Attribute"
+        }
+      ]
+    },
+    {
+      "id": "S9.4",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+        "heading": "Types of Relationships"
+      },
+      "see_also": [
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Relationships"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "One-to-One Relationship"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "One-to-Many Relationship"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Many-to-Many Relationship"
+        },
+        {
+          "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+          "heading": "Cardinality Ratio"
+        }
+      ],
+      "body": "Relationships connect entity types: **one-to-one (1:1)**, **one-to-many (1:N)**, **many-to-many (M:N)**. The **cardinality ratio** says which one."
+    },
+    {
+      "id": "S9.5",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+        "heading": "Cardinality Ratio"
+      },
+      "prompt": "Draw the red strings: pick the cardinality of each relationship.",
+      "pairs": [
+        {
+          "left": "A person and their smartwatch (each wears one, each watch belongs to one)",
+          "right": "One-to-One (1:1)"
+        },
+        {
+          "left": "A farm stay and its bookings (one farm, many bookings)",
+          "right": "One-to-Many (1:N)"
+        },
+        {
+          "left": "Bookings and their guests (a booking has many guests; a person can join many bookings)",
+          "right": "Many-to-Many (M:N)"
+        }
+      ]
+    },
+    {
+      "id": "S9.6",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+        "heading": "Applying ER Model Concepts"
+      },
+      "see_also": [
+        {
+          "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+          "heading": "E-commerce Application"
+        },
+        {
+          "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+          "heading": "Entity types"
+        },
+        {
+          "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+          "heading": "Relationships"
+        },
+        {
+          "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+          "heading": "Attributes"
+        },
+        {
+          "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+          "heading": "ER Model of e-commerce application"
+        }
+      ],
+      "body": "The course builds an e-commerce ER model: customer–cart (1:1), customer–address (1:N), cart–product (M:N). Our case has the same shapes."
+    },
+    {
+      "id": "S9.7",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+        "heading": "ER Model of e-commerce application"
+      },
+      "prompt": "Same pattern, different story — match each case relationship to its e-commerce twin.",
+      "pairs": [
+        {
+          "left": "Person – smartwatch",
+          "right": "Customer – cart (1:1)"
+        },
+        {
+          "left": "Farm stay – bookings",
+          "right": "Customer – addresses (1:N)"
+        },
+        {
+          "left": "Bookings – guests",
+          "right": "Cart – products (M:N)"
+        }
+      ]
+    },
+    {
+      "id": "S9.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+        "heading": "Entity Type to Table"
+      },
+      "see_also": [
+        {
+          "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+          "heading": "ER Model to Relational Database"
+        },
+        {
+          "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+          "heading": "E-commerce Application"
+        }
+      ],
+      "body": "Each **entity type becomes a table**; its attributes become columns; the key attribute becomes the **primary key**."
+    },
+    {
+      "id": "S9.9",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+        "heading": "Relationships"
+      },
+      "see_also": [
+        {
+          "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+          "heading": "E-commerce Usecase: ER Model to Relational Database"
+        },
+        {
+          "unit_id": "21b08636-88d8-4a75-9a69-8b45d3be7318",
+          "heading": "E-commerce Usecase: ER Model to Relational Database"
+        }
+      ],
+      "body": "**1:1 and 1:N** relationships become a **foreign key** column. **M:N** needs a separate **junction table** (like `cart_product`)."
+    },
+    {
+      "id": "S9.10",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+        "heading": "Relationships"
+      },
+      "prompt": "Map the case board to tables.",
+      "pairs": [
+        {
+          "left": "Person (entity type)",
+          "right": "Table `person`"
+        },
+        {
+          "left": "Farm stay – bookings (1:N)",
+          "right": "Column `property_id` in `booking` (foreign key)"
+        },
+        {
+          "left": "Bookings – guests (M:N)",
+          "right": "Junction table `booking_guest`"
+        }
+      ]
+    },
+    {
+      "id": "S9.11",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+        "heading": "Primary Key"
+      },
+      "see_also": [
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "Modelling Databse - 2"
+        },
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "Creating a Relational Database"
+        },
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "Foreign Key"
+        }
+      ],
+      "body": "```sql\nCREATE TABLE table_name (c1 t1 NOT NULL PRIMARY KEY, ...);\nCREATE TABLE table2 (c1 t1 NOT NULL PRIMARY KEY, c2 t2,\n  FOREIGN KEY (c2) REFERENCES table1(c3) ON DELETE CASCADE);\n```\nA **foreign key** can only hold values that exist in the referenced primary key.\n`ON DELETE CASCADE`: delete a parent row and its child rows go too. (Foreign keys are switched on here, like on our platform.)\n"
+    },
+    {
+      "id": "S9.12",
+      "type": "task",
+      "task_id": "T9.1",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+        "heading": "Creating Tables in Relational Database"
+      },
+      "ask": "Create `person` with `id` (INTEGER, NOT NULL, PRIMARY KEY), `name` (VARCHAR(250)), `role` (VARCHAR(100)).",
+      "grading": {
+        "inspect": "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('person');",
+        "expected_hash": "sha256:8bc806c9c0f7dc859c1a699a101a49099fd2298eda7468fa37ed89cf818a996c"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "Customer Table"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE TABLE person (\n  id INTEGER NOT NULL ____,\n  name VARCHAR(250),\n  role VARCHAR(100)\n);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.1"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S9.13",
+      "type": "task",
+      "task_id": "T9.2",
+      "minutes": 2,
+      "ask": "Create `property` with `id` (INTEGER, NOT NULL, PRIMARY KEY), `name` (VARCHAR(250)), `area` (VARCHAR(250)), `district` (VARCHAR(100)).",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));"
+      ],
+      "grading": {
+        "inspect": "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('property');",
+        "expected_hash": "sha256:c3973f30303ec2272b85fe0afbb13f105d5883285ee122463e70eaa7e3953ae6"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "Product Table"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE TABLE property (\n  id INTEGER NOT NULL PRIMARY KEY,\n  name VARCHAR(250),\n  area ____,\n  district ____\n);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.2"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S9.14",
+      "type": "task",
+      "task_id": "T9.3",
+      "ask": "Create `booking`: `id` (INTEGER, NOT NULL, PRIMARY KEY), `property_id` (INTEGER), `booked_by` (INTEGER), `check_in` (DATETIME),\nwith **foreign keys** `property_id` → `property(id)` and `booked_by` → `person(id)`, both `ON DELETE CASCADE`.\n",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+        "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));"
+      ],
+      "grading": {
+        "inspect": "SELECT 'col' AS kind, lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('booking') UNION ALL SELECT 'fk', lower(\"from\"), lower(\"table\") || '.' || lower(\"to\"), on_delete FROM pragma_foreign_key_list('booking');",
+        "expected_hash": "sha256:9de0a0e835e0b9aca863bd2e9e7320004798dc77c766a6c730c78fc0550a7051"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "Address Table"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE TABLE booking (\n  id INTEGER NOT NULL PRIMARY KEY,\n  property_id INTEGER,\n  booked_by INTEGER,\n  check_in DATETIME,\n  FOREIGN KEY (property_id) REFERENCES ____(id) ON DELETE CASCADE,\n  FOREIGN KEY (booked_by) REFERENCES ____(id) ON DELETE CASCADE\n);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.3"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S9.15",
+      "type": "task",
+      "task_id": "T9.4",
+      "ask": "Create the **junction table** `booking_guest`: `id` (INTEGER, NOT NULL, PRIMARY KEY), `booking_id` (INTEGER), `person_id` (INTEGER), with foreign keys to `booking(id)` and `person(id)`, both `ON DELETE CASCADE`.",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+        "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
+        "CREATE TABLE booking (id INTEGER NOT NULL PRIMARY KEY, property_id INTEGER, booked_by INTEGER, check_in DATETIME, FOREIGN KEY (property_id) REFERENCES property(id) ON DELETE CASCADE, FOREIGN KEY (booked_by) REFERENCES person(id) ON DELETE CASCADE);"
+      ],
+      "grading": {
+        "inspect": "SELECT 'col' AS kind, lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('booking_guest') UNION ALL SELECT 'fk', lower(\"from\"), lower(\"table\") || '.' || lower(\"to\"), on_delete FROM pragma_foreign_key_list('booking_guest');",
+        "expected_hash": "sha256:964e7a80195333bb93a204c36df2f185e50f42d660907d297b28d5d494b29a4a"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "Cart Product Table (Junction Table)"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE TABLE booking_guest (\n  id INTEGER NOT NULL PRIMARY KEY,\n  booking_id INTEGER,\n  person_id INTEGER,\n  FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE,\n  FOREIGN KEY (____) REFERENCES ____(id) ON DELETE CASCADE\n);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.4"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S9.16",
+      "type": "scene",
+      "speaker": "analyst",
+      "body": "WhatsApp from Ramesh Pawar, the Green Acres Farm Stays caretaker:\n*\"Booking **B-88**, 12 Dec, check-in **18:45**. Booked by Mr **Dev Arora**. 2 guests: Sir + 1 lady (name not given). Property: Green Acres Farm Stays, Ring Road outskirts, Rural District.\"*\n"
+    },
+    {
+      "id": "S9.17",
+      "type": "task",
+      "task_id": "T9.5",
+      "rm_ref": {
+        "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+        "heading": "Inserting data into the respective tables"
+      },
+      "ask": "Put the caretaker's message into the tables — **parents first**:\n- `person`: `(2, 'Dev Arora', 'Artist manager')`\n- `property`: `(1, 'Green Acres Farm Stays', 'Ring Road outskirts', 'Rural District')`\n- `booking`: `(88, 1, 2, '2026-12-12 18:45:00')`\n- `booking_guest`: `(1, 88, 2)` and `(2, 88, NULL)` — the lady's name wasn't given\n",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+        "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
+        "CREATE TABLE booking (id INTEGER NOT NULL PRIMARY KEY, property_id INTEGER, booked_by INTEGER, check_in DATETIME, FOREIGN KEY (property_id) REFERENCES property(id) ON DELETE CASCADE, FOREIGN KEY (booked_by) REFERENCES person(id) ON DELETE CASCADE);",
+        "CREATE TABLE booking_guest (id INTEGER NOT NULL PRIMARY KEY, booking_id INTEGER, person_id INTEGER, FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE, FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE);"
+      ],
+      "grading": {
+        "inspect": "SELECT booking.id, property.name, person.name, booking.check_in, (SELECT COUNT(*) FROM booking_guest WHERE booking_guest.booking_id = booking.id) FROM booking JOIN property ON property.id = booking.property_id JOIN person ON person.id = booking.booked_by;",
+        "expected_hash": "sha256:22c737f5c078c27107770664d9904fbf8c99ff73dbea7d6e339cd7eaa79ebb64"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "Inserting data into the respective tables"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "INSERT INTO person (id, name, role) VALUES (2, 'Dev Arora', 'Artist manager');\nINSERT INTO property (id, name, area, district) VALUES (____);\nINSERT INTO booking (id, property_id, booked_by, check_in) VALUES (____);\nINSERT INTO booking_guest (id, booking_id, person_id) VALUES (1, 88, 2), (2, 88, NULL);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.5"
+        }
+      ],
+      "traps": [
+        {
+          "id": "child_first",
+          "match": {
+            "error_regex": "FOREIGN KEY constraint failed"
+          },
+          "reply": "A foreign key can only hold values that **already exist** in the parent table. Insert the `person` and the `property` first, then the `booking`.",
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "Foreign Key"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S9.18",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+        "heading": "Querying in SQL"
+      },
+      "see_also": [
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "1. One-to-Many Relationships"
+        },
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "2. One-to-One Relationships"
+        },
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "3. Many-to-Many Relationships"
+        },
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "Cart Table"
+        },
+        {
+          "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+          "heading": "Cart Product Table"
+        }
+      ],
+      "body": "Read related tables together with `JOIN … ON`: `SELECT * FROM customer JOIN address ON customer.id = address.customer_id;`"
+    },
+    {
+      "id": "S9.19",
+      "type": "task",
+      "task_id": "T9.6",
+      "ask": "**1:N** — all bookings of `'Green Acres Farm Stays'`: everything from `property` joined with `booking` on `property.id = booking.property_id`.",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+        "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
+        "CREATE TABLE booking (id INTEGER NOT NULL PRIMARY KEY, property_id INTEGER, booked_by INTEGER, check_in DATETIME, FOREIGN KEY (property_id) REFERENCES property(id) ON DELETE CASCADE, FOREIGN KEY (booked_by) REFERENCES person(id) ON DELETE CASCADE);",
+        "CREATE TABLE booking_guest (id INTEGER NOT NULL PRIMARY KEY, booking_id INTEGER, person_id INTEGER, FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE, FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE);",
+        "INSERT INTO person VALUES (1, 'Tara Sen', 'Singer'), (2, 'Dev Arora', 'Artist manager'), (3, 'Nysa Kapoor', 'Singer'), (6, 'Kunal Bajaj', 'Event organiser'), (7, 'Mahi Sen', 'Student'), (9, 'Anita Fernandes', 'Hotel guest'); INSERT INTO property VALUES (1, 'Green Acres Farm Stays', 'Ring Road outskirts', 'Rural District'), (2, 'Lakeview Resort', 'Lake Road', 'Rural District'); INSERT INTO booking VALUES (71, 1, 9, '2026-11-20 12:00:00'), (88, 1, 2, '2026-12-12 18:45:00'), (90, 2, 3, '2026-12-20 11:00:00'); INSERT INTO booking_guest VALUES (1, 88, 2), (2, 88, NULL), (3, 71, 9), (4, 90, 3);"
+      ],
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:719f8fd0bc0820ac9027a12ef6f07bbf6b3afcba9c72397f269fc894f81adb15"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "1. One-to-Many Relationships"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM property JOIN booking ON property.id = ____ WHERE property.name = 'Green Acres Farm Stays';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.6"
+        }
+      ],
+      "reply_on_pass": "Two bookings at the farm. One is old (November). The other is **88**: `booked_by` 2, `check_in` **2026-12-12 18:45:00** — tonight.",
+      "traps": []
+    },
+    {
+      "id": "S9.20",
+      "type": "task",
+      "task_id": "T9.7",
+      "minutes": 2,
+      "ask": "**1:1** — each person with their smartwatch: `person.name`, `smartwatch.model`, `smartwatch.esim_number` (join on `person.id = smartwatch.person_id`).",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+        "INSERT INTO person VALUES (1, 'Tara Sen', 'Singer'), (2, 'Dev Arora', 'Artist manager'), (3, 'Nysa Kapoor', 'Singer'), (6, 'Kunal Bajaj', 'Event organiser'), (7, 'Mahi Sen', 'Student'), (9, 'Anita Fernandes', 'Hotel guest');"
+      ],
+      "grading": {
+        "expect_rows": 3,
+        "expected_hash": "sha256:3cf072e76f0168e66da9288111001ea92b80a34865bc2931591407035b28871b"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "2. One-to-One Relationships"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT person.name, smartwatch.model, smartwatch.esim_number FROM person JOIN smartwatch ON ____ = ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.7"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S9.21",
+      "type": "task",
+      "task_id": "T9.8",
+      "ask": "**M:N** — the registered guests of booking **88**: `person.name` from `booking_guest` joined with `person` on `booking_guest.person_id = person.id`.",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+        "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
+        "CREATE TABLE booking (id INTEGER NOT NULL PRIMARY KEY, property_id INTEGER, booked_by INTEGER, check_in DATETIME, FOREIGN KEY (property_id) REFERENCES property(id) ON DELETE CASCADE, FOREIGN KEY (booked_by) REFERENCES person(id) ON DELETE CASCADE);",
+        "CREATE TABLE booking_guest (id INTEGER NOT NULL PRIMARY KEY, booking_id INTEGER, person_id INTEGER, FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE, FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE);",
+        "INSERT INTO person VALUES (1, 'Tara Sen', 'Singer'), (2, 'Dev Arora', 'Artist manager'), (3, 'Nysa Kapoor', 'Singer'), (6, 'Kunal Bajaj', 'Event organiser'), (7, 'Mahi Sen', 'Student'), (9, 'Anita Fernandes', 'Hotel guest'); INSERT INTO property VALUES (1, 'Green Acres Farm Stays', 'Ring Road outskirts', 'Rural District'), (2, 'Lakeview Resort', 'Lake Road', 'Rural District'); INSERT INTO booking VALUES (71, 1, 9, '2026-11-20 12:00:00'), (88, 1, 2, '2026-12-12 18:45:00'), (90, 2, 3, '2026-12-20 11:00:00'); INSERT INTO booking_guest VALUES (1, 88, 2), (2, 88, NULL), (3, 71, 9), (4, 90, 3);"
+      ],
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:4239cf8f146d22028a24faeece01b5a79d04cf20614f483e387882f4086c0a37"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "3. Many-to-Many Relationships"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT person.name FROM booking_guest JOIN person ON booking_guest.person_id = person.id WHERE booking_guest.booking_id = ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.8"
+        }
+      ],
+      "on_pass": {
+        "clue": "S9-C1"
+      },
+      "reply_on_pass": "Two guests booked — one name came back. Ira: \"Remember this.\"",
+      "traps": []
+    },
+    {
+      "id": "S9.21b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+        "heading": "3. Many-to-Many Relationships"
+      },
+      "prompt": "You inserted **two** `booking_guest` rows for booking 88, but the join returned **one** name. Why?",
+      "options": [
+        {
+          "text": "The second guest's `person_id` is NULL — no name was registered, so there is no `person` row to match",
+          "correct": true
+        },
+        {
+          "text": "The join only ever returns one row"
+        },
+        {
+          "text": "The second row was deleted by ON DELETE CASCADE"
+        }
+      ],
+      "explain": "`(2, 88, NULL)`: a guest with no `person_id`. JOIN keeps only rows that match on both sides, so the unnamed guest disappears. Two people checked in at 18:45 — we know the name of only one."
+    },
+    {
+      "id": "S9.22",
+      "type": "clue",
+      "clue_id": "S9-C1",
+      "requires_task": "T9.8",
+      "title": "Booking B-88",
+      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    },
+    {
+      "id": "S9.23",
+      "type": "task",
+      "task_id": "T9.9",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+        "heading": "Foreign Key"
+      },
+      "ask": "See `ON DELETE CASCADE` work: delete the property with `id` = 2 (Lakeview Resort). Its booking should disappear too.",
+      "setup": [
+        "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+        "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
+        "CREATE TABLE booking (id INTEGER NOT NULL PRIMARY KEY, property_id INTEGER, booked_by INTEGER, check_in DATETIME, FOREIGN KEY (property_id) REFERENCES property(id) ON DELETE CASCADE, FOREIGN KEY (booked_by) REFERENCES person(id) ON DELETE CASCADE);",
+        "CREATE TABLE booking_guest (id INTEGER NOT NULL PRIMARY KEY, booking_id INTEGER, person_id INTEGER, FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE, FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE);",
+        "INSERT INTO person VALUES (1, 'Tara Sen', 'Singer'), (2, 'Dev Arora', 'Artist manager'), (3, 'Nysa Kapoor', 'Singer'), (6, 'Kunal Bajaj', 'Event organiser'), (7, 'Mahi Sen', 'Student'), (9, 'Anita Fernandes', 'Hotel guest'); INSERT INTO property VALUES (1, 'Green Acres Farm Stays', 'Ring Road outskirts', 'Rural District'), (2, 'Lakeview Resort', 'Lake Road', 'Rural District'); INSERT INTO booking VALUES (71, 1, 9, '2026-11-20 12:00:00'), (88, 1, 2, '2026-12-12 18:45:00'), (90, 2, 3, '2026-12-20 11:00:00'); INSERT INTO booking_guest VALUES (1, 88, 2), (2, 88, NULL), (3, 71, 9), (4, 90, 3);"
+      ],
+      "grading": {
+        "inspect": "SELECT id FROM booking;",
+        "expected_hash": "sha256:6fe8b2a79ccfe2b41637ec78da9fe4007dd0618e3e667fc252a46e9b50040d87"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+            "heading": "Foreign Key"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "DELETE FROM property WHERE ____ = 2;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s09.json#T9.9"
+        }
+      ],
+      "reply_on_pass": "Booking 90 vanished with it. That's cascade — powerful, so never test it on real evidence!",
+      "traps": []
+    },
+    {
+      "id": "S9.24",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+        "heading": "Relationships"
+      },
+      "prompt": "A many-to-many relationship becomes…",
+      "options": [
+        {
+          "text": "a junction table",
+          "correct": true
+        },
+        {
+          "text": "a single foreign key column"
+        },
+        {
+          "text": "a primary key"
+        }
+      ],
+      "explain": "M:N needs its own table holding a foreign key to each side — like `booking_guest` or `cart_product`."
+    },
+    {
+      "id": "S9.25",
+      "type": "hook",
+      "speaker": "analyst",
+      "body": "I've loaded the full city data: people, UPI accounts, companies, rehearsal logs, insurance. Time to **join** everything."
+    }
+  ]
+}

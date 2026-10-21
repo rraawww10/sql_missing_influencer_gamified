@@ -5,7 +5,6 @@ __pycache__/
 app/dist/
 app/public/content/
 deploy/
-missing-influencer-v2/
 *.zip
 # local
 .vscode/

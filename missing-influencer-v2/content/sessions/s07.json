@@ -1,0 +1,682 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 7,
+  "title": "Smartwatch Secrets",
+  "story_clock": "2026-12-12 21:00:00",
+  "course_topic_id": "e4e8f7c2-036d-457c-a60f-866c35b0417b",
+  "snapshot": "s07",
+  "est_minutes": 50,
+  "reading_materials": [
+    {
+      "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+      "role": "primary",
+      "rm": 19,
+      "learning_resource_id": "4e29ae27-559d-4130-b38f-49a0d5126d8d"
+    },
+    {
+      "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+      "role": "primary",
+      "rm": 20,
+      "learning_resource_id": "9d0e93cc-8e86-418a-9383-db62f1686bb9"
+    },
+    {
+      "unit_id": "7aea2483-8eea-4ded-a05a-19c2f1044e2b",
+      "role": "primary",
+      "rm": 21,
+      "learning_resource_id": "68757830-34aa-4cfa-b62b-865dd390d959"
+    },
+    {
+      "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+      "role": "primary",
+      "rm": 22,
+      "learning_resource_id": "2cc255e2-cac4-4131-a91f-5069e7bc13e7"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S7-C1"
+    ],
+    "required_beats": [
+      "S7.3",
+      "S7.4",
+      "S7.5",
+      "S7.7",
+      "S7.9",
+      "S7.11",
+      "S7.14",
+      "S7.16",
+      "S7.18",
+      "S7.20",
+      "S7.22",
+      "S7.22b"
+    ]
+  },
+  "minutes_estimate": 46.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S7.1",
+      "type": "scene",
+      "speaker": "analyst",
+      "body": "Tara's watch log: `watch_log` — one row every 5 minutes with `steps`, `distance_m`, `heart_rate` and her `resting_hr`."
+    },
+    {
+      "id": "S7.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+        "heading": "Arithmetic Operators in SQL"
+      },
+      "see_also": [
+        {
+          "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+          "heading": "Expressions in Querying"
+        }
+      ],
+      "body": "SQL can calculate: `+` add · `-` subtract · `*` multiply · `/` divide · `%` remainder."
+    },
+    {
+      "id": "S7.3",
+      "type": "task",
+      "task_id": "T7.1",
+      "minutes": 2,
+      "ask": "For every log, show `ts` and how much her heart rate was **above resting** (`heart_rate - resting_hr`) as `hr_rise`.",
+      "grading": {
+        "expect_rows": 216,
+        "expected_hash": "sha256:f9c0d156cb7ab281916ccfb8ffedb9e5861c097f1be02257c2e8a89ca723227f"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Arithmetic Operators in SQL"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ts, heart_rate ____ resting_hr AS hr_rise FROM watch_log;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.1"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S7.4",
+      "type": "task",
+      "task_id": "T7.2",
+      "minutes": 2,
+      "ask": "Show `ts` and the distance in **kilometres** (`distance_m / 1000.0`) as `distance_km`.",
+      "grading": {
+        "expect_rows": 216,
+        "expected_hash": "sha256:af1bf7fa3a80af2d5100e952463560f86362bbae28ab50542c0c85cfb9320e6a"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Arithmetic Operators in SQL"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ts, distance_m ____ 1000.0 AS distance_km FROM watch_log;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.2"
+        }
+      ],
+      "reply_on_pass": "Look at the evening rows — 11 km in 5 minutes while sitting still? Something's wrong with the evening export. Keep reading.",
+      "traps": []
+    },
+    {
+      "id": "S7.5",
+      "type": "task",
+      "task_id": "T7.3",
+      "minutes": 2,
+      "ask": "The watch syncs fully every 15 minutes, i.e. every 3rd log. Show all the details of logs whose `log_id` divides evenly by 3.",
+      "grading": {
+        "expect_rows": 72,
+        "expected_hash": "sha256:bf6a03641d93a8fc9f16e39a6505e0a8676f706dbf597899ffca583b0556bfe2"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Arithmetic Operators in SQL"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM watch_log WHERE log_id ____ 3 = 0;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.3"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S7.6",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+        "heading": "Using Expressions in SELECT Clause"
+      },
+      "body": "Expressions can build new columns. `||` joins text together in SQLite: `name || ' - ' || genre`."
+    },
+    {
+      "id": "S7.7",
+      "type": "task",
+      "task_id": "T7.4",
+      "minutes": 2,
+      "ask": "For log `147` only, show one column like `2026-12-12 18:10:00 - 112 bpm` (time, ` - `, heart rate, ` bpm`).",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:ce384d2986ea605f6c4a0308d0c964d83b4d361238b4dc552d16b43585c50a82"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Using Expressions in SELECT Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ts || ' - ' || ____ || ' bpm' AS reading FROM watch_log WHERE log_id = 147;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.4"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S7.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+        "heading": "Using Expressions in WHERE Clause"
+      },
+      "body": "Expressions work inside `WHERE` too: `WHERE (collection - budget) >= 50`."
+    },
+    {
+      "id": "S7.9",
+      "type": "task",
+      "task_id": "T7.5",
+      "ask": "Find her **heart-rate spikes**: all the details of logs where `heart_rate - resting_hr` is **40 or more**.",
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:dbea2724bc67c7a689e016cd4694f96e4917687214712831500031a616e9a69d"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Using Expressions in WHERE Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM watch_log WHERE (heart_rate - resting_hr) ____ 40;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.5"
+        }
+      ],
+      "reply_on_pass": "Two spikes: **18:10** (112 bpm — when she realised the car wasn't going to the stadium) and **19:00** (109 bpm — just before her ₹1 message).",
+      "traps": []
+    },
+    {
+      "id": "S7.10",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+        "heading": "Using Expressions in UPDATE Clause"
+      },
+      "body": "Expressions can fix data with `UPDATE`: `UPDATE movie SET rating = rating / 2;`"
+    },
+    {
+      "id": "S7.11",
+      "type": "task",
+      "task_id": "T7.6",
+      "ask": "Kabir: \"The evening export saved distance in **centimetres**.\" Fix it: from 6 PM onwards, divide `distance_m` by 100.",
+      "grading": {
+        "inspect": "SELECT log_id, distance_m FROM watch_log;",
+        "expected_hash": "sha256:d76dad74e01c227439b48ad93e8268b0a554e7066e0780d58ae579d43ae125bc"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Using Expressions in UPDATE Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "UPDATE watch_log SET distance_m = distance_m ____ 100 WHERE ts >= '2026-12-12 18:00:00';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.6"
+        }
+      ],
+      "traps": [
+        {
+          "id": "update_all",
+          "match": {
+            "result_hash": "sha256:df151ded295f27c5b76210811bb969f0ef6977a62fbb40e39834aedb395ba3f8",
+            "inspect": "SELECT COUNT(*) FROM watch_log WHERE ts < '2026-12-12 18:00:00' AND distance_m <> CAST(ROUND(steps * 0.7) AS INTEGER);"
+          },
+          "reply": "That fixed the evening — and broke the morning. Without `WHERE`, every row was divided. Only rows from 6 PM onwards were in centimetres.",
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Using Expressions in UPDATE Clause"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S7.12",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+        "heading": "SQL Function Categories"
+      },
+      "see_also": [
+        {
+          "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+          "heading": "SQL Functions"
+        },
+        {
+          "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+          "heading": "Date Functions"
+        }
+      ],
+      "body": "SQL functions come in groups: **date** functions, **cast** functions and **arithmetic** functions."
+    },
+    {
+      "id": "S7.13",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+        "heading": "strftime()"
+      },
+      "see_also": [
+        {
+          "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+          "heading": "How to use strftime()"
+        }
+      ],
+      "body": "`strftime(format, field)` pulls a part out of a date or datetime, **as text**:\n`%Y` year · `%m` month · `%d` day · `%H` hour. Example: `strftime('%H', ts)` → `'18'`.\n"
+    },
+    {
+      "id": "S7.14",
+      "type": "task",
+      "task_id": "T7.8",
+      "ask": "Steps per **hour**: show the hour (`strftime('%H', ts)`) as `hour` and `SUM(steps)` as `steps`, one row per hour.",
+      "grading": {
+        "expect_rows": 18,
+        "expected_hash": "sha256:5d2f2ae146a81fb25cddf073f43105ea65ed22efecf3fa9887307e859b4c3f8e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+            "heading": "How to use strftime()"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT strftime('%H', ts) AS hour, SUM(steps) AS steps FROM watch_log GROUP BY ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.8"
+        }
+      ],
+      "reply_on_pass": "After 19:00 — **zero steps**. She's sitting in one place.",
+      "traps": []
+    },
+    {
+      "id": "S7.15",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+        "heading": "Expressions in HAVING Clause"
+      },
+      "body": "Expressions work inside `HAVING` too: `HAVING AVG(collection - budget) >= 100`."
+    },
+    {
+      "id": "S7.16",
+      "type": "task",
+      "task_id": "T7.7",
+      "minutes": 2,
+      "ask": "Which hours had an **average** heart-rate rise above 25? Show just the `hour`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:19e8d0474ccd9455e3eb5d839396711d082b248012143cc82edcb668e5684ca0"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Expressions in HAVING Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT strftime('%H', ts) AS hour FROM watch_log GROUP BY hour HAVING AVG(____ - ____) > 25;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.7"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S7.17",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "7aea2483-8eea-4ded-a05a-19c2f1044e2b",
+        "heading": "CAST Function"
+      },
+      "see_also": [
+        {
+          "unit_id": "7aea2483-8eea-4ded-a05a-19c2f1044e2b",
+          "heading": "CAST Function Syntax and Examples"
+        }
+      ],
+      "body": "`CAST(value AS data_type)` changes a value's type. `CAST(strftime('%H', ts) AS INTEGER)` turns `'18'` into the number 18."
+    },
+    {
+      "id": "S7.18",
+      "type": "task",
+      "task_id": "T7.9",
+      "ask": "All the details of logs from hour **18 onwards**, comparing the hour as a **number**.",
+      "grading": {
+        "expect_rows": 72,
+        "expected_hash": "sha256:6c2bde8824ba4f5afe522d517182c168023aab10125f59ff0d7ee5c5df94c80e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "7aea2483-8eea-4ded-a05a-19c2f1044e2b",
+            "heading": "CAST Function Syntax and Examples"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM watch_log WHERE CAST(strftime('%H', ts) AS ____) >= 18;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.9"
+        }
+      ],
+      "traps": [
+        {
+          "id": "text_vs_number",
+          "match": {
+            "result_hash": "sha256:9dee4f1dda3256bb7887cc65e2030987e319b7a2e48d95f4e2a37a7f1f727bf3"
+          },
+          "reply": "Every row came back — even 6 AM! `strftime` gives **text** ('06'), and SQLite treats text as bigger than any number. `CAST` it to INTEGER first.",
+          "rm_ref": {
+            "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+            "heading": "How to use strftime()"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S7.19",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+        "heading": "Arithmetic Functions"
+      },
+      "see_also": [
+        {
+          "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+          "heading": "FLOOR Function"
+        },
+        {
+          "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+          "heading": "CEIL Function"
+        },
+        {
+          "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+          "heading": "ROUND Function"
+        }
+      ],
+      "body": "`FLOOR(x)` rounds down · `CEIL(x)` rounds up · `ROUND(x, n)` rounds to n decimal places."
+    },
+    {
+      "id": "S7.20",
+      "type": "task",
+      "task_id": "T7.10",
+      "ask": "How far did she walk after **18:45**? Show the total distance in km as `ROUND(…, 1)`, `CEIL(…)` and `FLOOR(…)` — in that order. (The cm fix is already applied.)",
+      "setup": [
+        "UPDATE watch_log SET distance_m = distance_m / 100 WHERE ts >= '2026-12-12 18:00:00';"
+      ],
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:2db5c346b3e6881102dd8131b476a1fc393b39a77c6d7072b424df18dcd3602d"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+            "heading": "ROUND Function"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ROUND(SUM(distance_m) / 1000.0, ____), CEIL(SUM(distance_m) / 1000.0), FLOOR(SUM(distance_m) / 1000.0) FROM watch_log WHERE ts >= '2026-12-12 18:45:00';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.10"
+        }
+      ],
+      "reply_on_pass": "About **0.2 km** — she walked only 200 metres from where the car stopped.",
+      "traps": []
+    },
+    {
+      "id": "S7.21",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+        "heading": "String Functions"
+      },
+      "body": "`UPPER()` and `LOWER()` change text case — great for case-insensitive search: `UPPER(name) LIKE UPPER('%avengers%')`."
+    },
+    {
+      "id": "S7.22",
+      "type": "task",
+      "task_id": "T7.11",
+      "ask": "Decode the ₹1 note (S5-C1: `gReEn aCrEs`). The capitals hide a name — so ignore letter case. From `upi_payments`, show `from_name`, `to_name`, `amount`, `note`, `ts` where the note contains **green acres** in **any** letter case.",
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:831fea5cf5c09b3601307d811636884e75dbe9566f871334e33a6855051e4603"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+            "heading": "String Functions"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT from_name, to_name, amount, note, ts FROM upi_payments WHERE ____(note) LIKE ____('%green acres%');"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.11"
+        }
+      ],
+      "on_pass": {
+        "clue": "S7-C1"
+      },
+      "reply_on_pass": "Two rows — two different people wrote the same place.",
+      "traps": []
+    },
+    {
+      "id": "S7.22b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+        "heading": "String Functions"
+      },
+      "prompt": "Your two rows: who wrote *green acres*, and when?",
+      "options": [
+        {
+          "text": "Dev at 16:10 (₹45,000 to Green Acres Farm Stays, '2 guests') — and Tara's watch at 19:02 (₹1 to Mahi, 'gReEn aCrEs')",
+          "correct": true
+        },
+        {
+          "text": "Only Tara — the ₹45,000 row is a different place"
+        },
+        {
+          "text": "Only Dev — the ₹1 note says something else"
+        }
+      ],
+      "explain": "Case-insensitive search matched both notes: *Green Acres - 2 guests* (16:10:05) and *gReEn aCrEs* (19:02:30). Same place. She typed the name of the farm stay her manager paid for."
+    },
+    {
+      "id": "S7.23",
+      "type": "clue",
+      "clue_id": "S7-C1",
+      "requires_task": "T7.11",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "id": "S7.24",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+        "heading": "ROUND Function"
+      },
+      "prompt": "What is `ROUND(16.25, 1)`?",
+      "options": [
+        {
+          "text": "16.3",
+          "correct": true
+        },
+        {
+          "text": "16.2"
+        },
+        {
+          "text": "16"
+        }
+      ],
+      "explain": "ROUND to 1 decimal place looks at the next digit (5) and rounds up: 16.3."
+    },
+    {
+      "id": "S7.25",
+      "type": "hook",
+      "speaker": "system",
+      "body": "📱 Trending: **#IshitaKnows** — the @tara_squad admin posted *\"she's safe, trust me\"* at 8:55 PM. Ira: \"Let's clear people properly — with data, not hashtags.\""
+    }
+  ]
+}

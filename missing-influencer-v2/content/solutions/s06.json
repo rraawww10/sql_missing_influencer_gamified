@@ -1,0 +1,19 @@
+{
+  "T6.1": {
+    "ref": "SELECT tower_id, tower_area, COUNT(*) AS pings FROM tower_pings WHERE device_owner = 'Tara Sen' AND device_type = 'WATCH' GROUP BY tower_id, tower_area;",
+    "traps": []
+  },
+  "T6.2": {
+    "ref": "SELECT tower_id, tower_area, COUNT(*) AS pings, MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = 'Tara Sen' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area HAVING pings > 5;",
+    "traps": [
+      {
+        "id": "no_where",
+        "sql": "SELECT tower_id, tower_area, COUNT(*) AS pings, MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = 'Tara Sen' GROUP BY tower_id, tower_area HAVING pings > 5;"
+      }
+    ]
+  },
+  "T6.3": {
+    "ref": "SELECT tower_id, COUNT(*), MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = 'Dev Arora' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area HAVING COUNT(*) > 3;",
+    "traps": []
+  }
+}

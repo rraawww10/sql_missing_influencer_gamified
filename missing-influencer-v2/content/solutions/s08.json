@@ -1,0 +1,48 @@
+{
+  "T8.1": {
+    "ref": "SELECT device_owner, COUNT(*) AS pings, CASE WHEN COUNT(*) >= 10 THEN 'High' WHEN COUNT(*) >= 1 THEN 'Medium' ELSE 'Low' END AS suspicion FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' GROUP BY device_owner;",
+    "traps": []
+  },
+  "T8.2": {
+    "ref": "SELECT device_owner, COUNT(CASE WHEN tower_id = 'RRO-17' THEN 1 END) AS at_farm_area, COUNT(CASE WHEN tower_id <> 'RRO-17' THEN 1 END) AS elsewhere FROM tower_pings WHERE ts >= '2026-12-12 18:00:00' GROUP BY device_owner;",
+    "traps": []
+  },
+  "T8.3": {
+    "ref": "SELECT device_owner FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' INTERSECT SELECT from_name FROM upi_payments WHERE to_name = 'Green Acres Farm Stays';",
+    "traps": []
+  },
+  "T8.4": {
+    "ref": "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' UNION SELECT rider_name FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00';",
+    "traps": []
+  },
+  "T8.5": {
+    "ref": "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' UNION ALL SELECT rider_name FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00';",
+    "traps": []
+  },
+  "T8.6": {
+    "ref": "SELECT name FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1;",
+    "traps": [
+      {
+        "id": "column_count",
+        "sql": "SELECT name, phone FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1;"
+      }
+    ]
+  },
+  "T8.fan": {
+    "ref": "SELECT DISTINCT tower_area FROM fan_dms WHERE sender_handle = '@tara_squad';",
+    "traps": []
+  },
+  "T8.7": {
+    "ref": "SELECT name FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1 ORDER BY 1;",
+    "traps": [
+      {
+        "id": "order_inside",
+        "sql": "SELECT name FROM suspects ORDER BY name EXCEPT SELECT person_name FROM alibis WHERE verified = 1;"
+      }
+    ]
+  },
+  "T8.8": {
+    "ref": "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' UNION SELECT rider_name FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' ORDER BY 1 DESC LIMIT 5;",
+    "traps": []
+  }
+}
