@@ -1,0 +1,372 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 11,
+  "title": "The Toll Plaza",
+  "story_clock": "2026-12-12 23:00:00",
+  "course_topic_id": "d828fceb-ce97-41f7-b8fa-b30644a51658",
+  "snapshot": "s11",
+  "est_minutes": 45,
+  "reading_materials": [
+    {
+      "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+      "role": "primary",
+      "rm": 32,
+      "learning_resource_id": "224113f2-7756-4a22-8f65-f46b1de89fa5"
+    },
+    {
+      "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+      "role": "primary",
+      "rm": 33,
+      "learning_resource_id": "4c1b550e-4c11-472f-8c2f-130b00798feb"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S11-C2"
+    ],
+    "required_beats": [
+      "S11.10",
+      "S11.12",
+      "S11.14",
+      "S11.16",
+      "S11.18"
+    ]
+  },
+  "minutes_estimate": 22,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    },
+    {
+      "session": 9,
+      "clue_id": "S9-C1",
+      "title": "Booking B-88",
+      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    },
+    {
+      "session": 10,
+      "clue_id": "S10-C1",
+      "title": "The SUV is the manager's",
+      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 — S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
+    },
+    {
+      "session": 11,
+      "clue_id": "S11-C1",
+      "title": "Out to the outskirts and back",
+      "body": "Your three-table join: the SUV crossed **Ring Road Toll Plaza** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "U33.open",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Previously: joining `toll_crossings` with `vehicles` and `people` showed Dev's SUV crossing Ring Road Toll Plaza going out at 18:41 and back at 19:30.\nNow we need joins that keep rows with **no** match — and a table joined with itself.\n"
+    },
+    {
+      "id": "S11.9",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+        "heading": "RIGHT JOIN"
+      },
+      "see_also": [
+        {
+          "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+          "heading": "JOINS Cont'd"
+        }
+      ],
+      "body": "`RIGHT JOIN` is the mirror of LEFT JOIN: it keeps **every row of the right table**, with NULLs where the left has no match."
+    },
+    {
+      "id": "S11.10",
+      "type": "task",
+      "task_id": "T11.4",
+      "ask": "Every guest row of booking **88**, even guests with no matching person: `booking_guest.booking_id`, `person.name` from `person RIGHT JOIN booking_guest` on `person.id = booking_guest.person_id`.",
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:2faa7bd44fceea6b14f9dc0292e792976733e85ced732051a97daceb7e596a37"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+            "heading": "RIGHT JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT booking_guest.booking_id, person.name FROM person ____ booking_guest ON person.id = booking_guest.person_id WHERE booking_guest.booking_id = 88;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s11.json#T11.4"
+        }
+      ],
+      "reply_on_pass": "Two rows: Dev — and **NULL**. The INNER JOIN in the case board hid her. The unregistered *\"+1 lady\"* is **Tara**.",
+      "traps": []
+    },
+    {
+      "id": "S11.11",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+        "heading": "FULL JOIN"
+      },
+      "body": "`FULL JOIN` = LEFT + RIGHT: every row from **both** tables; NULL where one side has no match."
+    },
+    {
+      "id": "S11.12",
+      "type": "task",
+      "task_id": "T11.5",
+      "ask": "Match hotel-gate vehicles with toll crossings: `DISTINCT gate_log.vehicle_no` as `at_hotel_gate` and `toll_crossings.vehicle_no` as `at_toll`, using `FULL JOIN` on `vehicle_no`.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+            "heading": "FULL JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT DISTINCT gate_log.vehicle_no AS at_hotel_gate, toll_crossings.vehicle_no AS at_toll FROM gate_log ____ toll_crossings ON gate_log.vehicle_no = toll_crossings.vehicle_no;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s11.json#T11.5"
+        }
+      ],
+      "reply_on_pass": "NULL on one side = seen in only one place. Only **26 BH 4471 EX** has a value on **both** sides.",
+      "grading": {
+        "expected_hash": "sha256:2a89267634a8dd33840021dc7966e0aa305e015def3e68ecf5c204109c219432"
+      },
+      "traps": []
+    },
+    {
+      "id": "S11.13",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+        "heading": "CROSS JOIN"
+      },
+      "body": "`CROSS JOIN` pairs **every** row of one table with **every** row of the other (m × n rows)."
+    },
+    {
+      "id": "S11.14",
+      "type": "task",
+      "task_id": "T11.6",
+      "ask": "Plan the rescue: every `police_units` × `routes` pair for the unit based at `'Ring Road'`; show unit `name`, route `name`, `km`, shortest route first, **only 1**.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:888069629529dd8cc7d6f2c97bf29ee2f86759a8d6b2e4dffcb076d9d103cb01"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+            "heading": "CROSS JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT police_units.name, routes.name, routes.km FROM police_units ____ routes WHERE police_units.base_area = 'Ring Road' ORDER BY routes.km LIMIT 1;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s11.json#T11.6"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S11.15",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+        "heading": "SELF JOIN"
+      },
+      "body": "A **self join** joins a table with itself, using two aliases (`AS p1`, `AS p2`). Write `p1.x < p2.x` so each pair shows once."
+    },
+    {
+      "id": "S11.16",
+      "type": "task",
+      "task_id": "T11.7",
+      "ask": "Were they together? Join `tower_pings AS p1` with `tower_pings AS p2` on the same `tower_id` **and** the same `ts`, where `p1.device_owner < p2.device_owner` and the tower is `'RRO-17'`. Show `p1.device_owner`, `p2.device_owner`, `p1.tower_id`, `p1.ts`.",
+      "grading": {
+        "expect_rows": 6,
+        "expected_hash": "sha256:27fe3ad5bc0cc7d8330d8e3629e13e3427c1ab71e4326de1f73548dd9d935c36"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+            "heading": "SELF JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT p1.device_owner, p2.device_owner, p1.tower_id, p1.ts FROM tower_pings AS p1 INNER JOIN tower_pings AS p2 ON p1.tower_id = p2.tower_id AND p1.ts = ____ WHERE p1.device_owner < p2.device_owner AND p1.tower_id = 'RRO-17';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s11.json#T11.7"
+        }
+      ],
+      "on_pass": {
+        "clue": "S11-C2"
+      },
+      "reply_on_pass": "Six rows, six identical minutes. Two devices, one place, one time.",
+      "traps": []
+    },
+    {
+      "id": "S11.17",
+      "type": "clue",
+      "clue_id": "S11-C2",
+      "requires_task": "T11.7",
+      "title": "Same tower, same minute",
+      "body": "Your self join: Tara's watch and Dev's phone pinged **RRO-17** at the **same six minutes** — 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
+    },
+    {
+      "id": "S11.18",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+        "heading": "JOINS Summary"
+      },
+      "prompt": "JOINS summary — match each join you used tonight to what it keeps.",
+      "pairs": [
+        {
+          "left": "INNER JOIN",
+          "right": "Only rows that match on both sides"
+        },
+        {
+          "left": "LEFT JOIN",
+          "right": "Every row of the left table"
+        },
+        {
+          "left": "RIGHT JOIN",
+          "right": "Every row of the right table"
+        },
+        {
+          "left": "FULL JOIN",
+          "right": "Every row of both tables"
+        },
+        {
+          "left": "CROSS JOIN",
+          "right": "Every combination of rows"
+        }
+      ]
+    },
+    {
+      "id": "S11.19",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "📻 \"Ring Road unit — Green Acres Farm Stays, booking B-88, the village road is shortest. Go quietly. Her heart rate is calm; she's safe in a room.\""
+    },
+    {
+      "id": "S11.20",
+      "type": "hook",
+      "speaker": "system",
+      "body": "📧 Dev's lawyer: *\"My client never left the hotel. And her contract says she **chose** to skip shows — check the label's system.\"*"
+    }
+  ],
+  "unit": {
+    "n": 33,
+    "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+    "learning_resource_id": "4c1b550e-4c11-472f-8c2f-130b00798feb",
+    "title": "Querying with Joins | Part 3",
+    "part": 2,
+    "parts": 2,
+    "finale": false
+  }
+}

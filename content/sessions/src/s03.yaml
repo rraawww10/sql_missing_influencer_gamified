@@ -1,0 +1,319 @@
+# Session 3 — "Hotel Gate Log" (7:00 PM). Flow: docs/SESSION_PLAN.md › Session 3.
+# Build: node pipeline/build_sessions.mjs --only 3
+session: 3
+title: "Hotel Gate Log"
+story_clock: "2026-12-12 19:00:00"
+course_topic_id: 96f9178e-a503-4611-9d16-abf889375c54
+snapshot: s03
+est_minutes: 45
+reading_materials:
+  - { unit_id: 5a12e93b-c3a5-4204-b31e-de0051a406bd, role: primary }   # RM #10 Comparison Operators
+  - { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, role: primary }   # RM #11 String Operations
+  - { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, role: primary }   # RM #12 Logical Operators
+
+beats:
+  - id: S3.1
+    type: scene
+    speaker: mentor
+    body: |
+      The gate log is here: `gate_log` has every entry and exit at the hotel's three gates —
+      **MAIN**, **SERVICE** and **STAFF** — since noon.
+      Each row has the gate, direction (IN/OUT), time, vehicle number, vehicle colour, and sometimes a name the guard wrote down.
+
+  - id: S3.2
+    type: note
+    rm_ref: { unit_id: 5a12e93b-c3a5-4204-b31e-de0051a406bd, heading: "Comparison Operators" }
+    body: |
+      Comparison operators help us filter rows:
+
+      | Operator | Description |
+      |---|---|
+      | `=` | Equal to |
+      | `<>` | Not equal to |
+      | `<` | Less than |
+      | `<=` | Less than or equal to |
+      | `>` | Greater than |
+      | `>=` | Greater than or equal to |
+
+      Tip: our times look like `'2026-12-12 18:00:00'`. In this format, a later time is "greater", so `>=` works on times too.
+
+  - id: S3.3
+    type: task
+    task_id: T3.1
+    minutes: 2
+    ask: "{{star.first}}'s key card was used at 18:09. Get **all the details** of every gate entry from **6 PM onwards** (`ts` greater than or equal to `'2026-12-12 18:00:00'`)."
+    ref: "SELECT * FROM gate_log WHERE ts >= '2026-12-12 18:00:00';"
+    grading: { expect_rows: 144 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 5a12e93b-c3a5-4204-b31e-de0051a406bd, heading: "Comparison Operators" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE ts ____ '2026-12-12 18:00:00';" }
+    reply_on_pass: "144 rows. Too many to read one by one. Let's narrow it down."
+
+  - id: S3.4
+    type: task
+    task_id: T3.2
+    minutes: 2
+    ask: "The service lift opens near the service gate. Show **all the details** of every entry that was **not** at the `'MAIN'` gate."
+    ref: "SELECT * FROM gate_log WHERE gate <> 'MAIN';"
+    grading: { expect_rows: 22 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 5a12e93b-c3a5-4204-b31e-de0051a406bd, heading: "Comparison Operators" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE gate ____ 'MAIN';" }
+
+  - id: S3.5
+    type: note
+    rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "LIKE Operator" }
+    see_also:
+      - { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "String Operations" }
+    body: |
+      To search text by **pattern**, use `LIKE`:
+      ```sql
+      SELECT * FROM table_name WHERE c1 LIKE matching_pattern;
+      ```
+      - `%` matches **any number** of characters (even zero).
+      - `_` matches **exactly one** character.
+
+  - id: S3.6
+    type: note
+    rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" }
+    body: |
+      | Pattern | Example | Finds names that… |
+      |---|---|---|
+      | Exact match | `LIKE "mobiles"` | are exactly "mobiles" |
+      | Starts with | `LIKE "mobiles%"` | start with "mobiles" |
+      | Ends with | `LIKE "%mobiles"` | end with "mobiles" |
+      | Contains | `LIKE "%mobiles%"` | contain "mobiles" |
+      | Pattern matching | `LIKE "a_%"` | start with "a" and have at least 2 characters |
+
+  - id: S3.7
+    type: scene
+    speaker: guard
+    body: |
+      🎙️ Voice note from {{guard}}, the hotel guard: "Madam, around six a **grey car** went out from the service gate.
+      Number plate… it started with **26 BH**… and ended with **EX**, I think."
+
+  - id: S3.8
+    type: task
+    task_id: T3.3a
+    minutes: 2
+    ask: "Show all the details of entries where the vehicle number **starts with** `26 BH`."
+    ref: "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH%';"
+    grading: { expect_rows: 9 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE vehicle_no LIKE '____';" }
+    traps:
+      - id: exact_match
+        rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" }
+        sql: "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH';"
+        match: result
+        reply: "No rows — without `%`, LIKE looks for the **exact** text '26 BH'. Add `%` after it to mean 'starts with'."
+
+  - id: S3.9
+    type: task
+    task_id: T3.3b
+    minutes: 2
+    ask: "Now the other end: entries where the vehicle number **ends with** `EX`."
+    ref: "SELECT * FROM gate_log WHERE vehicle_no LIKE '%EX';"
+    grading: { expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE vehicle_no LIKE '____EX';" }
+
+  - id: S3.10
+    type: scene
+    speaker: guard
+    body: "Wait, madam… I remember more now. **26 BH 4471, then E-something**. The last letter I didn't see."
+
+  - id: S3.11
+    type: task
+    task_id: T3.3c
+    ask: "The plate is `26 BH 4471 E?`, where `?` is **one** unknown letter. Find those entries."
+    ref: "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH 4471 E_';"
+    grading: { expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "LIKE Operator" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH ____ E_';" }
+    traps:
+      - id: percent_instead_of_underscore
+        rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" }
+        sql: "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH 44% E%';"
+        match: result
+        reply: "Too wide — `%` allowed **{{suv_near_miss}}** in too. We know exactly **one** letter is missing and the number is 4471. Use `_` for one character."
+    reply_on_pass: "Two rows, same grey SUV: it **left** by the service gate at **18:12:05**… and came **back** at **19:52**."
+
+  - id: S3.12
+    type: task
+    task_id: T3.4
+    minutes: 2
+    ask: "Guards sometimes write a name. Find entries where `person_name` **contains** `{{manager.last}}`."
+    ref: "SELECT * FROM gate_log WHERE person_name LIKE '%{{manager.last}}%';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE person_name LIKE '%____%';" }
+    reply_on_pass: "**{{manager}}** — {{star.first}}'s manager — was driving that SUV when it came back at 19:52. {{mentor.first}}: \"He told us he never left the lobby.\""
+
+  - id: S3.13
+    type: note
+    rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "AND, OR, NOT" }
+    see_also:
+      - { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "Logical Operators" }
+    body: |
+      Combine conditions with logical operators:
+
+      | Operator | Use |
+      |---|---|
+      | `AND` | rows that satisfy **all** the conditions |
+      | `OR` | rows that satisfy **at least one** condition |
+      | `NOT` | negates a condition |
+
+  - id: S3.14
+    type: task
+    task_id: T3.5
+    ask: "Show entries at the `'SERVICE'` gate **and** with direction `'OUT'` **and** from 6 PM onwards."
+    ref: "SELECT * FROM gate_log WHERE gate = 'SERVICE' AND direction = 'OUT' AND ts >= '2026-12-12 18:00:00';"
+    grading: { expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "AND, OR, NOT" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE gate = 'SERVICE' ____ direction = 'OUT' ____ ts >= '2026-12-12 18:00:00';" }
+    reply_on_pass: "Only two vehicles left by the service gate after 6: the grey SUV at 18:12 and a catering van at 18:55."
+
+  - id: S3.15
+    type: task
+    task_id: T3.6
+    minutes: 2
+    ask: "Show entries at the `'SERVICE'` gate **or** the `'STAFF'` gate."
+    ref: "SELECT * FROM gate_log WHERE gate = 'SERVICE' OR gate = 'STAFF';"
+    grading: { expect_rows: 22 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "AND, OR, NOT" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE gate = 'SERVICE' ____ gate = 'STAFF';" }
+    reply_on_pass: "22 rows — the same as `gate <> 'MAIN'`. Two different queries, one answer."
+
+  - id: S3.16
+    type: task
+    task_id: T3.7
+    minutes: 2
+    ask: "Hotel shuttle buses have numbers starting with `HTL`. Show entries whose vehicle number does **not** start with `HTL`."
+    ref: "SELECT * FROM gate_log WHERE NOT vehicle_no LIKE 'HTL%';"
+    grading: { expect_rows: 180 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "AND, OR, NOT" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE ____ vehicle_no LIKE 'HTL%';" }
+    reply_on_pass: "180 rows. Notice: people **on foot** (no vehicle number) are not in this list either — an empty value is neither 'HTL…' nor 'not HTL…'."
+
+  - id: S3.17
+    type: note
+    rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "Precedence" }
+    see_also:
+      - { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "Multiple Logical Operators" }
+    body: |
+      When a query has many logical operators, **precedence** decides which runs first:
+      **NOT** → **AND** → **OR**.
+
+      So `A AND B OR C` means `(A AND B) OR C`.
+      Best practice: use **parentheses** to say exactly what you mean.
+
+  - id: S3.18
+    type: task
+    task_id: T3.8
+    ask: "{{mentor.first}}: \"Show me **grey** vehicles that used the service gate **or** the staff gate.\" Get all the details."
+    ref: "SELECT * FROM gate_log WHERE vehicle_colour = 'Grey' AND (gate = 'SERVICE' OR gate = 'STAFF');"
+    grading: { expect_rows: 4 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "Precedence" } }
+      - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE vehicle_colour = 'Grey' AND (gate = 'SERVICE' ____ gate = 'STAFF');" }
+    traps:
+      - id: precedence
+        rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "Precedence" }
+        sql: "SELECT * FROM gate_log WHERE vehicle_colour = 'Grey' AND gate = 'SERVICE' OR gate = 'STAFF';"
+        match: result
+        reply: |
+          📱 Comments explode: **#FanDidIt** — your result shows the white fan-club van at the staff gate!
+          {{mentor.first}}: "Careful. **AND runs before OR.** Your query means *(grey AND service) OR staff* — it brought in **every** staff-gate entry, grey or not. That van is white. Use parentheses."
+    on_pass: { clue: S3-C1 }
+    reply_on_pass: "4 rows. Read the `ts`, `direction` and `person_name` columns of the two SUV rows before you continue."
+
+  - id: S3.18b
+    type: check
+    source: authored
+    rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "Precedence" }
+    prompt: "Your 4 rows: two are a laundry van in the afternoon. What do the other two rows say?"
+    options:
+      - { text: "Grey SUV {{suv}} went OUT by the service gate at 18:12 and came back IN at 19:52 — with {{manager}} noted at the wheel", correct: true }
+      - { text: "The white fan-club van left by the staff gate at 17:40" }
+      - { text: "The SUV only entered the hotel once, at 19:52" }
+    explain: "Row 160: SERVICE · OUT · 18:12:05 · {{suv}}. Row 197: SERVICE · IN · 19:52:10 · {{suv}} · person_name **{{manager}}**. The fan van only appears if you get the precedence wrong — it's white."
+
+  - id: S3.19
+    type: clue
+    clue_id: S3-C1
+    requires_task: T3.8
+    title: "Grey SUV at the service gate"
+    body: "Your gate-log query: grey SUV **{{suv}}** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **{{manager}}**."
+
+  - id: S3.20
+    type: task
+    task_id: T3.9
+    minutes: 2
+    ask: "Look up the SUV in the `vehicles` table: all details of vehicle `'{{suv}}'`."
+    ref: "SELECT * FROM vehicles WHERE vehicle_no = '{{suv}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 5a12e93b-c3a5-4204-b31e-de0051a406bd, heading: "Comparison Operators" } }
+      - { tier: 2, skeleton: "SELECT * FROM vehicles WHERE vehicle_no = '____';" }
+    reply_on_pass: "Owner: **{{talent_company}}**. {{mentor.first}}: \"Never heard of it. Note it down — we'll find out who owns that company.\""
+
+  - id: S3.21
+    type: check
+    source: authored
+    rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" }
+    prompt: "Which pattern finds names that **start with 'a'** and have **at least 2 characters**?"
+    options:
+      - { text: "LIKE \"a%\"" }
+      - { text: "LIKE \"a_%\"", correct: true }
+      - { text: "LIKE \"%a\"" }
+      - { text: "LIKE \"_a%\"" }
+    explain: "`a` first, then `_` (exactly one more character), then `%` (anything after). `a%` would also match just \"a\"."
+
+  - id: S3.22
+    type: hook
+    speaker: system
+    body: |
+      📱 Cab app reply: "{{star}} booked a ride at **17:55**. Status: **cancelled by rider**."
+      {{mentor.first}}: "She cancelled her own cab? Let's see every ride."
+
+exit:
+  required_clues: [S3-C1]
+  required_beats: [S3.3, S3.4, S3.8, S3.9, S3.11, S3.12, S3.14, S3.15, S3.16, S3.18, S3.18b, S3.20]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: 5a12e93b-c3a5-4204-b31e-de0051a406bd   # RM #10 Comparison Operators
+    from: S3.1
+    to: S3.4
+    closer:
+      speaker: mentor
+      body: |
+        Entries at the wrong hours found. The guard remembers a grey SUV — but only part of the number plate.
+  - unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86   # RM #11 String Operations
+    from: S3.5
+    to: S3.12
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the hotel gate log has 300 entries. We filtered them by time and found vehicles leaving around 6 PM.
+        Now the guard remembers a **grey SUV** — but only part of its number plate. We search by pattern.
+    closer:
+      speaker: mentor
+      body: |
+        We have the plate: **{{suv}}**. Now combine conditions to track its movements.
+  - unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4   # RM #12 Logical Operators
+    from: S3.13
+    to: S3.22
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the guard's grey SUV is **{{suv}}**. We found it in the gate log by matching the plate pattern.
+        Now we combine several conditions in one query: colour, gate, time — all at once.

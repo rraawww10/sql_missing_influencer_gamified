@@ -1,0 +1,15 @@
+{
+  "about": "Course-team curation applied on top of the verbatim extract. Each rule removes a reading material's text from the given heading to the end (optionally also the --- separator line just above it). Applied by pipeline/extract_reading_materials.py; the course export itself is never changed.",
+  "decided_by": "course team",
+  "decided_on": "2026-10-05",
+  "reason": "Sections added only for compliance; not part of the course session content that is delivered.",
+  "rules": [
+    { "rm": 2,  "unit_id": "a7ecece7-3f40-4856-92aa-192911076595", "title": "Introduction to Databases",       "truncate_from_heading": "Database System Architecture", "also_remove_separator_above": true },
+    { "rm": 9,  "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d", "title": "Alter Table",                     "truncate_from_heading": "SQL Command Categories" },
+    { "rm": 25, "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b", "title": "SQL Set Operations",              "truncate_from_heading": "Relational Algebra" },
+    { "rm": 26, "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3", "title": "Core Concepts of ER Model",       "truncate_from_heading": "Participation Constraints" },
+    { "rm": 27, "unit_id": "21b08636-88d8-4a75-9a69-8b45d3be7318", "title": "ER Model to Relational Database", "truncate_from_heading": "ER to Relational Mapping: Conversion of ER Model to Relational Schema" },
+    { "rm": 34, "unit_id": "1603fce6-36ce-4b12-831e-fe37794f87d1", "title": "Transaction and Indexes",         "truncate_from_heading": "Concurrency Control" },
+    { "rm": 37, "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af", "title": "Transaction and Indexes",         "truncate_from_heading": "Concurrency Control" }
+  ]
+}

@@ -1,0 +1,376 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 5,
+  "title": "Follow the Money",
+  "story_clock": "2026-12-12 20:00:00",
+  "course_topic_id": "eab97311-acfb-4686-a901-2a86ad4d7b1d",
+  "snapshot": "s05",
+  "est_minutes": 40,
+  "reading_materials": [
+    {
+      "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+      "role": "primary",
+      "rm": 16,
+      "learning_resource_id": "a3353e83-ac82-48a4-969b-6b96dc207dcf"
+    },
+    {
+      "unit_id": "9fe2b23a-f2c1-4397-8464-1da99a1c6526",
+      "role": "primary",
+      "rm": 17,
+      "learning_resource_id": "c578ae61-94db-473d-ad4a-08b11a8e9c7e"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S5-C1"
+    ],
+    "required_beats": [
+      "S5.3",
+      "S5.5",
+      "S5.9",
+      "S5.10",
+      "S5.10b"
+    ]
+  },
+  "minutes_estimate": 20,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S5.1",
+      "type": "scene",
+      "speaker": "analyst",
+      "body": "The bank sent UPI payments for the last three days: `upi_payments` — who paid whom, how much, an optional note, and when."
+    },
+    {
+      "id": "S5.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+        "heading": "Aggregation Functions"
+      },
+      "see_also": [
+        {
+          "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+          "heading": "Aggregations"
+        }
+      ],
+      "body": "**Aggregation** combines many values into one:\n`COUNT` (how many) · `SUM` (total) · `MIN` · `MAX` · `AVG` (average).\nYou can use several in one query: `SELECT SUM(c1), MAX(c1) FROM table_name;`\n"
+    },
+    {
+      "id": "S5.3",
+      "type": "task",
+      "task_id": "T5.1",
+      "ask": "Dev Arora's payments **today** (from `'2026-12-12 00:00:00'`): show `SUM`, `COUNT`, `MAX`, `MIN` and `AVG` of `amount` — in that order.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:bc4a8d4c4524a2a2e5152269b35448fc8ef00c87ede60d18ecec6ff4ef716aa6"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+            "heading": "Aggregation Functions"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT SUM(amount), COUNT(amount), MAX(amount), MIN(amount), AVG(amount) FROM upi_payments WHERE from_name = '____' AND ts >= '2026-12-12 00:00:00';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s05.json#T5.1"
+        }
+      ],
+      "reply_on_pass": "₹54,450 in six payments — and one of them is **₹45,000**.",
+      "traps": []
+    },
+    {
+      "id": "S5.4",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+        "heading": "COUNT Variants"
+      },
+      "see_also": [
+        {
+          "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+          "heading": "Variant 1"
+        },
+        {
+          "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+          "heading": "Variant 2"
+        },
+        {
+          "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+          "heading": "Variant 3"
+        },
+        {
+          "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+          "heading": "Output of Variant 1, Variant 2 and Variant 3"
+        }
+      ],
+      "body": "`COUNT(*)`, `COUNT(1)` and `COUNT()` all count **rows**.\n`COUNT(column)` counts only the rows where that column is **not NULL**.\n"
+    },
+    {
+      "id": "S5.5",
+      "type": "task",
+      "task_id": "T5.2n",
+      "minutes": 2,
+      "ask": "How many of Dev's payments today have a **note**?",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+            "heading": "COUNT Variants"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT COUNT(____) FROM upi_payments WHERE from_name = 'Dev Arora' AND ts >= '2026-12-12 00:00:00';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s05.json#T5.2n"
+        }
+      ],
+      "traps": [
+        {
+          "id": "count_star",
+          "match": {
+            "result_hash": "sha256:6802be7321603934456b4818d7b3d70078063fea4941107578310cbe84f6d656"
+          },
+          "reply": "`COUNT(*)` counts **every** payment (6). Ira asked how many have a note: `COUNT(note)` skips the NULLs.",
+          "rm_ref": {
+            "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+            "heading": "COUNT Variants"
+          }
+        }
+      ],
+      "reply_on_pass": "Only 2 have notes: *team lunch* and *Green Acres - 2 guests*.",
+      "grading": {
+        "expected_hash": "sha256:fc583cfce3a5c74b382cd86f167416072638bb435fa13f3fd244b273ef55a1c0"
+      }
+    },
+    {
+      "id": "S5.6",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+        "heading": "Special Cases"
+      },
+      "body": "Special cases:\n- `SUM` on text gives `0.0` in SQLite (PostgreSQL gives None).\n- `MIN` / `MAX` on text follow dictionary (lexicographic) order.\n- `NULL` values are ignored by aggregations; on only NULLs, they return NULL (COUNT returns 0).\n"
+    },
+    {
+      "id": "S5.7",
+      "type": "task",
+      "task_id": "T5.sum_text",
+      "minutes": 1,
+      "ask": "Try it: what is `SUM(note)` over all of `upi_payments`?",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+            "heading": "Special Cases"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT SUM(____) FROM upi_payments;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s05.json#T5.sum_text"
+        }
+      ],
+      "reply_on_pass": "**0.0** — not zero money. You added up words, and SQLite treats text as 0.",
+      "grading": {
+        "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
+      },
+      "traps": []
+    },
+    {
+      "id": "S5.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+        "heading": "Alias"
+      },
+      "body": "`AS` gives a column a readable name: `SELECT MAX(amount) AS biggest_payment FROM …`"
+    },
+    {
+      "id": "S5.9",
+      "type": "task",
+      "task_id": "T5.2",
+      "minutes": 2,
+      "ask": "Show Dev's biggest payment ever, with the column named `biggest_payment`.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+            "heading": "Alias"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT MAX(amount) ____ biggest_payment FROM upi_payments WHERE from_name = 'Dev Arora';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s05.json#T5.2"
+        }
+      ],
+      "grading": {
+        "expected_hash": "sha256:f8c7bec53e3c2a29ee4a9d7a0705ff4fa44cf8456591cd16ee0c18a951999ace"
+      },
+      "traps": []
+    },
+    {
+      "id": "S5.9b",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Now Mahi's call. She said: *\"a strange ₹1 from Tara's smartwatch at 7 PM.\"*\nA payment of ₹1 is not money — it's a **message**. The bank's table keeps the sender, the amount, the note and the time. Find that payment and read its note.\n"
+    },
+    {
+      "id": "S5.10",
+      "type": "task",
+      "task_id": "T5.3",
+      "ask": "Find the ₹1 payment: show `from_name`, `amount`, `note`, `ts` of payments **to** `'Mahi Sen'` with `amount` = 1.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:7c67765db23f50530045e259ad32de157cea02f765d3341954bd770628f7439a"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+            "heading": "Aggregations"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT from_name, amount, note, ts FROM upi_payments WHERE to_name = 'Mahi Sen' AND amount = ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s05.json#T5.3"
+        }
+      ],
+      "on_pass": {
+        "clue": "S5-C1"
+      },
+      "reply_on_pass": "One payment. Read the `note` column carefully.",
+      "traps": []
+    },
+    {
+      "id": "S5.10b",
+      "type": "activity",
+      "kind": "pick_cell",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+        "heading": "Aggregations"
+      },
+      "prompt": "This is the row your query returned. Tap the **note** — the only thing Tara could type.",
+      "tables": [
+        {
+          "caption": "Your result",
+          "columns": [
+            "from_name",
+            "amount",
+            "note",
+            "ts"
+          ],
+          "rows": [
+            [
+              "Tara Sen (Watch)",
+              1,
+              "gReEn aCrEs",
+              "2026-12-12 19:02:30"
+            ]
+          ]
+        }
+      ],
+      "answer": {
+        "table": "Your result",
+        "row": 0,
+        "column": "note"
+      },
+      "feedback": "`gReEn aCrEs` — capital letters in odd places. Nobody types like that by accident. Sent from her **watch**, not her phone. Keep it; we decode it later."
+    },
+    {
+      "id": "S5.11",
+      "type": "clue",
+      "clue_id": "S5-C1",
+      "requires_task": "T5.3",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "id": "U16.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "The ₹1 to Mahi is real, and its note is strange. Now: who paid whom, and how often?\n"
+    }
+  ],
+  "unit": {
+    "n": 16,
+    "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
+    "learning_resource_id": "a3353e83-ac82-48a4-969b-6b96dc207dcf",
+    "title": "Aggregations",
+    "part": 1,
+    "parts": 2,
+    "finale": false
+  }
+}

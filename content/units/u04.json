@@ -1,0 +1,200 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 2,
+  "title": "Build the Case File",
+  "story_clock": "2026-12-12 18:30:00",
+  "course_topic_id": "9f5e3ac3-94b1-4b12-a167-12c4ef571903",
+  "snapshot": "s02",
+  "est_minutes": 54,
+  "reading_materials": [
+    {
+      "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+      "role": "primary",
+      "rm": 3,
+      "learning_resource_id": "1860df1f-8fcf-4221-83ba-cad49900d581"
+    },
+    {
+      "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+      "role": "primary",
+      "rm": 4,
+      "learning_resource_id": "480c4d22-60fa-4dd7-8fe9-1a97d9710891"
+    },
+    {
+      "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+      "role": "primary",
+      "rm": 5,
+      "learning_resource_id": "0f23f352-800f-40f1-a119-918cd7a45451"
+    },
+    {
+      "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+      "role": "primary",
+      "rm": 6,
+      "learning_resource_id": "0ffb983d-fdc2-4cc3-bf17-91255ac56bae"
+    },
+    {
+      "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+      "role": "primary",
+      "rm": 7,
+      "learning_resource_id": "b41f7ad3-c07f-4685-a76e-a2678d1fc26b"
+    },
+    {
+      "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+      "role": "primary",
+      "rm": 9,
+      "learning_resource_id": "3a340dab-2544-49e7-bb4b-023be16975b5"
+    },
+    {
+      "unit_id": "5db3ad70-736e-49ee-8e01-9186191cab34",
+      "role": "subset",
+      "rm": 8,
+      "learning_resource_id": "da01c855-64bf-45e0-be84-f473e20bf2ef"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S2.9"
+    ]
+  },
+  "minutes_estimate": 5.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "U4.open",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Previously: we created an empty `suspects` table with four columns — name, role, phone, age.\nKabir has the five names and phone numbers. Put them in.\n"
+    },
+    {
+      "id": "S2.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+        "heading": "Inserting Rows"
+      },
+      "see_also": [
+        {
+          "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+          "heading": "Possible Mistakes"
+        }
+      ],
+      "body": "`INSERT INTO` adds rows to a table. You can add many rows in one query:\n```sql\nINSERT INTO table_name (column1, column2, ...)\nVALUES\n  (value1, value2, ...),\n  (value1, value2, ...);\n```\nKabir warns: there are **4 common mistakes** with INSERT. He stamps every one in red.\n"
+    },
+    {
+      "id": "S2.9",
+      "type": "task",
+      "task_id": "T2.3",
+      "ask": "Ira's notebook has the five suspects. Insert all five rows into `suspects` — copy them exactly, even if something looks wrong.\n\n| name | role | phone | age |\n|---|---|---|---|\n| Dev Arora | manager | 9876500002 | 38 |\n| Nysa Kapoor | rival singer | 9876500003 | 24 |\n| Ishita Das | fan page admin | 9876500004 | 19 |\n| Sunny Gill | cab driver | 9876500050 | 45 |\n| Kunal Bajaj | event organiser | 9876500006 | 41 |\n",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
+      ],
+      "grading": {
+        "inspect": "SELECT name, role, phone, age FROM suspects;",
+        "expected_hash": "sha256:e6a71c8bde29c6db6c64cb360e446d896138a85261b7cfa2ac680f09c51b3338"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Inserting Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "INSERT INTO suspects (name, role, phone, age)\nVALUES\n  ('Dev Arora', 'manager', '9876500002', 38),\n  (____),\n  ...;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.3"
+        }
+      ],
+      "traps": [
+        {
+          "id": "M1",
+          "match": {
+            "error_regex": "^\\d+ values for \\d+ columns"
+          },
+          "reply": "🟥 Kabir's red stamp: **number of values ≠ number of columns**. You listed 4 columns, so every row needs 4 values.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 1"
+          }
+        },
+        {
+          "id": "M3",
+          "match": {
+            "error_regex": "values for \\d+ columns",
+            "sql_regex": "VALUES\\s*\\(\\s*\\("
+          },
+          "reply": "🟥 Red stamp: **no extra brackets after VALUES**. Write `VALUES (...), (...)`, not `VALUES ((...), (...))`.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 3"
+          }
+        },
+        {
+          "id": "M2",
+          "match": {
+            "error_regex": "no such table"
+          },
+          "reply": "🟥 Red stamp: **that table doesn't exist**. We only have `suspects`.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 2"
+          }
+        },
+        {
+          "id": "M4",
+          "match": {
+            "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
+            "inspect": "SELECT COUNT(*) > 0 FROM suspects WHERE typeof(age) = 'text';"
+          },
+          "reply": "⚠️ No error — but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 4"
+          }
+        }
+      ]
+    },
+    {
+      "id": "U4.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Five rows in. Now let's read them back.\n"
+    }
+  ],
+  "unit": {
+    "n": 4,
+    "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+    "learning_resource_id": "480c4d22-60fa-4dd7-8fe9-1a97d9710891",
+    "title": "Inserting Rows",
+    "part": 2,
+    "parts": 6,
+    "finale": false
+  }
+}

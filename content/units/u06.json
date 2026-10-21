@@ -1,0 +1,200 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 2,
+  "title": "Build the Case File",
+  "story_clock": "2026-12-12 18:30:00",
+  "course_topic_id": "9f5e3ac3-94b1-4b12-a167-12c4ef571903",
+  "snapshot": "s02",
+  "est_minutes": 54,
+  "reading_materials": [
+    {
+      "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+      "role": "primary",
+      "rm": 3,
+      "learning_resource_id": "1860df1f-8fcf-4221-83ba-cad49900d581"
+    },
+    {
+      "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+      "role": "primary",
+      "rm": 4,
+      "learning_resource_id": "480c4d22-60fa-4dd7-8fe9-1a97d9710891"
+    },
+    {
+      "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+      "role": "primary",
+      "rm": 5,
+      "learning_resource_id": "0f23f352-800f-40f1-a119-918cd7a45451"
+    },
+    {
+      "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+      "role": "primary",
+      "rm": 6,
+      "learning_resource_id": "0ffb983d-fdc2-4cc3-bf17-91255ac56bae"
+    },
+    {
+      "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+      "role": "primary",
+      "rm": 7,
+      "learning_resource_id": "b41f7ad3-c07f-4685-a76e-a2678d1fc26b"
+    },
+    {
+      "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+      "role": "primary",
+      "rm": 9,
+      "learning_resource_id": "3a340dab-2544-49e7-bb4b-023be16975b5"
+    },
+    {
+      "unit_id": "5db3ad70-736e-49ee-8e01-9186191cab34",
+      "role": "subset",
+      "rm": 8,
+      "learning_resource_id": "da01c855-64bf-45e0-be84-f473e20bf2ef"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S2.17"
+    ]
+  },
+  "minutes_estimate": 6.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "U6.open",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Previously: Tara's key card was last used at the service lift. And Sunny's phone number in our `suspects` table has a typo.\nWe need to change data that is already in the table.\n"
+    },
+    {
+      "id": "S2.16",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+        "heading": "Update Rows"
+      },
+      "see_also": [
+        {
+          "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+          "heading": "Update All Rows"
+        }
+      ],
+      "body": "`UPDATE` changes data that is already in a table.\n```sql\nUPDATE table_name SET c1 = value1;                    -- changes ALL rows\nUPDATE table_name SET c1 = value1 WHERE condition;    -- changes only matching rows\n```\n"
+    },
+    {
+      "id": "S2.17",
+      "type": "task",
+      "task_id": "T2.7",
+      "rm_ref": {
+        "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+        "heading": "Update Specific Rows"
+      },
+      "ask": "The notebook had a typo: **Sunny Gill's** phone is really `9876500005`. Fix only his row.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);"
+      ],
+      "grading": {
+        "inspect": "SELECT name, phone FROM suspects;",
+        "expected_hash": "sha256:c81a2f85935159c7a1296a896e935dd56eb14a4a006424ab125d287d2b4702ce"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+            "heading": "Update Specific Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "UPDATE suspects SET phone = '9876500005' WHERE ____ = 'Sunny Gill';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.7"
+        }
+      ],
+      "traps": [
+        {
+          "id": "update_all",
+          "match": {
+            "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
+            "inspect": "SELECT COUNT(DISTINCT phone) FROM suspects;"
+          },
+          "reply": "😬 Now **everyone** has Sunny's number! Without `WHERE`, UPDATE changes **all rows**. Tap **↺ Reset DB**, then add a WHERE condition.",
+          "rm_ref": {
+            "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+            "heading": "Update All Rows"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S2.18",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+        "heading": "SQLite is Case Insensitive!"
+      },
+      "prompt": "`SELECT * FROM suspects;` and `select * from suspects;` — what happens?",
+      "options": [
+        {
+          "text": "Only the first one works"
+        },
+        {
+          "text": "Both give the same output; writing keywords in UPPER CASE is the best practice",
+          "correct": true
+        },
+        {
+          "text": "The second one gives an error"
+        }
+      ],
+      "explain": "SQLite is case insensitive for keywords. Both work, but UPPER CASE keywords are easier to read."
+    },
+    {
+      "id": "U6.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Data fixed. Next: a table full of rumours that needs cleaning.\n"
+    }
+  ],
+  "unit": {
+    "n": 6,
+    "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+    "learning_resource_id": "0ffb983d-fdc2-4cc3-bf17-91255ac56bae",
+    "title": "Update Rows",
+    "part": 4,
+    "parts": 6,
+    "finale": false
+  }
+}

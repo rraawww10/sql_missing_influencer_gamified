@@ -1,0 +1,386 @@
+# Session 12 — "The Edited Contract" (11:30 PM). Flow: docs/SESSION_PLAN.md › Session 12.
+session: 12
+title: "The Edited Contract"
+story_clock: "2026-12-12 23:30:00"
+course_topic_id: eedd3130-8dd7-4042-a3f5-05ff5123e356
+snapshot: s12
+est_minutes: 55
+reading_materials:
+  - { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, role: primary }   # RM #35 Views
+  - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, role: primary }   # RM #36 Subqueries
+  - { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, role: primary }   # RM #37 Transaction and Indexes
+  - { unit_id: 1603fce6-36ce-4b12-831e-fe37794f87d1, role: subset }    # RM #34 Transaction and Indexes
+
+x-view: &view "CREATE VIEW suv_timeline AS SELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '{{suv}}' UNION ALL SELECT 'toll', ts, plaza FROM toll_crossings WHERE vehicle_no = '{{suv}}' UNION ALL SELECT 'tower', ts, tower_area FROM tower_pings WHERE device_owner = '{{manager}}';"
+
+beats:
+  - id: S12.1
+    type: scene
+    speaker: mentor
+    body: "The label sent its system data: `contracts`, `label_payments` and `txn_log` (every change made to the contracts). We need a court-ready timeline — and the truth about that contract."
+
+  - id: S12.2
+    type: note
+    rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "View" }
+    see_also:
+      - { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Views" }
+      - { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Create View" }
+      - { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "user table" }
+      - { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "product table" }
+      - { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "orderproduct table" }
+      - { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "orderdetails table" }
+    body: |
+      A **view** is a saved query you can use like a table:
+      ```sql
+      CREATE VIEW view_name AS SELECT …;
+      ```
+      Views are generally **read only** — you can't insert, update or delete through them.
+
+  - id: S12.3
+    type: task
+    task_id: T12.1
+    ask: |
+      Create the view `suv_timeline` with columns `source`, `ts`, `place`, combining (with `UNION ALL`):
+      - `'gate'`, `ts`, `gate` from `gate_log` for vehicle `'{{suv}}'`
+      - `'toll'`, `ts`, `plaza` from `toll_crossings` for `'{{suv}}'`
+      - `'tower'`, `ts`, `tower_area` from `tower_pings` for `'{{manager}}'`
+    ref: *view
+    grading:
+      inspect: "SELECT source, COUNT(*) FROM suv_timeline GROUP BY source;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Create View" } }
+      - { tier: 2, skeleton: "CREATE VIEW suv_timeline AS\nSELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '{{suv}}'\nUNION ALL SELECT 'toll', ts, plaza FROM ____ WHERE vehicle_no = '{{suv}}'\nUNION ALL SELECT 'tower', ts, tower_area FROM ____ WHERE device_owner = '{{manager}}';" }
+
+  - id: S12.4
+    type: task
+    task_id: T12.2
+    rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Querying Using View" }
+    ask: "Query your view: all its columns, **without** the tower rows (`source <> 'tower'`), in time order."
+    setup: [*view]
+    ref: "SELECT * FROM suv_timeline WHERE source <> 'tower' ORDER BY ts;"
+    grading: { ordered: true, expect_rows: 4 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Querying Using View" } }
+      - { tier: 2, skeleton: "SELECT * FROM ____ WHERE source <> 'tower' ORDER BY ts;" }
+    traps:
+      - id: write_view
+        rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "View" }
+        sql: "UPDATE suv_timeline SET place = 'MAIN';"
+        match: error
+        error_regex: "because it is a view"
+        reply: "Views are **read only**. To change data, change the base tables — the view shows it automatically."
+    reply_on_pass: "Out by the service gate 18:12 → toll out 18:41 → toll in 19:30 → back at the hotel 19:52."
+
+  - id: S12.5
+    type: task
+    task_id: T12.3
+    minutes: 2
+    rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "List All Available Views" }
+    ask: "List every view in the database: `name` from `sqlite_master` where `type = 'view'`."
+    setup: [*view]
+    ref: "SELECT name FROM sqlite_master WHERE type = 'view';"
+    grading: { expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "List All Available Views" } }
+      - { tier: 2, skeleton: "SELECT name FROM ____ WHERE type = 'view';" }
+
+  - id: S12.6
+    type: task
+    task_id: T12.4
+    minutes: 2
+    rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Delete View" }
+    ask: "An old draft view `draft_suspects` is still lying around. Delete it."
+    ref: "DROP VIEW draft_suspects;"
+    grading:
+      inspect: "SELECT COUNT(*) FROM sqlite_master WHERE type = 'view' AND name = 'draft_suspects';"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Delete View" } }
+      - { tier: 2, skeleton: "____ VIEW draft_suspects;" }
+
+  - id: S12.7
+    type: note
+    rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Advantages" }
+    body: "Views keep **complex queries** (joins, group by…) ready to reuse, and **restrict access** — {{mentor.first}} shares a view with the organiser that hides personal data."
+
+  - id: S12.8
+    type: note
+    rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "1. Introduction to Subquery" }
+    see_also:
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "2. Why Do We Use Subqueries?" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "3. Example-The Problem with Aggregate Functions in WHERE" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "The Problem" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Why Does This Error Occur?" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Use a Subquery" }
+    body: "A **subquery** is a query inside another query, in brackets. It answers a question the outer query needs — like *what is the average?*"
+
+  - id: S12.9
+    type: task
+    task_id: T12.5
+    ask: "Which label payments are **above the average** payment? Show `payer`, `payee`, `amount`."
+    ref: "SELECT payer, payee, amount FROM label_payments WHERE amount > (SELECT AVG(amount) FROM label_payments);"
+    grading: { expect_rows: 9 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Use a Subquery" } }
+      - { tier: 2, skeleton: "SELECT payer, payee, amount FROM label_payments WHERE amount > (SELECT ____ FROM label_payments);" }
+    traps:
+      - id: aggregate_in_where
+        rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Why Does This Error Occur?" }
+        sql: "SELECT payer, payee, amount FROM label_payments WHERE amount > AVG(amount);"
+        match: error
+        error_regex: "misuse of aggregate"
+        reply: "`WHERE` checks one row at a time, so it can't use `AVG(...)` of all rows. Put the average in a **subquery**: `(SELECT AVG(amount) FROM label_payments)`."
+      - id: two_columns_where
+        rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Mistake in WHERE Clause" }
+        sql: "SELECT payer, payee, amount FROM label_payments WHERE amount > (SELECT amount, payment_id FROM label_payments);"
+        match: error
+        error_regex: "row value misused"
+        reply: "A subquery used in a comparison must return **exactly one value** — one column, one row."
+    reply_on_pass: "Nine payments above average — and one towers over the rest: **{{label}} → {{manager}}, ₹2,00,000** (the *advance* from S5-C3). Every other payment here is a normal label fee."
+
+  - id: S12.9b
+    type: scene
+    speaker: mentor
+    body: |
+      {{manager.first}}'s lawyer says the contract lets her **choose** to skip shows. Let's read the contract itself.
+      `contracts` has one row per artist: the label, the `missed_show_clause`, and the `manager_bonus` paid if that clause triggers.
+
+  - id: S12.9c
+    type: task
+    task_id: T12.5b
+    minutes: 2
+    ask: "{{star.first}}'s contract: **all columns** of `contracts` where `artist_name` = `'{{star}}'`."
+    ref: "SELECT * FROM contracts WHERE artist_name = '{{star}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "6. Subquery with WHERE Clause" } }
+      - { tier: 2, skeleton: "SELECT * FROM contracts WHERE artist_name = '____';" }
+    on_pass: { clue: S12-C1 }
+    reply_on_pass: "`missed_show_clause` = **Applicable**, `manager_bonus` = **2500000**. If she misses tonight's show, her manager gets ₹25 lakh. Did she really agree to that? The system log will tell us when this row was written."
+
+  - id: S12.10
+    type: clue
+    clue_id: S12-C1
+    requires_task: T12.5b
+    title: "A rival label's advance"
+    body: "Your queries: {{label}} paid {{manager.first}} **₹2,00,000** (*advance*, 11 Dec) — the only label payment far above average. And {{star.first}}'s contract row says *missed-show clause*: **Applicable**, *manager bonus*: **₹25,00,000**. If she misses the show, he is paid twice."
+
+  - id: S12.11
+    type: note
+    rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "4. Usage of Subquery with Other Clauses" }
+    see_also:
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "5. Subquery with SELECT Clause" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "6. Subquery with WHERE Clause" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Database Schema" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step-by-Step Solution" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Understanding Nested Queries" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Solution" }
+    body: "Subqueries work in `WHERE`, `SELECT`, `FROM`, `HAVING` and more."
+
+  - id: S12.12
+    type: task
+    task_id: T12.6
+    ask: "How far is each payment from the average? Show `payment_id`, `payer`, `payee`, and `amount` minus the average as `above_avg`."
+    ref: "SELECT payment_id, payer, payee, amount - (SELECT AVG(amount) FROM label_payments) AS above_avg FROM label_payments;"
+    grading: { expect_rows: 17 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "5. Subquery with SELECT Clause" } }
+      - { tier: 2, skeleton: "SELECT payment_id, payer, payee, amount - (SELECT ____ FROM label_payments) AS above_avg FROM label_payments;" }
+    traps:
+      - id: two_columns_select
+        rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Mistake in SELECT Clause" }
+        sql: "SELECT payment_id, payer, payee, amount - (SELECT AVG(amount), MAX(amount) FROM label_payments) AS above_avg FROM label_payments;"
+        match: error
+        error_regex: "sub-select returns 2 columns"
+        reply: "In a calculation the subquery must return **one** value. You asked for two columns."
+
+  - id: S12.13
+    type: note
+    rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "7. Possible Mistakes" }
+    see_also:
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Mistake in SELECT Clause" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Mistake in WHERE Clause" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Correct Rule" }
+    body: "**Correct rule:** a subquery used in a calculation, comparison or SELECT expression must return **exactly one value** (one column, one row)."
+
+  - id: S12.14
+    type: task
+    task_id: T12.7
+    rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Question 1 – Order Value Tags" }
+    ask: "Tag every payment: show `payment_id` and `tag` — **'Above Average'** if `amount` is above the average, else **'Below Average'**."
+    ref: "SELECT payment_id, CASE WHEN amount > (SELECT AVG(amount) FROM label_payments) THEN 'Above Average' ELSE 'Below Average' END AS tag FROM label_payments;"
+    grading: { expect_rows: 17 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 4 – Replace Placeholder with the Subquery (Final Query)" } }
+      - { tier: 2, skeleton: "SELECT payment_id, CASE WHEN amount > (SELECT AVG(amount) FROM label_payments) THEN '____' ELSE '____' END AS tag FROM label_payments;" }
+
+  - id: S12.15
+    type: note
+    rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "8. Problem Solving" }
+    see_also:
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Question 1 – Order Value Tags" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Understanding the Question" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step-by-Step Approach" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 1 – Get the Average Total Amount" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 2 – Get All Orders with Their Total Amounts" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 3 – Categorise Using CASE (with placeholder)" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 4 – Replace Placeholder with the Subquery (Final Query)" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Question 2 – Monthly Average Order Amount per User" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 1 – Get Customers and Months of Orders in 2021" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 2 – Get Customer-wise, Month-wise Sum of Total Amount (monthlytotals)" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 3 – Use monthlytotals in FROM Clause (Final Query)" }
+      - { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Summary" }
+    body: "A subquery in `FROM` acts like a temporary table — give it a name with `AS` and query it."
+
+  - id: S12.16
+    type: task
+    task_id: T12.8
+    rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Question 2 – Monthly Average Order Amount per User" }
+    ask: "Average **monthly** total per payee: first total `amount` per `payee` per month (`strftime('%m', ts)`) in a subquery named `monthly_totals`, then `AVG(monthly_total)` per payee."
+    ref: "SELECT payee, AVG(monthly_total) FROM (SELECT payee, strftime('%m', ts) AS month, SUM(amount) AS monthly_total FROM label_payments GROUP BY payee, month) AS monthly_totals GROUP BY payee;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646, heading: "Step 3 – Use monthlytotals in FROM Clause (Final Query)" } }
+      - { tier: 2, skeleton: "SELECT payee, AVG(monthly_total) FROM (SELECT payee, strftime('%m', ts) AS month, SUM(amount) AS monthly_total FROM label_payments GROUP BY payee, month) AS ____ GROUP BY payee;" }
+    reply_on_pass: "{{manager.first}}'s average jumps to ₹58,000 a month — because of one ₹2 lakh payment in December."
+
+  - id: S12.17
+    type: note
+    rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Transactions" }
+    see_also:
+      - { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Atomicity" }
+      - { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Consistency" }
+      - { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Isolation" }
+      - { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Durability" }
+    body: |
+      A **transaction** is a group of SQL statements that belong together. Every transaction is **ACID**:
+      - **Atomicity** — all statements are applied, or **none**.
+      - **Consistency** — the database is always left in a consistent state.
+      - **Isolation** — many transactions can run at once without harming each other.
+      - **Durability** — once committed, changes **survive a crash**.
+
+  - id: S12.18
+    type: activity
+    kind: match
+    rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Atomicity" }
+    prompt: "Which ACID property is the label system relying on?"
+    pairs:
+      - { left: "The bonus and the contract change are saved together — or not at all", right: "Atomicity" }
+      - { left: "A contract can never end up half-edited and invalid", right: "Consistency" }
+      - { left: "The legal team and the manager edit at the same time without clashing", right: "Isolation" }
+      - { left: "A committed change is still there after the server crashes", right: "Durability" }
+
+  - id: S12.19
+    type: task
+    task_id: T12.9
+    ask: "Read the label system's log: all columns of `txn_log` for transactions `'T7'` and `'T9'`, **or** the `'CRASH'` entry, in `lsn` order."
+    ref: "SELECT lsn, txn_id, entry_type, data_item, old_value, new_value, user_name, ts FROM txn_log WHERE txn_id IN ('T7', 'T9') OR entry_type = 'CRASH' ORDER BY lsn;"
+    grading: { ordered: true, expect_rows: 7 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Transactions" } }
+      - { tier: 2, skeleton: "SELECT * FROM txn_log WHERE txn_id IN ('T7', 'T9') ____ entry_type = 'CRASH' ORDER BY lsn;" }
+    reply_on_pass: "Seven rows. Read `user_name`, `old_value`, `new_value` and `ts` of the WRITE rows — and where the CRASH sits between them."
+
+  - id: S12.19b
+    type: check
+    source: authored
+    rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Transactions" }
+    prompt: "Who changed `contract_C12.missed_show_clause`, from what, to what — and when?"
+    options:
+      - { text: "User darora: Not Applicable → Applicable at 18:05 (T7), the server crashed at 18:07, then again at 18:20 (T9) with the bonus set to 2500000", correct: true }
+      - { text: "User legal_team at 17:50 — a routine edit" }
+      - { text: "Nobody — the clause was always Applicable" }
+    explain: "lsn 5: T7 WRITE by **darora** 18:05:40, old value **Not Applicable**. lsn 6: CRASH 18:07. lsn 11–12: T9 WRITE by darora 18:20:30 (clause) and 18:20:40 (bonus 0 → 2500000). lsn 13: T9 COMMIT 18:21. The original value was *Not Applicable* — she had not agreed to anything."
+
+  - id: S12.20
+    type: task
+    task_id: T12.10
+    ask: "Which transactions **started** but never **committed**? `txn_id` of `'START'` entries **except** those with a `'COMMIT'` entry."
+    ref: "SELECT txn_id FROM txn_log WHERE entry_type = 'START' EXCEPT SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Atomicity" } }
+      - { tier: 2, skeleton: "SELECT txn_id FROM txn_log WHERE entry_type = 'START' ____ SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT';" }
+    on_pass: { clue: S12-C2 }
+
+  - id: S12.21
+    type: activity
+    kind: match
+    rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Durability" }
+    prompt: "Apply ACID to the log."
+    pairs:
+      - { left: "T7 never committed before the crash", right: "Atomicity: none of T7 was applied" }
+      - { left: "T9 committed at 18:21", right: "Durability: T9's change survived" }
+
+  - id: S12.22
+    type: clue
+    clue_id: S12-C2
+    requires_task: T12.10
+    title: "The edited contract"
+    body: "Your log queries: the missed-show clause was **Not Applicable** until user **{{manager.login}}** wrote *Applicable* at 18:05 (T7 — lost in the 18:07 crash) and again at **18:20** (T9 — **committed**, with the bonus set to ₹25 lakh). Both writes came **after** she left the hotel in his SUV at 18:12 (S3-C1). She never agreed to skip the show."
+
+  - id: S12.23
+    type: note
+    rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Indexes" }
+    body: "An **index** is like the index of a dictionary: the database finds rows fast without reading the whole table."
+
+  - id: S12.24
+    type: demo
+    rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Indexes" }
+    prompt: "{{analyst.first}} loads last month's **1 lakh** tower pings and searches for one person at one tower — first without an index, then with one. Press run and compare."
+    script_file: index_demo.sql
+    steps:
+      - { label: "Search 1 lakh rows — no index", sql: "SELECT COUNT(*) FROM tower_pings_archive WHERE device_owner = '{{guest}}' AND tower_id = 'MGR-04';", repeat: 20 }
+      - { label: "Create an index on (device_owner, tower_id)", sql: "CREATE INDEX idx_owner_tower ON tower_pings_archive (device_owner, tower_id);", repeat: 1 }
+      - { label: "Same search — with the index", sql: "SELECT COUNT(*) FROM tower_pings_archive WHERE device_owner = '{{guest}}' AND tower_id = 'MGR-04';", repeat: 20 }
+    feedback: "Same answer, far less work — the index lets the database jump straight to the matching rows."
+
+  - id: S12.25
+    type: check
+    source: authored
+    rm_ref: { unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af, heading: "Atomicity" }
+    prompt: "A transaction crashed **before COMMIT**. Which ACID property says none of its changes are applied?"
+    options:
+      - { text: "Atomicity", correct: true }
+      - { text: "Durability" }
+      - { text: "Isolation" }
+    explain: "Atomicity: all of a transaction's statements are applied, or none."
+
+  - id: S12.26
+    type: hook
+    speaker: system
+    body: "📻 Ring Road unit: *\"We're at {{farm}}. We have her. She's okay. She's asking — **is the show still on?**\"*"
+
+exit:
+  required_clues: [S12-C1, S12-C2]
+  required_beats: [S12.3, S12.4, S12.5, S12.6, S12.9, S12.9c, S12.12, S12.14, S12.16, S12.18, S12.19, S12.19b, S12.20, S12.21, S12.24]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97   # RM #35 Views
+    from: S12.1
+    to: S12.7
+    closer:
+      speaker: mentor
+      body: |
+        Views saved. Next: a query inside a query.
+  - unit_id: 85bae7a3-1e61-42d4-bbb0-08e9fc9fe646   # RM #36 Subqueries
+    from: S12.8
+    to: S12.16
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the label sent its system data — `contracts`, `label_payments` and a change log `txn_log`. We saved **views** of the parts we need.
+        Now we ask questions inside questions — **subqueries** — to find who edited the contract.
+    closer:
+      speaker: mentor
+      body: |
+        The contract says *missed-show clause: Applicable* and a ₹25 lakh bonus for the manager. Now: **who** wrote that, and **when**? The system log records every change.
+  - unit_id: 0aee01e4-7697-4aad-9d41-4996a143f8af   # RM #37 Transaction and Indexes
+    from: S12.17
+    to: S12.26
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the missed-show clause was edited by login **{{manager.login}}** at 18:20 — after {{star.first}} was already gone.
+        Now we check how the label system keeps data safe — **transactions** and **indexes**.
+  - unit_id: 1603fce6-36ce-4b12-831e-fe37794f87d1   # RM #34 Transaction and Indexes — same text as RM #37
+    same_as: 0aee01e4-7697-4aad-9d41-4996a143f8af

@@ -1,0 +1,16 @@
+{
+  "name": "missing-influencer-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "Content pipeline steps that need the browser SQLite engine (sql.js)",
+  "scripts": {
+    "check:case-db": "node check_case_db.mjs",
+    "build:sessions": "node build_sessions.mjs",
+    "test:grader": "node test_grader.mjs",
+    "ci": "npm run check:case-db && npm run build:sessions && npm run test:grader"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "sql.js": "1.14.2"
+  }
+}

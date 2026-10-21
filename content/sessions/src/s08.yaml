@@ -1,0 +1,239 @@
+# Session 8 — "Clear the Innocent" (9:30 PM). Flow: docs/SESSION_PLAN.md › Session 8.
+session: 8
+title: "Clear the Innocent"
+story_clock: "2026-12-12 21:30:00"
+course_topic_id: 478ef25a-12f6-4aa2-b500-6940806a7983
+snapshot: s08
+est_minutes: 40
+reading_materials:
+  - { unit_id: 3b692841-a6a3-4e2f-99ce-c4fadd78c82f, role: primary }   # RM #23 SQL Case
+  - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, role: primary }   # RM #25 SQL Set Operations
+  - { unit_id: 54a9517e-4844-4f5a-b278-18e0c971615f, role: subset }    # RM #24 SQL Set Operations
+
+x-near: &near "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'"
+
+beats:
+  - id: S8.1
+    type: scene
+    speaker: mentor
+    body: "Five suspects. Hashtags don't clear anyone — **data** does. New tables: `alibis` (each person's claim and whether it's verified) and `fan_dms`."
+
+  - id: S8.2
+    type: note
+    rm_ref: { unit_id: 3b692841-a6a3-4e2f-99ce-c4fadd78c82f, heading: "CASE Clause" }
+    body: |
+      `CASE` works like if-else: the **first** true `WHEN` wins; with no `ELSE` the result is NULL.
+      ```sql
+      SELECT c1, CASE WHEN condition1 THEN value1 WHEN condition2 THEN value2 ELSE value END AS cn FROM table_name;
+      ```
+      You can use CASE in SELECT, WHERE, HAVING, ORDER BY and GROUP BY.
+
+  - id: S8.3
+    type: task
+    task_id: T8.1
+    ask: |
+      Who pinged tower **RRO-17** from 6 PM, and how suspicious is that? Show `device_owner`, the ping count as `pings`,
+      and `suspicion`: **'High'** for 10 or more pings, **'Medium'** for 1 or more, else **'Low'**.
+    ref: "SELECT device_owner, COUNT(*) AS pings, CASE WHEN COUNT(*) >= 10 THEN 'High' WHEN COUNT(*) >= 1 THEN 'Medium' ELSE 'Low' END AS suspicion FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' GROUP BY device_owner;"
+    grading: { expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 3b692841-a6a3-4e2f-99ce-c4fadd78c82f, heading: "CASE Clause" } }
+      - { tier: 2, skeleton: "SELECT device_owner, COUNT(*) AS pings, CASE WHEN COUNT(*) >= 10 THEN 'High' WHEN ____ THEN 'Medium' ELSE 'Low' END AS suspicion FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' GROUP BY device_owner;" }
+    reply_on_pass: "{{caretaker}} is 'High' too — but he **lives** at the farm. High pings alone don't make anyone guilty."
+
+  - id: S8.4
+    type: note
+    rm_ref: { unit_id: 3b692841-a6a3-4e2f-99ce-c4fadd78c82f, heading: "CASE with Aggregates" }
+    body: "CASE works inside aggregates: `COUNT(CASE WHEN rating >= 8 THEN 1 END)` counts only rows that match."
+
+  - id: S8.5
+    type: task
+    task_id: T8.2
+    ask: "From 6 PM, for every `device_owner`: pings **at** RRO-17 as `at_farm_area` and pings **elsewhere** as `elsewhere`."
+    ref: "SELECT device_owner, COUNT(CASE WHEN tower_id = 'RRO-17' THEN 1 END) AS at_farm_area, COUNT(CASE WHEN tower_id <> 'RRO-17' THEN 1 END) AS elsewhere FROM tower_pings WHERE ts >= '2026-12-12 18:00:00' GROUP BY device_owner;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 3b692841-a6a3-4e2f-99ce-c4fadd78c82f, heading: "CASE with Aggregates" } }
+      - { tier: 2, skeleton: "SELECT device_owner, COUNT(CASE WHEN tower_id = 'RRO-17' THEN 1 END) AS at_farm_area, COUNT(CASE WHEN ____ THEN 1 END) AS elsewhere FROM tower_pings WHERE ts >= '2026-12-12 18:00:00' GROUP BY device_owner;" }
+
+  - id: S8.6
+    type: note
+    rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "Common Set Operators" }
+    see_also:
+      - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "SQL Set Operations" }
+      - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "INTERSECT" }
+      - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "MINUS" }
+      - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION" }
+      - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION ALL" }
+    body: |
+      Set operators combine the results of two SELECTs:
+      - `INTERSECT` — rows in **both**
+      - `MINUS` — rows in the first but **not** the second (SQLite writes it as `EXCEPT`)
+      - `UNION` — rows in **either** (duplicates removed) · `UNION ALL` — same, but **keeps** duplicates
+
+  - id: S8.7
+    type: note
+    rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "Basic rules when combining two sql queries using set operations" }
+    see_also:
+      - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "Applying Set Operations" }
+    body: "Each SELECT must have the **same number of columns**, of **similar types**, in the **same order**."
+
+  - id: S8.7b
+    type: scene
+    speaker: mentor
+    body: |
+      Two lists. List one: everyone whose device hit **RRO-17** tonight — your CASE query showed three names: {{star.first}}, {{caretaker}} and {{manager.first}}.
+      List two: everyone who ever **paid {{farm}}**. Being near the farm is not a crime. Paying for the farm is not a crime. Being on **both** lists tonight — that needs an explanation.
+
+  - id: S8.8
+    type: task
+    task_id: T8.3
+    ask: "Who was near **RRO-17** from 6 PM (`device_owner` in `tower_pings`) **and** paid `'{{farm}}'` (`from_name` in `upi_payments`)? One list, only the names on both."
+    ref: "SELECT device_owner FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' INTERSECT SELECT from_name FROM upi_payments WHERE to_name = '{{farm}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "INTERSECT" } }
+      - { tier: 2, skeleton: "SELECT device_owner FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' ____ SELECT from_name FROM upi_payments WHERE to_name = '{{farm}}';" }
+    on_pass: { clue: S8-C1 }
+    reply_on_pass: "One name. Not {{caretaker}} (he lives there, never paid), not {{star.first}} (she paid nobody)."
+
+  - id: S8.9
+    type: clue
+    clue_id: S8-C1
+    requires_task: T8.3
+    title: "Only one name in both lists"
+    body: "Your INTERSECT: of the three people near **RRO-17** tonight, only **{{manager}}** also paid **{{farm}}**. The caretaker lives there; {{star.first}} is the guest. One person booked the place and went there."
+
+  - id: S8.10
+    type: task
+    task_id: T8.4
+    ask: "Everyone seen around the hotel between 17:30 and 18:30: `person_name` from `gate_log` **or** `rider_name` from hotel pickups in `cab_rides` — no duplicates."
+    ref: "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' UNION SELECT rider_name FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00';"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION" } }
+      - { tier: 2, skeleton: "SELECT person_name FROM gate_log WHERE ts BETWEEN ... ____ SELECT rider_name FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN ...;" }
+
+  - id: S8.11
+    type: task
+    task_id: T8.5
+    minutes: 2
+    ask: "Same two lists, but **keep duplicates** this time."
+    ref: "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' UNION ALL SELECT rider_name FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00';"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION ALL" } }
+      - { tier: 2, skeleton: "... UNION ____ SELECT rider_name FROM cab_rides ...;" }
+    reply_on_pass: "{{guest}} now appears **twice** — she walked out of the main gate *and* booked a cab. UNION ALL keeps both."
+
+  - id: S8.12
+    type: task
+    task_id: T8.6
+    ask: "Suspects **minus** people with a **verified** alibi: `name` from `suspects` except `person_name` from `alibis` where `verified = 1`."
+    ref: "SELECT name FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1;"
+    grading: { expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "MINUS" } }
+      - { tier: 2, skeleton: "SELECT name FROM suspects ____ SELECT person_name FROM alibis WHERE verified = 1;" }
+    traps:
+      - id: column_count
+        rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "Basic rules when combining two sql queries using set operations" }
+        sql: "SELECT name, phone FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1;"
+        match: error
+        error_regex: "same number of result columns"
+        reply: "Both SELECTs need the **same number of columns**. The second one has only `person_name`."
+    reply_on_pass: "{{fan}} and {{driver}} drop out — their alibis are verified. Left: {{manager.first}}, {{rival.first}}, {{organiser.first}}."
+
+  - id: S8.13
+    type: task
+    task_id: T8.fan
+    minutes: 2
+    ask: "Check the fan page: show each `tower_area` (once) of messages in `fan_dms` from `'{{fan_handle}}'`."
+    ref: "SELECT DISTINCT tower_area FROM fan_dms WHERE sender_handle = '{{fan_handle}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "SQL Set Operations" } }
+      - { tier: 2, skeleton: "SELECT DISTINCT tower_area FROM fan_dms WHERE sender_handle = '____';" }
+
+  - id: S8.14
+    type: scene
+    speaker: mentor
+    body: |
+      Every message from {{fan_handle}} came from **{{hometown}}**, far from the city. Her *"she's safe"* post was a hopeful prayer, not knowledge.
+      Being a big fan isn't a crime. Following someone home would be. She didn't — she's cleared.
+
+  - id: S8.15
+    type: note
+    rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "ORDER BY Clause in Set Operations" }
+    body: "`ORDER BY` may appear **only once**, at the very end. Sort by column **position**: `ORDER BY 1`."
+
+  - id: S8.16
+    type: task
+    task_id: T8.7
+    minutes: 2
+    ask: "Repeat the 'suspects minus verified alibis' query, sorted A → Z by the first column."
+    ref: "SELECT name FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1 ORDER BY 1;"
+    grading: { ordered: true, expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "ORDER BY Clause in Set Operations" } }
+      - { tier: 2, skeleton: "SELECT name FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1 ORDER BY ____;" }
+    traps:
+      - id: order_inside
+        rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "ORDER BY Clause in Set Operations" }
+        sql: "SELECT name FROM suspects ORDER BY name EXCEPT SELECT person_name FROM alibis WHERE verified = 1;"
+        match: error
+        error_regex: "ORDER BY clause should come after"
+        reply: "In set operations, `ORDER BY` goes **once, at the end** — not inside the first SELECT."
+
+  - id: S8.17
+    type: note
+    rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "Pagination in Set Operations" }
+    body: "`LIMIT` and `OFFSET` also go at the very end of the whole query."
+
+  - id: S8.18
+    type: task
+    task_id: T8.8
+    minutes: 2
+    ask: "The no-duplicates hotel list (UNION) again, sorted Z → A by the first column, **first 5 only**."
+    ref: "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' UNION SELECT rider_name FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' ORDER BY 1 DESC LIMIT 5;"
+    grading: { ordered: true, expect_rows: 5 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "Pagination in Set Operations" } }
+      - { tier: 2, skeleton: "... UNION SELECT rider_name FROM cab_rides WHERE ... ORDER BY 1 ____ LIMIT ____;" }
+
+  - id: S8.19
+    type: check
+    source: authored
+    rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION ALL" }
+    prompt: "Which set operator **keeps** duplicates?"
+    options:
+      - { text: "UNION" }
+      - { text: "UNION ALL", correct: true }
+      - { text: "INTERSECT" }
+    explain: "UNION removes duplicates. UNION ALL keeps every row from both SELECTs."
+
+  - id: S8.20
+    type: hook
+    speaker: mentor
+    body: "Our evidence is scattered across ten tables. Before we accuse anyone, let's **draw the full picture**."
+
+exit:
+  required_clues: [S8-C1]
+  required_beats: [S8.3, S8.5, S8.8, S8.10, S8.11, S8.12, S8.13, S8.16, S8.18]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: 3b692841-a6a3-4e2f-99ce-c4fadd78c82f   # RM #23 SQL Case
+    from: S8.1
+    to: S8.5
+    closer:
+      speaker: mentor
+      body: |
+        Labels done. Now compare lists: who was near the tower **and** paid the farm stay?
+  - unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b   # RM #25 SQL Set Operations
+    from: S8.6
+    to: S8.20
+    opener:
+      speaker: mentor
+      body: |
+        Previously: five suspects. We labelled every row with `CASE` — near the outskirts tower or not, big payment or not.
+        Now we compare whole lists — tower pings, payments, rehearsal logs — to clear the innocent.
+  - unit_id: 54a9517e-4844-4f5a-b278-18e0c971615f   # RM #24 SQL Set Operations — same text as RM #25
+    same_as: 777e1aeb-92cd-4978-8bda-c0543963353b

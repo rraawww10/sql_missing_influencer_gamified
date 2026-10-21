@@ -1,0 +1,212 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 8,
+  "title": "Clear the Innocent",
+  "story_clock": "2026-12-12 21:30:00",
+  "course_topic_id": "478ef25a-12f6-4aa2-b500-6940806a7983",
+  "snapshot": "s08",
+  "est_minutes": 40,
+  "reading_materials": [
+    {
+      "unit_id": "3b692841-a6a3-4e2f-99ce-c4fadd78c82f",
+      "role": "primary",
+      "rm": 23,
+      "learning_resource_id": "5945a93e-17d1-4499-a98b-223afa1c46aa"
+    },
+    {
+      "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+      "role": "primary",
+      "rm": 25,
+      "learning_resource_id": "50b00eb2-8a43-404a-ab6c-e286c60c9432"
+    },
+    {
+      "unit_id": "54a9517e-4844-4f5a-b278-18e0c971615f",
+      "role": "subset",
+      "rm": 24,
+      "learning_resource_id": "17584215-dd51-4cba-9ae9-2f289a1e403d"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S8.3",
+      "S8.5"
+    ]
+  },
+  "minutes_estimate": 10,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    }
+  },
+  "beats": [
+    {
+      "id": "S8.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Five suspects. Hashtags don't clear anyone — **data** does. New tables: `alibis` (each person's claim and whether it's verified) and `fan_dms`."
+    },
+    {
+      "id": "S8.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "3b692841-a6a3-4e2f-99ce-c4fadd78c82f",
+        "heading": "CASE Clause"
+      },
+      "body": "`CASE` works like if-else: the **first** true `WHEN` wins; with no `ELSE` the result is NULL.\n```sql\nSELECT c1, CASE WHEN condition1 THEN value1 WHEN condition2 THEN value2 ELSE value END AS cn FROM table_name;\n```\nYou can use CASE in SELECT, WHERE, HAVING, ORDER BY and GROUP BY.\n"
+    },
+    {
+      "id": "S8.3",
+      "type": "task",
+      "task_id": "T8.1",
+      "ask": "Who pinged tower **RRO-17** from 6 PM, and how suspicious is that? Show `device_owner`, the ping count as `pings`,\nand `suspicion`: **'High'** for 10 or more pings, **'Medium'** for 1 or more, else **'Low'**.\n",
+      "grading": {
+        "expect_rows": 3,
+        "expected_hash": "sha256:1728f16816d2b28439bf937593c9a528d3e9f14192599dfceb075441b0f98aff"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "3b692841-a6a3-4e2f-99ce-c4fadd78c82f",
+            "heading": "CASE Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT device_owner, COUNT(*) AS pings, CASE WHEN COUNT(*) >= 10 THEN 'High' WHEN ____ THEN 'Medium' ELSE 'Low' END AS suspicion FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' GROUP BY device_owner;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.1"
+        }
+      ],
+      "reply_on_pass": "Ramesh Pawar is 'High' too — but he **lives** at the farm. High pings alone don't make anyone guilty.",
+      "traps": []
+    },
+    {
+      "id": "S8.4",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "3b692841-a6a3-4e2f-99ce-c4fadd78c82f",
+        "heading": "CASE with Aggregates"
+      },
+      "body": "CASE works inside aggregates: `COUNT(CASE WHEN rating >= 8 THEN 1 END)` counts only rows that match."
+    },
+    {
+      "id": "S8.5",
+      "type": "task",
+      "task_id": "T8.2",
+      "ask": "From 6 PM, for every `device_owner`: pings **at** RRO-17 as `at_farm_area` and pings **elsewhere** as `elsewhere`.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "3b692841-a6a3-4e2f-99ce-c4fadd78c82f",
+            "heading": "CASE with Aggregates"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT device_owner, COUNT(CASE WHEN tower_id = 'RRO-17' THEN 1 END) AS at_farm_area, COUNT(CASE WHEN ____ THEN 1 END) AS elsewhere FROM tower_pings WHERE ts >= '2026-12-12 18:00:00' GROUP BY device_owner;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.2"
+        }
+      ],
+      "grading": {
+        "expected_hash": "sha256:52a3ef8e489d7cca523b0edcbbc69b55f7f7edebbb8f6e5efd9c114b4e97eb85"
+      },
+      "traps": []
+    },
+    {
+      "id": "U23.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Labels done. Now compare lists: who was near the tower **and** paid the farm stay?\n"
+    }
+  ],
+  "unit": {
+    "n": 23,
+    "unit_id": "3b692841-a6a3-4e2f-99ce-c4fadd78c82f",
+    "learning_resource_id": "5945a93e-17d1-4499-a98b-223afa1c46aa",
+    "title": "SQL Case",
+    "part": 1,
+    "parts": 2,
+    "finale": false
+  }
+}

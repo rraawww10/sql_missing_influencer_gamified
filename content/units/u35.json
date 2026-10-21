@@ -1,0 +1,366 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 12,
+  "title": "The Edited Contract",
+  "story_clock": "2026-12-12 23:30:00",
+  "course_topic_id": "eedd3130-8dd7-4042-a3f5-05ff5123e356",
+  "snapshot": "s12",
+  "est_minutes": 55,
+  "reading_materials": [
+    {
+      "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+      "role": "primary",
+      "rm": 35,
+      "learning_resource_id": "3d5104b8-ac44-424e-88d8-c906096dedb9"
+    },
+    {
+      "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
+      "role": "primary",
+      "rm": 36,
+      "learning_resource_id": "899181a1-526f-49e8-a649-79b925f73539"
+    },
+    {
+      "unit_id": "0aee01e4-7697-4aad-9d41-4996a143f8af",
+      "role": "primary",
+      "rm": 37,
+      "learning_resource_id": "3526add8-e14d-4d84-a9cf-74b9bbab9f6b"
+    },
+    {
+      "unit_id": "1603fce6-36ce-4b12-831e-fe37794f87d1",
+      "role": "subset",
+      "rm": 34,
+      "learning_resource_id": "70d380bb-d275-4e22-ba1e-d54a078ba2c4"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S12.3",
+      "S12.4",
+      "S12.5",
+      "S12.6"
+    ]
+  },
+  "minutes_estimate": 14,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    },
+    {
+      "session": 9,
+      "clue_id": "S9-C1",
+      "title": "Booking B-88",
+      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    },
+    {
+      "session": 10,
+      "clue_id": "S10-C1",
+      "title": "The SUV is the manager's",
+      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 — S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
+    },
+    {
+      "session": 11,
+      "clue_id": "S11-C1",
+      "title": "Out to the outskirts and back",
+      "body": "Your three-table join: the SUV crossed **Ring Road Toll Plaza** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+    },
+    {
+      "session": 11,
+      "clue_id": "S11-C2",
+      "title": "Same tower, same minute",
+      "body": "Your self join: Tara's watch and Dev's phone pinged **RRO-17** at the **same six minutes** — 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    }
+  },
+  "beats": [
+    {
+      "id": "S12.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "The label sent its system data: `contracts`, `label_payments` and `txn_log` (every change made to the contracts). We need a court-ready timeline — and the truth about that contract."
+    },
+    {
+      "id": "S12.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "View"
+      },
+      "see_also": [
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "Views"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "Create View"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "user table"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "product table"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "orderproduct table"
+        },
+        {
+          "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+          "heading": "orderdetails table"
+        }
+      ],
+      "body": "A **view** is a saved query you can use like a table:\n```sql\nCREATE VIEW view_name AS SELECT …;\n```\nViews are generally **read only** — you can't insert, update or delete through them.\n"
+    },
+    {
+      "id": "S12.3",
+      "type": "task",
+      "task_id": "T12.1",
+      "ask": "Create the view `suv_timeline` with columns `source`, `ts`, `place`, combining (with `UNION ALL`):\n- `'gate'`, `ts`, `gate` from `gate_log` for vehicle `'26 BH 4471 EX'`\n- `'toll'`, `ts`, `plaza` from `toll_crossings` for `'26 BH 4471 EX'`\n- `'tower'`, `ts`, `tower_area` from `tower_pings` for `'Dev Arora'`\n",
+      "grading": {
+        "inspect": "SELECT source, COUNT(*) FROM suv_timeline GROUP BY source;",
+        "expected_hash": "sha256:5acbf6608fd673dedde254c9e88ced2b0e2b6d43344c2c83ae96893080b0d3b5"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "Create View"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE VIEW suv_timeline AS\nSELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '26 BH 4471 EX'\nUNION ALL SELECT 'toll', ts, plaza FROM ____ WHERE vehicle_no = '26 BH 4471 EX'\nUNION ALL SELECT 'tower', ts, tower_area FROM ____ WHERE device_owner = 'Dev Arora';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.1"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S12.4",
+      "type": "task",
+      "task_id": "T12.2",
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "Querying Using View"
+      },
+      "ask": "Query your view: all its columns, **without** the tower rows (`source <> 'tower'`), in time order.",
+      "setup": [
+        "CREATE VIEW suv_timeline AS SELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'toll', ts, plaza FROM toll_crossings WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'tower', ts, tower_area FROM tower_pings WHERE device_owner = 'Dev Arora';"
+      ],
+      "grading": {
+        "ordered": true,
+        "expect_rows": 4,
+        "expected_hash": "sha256:f93a293b69c836aa1ea8e0d7839faa6ea122a15a5379bc3657737e6024baab0c"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "Querying Using View"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM ____ WHERE source <> 'tower' ORDER BY ts;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.2"
+        }
+      ],
+      "traps": [
+        {
+          "id": "write_view",
+          "match": {
+            "error_regex": "because it is a view"
+          },
+          "reply": "Views are **read only**. To change data, change the base tables — the view shows it automatically.",
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "View"
+          }
+        }
+      ],
+      "reply_on_pass": "Out by the service gate 18:12 → toll out 18:41 → toll in 19:30 → back at the hotel 19:52."
+    },
+    {
+      "id": "S12.5",
+      "type": "task",
+      "task_id": "T12.3",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "List All Available Views"
+      },
+      "ask": "List every view in the database: `name` from `sqlite_master` where `type = 'view'`.",
+      "setup": [
+        "CREATE VIEW suv_timeline AS SELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'toll', ts, plaza FROM toll_crossings WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'tower', ts, tower_area FROM tower_pings WHERE device_owner = 'Dev Arora';"
+      ],
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:174a0a78acc67763a16b14e83f4fa9ee974b67aefcbadb53cd118a0ce354320f"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "List All Available Views"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT name FROM ____ WHERE type = 'view';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.3"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S12.6",
+      "type": "task",
+      "task_id": "T12.4",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "Delete View"
+      },
+      "ask": "An old draft view `draft_suspects` is still lying around. Delete it.",
+      "grading": {
+        "inspect": "SELECT COUNT(*) FROM sqlite_master WHERE type = 'view' AND name = 'draft_suspects';",
+        "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+            "heading": "Delete View"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "____ VIEW draft_suspects;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s12.json#T12.4"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S12.7",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+        "heading": "Advantages"
+      },
+      "body": "Views keep **complex queries** (joins, group by…) ready to reuse, and **restrict access** — Ira shares a view with the organiser that hides personal data."
+    },
+    {
+      "id": "U35.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Views saved. Next: a query inside a query.\n"
+    }
+  ],
+  "unit": {
+    "n": 35,
+    "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
+    "learning_resource_id": "3d5104b8-ac44-424e-88d8-c906096dedb9",
+    "title": "Views",
+    "part": 1,
+    "parts": 3,
+    "finale": false
+  }
+}

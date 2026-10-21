@@ -1,0 +1,347 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 13,
+  "title": "Showtime",
+  "story_clock": "2026-12-13 00:00:00",
+  "course_topic_id": "165a835e-0ee5-42d6-9549-aba5ff78ad89",
+  "snapshot": "s13",
+  "est_minutes": 30,
+  "reading_materials": [],
+  "exit": {
+    "required_clues": [
+      "S13-C1"
+    ],
+    "required_beats": [
+      "S13.3",
+      "S13.4",
+      "S13.5",
+      "S13.6",
+      "S13.7",
+      "S13.8"
+    ]
+  },
+  "minutes_estimate": 20.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    },
+    {
+      "session": 9,
+      "clue_id": "S9-C1",
+      "title": "Booking B-88",
+      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    },
+    {
+      "session": 10,
+      "clue_id": "S10-C1",
+      "title": "The SUV is the manager's",
+      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 — S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
+    },
+    {
+      "session": 11,
+      "clue_id": "S11-C1",
+      "title": "Out to the outskirts and back",
+      "body": "Your three-table join: the SUV crossed **Ring Road Toll Plaza** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+    },
+    {
+      "session": 11,
+      "clue_id": "S11-C2",
+      "title": "Same tower, same minute",
+      "body": "Your self join: Tara's watch and Dev's phone pinged **RRO-17** at the **same six minutes** — 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
+    },
+    {
+      "session": 12,
+      "clue_id": "S12-C1",
+      "title": "A rival label's advance",
+      "body": "Your queries: Skyline Records paid Dev **₹2,00,000** (*advance*, 11 Dec) — the only label payment far above average. And Tara's contract row says *missed-show clause*: **Applicable**, *manager bonus*: **₹25,00,000**. If she misses the show, he is paid twice."
+    },
+    {
+      "session": 12,
+      "clue_id": "S12-C2",
+      "title": "The edited contract",
+      "body": "Your log queries: the missed-show clause was **Not Applicable** until user **darora** wrote *Applicable* at 18:05 (T7 — lost in the 18:07 crash) and again at **18:20** (T9 — **committed**, with the bonus set to ₹25 lakh). Both writes came **after** she left the hotel in his SUV at 18:12 (S3-C1). She never agreed to skip the show."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "star": {
+      "name": "Tara Sen",
+      "role": "Singer, @TARA on reels",
+      "initials": "TS",
+      "color": "#7c3aed"
+    }
+  },
+  "beats": [
+    {
+      "id": "S13.1",
+      "type": "scene",
+      "speaker": "star",
+      "body": "📹 Video call from the police jeep: \"I saw the farm's board when we turned in. My phone was gone, but my watch could pay —\nso I sent Mahi ₹1 and typed the name in strange capitals, so Dev wouldn't notice.\"\n"
+    },
+    {
+      "id": "S13.2",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "The court needs **proof**, not a story. Five claims — prove each one with a query. Then we close the case."
+    },
+    {
+      "id": "S13.3",
+      "type": "task",
+      "task_id": "T13.c1",
+      "ask": "**Claim 1 — the SUV is Dev's.** Join `vehicles`, `company` and `people`: show `vehicles.vehicle_no` and `people.name` for `'26 BH 4471 EX'`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:ee6384de7ce9cbfb0b9d186cbb2dd983b5ff26e9d46bd637783a8536a1c04c4a"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "text": "Session 11: join the combined table again — vehicles → company → people."
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT vehicles.vehicle_no, people.name FROM vehicles INNER JOIN company ON vehicles.company_id = company.company_id INNER JOIN people ON ____ = people.person_id WHERE vehicles.vehicle_no = '26 BH 4471 EX';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s13.json#T13.c1"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S13.4",
+      "type": "task",
+      "task_id": "T13.c2",
+      "ask": "**Claim 2 — the SUV went to the outskirts and came back.** Show `direction` and `ts` from `toll_crossings` for `'26 BH 4471 EX'`, in time order.",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 2,
+        "expected_hash": "sha256:b94043610aa89a3f604b83b57daaa826af5c9f19b673feb35019e7516457e370"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "text": "Session 4: filter with WHERE, sort with ORDER BY."
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT direction, ts FROM toll_crossings WHERE vehicle_no = '26 BH 4471 EX' ORDER BY ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s13.json#T13.c2"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S13.5",
+      "type": "task",
+      "task_id": "T13.c3",
+      "ask": "**Claim 3 — Tara was held near RRO-17.** From 6 PM: `tower_id` and ping count for `'Tara Sen'`, only towers with **more than 5** pings.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:1d126d3cc9d62b4c51aed370f76f83bf1ad1c20f65f8ff7facbb4852e9f66088"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "text": "Session 6: WHERE filters rows first, HAVING filters the groups."
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT tower_id, COUNT(*) FROM tower_pings WHERE device_owner = 'Tara Sen' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id ____ COUNT(*) > 5;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s13.json#T13.c3"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S13.6",
+      "type": "task",
+      "task_id": "T13.c4",
+      "ask": "**Claim 4 — Dev booked the farm stay.** Join `booking`, `property` and `person`: show `booking.id`, `property.name`, `person.name`, `booking.check_in` for booking **88**.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:2408c2920a1e7f9bed21b78ce2e64ab2dfc34bcacd065a9fedfff5eb5b883761"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "text": "Session 9: booking.property_id points to property, booking.booked_by points to person."
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT booking.id, property.name, person.name, booking.check_in FROM booking INNER JOIN property ON booking.property_id = property.id INNER JOIN person ON ____ = person.id WHERE booking.id = 88;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s13.json#T13.c4"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S13.7",
+      "type": "task",
+      "task_id": "T13.c5",
+      "ask": "**Claim 5 — he changed the contract after taking her.** Show `user_name`, `new_value`, `ts` of `'WRITE'` entries in `txn_log` on `'contract_C12.missed_show_clause'` from transactions that **committed** (`txn_id IN (SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT')`).",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:43956308bc53390a02adb9212612d90756bdd4ac98b30499da9fd24d26bf8915"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "text": "Session 12: a subquery inside IN returns a list of values."
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT user_name, new_value, ts FROM txn_log WHERE entry_type = 'WRITE' AND data_item = 'contract_C12.missed_show_clause' AND txn_id IN (SELECT txn_id FROM txn_log WHERE entry_type = '____');"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s13.json#T13.c5"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S13.8",
+      "type": "task",
+      "task_id": "T13.1",
+      "ask": "**Close the case.** For every person with `role = 'suspect'`: `name` and `status` — **'Cleared'** if their name is in the verified alibis (`SELECT person_name FROM alibis WHERE verified = 1`), else **'Charged'**. Sort by `status`.",
+      "grading": {
+        "expect_rows": 5,
+        "expected_hash": "sha256:093146d191ed4c9e53d6b77f0b8d8288ff31f6953ab185e3c8d2def68b3dffdf"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "text": "Sessions 8 and 12: CASE decides the label; the subquery lists the cleared names."
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT people.name, CASE WHEN people.name IN (SELECT person_name FROM alibis WHERE verified = 1) THEN 'Cleared' ELSE '____' END AS status FROM people WHERE role = 'suspect' ORDER BY status;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s13.json#T13.1"
+        }
+      ],
+      "on_pass": {
+        "clue": "S13-C1"
+      },
+      "traps": []
+    },
+    {
+      "id": "S13.9",
+      "type": "clue",
+      "clue_id": "S13-C1",
+      "requires_task": "T13.1",
+      "title": "Case closed",
+      "body": "Your five claim queries and the final CASE: **Dev Arora** is charged — his SUV (claim 1), its round trip through the toll (claim 2), her watch held at RRO-17 (claim 3), his farm booking for two (claim 4), his committed contract change at 18:20 (claim 5). Nysa, Ishita, Sunny and Kunal: **Cleared** — by data, not rumours."
+    },
+    {
+      "id": "S13.10",
+      "type": "scene",
+      "speaker": "system",
+      "body": "🎤 **12:15 AM, City Stadium.** Tara Sen walks on stage. 40,000 phones light up.\nHer first song is dedicated *\"to everyone who looked for me with facts, not rumours.\"* Mahi is in the front row. Sunny has a VIP pass.\n"
+    },
+    {
+      "id": "S13.11",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Dev is in custody; the court decides the rest. Our job was **evidence, not noise**. Well done, Inspector."
+    }
+  ],
+  "unit": {
+    "n": 38,
+    "unit_id": "165a835e-0ee5-42d6-9549-aba5ff78ad89",
+    "learning_resource_id": null,
+    "title": "Showtime",
+    "part": 1,
+    "parts": 1,
+    "finale": true
+  }
+}

@@ -1,0 +1,224 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 9,
+  "title": "The Case Board",
+  "story_clock": "2026-12-12 22:00:00",
+  "course_topic_id": "6f955426-d78c-4ec1-a33d-91ea8feb2667",
+  "snapshot": "s09",
+  "est_minutes": 45,
+  "reading_materials": [
+    {
+      "unit_id": "113540cc-5232-4ce7-88c3-08637ddc56f3",
+      "role": "primary",
+      "rm": 26,
+      "learning_resource_id": "62c91d3c-e57d-4c4b-b88f-056b5e9d5f0f"
+    },
+    {
+      "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
+      "role": "primary",
+      "rm": 28,
+      "learning_resource_id": "2a70196a-9c13-44a1-a53a-d019d1f0974c"
+    },
+    {
+      "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+      "role": "primary",
+      "rm": 29,
+      "learning_resource_id": "c524d83b-82e1-42ab-871c-097630e02024"
+    },
+    {
+      "unit_id": "21b08636-88d8-4a75-9a69-8b45d3be7318",
+      "role": "subset",
+      "rm": 27,
+      "learning_resource_id": "36b1d8cc-2383-4983-87b8-77463ab2f728"
+    },
+    {
+      "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
+      "role": "primary",
+      "rm": 30,
+      "learning_resource_id": "25ac533c-e909-4a5a-953d-72cad4122fa9"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S9.10"
+    ]
+  },
+  "minutes_estimate": 6,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "U29.open",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Previously: entities, attributes, relationships — our board is tidy, and it matches the course's e-commerce model.\nNow each piece becomes a **table**, a **column** or a **foreign key**.\n"
+    },
+    {
+      "id": "S9.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+        "heading": "Entity Type to Table"
+      },
+      "see_also": [
+        {
+          "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+          "heading": "ER Model to Relational Database"
+        },
+        {
+          "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+          "heading": "E-commerce Application"
+        }
+      ],
+      "body": "Each **entity type becomes a table**; its attributes become columns; the key attribute becomes the **primary key**."
+    },
+    {
+      "id": "S9.9",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+        "heading": "Relationships"
+      },
+      "see_also": [
+        {
+          "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+          "heading": "E-commerce Usecase: ER Model to Relational Database"
+        },
+        {
+          "unit_id": "21b08636-88d8-4a75-9a69-8b45d3be7318",
+          "heading": "E-commerce Usecase: ER Model to Relational Database"
+        }
+      ],
+      "body": "**1:1 and 1:N** relationships become a **foreign key** column. **M:N** needs a separate **junction table** (like `cart_product`)."
+    },
+    {
+      "id": "S9.10",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "7f4e3b64-3404-4efc-9b8a-52f3f883de51",
+        "heading": "Relationships"
+      },
+      "prompt": "Map the case board to tables.",
+      "pairs": [
+        {
+          "left": "Person (entity type)",
+          "right": "Table `person`"
+        },
+        {
+          "left": "Farm stay – bookings (1:N)",
+          "right": "Column `property_id` in `booking` (foreign key)"
+        },
+        {
+          "left": "Bookings – guests (M:N)",
+          "right": "Junction table `booking_guest`"
+        }
+      ]
+    },
+    {
+      "id": "U29.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Tables designed. Time to build them in SQL.\n"
+    }
+  ],
+  "unit": {
+    "n": 27,
+    "unit_id": "21b08636-88d8-4a75-9a69-8b45d3be7318",
+    "learning_resource_id": "36b1d8cc-2383-4983-87b8-77463ab2f728",
+    "title": "ER Model to Relational Database",
+    "part": 3,
+    "parts": 4,
+    "finale": false,
+    "same_as": "7f4e3b64-3404-4efc-9b8a-52f3f883de51"
+  }
+}

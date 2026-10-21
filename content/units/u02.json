@@ -1,0 +1,406 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 1,
+  "title": "She's Gone",
+  "story_clock": "2026-12-12 18:00:00",
+  "course_topic_id": "86ff2666-0e83-4535-969f-64453ca21746",
+  "snapshot": "s01",
+  "est_minutes": 22,
+  "reading_materials": [
+    {
+      "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+      "role": "primary",
+      "rm": 2,
+      "learning_resource_id": "aac5436f-927b-4b46-9b7b-849c7b3ad70d"
+    },
+    {
+      "unit_id": "134188ca-3b59-40c3-9f5c-73b88cabb648",
+      "role": "subset",
+      "rm": 1,
+      "learning_resource_id": "52516927-e94f-4328-a551-3aded23620b9"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S1-C1"
+    ],
+    "required_beats": [
+      "S1.4",
+      "S1.7",
+      "S1.9",
+      "S1.14"
+    ]
+  },
+  "minutes_estimate": 23.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S1.1",
+      "type": "scene",
+      "speaker": "system",
+      "body": "🔔 **BREAKING:** Singer **Tara Sen** is missing.\nHer first stadium concert in the city starts at midnight. 40,000 fans are coming.\nHer phone is switched off.\n"
+    },
+    {
+      "id": "S1.2",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Welcome to the City Police Data Cell, intern. I am SI Ira Menon.\nWe have no CCTV yet and no phone signal. But this city writes everything down —\nhotel entries, cab bookings, UPI payments, phone towers.\nAll of that is **data**. Tonight, data is our only witness.\n"
+    },
+    {
+      "id": "S1.3",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Data"
+      },
+      "body": "**Data** is any information that is stored.\nYou already use data every day: messages and photos on WhatsApp, products and orders on Amazon,\nnumbers in a telephone directory.\nIn our case: the hotel register, cab bookings, UPI payments and phone tower records.\n"
+    },
+    {
+      "id": "S1.4",
+      "type": "activity",
+      "kind": "sort_into",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Data"
+      },
+      "prompt": "Ira drops five things on your desk. Which of them are **data** (stored information)?",
+      "buckets": [
+        "Data",
+        "Not data"
+      ],
+      "items": [
+        {
+          "text": "The hotel register entry for Room 704",
+          "bucket": "Data"
+        },
+        {
+          "text": "Tara's last reel on her profile",
+          "bucket": "Data"
+        },
+        {
+          "text": "A UPI payment receipt",
+          "bucket": "Data"
+        },
+        {
+          "text": "Something a man on the street said and nobody wrote down",
+          "bucket": "Not data"
+        },
+        {
+          "text": "The cab app's booking history",
+          "bucket": "Data"
+        }
+      ],
+      "feedback": "Data is information that is **stored**. A rumour nobody saved is not data — and we can't query it."
+    },
+    {
+      "id": "S1.5",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Database"
+      },
+      "body": "A **database** is an organised collection of data.\nA pile of loose hotel slips is data. The hotel's neat register, where every guest has a row, is a database.\n"
+    },
+    {
+      "id": "S1.6",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Database Management System (DBMS)"
+      },
+      "body": "A **Database Management System (DBMS)** is software that helps us store and access data\nfrom a database easily and securely.\nThe hotel staff never open the database files directly. They use the DBMS.\n"
+    },
+    {
+      "id": "S1.7",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Advantages"
+      },
+      "prompt": "A DBMS has four advantages. Match each problem Ira has tonight to the advantage that solves it.",
+      "pairs": [
+        {
+          "left": "Only police can see the guest list, not the public",
+          "right": "Security"
+        },
+        {
+          "left": "The receptionist adds new guests quickly, without any coding",
+          "right": "Ease of Use"
+        },
+        {
+          "left": "Last night's entries must still be there after a power cut",
+          "right": "Durability and Availability"
+        },
+        {
+          "left": "We need the answer in seconds, not hours",
+          "right": "Performance"
+        }
+      ]
+    },
+    {
+      "id": "S1.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Types of Databases"
+      },
+      "body": "Databases are of different types, based on how they organise data.\n- A **relational database** organises data in **tables** (rows and columns).\n- **Non-relational databases** store data in a non-tabular form. There are four common types of them.\n\nThe choice of database depends on our requirements. Relational databases are the most commonly used.\n",
+      "see_also": [
+        {
+          "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+          "heading": "Relational Database"
+        },
+        {
+          "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+          "heading": "Non-Relational Database"
+        }
+      ]
+    },
+    {
+      "id": "S1.9",
+      "type": "activity",
+      "kind": "sort_into",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Relational Database"
+      },
+      "prompt": "Sort the evidence: is it organised as a table, or not?",
+      "buckets": [
+        "Relational (tables)",
+        "Non-relational (non-tabular)"
+      ],
+      "items": [
+        {
+          "text": "Hotel register: guest, room, check-in time",
+          "bucket": "Relational (tables)"
+        },
+        {
+          "text": "Cab bookings: ride id, rider, driver, time",
+          "bucket": "Relational (tables)"
+        },
+        {
+          "text": "Tara's reel video with its comments",
+          "bucket": "Non-relational (non-tabular)"
+        },
+        {
+          "text": "UPI payments: from, to, amount, time",
+          "bucket": "Relational (tables)"
+        }
+      ],
+      "feedback": "Most of our evidence sits in tables. That's why we'll use a relational database."
+    },
+    {
+      "id": "S1.10",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Non-Relational Database"
+      },
+      "body": "Non-relational databases don't use tables. They suit data like videos, posts and comments.\nWe'll only need them as background tonight.\n"
+    },
+    {
+      "id": "S1.11",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Relational DBMS"
+      },
+      "body": "A **Relational DBMS** is a DBMS designed for relational databases.\nExamples: Oracle, PostgreSQL, MySQL, **SQLite**, SQL Server, IBM DB2.\n\nA **Non-Relational DBMS** is designed for non-relational databases.\nExamples: Elasticsearch, CouchDB, DynamoDB, MongoDB, Cassandra, Redis.\n\nIra: \"Our Data Cell uses **SQLite**. So will you.\"\n",
+      "see_also": [
+        {
+          "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+          "heading": "Non-Relational DBMS"
+        }
+      ]
+    },
+    {
+      "id": "S1.11b",
+      "type": "note",
+      "minutes": 0.5,
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Non-Relational DBMS"
+      },
+      "body": "Remember: **relational** DBMS → tables. **Non-relational** DBMS → non-tabular data."
+    },
+    {
+      "id": "S1.12",
+      "type": "check",
+      "source": "authored",
+      "prompt": "Which of these is a **Relational DBMS**?",
+      "options": [
+        {
+          "text": "MongoDB"
+        },
+        {
+          "text": "SQLite",
+          "correct": true
+        },
+        {
+          "text": "Redis"
+        },
+        {
+          "text": "Cassandra"
+        }
+      ],
+      "explain": "SQLite is a relational DBMS — it stores data in tables. MongoDB, Redis and Cassandra are non-relational."
+    },
+    {
+      "id": "S1.13",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Relational Database"
+      },
+      "body": "In a relational database, every table has **columns** (what we store, like `name` or `room_no`)\nand **rows** (one row per guest). Kabir has sent two printouts of the hotel's guest table.\n"
+    },
+    {
+      "id": "S1.14",
+      "type": "activity",
+      "kind": "pick_cell",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Relational Database"
+      },
+      "prompt": "Two printouts of the **same table** — one from 5 PM, one from 6 PM. Find Tara's row and tap the cell that changed.",
+      "tables": [
+        {
+          "caption": "hotel_guests at 5:00 PM",
+          "columns": [
+            "guest_id",
+            "name",
+            "room_no",
+            "status"
+          ],
+          "rows": [
+            [
+              17,
+              "Tara Sen",
+              704,
+              "IN_ROOM"
+            ],
+            [
+              18,
+              "Dev Arora",
+              705,
+              "IN_ROOM"
+            ],
+            [
+              31,
+              "Anita Desai",
+              512,
+              "IN_ROOM"
+            ]
+          ]
+        },
+        {
+          "caption": "hotel_guests at 6:00 PM",
+          "columns": [
+            "guest_id",
+            "name",
+            "room_no",
+            "status"
+          ],
+          "rows": [
+            [
+              17,
+              "Tara Sen",
+              704,
+              "KEY_NOT_RETURNED"
+            ],
+            [
+              18,
+              "Dev Arora",
+              705,
+              "IN_ROOM"
+            ],
+            [
+              31,
+              "Anita Desai",
+              512,
+              "IN_ROOM"
+            ]
+          ]
+        }
+      ],
+      "answer": {
+        "table": "hotel_guests at 6:00 PM",
+        "row": 0,
+        "column": "status"
+      },
+      "feedback": "Same columns, same rows — one value changed. Between 5 and 6 PM, Tara left Room 704."
+    },
+    {
+      "id": "S1.24",
+      "type": "clue",
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "id": "S1.25",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Database Management System (DBMS)"
+      },
+      "prompt": "The hotel staff add and find guests without opening any database files. What do they use?",
+      "options": [
+        {
+          "text": "A paper register"
+        },
+        {
+          "text": "A Database Management System (DBMS)",
+          "correct": true
+        },
+        {
+          "text": "A non-relational video"
+        }
+      ],
+      "explain": "A DBMS is software that lets us store and access data from a database easily and securely."
+    },
+    {
+      "id": "S1.26",
+      "type": "note",
+      "minutes": 0.5,
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Introduction to Databases"
+      },
+      "body": "Session recap: data → database → DBMS (and its advantages) → relational tables vs non-relational → relational DBMS like SQLite."
+    },
+    {
+      "id": "S1.27",
+      "type": "hook",
+      "speaker": "analyst",
+      "body": "I've given you access to the case database. First job: build our suspect list — in SQL."
+    }
+  ],
+  "unit": {
+    "n": 2,
+    "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+    "learning_resource_id": "aac5436f-927b-4b46-9b7b-849c7b3ad70d",
+    "title": "Introduction to Databases",
+    "part": 1,
+    "parts": 1,
+    "finale": false
+  }
+}

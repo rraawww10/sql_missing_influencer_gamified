@@ -1,0 +1,158 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 3,
+  "title": "Hotel Gate Log",
+  "story_clock": "2026-12-12 19:00:00",
+  "course_topic_id": "96f9178e-a503-4611-9d16-abf889375c54",
+  "snapshot": "s03",
+  "est_minutes": 45,
+  "reading_materials": [
+    {
+      "unit_id": "5a12e93b-c3a5-4204-b31e-de0051a406bd",
+      "role": "primary",
+      "rm": 10,
+      "learning_resource_id": "1a89bd0c-e982-4a6e-8511-498d9cbfe2b2"
+    },
+    {
+      "unit_id": "e0bdc576-751c-434a-a2f0-ff4bb97d2f86",
+      "role": "primary",
+      "rm": 11,
+      "learning_resource_id": "d81d7bad-f921-4b55-97a9-72f613c8717d"
+    },
+    {
+      "unit_id": "efa7c57d-2825-4a62-b0d9-a0a4c9c769d4",
+      "role": "primary",
+      "rm": 12,
+      "learning_resource_id": "8095cfa9-3ab9-4c74-af4d-f7cfcaf75acf"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S3.3",
+      "S3.4"
+    ]
+  },
+  "minutes_estimate": 6.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "guard": {
+      "name": "Mohan",
+      "role": "Hotel guard, service gate",
+      "initials": "MG",
+      "color": "#4d7c0f"
+    }
+  },
+  "beats": [
+    {
+      "id": "S3.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "The gate log is here: `gate_log` has every entry and exit at the hotel's three gates —\n**MAIN**, **SERVICE** and **STAFF** — since noon.\nEach row has the gate, direction (IN/OUT), time, vehicle number, vehicle colour, and sometimes a name the guard wrote down.\n"
+    },
+    {
+      "id": "S3.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "5a12e93b-c3a5-4204-b31e-de0051a406bd",
+        "heading": "Comparison Operators"
+      },
+      "body": "Comparison operators help us filter rows:\n\n| Operator | Description |\n|---|---|\n| `=` | Equal to |\n| `<>` | Not equal to |\n| `<` | Less than |\n| `<=` | Less than or equal to |\n| `>` | Greater than |\n| `>=` | Greater than or equal to |\n\nTip: our times look like `'2026-12-12 18:00:00'`. In this format, a later time is \"greater\", so `>=` works on times too.\n"
+    },
+    {
+      "id": "S3.3",
+      "type": "task",
+      "task_id": "T3.1",
+      "minutes": 2,
+      "ask": "Tara's key card was used at 18:09. Get **all the details** of every gate entry from **6 PM onwards** (`ts` greater than or equal to `'2026-12-12 18:00:00'`).",
+      "grading": {
+        "expect_rows": 144,
+        "expected_hash": "sha256:e2f945a7f4a8d1ea87c0f83d45d4f94a6b80a72540bd7f49c85ccb7d189f24ff"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5a12e93b-c3a5-4204-b31e-de0051a406bd",
+            "heading": "Comparison Operators"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM gate_log WHERE ts ____ '2026-12-12 18:00:00';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s03.json#T3.1"
+        }
+      ],
+      "reply_on_pass": "144 rows. Too many to read one by one. Let's narrow it down.",
+      "traps": []
+    },
+    {
+      "id": "S3.4",
+      "type": "task",
+      "task_id": "T3.2",
+      "minutes": 2,
+      "ask": "The service lift opens near the service gate. Show **all the details** of every entry that was **not** at the `'MAIN'` gate.",
+      "grading": {
+        "expect_rows": 22,
+        "expected_hash": "sha256:d9aed1c2b68cb9f1da461a4f4312d24885032c31efcdab17c827e3bc92b5a204"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "5a12e93b-c3a5-4204-b31e-de0051a406bd",
+            "heading": "Comparison Operators"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM gate_log WHERE gate ____ 'MAIN';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s03.json#T3.2"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "U10.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Entries at the wrong hours found. The guard remembers a grey SUV — but only part of the number plate.\n"
+    }
+  ],
+  "unit": {
+    "n": 10,
+    "unit_id": "5a12e93b-c3a5-4204-b31e-de0051a406bd",
+    "learning_resource_id": "1a89bd0c-e982-4a6e-8511-498d9cbfe2b2",
+    "title": "Comparison Operators",
+    "part": 1,
+    "parts": 3,
+    "finale": false
+  }
+}

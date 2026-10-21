@@ -1,0 +1,2466 @@
+{
+  "s01": [
+    {
+      "rm": 2,
+      "heading": "Introduction to Databases",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Data",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Database Management System (DBMS)",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Advantages",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Types of Databases",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Non-Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Relational DBMS",
+      "covered": true
+    },
+    {
+      "rm": 2,
+      "heading": "Non-Relational DBMS",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Introduction to Databases",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Data",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Database Management System (DBMS)",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Advantages",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Types of Databases",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Non-Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Relational DBMS",
+      "covered": true
+    },
+    {
+      "rm": 1,
+      "heading": "Non-Relational DBMS",
+      "covered": true
+    }
+  ],
+  "s02": [
+    {
+      "rm": 3,
+      "heading": "Introduction to SQL",
+      "covered": true
+    },
+    {
+      "rm": 3,
+      "heading": "Data Types",
+      "covered": true
+    },
+    {
+      "rm": 3,
+      "heading": "Create Table",
+      "covered": true
+    },
+    {
+      "rm": 3,
+      "heading": "PRAGMA",
+      "covered": true
+    },
+    {
+      "rm": 4,
+      "heading": "Inserting Rows",
+      "covered": true
+    },
+    {
+      "rm": 4,
+      "heading": "Let's view the added data!",
+      "covered": true
+    },
+    {
+      "rm": 4,
+      "heading": "Possible Mistakes",
+      "covered": true
+    },
+    {
+      "rm": 4,
+      "heading": "Mistake 1",
+      "covered": true
+    },
+    {
+      "rm": 4,
+      "heading": "Mistake 2",
+      "covered": true
+    },
+    {
+      "rm": 4,
+      "heading": "Mistake 3",
+      "covered": true
+    },
+    {
+      "rm": 4,
+      "heading": "Mistake 4",
+      "covered": true
+    },
+    {
+      "rm": 5,
+      "heading": "Retrieving Data",
+      "covered": true
+    },
+    {
+      "rm": 5,
+      "heading": "Selecting Specific Columns",
+      "covered": true
+    },
+    {
+      "rm": 5,
+      "heading": "Selecting All Columns",
+      "covered": true
+    },
+    {
+      "rm": 5,
+      "heading": "Selecting Specific Rows",
+      "covered": true
+    },
+    {
+      "rm": 6,
+      "heading": "Update Rows",
+      "covered": true
+    },
+    {
+      "rm": 6,
+      "heading": "Update All Rows",
+      "covered": true
+    },
+    {
+      "rm": 6,
+      "heading": "Update Specific Rows",
+      "covered": true
+    },
+    {
+      "rm": 6,
+      "heading": "SQLite is Case Insensitive!",
+      "covered": true
+    },
+    {
+      "rm": 7,
+      "heading": "Delete Rows",
+      "covered": true
+    },
+    {
+      "rm": 7,
+      "heading": "Delete All Rows",
+      "covered": true
+    },
+    {
+      "rm": 7,
+      "heading": "Delete Specific Rows",
+      "covered": true
+    },
+    {
+      "rm": 7,
+      "heading": "Drop Table",
+      "covered": true
+    },
+    {
+      "rm": 7,
+      "heading": "DELETE VS DROP",
+      "covered": true
+    },
+    {
+      "rm": 9,
+      "heading": "Alter Table",
+      "covered": true
+    },
+    {
+      "rm": 9,
+      "heading": "Add Column",
+      "covered": true
+    },
+    {
+      "rm": 9,
+      "heading": "Rename Column",
+      "covered": true
+    },
+    {
+      "rm": 9,
+      "heading": "Drop Column",
+      "covered": true
+    },
+    {
+      "rm": 9,
+      "heading": "ALTER VS UPDATE",
+      "covered": true
+    },
+    {
+      "rm": 8,
+      "heading": "Alter Table",
+      "covered": true
+    },
+    {
+      "rm": 8,
+      "heading": "Add Column",
+      "covered": true
+    },
+    {
+      "rm": 8,
+      "heading": "Rename Column",
+      "covered": true
+    },
+    {
+      "rm": 8,
+      "heading": "Drop Column",
+      "covered": true
+    },
+    {
+      "rm": 8,
+      "heading": "ALTER VS UPDATE",
+      "covered": true
+    }
+  ],
+  "s03": [
+    {
+      "rm": 10,
+      "heading": "Comparison Operators",
+      "covered": true
+    },
+    {
+      "rm": 11,
+      "heading": "String Operations",
+      "covered": true
+    },
+    {
+      "rm": 11,
+      "heading": "LIKE Operator",
+      "covered": true
+    },
+    {
+      "rm": 11,
+      "heading": "Common Patterns",
+      "covered": true
+    },
+    {
+      "rm": 12,
+      "heading": "Logical Operators",
+      "covered": true
+    },
+    {
+      "rm": 12,
+      "heading": "AND, OR, NOT",
+      "covered": true
+    },
+    {
+      "rm": 12,
+      "heading": "Multiple Logical Operators",
+      "covered": true
+    },
+    {
+      "rm": 12,
+      "heading": "Precedence",
+      "covered": true
+    }
+  ],
+  "s04": [
+    {
+      "rm": 13,
+      "heading": "IN and BETWEEN Operators",
+      "covered": true
+    },
+    {
+      "rm": 13,
+      "heading": "IN Operator",
+      "covered": true
+    },
+    {
+      "rm": 13,
+      "heading": "BETWEEN Operator",
+      "covered": true
+    },
+    {
+      "rm": 13,
+      "heading": "Possible Mistakes",
+      "covered": true
+    },
+    {
+      "rm": 14,
+      "heading": "ORDER BY and DISTINCT",
+      "covered": true
+    },
+    {
+      "rm": 14,
+      "heading": "ORDER BY",
+      "covered": true
+    },
+    {
+      "rm": 14,
+      "heading": "ORDER BY with Multiple Columns",
+      "covered": true
+    },
+    {
+      "rm": 14,
+      "heading": "DISTINCT",
+      "covered": true
+    },
+    {
+      "rm": 15,
+      "heading": "Pagination",
+      "covered": true
+    },
+    {
+      "rm": 15,
+      "heading": "LIMIT",
+      "covered": true
+    },
+    {
+      "rm": 15,
+      "heading": "OFFSET",
+      "covered": true
+    },
+    {
+      "rm": 15,
+      "heading": "Possible Mistakes",
+      "covered": true
+    }
+  ],
+  "s05": [
+    {
+      "rm": 16,
+      "heading": "Aggregations",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "Aggregation Functions",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "COUNT Variants",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "Variant 1",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "Variant 2",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "Variant 3",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "Output of Variant 1, Variant 2 and Variant 3",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "Special Cases",
+      "covered": true
+    },
+    {
+      "rm": 16,
+      "heading": "Alias",
+      "covered": true
+    },
+    {
+      "rm": 17,
+      "heading": "GROUP BY",
+      "covered": true
+    },
+    {
+      "rm": 17,
+      "heading": "GROUP BY on Multiple Columns",
+      "covered": true
+    },
+    {
+      "rm": 17,
+      "heading": "GROUP BY with WHERE",
+      "covered": true
+    }
+  ],
+  "s06": [
+    {
+      "rm": 18,
+      "heading": "Group By with Having",
+      "covered": true
+    },
+    {
+      "rm": 18,
+      "heading": "HAVING",
+      "covered": true
+    },
+    {
+      "rm": 18,
+      "heading": "WHERE vs HAVING:",
+      "covered": true
+    }
+  ],
+  "s07": [
+    {
+      "rm": 19,
+      "heading": "Expressions in Querying",
+      "covered": true
+    },
+    {
+      "rm": 19,
+      "heading": "Arithmetic Operators in SQL",
+      "covered": true
+    },
+    {
+      "rm": 19,
+      "heading": "Using Expressions in SELECT Clause",
+      "covered": true
+    },
+    {
+      "rm": 19,
+      "heading": "Using Expressions in WHERE Clause",
+      "covered": true
+    },
+    {
+      "rm": 19,
+      "heading": "Using Expressions in UPDATE Clause",
+      "covered": true
+    },
+    {
+      "rm": 19,
+      "heading": "Expressions in HAVING Clause",
+      "covered": true
+    },
+    {
+      "rm": 20,
+      "heading": "SQL Functions",
+      "covered": true
+    },
+    {
+      "rm": 20,
+      "heading": "SQL Function Categories",
+      "covered": true
+    },
+    {
+      "rm": 20,
+      "heading": "Date Functions",
+      "covered": true
+    },
+    {
+      "rm": 20,
+      "heading": "strftime()",
+      "covered": true
+    },
+    {
+      "rm": 20,
+      "heading": "How to use strftime()",
+      "covered": true
+    },
+    {
+      "rm": 21,
+      "heading": "CAST Function",
+      "covered": true
+    },
+    {
+      "rm": 21,
+      "heading": "CAST Function Syntax and Examples",
+      "covered": true
+    },
+    {
+      "rm": 22,
+      "heading": "Arithmetic Functions",
+      "covered": true
+    },
+    {
+      "rm": 22,
+      "heading": "FLOOR Function",
+      "covered": true
+    },
+    {
+      "rm": 22,
+      "heading": "CEIL Function",
+      "covered": true
+    },
+    {
+      "rm": 22,
+      "heading": "ROUND Function",
+      "covered": true
+    },
+    {
+      "rm": 22,
+      "heading": "String Functions",
+      "covered": true
+    }
+  ],
+  "s08": [
+    {
+      "rm": 23,
+      "heading": "CASE Clause",
+      "covered": true
+    },
+    {
+      "rm": 23,
+      "heading": "CASE with Aggregates",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "SQL Set Operations",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "Common Set Operators",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "INTERSECT",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "MINUS",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "UNION",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "UNION ALL",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "Applying Set Operations",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "Basic rules when combining two sql queries using set operations",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "ORDER BY Clause in Set Operations",
+      "covered": true
+    },
+    {
+      "rm": 25,
+      "heading": "Pagination in Set Operations",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "Common Set Operators",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "INTERSECT",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "MINUS",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "UNION",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "UNION ALL",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "Applying Set Operations",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "Basic rules when combining two sql queries using set operations",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "ORDER BY Clause in Set Operations",
+      "covered": true
+    },
+    {
+      "rm": 24,
+      "heading": "Pagination in Set Operations",
+      "covered": true
+    }
+  ],
+  "s09": [
+    {
+      "rm": 26,
+      "heading": "Modelling Databases: Part 1",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Core Concepts in ER Model",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Entity",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Attributes of an Entity",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Key Attribute",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Entity Type",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Relationships",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Types of Relationships",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "One-to-One Relationship",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "One-to-Many Relationship",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Many-to-Many Relationship",
+      "covered": true
+    },
+    {
+      "rm": 26,
+      "heading": "Cardinality Ratio",
+      "covered": true
+    },
+    {
+      "rm": 28,
+      "heading": "Applying ER Model Concepts",
+      "covered": true
+    },
+    {
+      "rm": 28,
+      "heading": "E-commerce Application",
+      "covered": true
+    },
+    {
+      "rm": 28,
+      "heading": "Entity types",
+      "covered": true
+    },
+    {
+      "rm": 28,
+      "heading": "Relationships",
+      "covered": true
+    },
+    {
+      "rm": 28,
+      "heading": "Attributes",
+      "covered": true
+    },
+    {
+      "rm": 28,
+      "heading": "ER Model of e-commerce application",
+      "covered": true
+    },
+    {
+      "rm": 29,
+      "heading": "ER Model to Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 29,
+      "heading": "E-commerce Application",
+      "covered": true
+    },
+    {
+      "rm": 29,
+      "heading": "Entity Type to Table",
+      "covered": true
+    },
+    {
+      "rm": 29,
+      "heading": "Relationships",
+      "covered": true
+    },
+    {
+      "rm": 29,
+      "heading": "E-commerce Usecase: ER Model to Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 27,
+      "heading": "ER Model to Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 27,
+      "heading": "E-commerce Application",
+      "covered": true
+    },
+    {
+      "rm": 27,
+      "heading": "Entity Type to Table",
+      "covered": true
+    },
+    {
+      "rm": 27,
+      "heading": "Relationships",
+      "covered": true
+    },
+    {
+      "rm": 27,
+      "heading": "E-commerce Usecase: ER Model to Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Modelling Databse - 2",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Creating a Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Primary Key",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Foreign Key",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Creating Tables in Relational Database",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Customer Table",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Product Table",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Address Table",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Cart Table",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Cart Product Table (Junction Table)",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Inserting data into the respective tables",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Cart Product Table",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "Querying in SQL",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "1. One-to-Many Relationships",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "2. One-to-One Relationships",
+      "covered": true
+    },
+    {
+      "rm": 30,
+      "heading": "3. Many-to-Many Relationships",
+      "covered": true
+    }
+  ],
+  "s10": [
+    {
+      "rm": 31,
+      "heading": "JOINS",
+      "covered": true
+    },
+    {
+      "rm": 31,
+      "heading": "Natural JOIN",
+      "covered": true
+    },
+    {
+      "rm": 31,
+      "heading": "NATURAL JOIN on multiple common Columns",
+      "covered": true
+    },
+    {
+      "rm": 31,
+      "heading": "INNER JOIN",
+      "covered": true
+    },
+    {
+      "rm": 31,
+      "heading": "LEFT JOIN",
+      "covered": true
+    }
+  ],
+  "s11": [
+    {
+      "rm": 32,
+      "heading": "Querying with Joins",
+      "covered": true
+    },
+    {
+      "rm": 32,
+      "heading": "Joins on Multiple Tables",
+      "covered": true
+    },
+    {
+      "rm": 32,
+      "heading": "Using joins with other clauses",
+      "covered": true
+    },
+    {
+      "rm": 32,
+      "heading": "Using joins with aggregations",
+      "covered": true
+    },
+    {
+      "rm": 33,
+      "heading": "JOINS Cont'd",
+      "covered": true
+    },
+    {
+      "rm": 33,
+      "heading": "RIGHT JOIN",
+      "covered": true
+    },
+    {
+      "rm": 33,
+      "heading": "FULL JOIN",
+      "covered": true
+    },
+    {
+      "rm": 33,
+      "heading": "CROSS JOIN",
+      "covered": true
+    },
+    {
+      "rm": 33,
+      "heading": "SELF JOIN",
+      "covered": true
+    },
+    {
+      "rm": 33,
+      "heading": "JOINS Summary",
+      "covered": true
+    }
+  ],
+  "s12": [
+    {
+      "rm": 35,
+      "heading": "Views",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "user table",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "product table",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "orderproduct table",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "orderdetails table",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "View",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "Create View",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "Querying Using View",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "List All Available Views",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "Delete View",
+      "covered": true
+    },
+    {
+      "rm": 35,
+      "heading": "Advantages",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "1. Introduction to Subquery",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "2. Why Do We Use Subqueries?",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "3. Example-The Problem with Aggregate Functions in WHERE",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "The Problem",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Why Does This Error Occur?",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Use a Subquery",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "4. Usage of Subquery with Other Clauses",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "5. Subquery with SELECT Clause",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Database Schema",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step-by-Step Solution",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Understanding Nested Queries",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "6. Subquery with WHERE Clause",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Solution",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "7. Possible Mistakes",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Mistake in SELECT Clause",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Mistake in WHERE Clause",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Correct Rule",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "8. Problem Solving",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Question 1 – Order Value Tags",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Understanding the Question",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step-by-Step Approach",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step 1 – Get the Average Total Amount",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step 2 – Get All Orders with Their Total Amounts",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step 3 – Categorise Using CASE (with placeholder)",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step 4 – Replace Placeholder with the Subquery (Final Query)",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Question 2 – Monthly Average Order Amount per User",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step 1 – Get Customers and Months of Orders in 2021",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step 2 – Get Customer-wise, Month-wise Sum of Total Amount (monthlytotals)",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Step 3 – Use monthlytotals in FROM Clause (Final Query)",
+      "covered": true
+    },
+    {
+      "rm": 36,
+      "heading": "Summary",
+      "covered": true
+    },
+    {
+      "rm": 37,
+      "heading": "Transactions",
+      "covered": true
+    },
+    {
+      "rm": 37,
+      "heading": "Atomicity",
+      "covered": true
+    },
+    {
+      "rm": 37,
+      "heading": "Consistency",
+      "covered": true
+    },
+    {
+      "rm": 37,
+      "heading": "Isolation",
+      "covered": true
+    },
+    {
+      "rm": 37,
+      "heading": "Durability",
+      "covered": true
+    },
+    {
+      "rm": 37,
+      "heading": "Indexes",
+      "covered": true
+    },
+    {
+      "rm": 34,
+      "heading": "Transactions",
+      "covered": true
+    },
+    {
+      "rm": 34,
+      "heading": "Atomicity",
+      "covered": true
+    },
+    {
+      "rm": 34,
+      "heading": "Consistency",
+      "covered": true
+    },
+    {
+      "rm": 34,
+      "heading": "Isolation",
+      "covered": true
+    },
+    {
+      "rm": 34,
+      "heading": "Durability",
+      "covered": true
+    },
+    {
+      "rm": 34,
+      "heading": "Indexes",
+      "covered": true
+    }
+  ],
+  "s13": [],
+  "s01.units": [
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Introduction to Databases",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Data",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Database Management System (DBMS)",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Advantages",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Types of Databases",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Relational Database",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Non-Relational Database",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Relational DBMS",
+      "covered": true
+    },
+    {
+      "unit": 2,
+      "rm": 2,
+      "heading": "Non-Relational DBMS",
+      "covered": true
+    }
+  ],
+  "s02.units": [
+    {
+      "unit": 3,
+      "rm": 3,
+      "heading": "Introduction to SQL",
+      "covered": true
+    },
+    {
+      "unit": 3,
+      "rm": 3,
+      "heading": "Data Types",
+      "covered": true
+    },
+    {
+      "unit": 3,
+      "rm": 3,
+      "heading": "Create Table",
+      "covered": true
+    },
+    {
+      "unit": 3,
+      "rm": 3,
+      "heading": "PRAGMA",
+      "covered": true
+    },
+    {
+      "unit": 4,
+      "rm": 4,
+      "heading": "Inserting Rows",
+      "covered": true
+    },
+    {
+      "unit": 4,
+      "rm": 4,
+      "heading": "Let's view the added data!",
+      "covered": false
+    },
+    {
+      "unit": 4,
+      "rm": 4,
+      "heading": "Possible Mistakes",
+      "covered": true
+    },
+    {
+      "unit": 4,
+      "rm": 4,
+      "heading": "Mistake 1",
+      "covered": true
+    },
+    {
+      "unit": 4,
+      "rm": 4,
+      "heading": "Mistake 2",
+      "covered": true
+    },
+    {
+      "unit": 4,
+      "rm": 4,
+      "heading": "Mistake 3",
+      "covered": true
+    },
+    {
+      "unit": 4,
+      "rm": 4,
+      "heading": "Mistake 4",
+      "covered": true
+    },
+    {
+      "unit": 5,
+      "rm": 5,
+      "heading": "Retrieving Data",
+      "covered": true
+    },
+    {
+      "unit": 5,
+      "rm": 5,
+      "heading": "Selecting Specific Columns",
+      "covered": true
+    },
+    {
+      "unit": 5,
+      "rm": 5,
+      "heading": "Selecting All Columns",
+      "covered": true
+    },
+    {
+      "unit": 5,
+      "rm": 5,
+      "heading": "Selecting Specific Rows",
+      "covered": true
+    },
+    {
+      "unit": 6,
+      "rm": 6,
+      "heading": "Update Rows",
+      "covered": true
+    },
+    {
+      "unit": 6,
+      "rm": 6,
+      "heading": "Update All Rows",
+      "covered": true
+    },
+    {
+      "unit": 6,
+      "rm": 6,
+      "heading": "Update Specific Rows",
+      "covered": true
+    },
+    {
+      "unit": 6,
+      "rm": 6,
+      "heading": "SQLite is Case Insensitive!",
+      "covered": true
+    },
+    {
+      "unit": 7,
+      "rm": 7,
+      "heading": "Delete Rows",
+      "covered": true
+    },
+    {
+      "unit": 7,
+      "rm": 7,
+      "heading": "Delete All Rows",
+      "covered": true
+    },
+    {
+      "unit": 7,
+      "rm": 7,
+      "heading": "Delete Specific Rows",
+      "covered": true
+    },
+    {
+      "unit": 7,
+      "rm": 7,
+      "heading": "Drop Table",
+      "covered": true
+    },
+    {
+      "unit": 7,
+      "rm": 7,
+      "heading": "DELETE VS DROP",
+      "covered": true
+    },
+    {
+      "unit": 9,
+      "rm": 9,
+      "heading": "Alter Table",
+      "covered": true
+    },
+    {
+      "unit": 9,
+      "rm": 9,
+      "heading": "Add Column",
+      "covered": true
+    },
+    {
+      "unit": 9,
+      "rm": 9,
+      "heading": "Rename Column",
+      "covered": true
+    },
+    {
+      "unit": 9,
+      "rm": 9,
+      "heading": "Drop Column",
+      "covered": true
+    },
+    {
+      "unit": 9,
+      "rm": 9,
+      "heading": "ALTER VS UPDATE",
+      "covered": true
+    }
+  ],
+  "s03.units": [
+    {
+      "unit": 10,
+      "rm": 10,
+      "heading": "Comparison Operators",
+      "covered": true
+    },
+    {
+      "unit": 11,
+      "rm": 11,
+      "heading": "String Operations",
+      "covered": true
+    },
+    {
+      "unit": 11,
+      "rm": 11,
+      "heading": "LIKE Operator",
+      "covered": true
+    },
+    {
+      "unit": 11,
+      "rm": 11,
+      "heading": "Common Patterns",
+      "covered": true
+    },
+    {
+      "unit": 12,
+      "rm": 12,
+      "heading": "Logical Operators",
+      "covered": true
+    },
+    {
+      "unit": 12,
+      "rm": 12,
+      "heading": "AND, OR, NOT",
+      "covered": true
+    },
+    {
+      "unit": 12,
+      "rm": 12,
+      "heading": "Multiple Logical Operators",
+      "covered": true
+    },
+    {
+      "unit": 12,
+      "rm": 12,
+      "heading": "Precedence",
+      "covered": true
+    }
+  ],
+  "s04.units": [
+    {
+      "unit": 13,
+      "rm": 13,
+      "heading": "IN and BETWEEN Operators",
+      "covered": true
+    },
+    {
+      "unit": 13,
+      "rm": 13,
+      "heading": "IN Operator",
+      "covered": true
+    },
+    {
+      "unit": 13,
+      "rm": 13,
+      "heading": "BETWEEN Operator",
+      "covered": true
+    },
+    {
+      "unit": 13,
+      "rm": 13,
+      "heading": "Possible Mistakes",
+      "covered": true
+    },
+    {
+      "unit": 14,
+      "rm": 14,
+      "heading": "ORDER BY and DISTINCT",
+      "covered": true
+    },
+    {
+      "unit": 14,
+      "rm": 14,
+      "heading": "ORDER BY",
+      "covered": true
+    },
+    {
+      "unit": 14,
+      "rm": 14,
+      "heading": "ORDER BY with Multiple Columns",
+      "covered": true
+    },
+    {
+      "unit": 14,
+      "rm": 14,
+      "heading": "DISTINCT",
+      "covered": true
+    },
+    {
+      "unit": 15,
+      "rm": 15,
+      "heading": "Pagination",
+      "covered": true
+    },
+    {
+      "unit": 15,
+      "rm": 15,
+      "heading": "LIMIT",
+      "covered": true
+    },
+    {
+      "unit": 15,
+      "rm": 15,
+      "heading": "OFFSET",
+      "covered": true
+    },
+    {
+      "unit": 15,
+      "rm": 15,
+      "heading": "Possible Mistakes",
+      "covered": true
+    }
+  ],
+  "s05.units": [
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Aggregations",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Aggregation Functions",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "COUNT Variants",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Variant 1",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Variant 2",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Variant 3",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Output of Variant 1, Variant 2 and Variant 3",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Special Cases",
+      "covered": true
+    },
+    {
+      "unit": 16,
+      "rm": 16,
+      "heading": "Alias",
+      "covered": true
+    },
+    {
+      "unit": 17,
+      "rm": 17,
+      "heading": "GROUP BY",
+      "covered": true
+    },
+    {
+      "unit": 17,
+      "rm": 17,
+      "heading": "GROUP BY on Multiple Columns",
+      "covered": true
+    },
+    {
+      "unit": 17,
+      "rm": 17,
+      "heading": "GROUP BY with WHERE",
+      "covered": true
+    }
+  ],
+  "s06.units": [
+    {
+      "unit": 18,
+      "rm": 18,
+      "heading": "Group By with Having",
+      "covered": true
+    },
+    {
+      "unit": 18,
+      "rm": 18,
+      "heading": "HAVING",
+      "covered": true
+    },
+    {
+      "unit": 18,
+      "rm": 18,
+      "heading": "WHERE vs HAVING:",
+      "covered": true
+    }
+  ],
+  "s07.units": [
+    {
+      "unit": 19,
+      "rm": 19,
+      "heading": "Expressions in Querying",
+      "covered": true
+    },
+    {
+      "unit": 19,
+      "rm": 19,
+      "heading": "Arithmetic Operators in SQL",
+      "covered": true
+    },
+    {
+      "unit": 19,
+      "rm": 19,
+      "heading": "Using Expressions in SELECT Clause",
+      "covered": true
+    },
+    {
+      "unit": 19,
+      "rm": 19,
+      "heading": "Using Expressions in WHERE Clause",
+      "covered": true
+    },
+    {
+      "unit": 19,
+      "rm": 19,
+      "heading": "Using Expressions in UPDATE Clause",
+      "covered": true
+    },
+    {
+      "unit": 19,
+      "rm": 19,
+      "heading": "Expressions in HAVING Clause",
+      "covered": false
+    },
+    {
+      "unit": 20,
+      "rm": 20,
+      "heading": "SQL Functions",
+      "covered": true
+    },
+    {
+      "unit": 20,
+      "rm": 20,
+      "heading": "SQL Function Categories",
+      "covered": true
+    },
+    {
+      "unit": 20,
+      "rm": 20,
+      "heading": "Date Functions",
+      "covered": true
+    },
+    {
+      "unit": 20,
+      "rm": 20,
+      "heading": "strftime()",
+      "covered": true
+    },
+    {
+      "unit": 20,
+      "rm": 20,
+      "heading": "How to use strftime()",
+      "covered": true
+    },
+    {
+      "unit": 21,
+      "rm": 21,
+      "heading": "CAST Function",
+      "covered": true
+    },
+    {
+      "unit": 21,
+      "rm": 21,
+      "heading": "CAST Function Syntax and Examples",
+      "covered": true
+    },
+    {
+      "unit": 22,
+      "rm": 22,
+      "heading": "Arithmetic Functions",
+      "covered": true
+    },
+    {
+      "unit": 22,
+      "rm": 22,
+      "heading": "FLOOR Function",
+      "covered": true
+    },
+    {
+      "unit": 22,
+      "rm": 22,
+      "heading": "CEIL Function",
+      "covered": true
+    },
+    {
+      "unit": 22,
+      "rm": 22,
+      "heading": "ROUND Function",
+      "covered": true
+    },
+    {
+      "unit": 22,
+      "rm": 22,
+      "heading": "String Functions",
+      "covered": true
+    }
+  ],
+  "s08.units": [
+    {
+      "unit": 23,
+      "rm": 23,
+      "heading": "CASE Clause",
+      "covered": true
+    },
+    {
+      "unit": 23,
+      "rm": 23,
+      "heading": "CASE with Aggregates",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "SQL Set Operations",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "Common Set Operators",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "INTERSECT",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "MINUS",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "UNION",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "UNION ALL",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "Applying Set Operations",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "Basic rules when combining two sql queries using set operations",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "ORDER BY Clause in Set Operations",
+      "covered": true
+    },
+    {
+      "unit": 25,
+      "rm": 25,
+      "heading": "Pagination in Set Operations",
+      "covered": true
+    }
+  ],
+  "s09.units": [
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Modelling Databases: Part 1",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Core Concepts in ER Model",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Entity",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Attributes of an Entity",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Key Attribute",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Entity Type",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Relationships",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Types of Relationships",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "One-to-One Relationship",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "One-to-Many Relationship",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Many-to-Many Relationship",
+      "covered": true
+    },
+    {
+      "unit": 26,
+      "rm": 26,
+      "heading": "Cardinality Ratio",
+      "covered": true
+    },
+    {
+      "unit": 28,
+      "rm": 28,
+      "heading": "Applying ER Model Concepts",
+      "covered": true
+    },
+    {
+      "unit": 28,
+      "rm": 28,
+      "heading": "E-commerce Application",
+      "covered": true
+    },
+    {
+      "unit": 28,
+      "rm": 28,
+      "heading": "Entity types",
+      "covered": true
+    },
+    {
+      "unit": 28,
+      "rm": 28,
+      "heading": "Relationships",
+      "covered": true
+    },
+    {
+      "unit": 28,
+      "rm": 28,
+      "heading": "Attributes",
+      "covered": true
+    },
+    {
+      "unit": 28,
+      "rm": 28,
+      "heading": "ER Model of e-commerce application",
+      "covered": true
+    },
+    {
+      "unit": 29,
+      "rm": 29,
+      "heading": "ER Model to Relational Database",
+      "covered": true
+    },
+    {
+      "unit": 29,
+      "rm": 29,
+      "heading": "E-commerce Application",
+      "covered": true
+    },
+    {
+      "unit": 29,
+      "rm": 29,
+      "heading": "Entity Type to Table",
+      "covered": true
+    },
+    {
+      "unit": 29,
+      "rm": 29,
+      "heading": "Relationships",
+      "covered": true
+    },
+    {
+      "unit": 29,
+      "rm": 29,
+      "heading": "E-commerce Usecase: ER Model to Relational Database",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Modelling Databse - 2",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Creating a Relational Database",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Primary Key",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Foreign Key",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Creating Tables in Relational Database",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Customer Table",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Product Table",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Address Table",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Cart Table",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Cart Product Table (Junction Table)",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Inserting data into the respective tables",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Cart Product Table",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "Querying in SQL",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "1. One-to-Many Relationships",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "2. One-to-One Relationships",
+      "covered": true
+    },
+    {
+      "unit": 30,
+      "rm": 30,
+      "heading": "3. Many-to-Many Relationships",
+      "covered": true
+    }
+  ],
+  "s10.units": [
+    {
+      "unit": 31,
+      "rm": 31,
+      "heading": "JOINS",
+      "covered": true
+    },
+    {
+      "unit": 31,
+      "rm": 31,
+      "heading": "Natural JOIN",
+      "covered": true
+    },
+    {
+      "unit": 31,
+      "rm": 31,
+      "heading": "NATURAL JOIN on multiple common Columns",
+      "covered": true
+    },
+    {
+      "unit": 31,
+      "rm": 31,
+      "heading": "INNER JOIN",
+      "covered": true
+    },
+    {
+      "unit": 31,
+      "rm": 31,
+      "heading": "LEFT JOIN",
+      "covered": true
+    }
+  ],
+  "s11.units": [
+    {
+      "unit": 32,
+      "rm": 32,
+      "heading": "Querying with Joins",
+      "covered": true
+    },
+    {
+      "unit": 32,
+      "rm": 32,
+      "heading": "Joins on Multiple Tables",
+      "covered": true
+    },
+    {
+      "unit": 32,
+      "rm": 32,
+      "heading": "Using joins with other clauses",
+      "covered": true
+    },
+    {
+      "unit": 32,
+      "rm": 32,
+      "heading": "Using joins with aggregations",
+      "covered": true
+    },
+    {
+      "unit": 33,
+      "rm": 33,
+      "heading": "JOINS Cont'd",
+      "covered": true
+    },
+    {
+      "unit": 33,
+      "rm": 33,
+      "heading": "RIGHT JOIN",
+      "covered": true
+    },
+    {
+      "unit": 33,
+      "rm": 33,
+      "heading": "FULL JOIN",
+      "covered": true
+    },
+    {
+      "unit": 33,
+      "rm": 33,
+      "heading": "CROSS JOIN",
+      "covered": true
+    },
+    {
+      "unit": 33,
+      "rm": 33,
+      "heading": "SELF JOIN",
+      "covered": true
+    },
+    {
+      "unit": 33,
+      "rm": 33,
+      "heading": "JOINS Summary",
+      "covered": true
+    }
+  ],
+  "s12.units": [
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "Views",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "user table",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "product table",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "orderproduct table",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "orderdetails table",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "View",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "Create View",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "Querying Using View",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "List All Available Views",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "Delete View",
+      "covered": true
+    },
+    {
+      "unit": 35,
+      "rm": 35,
+      "heading": "Advantages",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "1. Introduction to Subquery",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "2. Why Do We Use Subqueries?",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "3. Example-The Problem with Aggregate Functions in WHERE",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "The Problem",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Why Does This Error Occur?",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Use a Subquery",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "4. Usage of Subquery with Other Clauses",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "5. Subquery with SELECT Clause",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Database Schema",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step-by-Step Solution",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Understanding Nested Queries",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "6. Subquery with WHERE Clause",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Solution",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "7. Possible Mistakes",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Mistake in SELECT Clause",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Mistake in WHERE Clause",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Correct Rule",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "8. Problem Solving",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Question 1 – Order Value Tags",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Understanding the Question",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step-by-Step Approach",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step 1 – Get the Average Total Amount",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step 2 – Get All Orders with Their Total Amounts",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step 3 – Categorise Using CASE (with placeholder)",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step 4 – Replace Placeholder with the Subquery (Final Query)",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Question 2 – Monthly Average Order Amount per User",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step 1 – Get Customers and Months of Orders in 2021",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step 2 – Get Customer-wise, Month-wise Sum of Total Amount (monthlytotals)",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Step 3 – Use monthlytotals in FROM Clause (Final Query)",
+      "covered": true
+    },
+    {
+      "unit": 36,
+      "rm": 36,
+      "heading": "Summary",
+      "covered": true
+    },
+    {
+      "unit": 37,
+      "rm": 37,
+      "heading": "Transactions",
+      "covered": true
+    },
+    {
+      "unit": 37,
+      "rm": 37,
+      "heading": "Atomicity",
+      "covered": true
+    },
+    {
+      "unit": 37,
+      "rm": 37,
+      "heading": "Consistency",
+      "covered": true
+    },
+    {
+      "unit": 37,
+      "rm": 37,
+      "heading": "Isolation",
+      "covered": true
+    },
+    {
+      "unit": 37,
+      "rm": 37,
+      "heading": "Durability",
+      "covered": true
+    },
+    {
+      "unit": 37,
+      "rm": 37,
+      "heading": "Indexes",
+      "covered": true
+    }
+  ],
+  "s13.units": []
+}

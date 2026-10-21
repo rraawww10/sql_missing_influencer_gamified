@@ -1,0 +1,163 @@
+# Session 10 — "Connect the Dots" (10:30 PM). Flow: docs/SESSION_PLAN.md › Session 10.
+session: 10
+title: "Connect the Dots"
+story_clock: "2026-12-12 22:30:00"
+course_topic_id: aeedb625-863e-403a-ace0-35b01a781b92
+snapshot: s10
+est_minutes: 25
+reading_materials:
+  - { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, role: primary }   # RM #31 Joins Part 1
+
+beats:
+  - id: S10.1
+    type: scene
+    speaker: analyst
+    body: |
+      New, tidy tables: `people`, `upi_accounts`, `company`, `rehearsal_attendance`, `event_schedule`, `insurance_claims`
+      (and `vehicles` now has a `company_id`). Each table holds one kind of thing — so we must **join** them.
+
+  - id: S10.2
+    type: note
+    rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "Natural JOIN" }
+    see_also:
+      - { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "JOINS" }
+    body: "`NATURAL JOIN` combines two tables on **every column with the same name**: `SELECT * FROM table1 NATURAL JOIN table2;`"
+
+  - id: S10.3
+    type: task
+    task_id: T10.1
+    minutes: 2
+    ask: "Every UPI handle with its owner: `people.name` and `upi_accounts.upi_id`, using `NATURAL JOIN` (both tables have `person_id`)."
+    ref: "SELECT people.name, upi_accounts.upi_id FROM people NATURAL JOIN upi_accounts;"
+    grading: { expect_rows: 53 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "Natural JOIN" } }
+      - { tier: 2, skeleton: "SELECT people.name, upi_accounts.upi_id FROM people ____ upi_accounts;" }
+    reply_on_pass: "Note `{{star.first|lower}}.watch@oknavyug` — the handle her watch paid from."
+
+  - id: S10.4
+    type: note
+    rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "INNER JOIN" }
+    body: |
+      `INNER JOIN … ON` joins on the condition **you** choose (any comparison operator works):
+      ```sql
+      SELECT * FROM table1 INNER JOIN table2 ON table1.c1 = table2.c2;
+      ```
+
+  - id: S10.5
+    type: task
+    task_id: T10.2
+    ask: "{{rival.first}} says she was rehearsing. Show `people.name`, `rehearsal_attendance.check_in`, `rehearsal_attendance.check_out` for everyone who checked in at `'{{stadium}}'` (join on `person_id`)."
+    ref: "SELECT people.name, rehearsal_attendance.check_in, rehearsal_attendance.check_out FROM people INNER JOIN rehearsal_attendance ON people.person_id = rehearsal_attendance.person_id WHERE rehearsal_attendance.venue = '{{stadium}}';"
+    grading: { expect_rows: 11 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "INNER JOIN" } }
+      - { tier: 2, skeleton: "SELECT people.name, rehearsal_attendance.check_in, rehearsal_attendance.check_out FROM people INNER JOIN rehearsal_attendance ON ____ = ____ WHERE rehearsal_attendance.venue = '{{stadium}}';" }
+    traps:
+      - id: natural_multi
+        rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "NATURAL JOIN on multiple common Columns" }
+        sql: "SELECT people.name, rehearsal_attendance.check_in, rehearsal_attendance.check_out FROM people NATURAL JOIN rehearsal_attendance;"
+        match: result
+        reply: |
+          📱 *"{{rival.first}} skipped rehearsal!"* — no: both tables have `person_id` **and** `venue`, and `NATURAL JOIN` matched on **both**.
+          Her usual venue is the studio, so she dropped out. Use `INNER JOIN … ON person_id` to say exactly what to match.
+    reply_on_pass: "{{rival}} was on stage **16:00–21:30**, with 3,000 crew around. Cleared."
+
+  - id: S10.6
+    type: task
+    task_id: T10.3
+    ask: |
+      {{organiser.first}} filed an insurance claim early. Join `insurance_claims` with `event_schedule` **on** `filed_at >= artist_checkin_deadline`,
+      keep rows where the `event_id`s match, and show `claim_id`, `filed_at`, `auto_generated`.
+    ref: "SELECT insurance_claims.claim_id, insurance_claims.filed_at, insurance_claims.auto_generated FROM insurance_claims INNER JOIN event_schedule ON insurance_claims.filed_at >= event_schedule.artist_checkin_deadline WHERE insurance_claims.event_id = event_schedule.event_id;"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "INNER JOIN" } }
+      - { tier: 2, skeleton: "SELECT insurance_claims.claim_id, insurance_claims.filed_at, insurance_claims.auto_generated FROM insurance_claims INNER JOIN event_schedule ON insurance_claims.filed_at ____ event_schedule.artist_checkin_deadline WHERE insurance_claims.event_id = event_schedule.event_id;" }
+    reply_on_pass: "Claim C-501 at 19:00:01 — `auto_generated = 1`. The insurance system files automatically when the artist misses check-in. {{organiser.first}} didn't even know. Cleared."
+
+  - id: S10.7
+    type: note
+    rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "LEFT JOIN" }
+    body: "`LEFT JOIN` keeps **every** row of the left table; when there's no match, the right side is `NULL`. `WHERE right.c IS NULL` finds the rows with **no** match."
+
+  - id: S10.8
+    type: task
+    task_id: T10.4
+    ask: |
+      {{mentor.first}} has marked {{rival.first}}'s and {{organiser.first}}'s alibis verified. Which **suspect** (`people.role = 'suspect'`) has **no** verified alibi?
+      `LEFT JOIN alibis ON people.name = alibis.person_name AND alibis.verified = 1`, keep rows where `alibis.person_name IS NULL`; show `people.name`.
+    setup:
+      - "UPDATE alibis SET verified = 1, verified_by = 'rehearsal attendance log' WHERE person_name = '{{rival}}';"
+      - "UPDATE alibis SET verified = 1, verified_by = 'insurance system: auto-generated claim' WHERE person_name = '{{organiser}}';"
+    ref: "SELECT people.name FROM people LEFT JOIN alibis ON people.name = alibis.person_name AND alibis.verified = 1 WHERE alibis.person_name IS NULL AND people.role = 'suspect';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "LEFT JOIN" } }
+      - { tier: 2, skeleton: "SELECT people.name FROM people ____ alibis ON people.name = alibis.person_name AND alibis.verified = 1 WHERE alibis.person_name ____ AND people.role = 'suspect';" }
+    reply_on_pass: "One name left: **{{manager}}**."
+
+  - id: S10.8b
+    type: scene
+    speaker: mentor
+    body: |
+      Back to the SUV. In Episode 3, `vehicles` said its owner is **{{talent_company}}** — a company, not a person.
+      Tonight {{analyst.first}} loaded `company`, and every company has an `owner_person_id`. Two joins and we have a name.
+
+  - id: S10.9
+    type: task
+    task_id: T10.5a
+    minutes: 2
+    ask: "Who owns the grey SUV? Join `vehicles` with `company` on `company_id`; show `vehicle_no`, `company.name`, `company.owner_person_id` for `'{{suv}}'`."
+    ref: "SELECT vehicles.vehicle_no, company.name, company.owner_person_id FROM vehicles INNER JOIN company ON vehicles.company_id = company.company_id WHERE vehicles.vehicle_no = '{{suv}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "INNER JOIN" } }
+      - { tier: 2, skeleton: "SELECT vehicles.vehicle_no, company.name, company.owner_person_id FROM vehicles INNER JOIN company ON ____ = ____ WHERE vehicles.vehicle_no = '{{suv}}';" }
+    reply_on_pass: "{{talent_company}}, `owner_person_id` = **2**. Now: who is person 2?"
+
+  - id: S10.10
+    type: task
+    task_id: T10.5b
+    minutes: 2
+    ask: "And who is that owner? Join `company` with `people` on `owner_person_id = person_id`; show `company.name`, `people.name` for `'{{talent_company}}'`."
+    ref: "SELECT company.name, people.name FROM company INNER JOIN people ON company.owner_person_id = people.person_id WHERE company.name = '{{talent_company}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "INNER JOIN" } }
+      - { tier: 2, skeleton: "SELECT company.name, people.name FROM company INNER JOIN people ON company.owner_person_id = ____ WHERE company.name = '{{talent_company}}';" }
+    on_pass: { clue: S10-C1 }
+    reply_on_pass: "Person 2 is **{{manager}}**. The chain is complete."
+
+  - id: S10.11
+    type: clue
+    clue_id: S10-C1
+    requires_task: T10.5b
+    title: "The SUV is the manager's"
+    body: "Your two joins: grey SUV **{{suv}}** (service gate, 18:12 — S3-C1) → company **{{talent_company}}** → owner person 2 = **{{manager}}**. The car she left in is her manager's."
+
+  - id: S10.12
+    type: check
+    source: authored
+    rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "LEFT JOIN" }
+    prompt: "In a LEFT JOIN, a left row with **no match** gets ___ on the right side."
+    options:
+      - { text: "NULL", correct: true }
+      - { text: "0" }
+      - { text: "it is removed" }
+    explain: "LEFT JOIN keeps every left row; missing right values are NULL — that's how `IS NULL` finds rows with no match."
+
+  - id: S10.13
+    type: hook
+    speaker: mentor
+    body: "The car is {{manager.first}}'s. But where did it **go**? And why was he back at the hotel at 19:52?"
+
+exit:
+  required_clues: [S10-C1]
+  required_beats: [S10.3, S10.5, S10.6, S10.8, S10.9, S10.10]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956   # RM #31 Joins | Part - 1
+    from: S10.1
+    to: S10.13

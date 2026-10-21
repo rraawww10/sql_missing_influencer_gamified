@@ -1,0 +1,232 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 2,
+  "title": "Build the Case File",
+  "story_clock": "2026-12-12 18:30:00",
+  "course_topic_id": "9f5e3ac3-94b1-4b12-a167-12c4ef571903",
+  "snapshot": "s02",
+  "est_minutes": 54,
+  "reading_materials": [
+    {
+      "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+      "role": "primary",
+      "rm": 3,
+      "learning_resource_id": "1860df1f-8fcf-4221-83ba-cad49900d581"
+    },
+    {
+      "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+      "role": "primary",
+      "rm": 4,
+      "learning_resource_id": "480c4d22-60fa-4dd7-8fe9-1a97d9710891"
+    },
+    {
+      "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+      "role": "primary",
+      "rm": 5,
+      "learning_resource_id": "0f23f352-800f-40f1-a119-918cd7a45451"
+    },
+    {
+      "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+      "role": "primary",
+      "rm": 6,
+      "learning_resource_id": "0ffb983d-fdc2-4cc3-bf17-91255ac56bae"
+    },
+    {
+      "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+      "role": "primary",
+      "rm": 7,
+      "learning_resource_id": "b41f7ad3-c07f-4685-a76e-a2678d1fc26b"
+    },
+    {
+      "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+      "role": "primary",
+      "rm": 9,
+      "learning_resource_id": "3a340dab-2544-49e7-bb4b-023be16975b5"
+    },
+    {
+      "unit_id": "5db3ad70-736e-49ee-8e01-9186191cab34",
+      "role": "subset",
+      "rm": 8,
+      "learning_resource_id": "da01c855-64bf-45e0-be84-f473e20bf2ef"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S2.5"
+    ]
+  },
+  "minutes_estimate": 11.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S2.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Five names keep coming up. Put them in a proper table — no notebook scribbles.\nWe talk to databases in **SQL**. Let's start.\n"
+    },
+    {
+      "id": "S2.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "Data Types"
+      },
+      "see_also": [
+        {
+          "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+          "heading": "Introduction to SQL"
+        }
+      ],
+      "body": "Every column has a **data type**. These are used often:\n\n| Data type | Syntax |\n|---|---|\n| Integer | INTEGER / INT |\n| Float | FLOAT |\n| String | VARCHAR |\n| Text | TEXT |\n| Date | DATE |\n| Time | TIME |\n| Datetime | DATETIME |\n| Boolean | BOOLEAN |\n\nNotes: Boolean values are stored as integers **0 (FALSE)** and **1 (TRUE)**.\nA date looks like `'YYYY-MM-DD'`. A datetime looks like `'YYYY-MM-DD HH:MM:SS'`.\n"
+    },
+    {
+      "id": "S2.3",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "Data Types"
+      },
+      "prompt": "Pick the best data type for each piece of case information.",
+      "pairs": [
+        {
+          "left": "Phone number, like 9876500002",
+          "right": "VARCHAR"
+        },
+        {
+          "left": "Age, like 38",
+          "right": "INTEGER"
+        },
+        {
+          "left": "Is the alibi verified? (yes/no)",
+          "right": "BOOLEAN"
+        },
+        {
+          "left": "Last seen at 2026-12-12 18:09:40",
+          "right": "DATETIME"
+        }
+      ]
+    },
+    {
+      "id": "S2.4",
+      "type": "note",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "Create Table"
+      },
+      "body": "`CREATE TABLE` creates a new table in the database.\n```sql\nCREATE TABLE table_name (\n  column1 type1,\n  column2 type2,\n  ...\n);\n```\n"
+    },
+    {
+      "id": "S2.5",
+      "type": "task",
+      "task_id": "T2.1",
+      "ask": "Create a table `suspects` with these columns:\n\n| column_name | data_type |\n|---|---|\n| name | VARCHAR(200) |\n| role | VARCHAR(100) |\n| phone | VARCHAR(15) |\n| age | INT |\n",
+      "grading": {
+        "inspect": "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type FROM pragma_table_info('suspects');",
+        "ordered": true,
+        "expected_hash": "sha256:b0d02aab6349aefd985f76946ebf0b9e292acdd8a3c156919cb6c01317e36698"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+            "heading": "Create Table"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE TABLE suspects (\n  name VARCHAR(200),\n  ____ VARCHAR(100),\n  phone ____,\n  age ____\n);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.1"
+        }
+      ],
+      "reply_on_pass": "Table ready. Empty, but ready.",
+      "traps": []
+    },
+    {
+      "id": "S2.6",
+      "type": "note",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "PRAGMA"
+      },
+      "body": "To check the details of a table, use `PRAGMA TABLE_INFO`:\n```sql\nPRAGMA TABLE_INFO(table_name);\n```\nIt shows every column with its type.\n"
+    },
+    {
+      "id": "S2.7",
+      "type": "task",
+      "task_id": "T2.2",
+      "minutes": 2,
+      "ask": "Check the structure of your `suspects` table.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
+      ],
+      "grading": {
+        "ordered": true,
+        "expected_hash": "sha256:c17a69a7cda6b01d58023a6622fc0a4992935f3fcc9e2b63fba87a53a12edbdc"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+            "heading": "PRAGMA"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "PRAGMA ____(suspects);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.2"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "U3.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Table ready. Next: put the five names into it.\n"
+    }
+  ],
+  "unit": {
+    "n": 3,
+    "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+    "learning_resource_id": "1860df1f-8fcf-4221-83ba-cad49900d581",
+    "title": "Create Table",
+    "part": 1,
+    "parts": 6,
+    "finale": false
+  }
+}

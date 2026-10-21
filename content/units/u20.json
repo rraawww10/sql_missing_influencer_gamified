@@ -1,0 +1,245 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 7,
+  "title": "Smartwatch Secrets",
+  "story_clock": "2026-12-12 21:00:00",
+  "course_topic_id": "e4e8f7c2-036d-457c-a60f-866c35b0417b",
+  "snapshot": "s07",
+  "est_minutes": 50,
+  "reading_materials": [
+    {
+      "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+      "role": "primary",
+      "rm": 19,
+      "learning_resource_id": "4e29ae27-559d-4130-b38f-49a0d5126d8d"
+    },
+    {
+      "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+      "role": "primary",
+      "rm": 20,
+      "learning_resource_id": "9d0e93cc-8e86-418a-9383-db62f1686bb9"
+    },
+    {
+      "unit_id": "7aea2483-8eea-4ded-a05a-19c2f1044e2b",
+      "role": "primary",
+      "rm": 21,
+      "learning_resource_id": "68757830-34aa-4cfa-b62b-865dd390d959"
+    },
+    {
+      "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
+      "role": "primary",
+      "rm": 22,
+      "learning_resource_id": "2cc255e2-cac4-4131-a91f-5069e7bc13e7"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S7.14",
+      "S7.16"
+    ]
+  },
+  "minutes_estimate": 10.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "U20.open",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Previously: Tara's smartwatch logs steps and heart rate every 5 minutes. With expressions we saw her heart rate jump around 6 PM.\nNow we need dates and times split into parts — SQL **functions** do that.\n"
+    },
+    {
+      "id": "S7.12",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+        "heading": "SQL Function Categories"
+      },
+      "see_also": [
+        {
+          "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+          "heading": "SQL Functions"
+        },
+        {
+          "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+          "heading": "Date Functions"
+        }
+      ],
+      "body": "SQL functions come in groups: **date** functions, **cast** functions and **arithmetic** functions."
+    },
+    {
+      "id": "S7.13",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+        "heading": "strftime()"
+      },
+      "see_also": [
+        {
+          "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+          "heading": "How to use strftime()"
+        }
+      ],
+      "body": "`strftime(format, field)` pulls a part out of a date or datetime, **as text**:\n`%Y` year · `%m` month · `%d` day · `%H` hour. Example: `strftime('%H', ts)` → `'18'`.\n"
+    },
+    {
+      "id": "S7.14",
+      "type": "task",
+      "task_id": "T7.8",
+      "ask": "Steps per **hour**: show the hour (`strftime('%H', ts)`) as `hour` and `SUM(steps)` as `steps`, one row per hour.",
+      "grading": {
+        "expect_rows": 18,
+        "expected_hash": "sha256:5d2f2ae146a81fb25cddf073f43105ea65ed22efecf3fa9887307e859b4c3f8e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+            "heading": "How to use strftime()"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT strftime('%H', ts) AS hour, SUM(steps) AS steps FROM watch_log GROUP BY ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.8"
+        }
+      ],
+      "reply_on_pass": "After 19:00 — **zero steps**. She's sitting in one place.",
+      "traps": []
+    },
+    {
+      "id": "S7.15",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+        "heading": "Expressions in HAVING Clause"
+      },
+      "body": "Expressions work inside `HAVING` too: `HAVING AVG(collection - budget) >= 100`."
+    },
+    {
+      "id": "S7.16",
+      "type": "task",
+      "task_id": "T7.7",
+      "minutes": 2,
+      "ask": "Which hours had an **average** heart-rate rise above 25? Show just the `hour`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:19e8d0474ccd9455e3eb5d839396711d082b248012143cc82edcb668e5684ca0"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47e1c94f-6264-46e7-9dc3-21425c3fba6d",
+            "heading": "Expressions in HAVING Clause"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT strftime('%H', ts) AS hour FROM watch_log GROUP BY hour HAVING AVG(____ - ____) > 25;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s07.json#T7.7"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "U20.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Hours extracted. But they come out as text — we fix the type next.\n"
+    }
+  ],
+  "unit": {
+    "n": 20,
+    "unit_id": "0447ed54-9507-4895-bc17-c3a9fa8b76c8",
+    "learning_resource_id": "9d0e93cc-8e86-418a-9383-db62f1686bb9",
+    "title": "SQL Functions",
+    "part": 2,
+    "parts": 4,
+    "finale": false
+  }
+}

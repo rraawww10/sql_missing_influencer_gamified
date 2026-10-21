@@ -1,0 +1,265 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 2,
+  "title": "Build the Case File",
+  "story_clock": "2026-12-12 18:30:00",
+  "course_topic_id": "9f5e3ac3-94b1-4b12-a167-12c4ef571903",
+  "snapshot": "s02",
+  "est_minutes": 54,
+  "reading_materials": [
+    {
+      "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+      "role": "primary",
+      "rm": 3,
+      "learning_resource_id": "1860df1f-8fcf-4221-83ba-cad49900d581"
+    },
+    {
+      "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+      "role": "primary",
+      "rm": 4,
+      "learning_resource_id": "480c4d22-60fa-4dd7-8fe9-1a97d9710891"
+    },
+    {
+      "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+      "role": "primary",
+      "rm": 5,
+      "learning_resource_id": "0f23f352-800f-40f1-a119-918cd7a45451"
+    },
+    {
+      "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+      "role": "primary",
+      "rm": 6,
+      "learning_resource_id": "0ffb983d-fdc2-4cc3-bf17-91255ac56bae"
+    },
+    {
+      "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+      "role": "primary",
+      "rm": 7,
+      "learning_resource_id": "b41f7ad3-c07f-4685-a76e-a2678d1fc26b"
+    },
+    {
+      "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+      "role": "primary",
+      "rm": 9,
+      "learning_resource_id": "3a340dab-2544-49e7-bb4b-023be16975b5"
+    },
+    {
+      "unit_id": "5db3ad70-736e-49ee-8e01-9186191cab34",
+      "role": "subset",
+      "rm": 8,
+      "learning_resource_id": "da01c855-64bf-45e0-be84-f473e20bf2ef"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S2.20",
+      "S2.23"
+    ]
+  },
+  "minutes_estimate": 11.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "U7.open",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Previously: our `suspects` table is correct now. Meanwhile, social media is on fire.\nI pulled the posts into a `rumours` table. Most of it is noise. We clean it.\n"
+    },
+    {
+      "id": "S2.19",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Delete Rows"
+      },
+      "see_also": [
+        {
+          "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+          "heading": "Delete Specific Rows"
+        },
+        {
+          "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+          "heading": "Delete All Rows"
+        }
+      ],
+      "body": "Ira made a `rumours` table from social media. Most of it is noise.\n```sql\nDELETE FROM table_name WHERE condition;   -- deletes matching rows\nDELETE FROM table_name;                   -- deletes ALL rows (table stays)\n```\n"
+    },
+    {
+      "id": "S2.20",
+      "type": "task",
+      "task_id": "T2.8a",
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Delete Specific Rows"
+      },
+      "ask": "Delete every rumour whose `source` is `'unverified_page'`.",
+      "grading": {
+        "inspect": "SELECT rumour_id FROM rumours;",
+        "expected_hash": "sha256:0f86aa30e8305656ef6c533a8613c2351ccb716308e9f3accbec880b2baa4a3d"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+            "heading": "Delete Specific Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "DELETE FROM rumours WHERE ____ = 'unverified_page';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.8a"
+        }
+      ],
+      "reply_on_pass": "4 rumours gone. Only the two news-channel facts are left.",
+      "traps": []
+    },
+    {
+      "id": "S2.21",
+      "type": "task",
+      "task_id": "T2.8b",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Delete All Rows"
+      },
+      "ask": "The news facts are already in our case notes. Delete **all** rows from `rumours`, but keep the table.",
+      "setup": [
+        "DELETE FROM rumours WHERE source = 'unverified_page';"
+      ],
+      "grading": {
+        "inspect": "SELECT COUNT(*) FROM rumours;",
+        "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+            "heading": "Delete All Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "DELETE FROM ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.8b"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.22",
+      "type": "note",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Drop Table"
+      },
+      "body": "`DROP TABLE` deletes the **whole table** from the database.\n```sql\nDROP TABLE table_name;\n```\n"
+    },
+    {
+      "id": "S2.23",
+      "type": "task",
+      "task_id": "T2.8c",
+      "minutes": 2,
+      "ask": "We don't need the rumour board at all. Remove the `rumours` table from the database.",
+      "setup": [
+        "DELETE FROM rumours;"
+      ],
+      "grading": {
+        "inspect": "SELECT COUNT(*) FROM sqlite_master WHERE name = 'rumours';",
+        "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+            "heading": "Drop Table"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "____ TABLE rumours;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.8c"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.24",
+      "type": "activity",
+      "minutes": 1,
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "DELETE VS DROP"
+      },
+      "prompt": "DELETE vs DROP — match each command to what it does.",
+      "pairs": [
+        {
+          "left": "DELETE FROM rumours WHERE …",
+          "right": "Removes specific rows; the table stays"
+        },
+        {
+          "left": "DROP TABLE rumours",
+          "right": "Removes the entire table from the database"
+        }
+      ]
+    },
+    {
+      "id": "U7.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Rumours cleared. One more thing: the suspects table needs an `alibi` column.\n"
+    }
+  ],
+  "unit": {
+    "n": 7,
+    "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+    "learning_resource_id": "b41f7ad3-c07f-4685-a76e-a2678d1fc26b",
+    "title": "Delete Rows",
+    "part": 5,
+    "parts": 6,
+    "finale": false
+  }
+}

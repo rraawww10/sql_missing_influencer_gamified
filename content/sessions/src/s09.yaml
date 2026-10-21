@@ -1,0 +1,369 @@
+# Session 9 — "The Case Board" (10:00 PM). Flow: docs/SESSION_PLAN.md › Session 9.
+# Table-structure tasks compare column names (any case), order, base type, PRIMARY KEY and FOREIGN KEYs.
+session: 9
+title: "The Case Board"
+story_clock: "2026-12-12 22:00:00"
+course_topic_id: 6f955426-d78c-4ec1-a33d-91ea8feb2667
+snapshot: s09
+est_minutes: 45
+reading_materials:
+  - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, role: primary }   # RM #26 Core Concepts of ER Model
+  - { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, role: primary }   # RM #28 Applying ER Model Concepts
+  - { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, role: primary }   # RM #29 ER Model to Relational Database
+  - { unit_id: 21b08636-88d8-4a75-9a69-8b45d3be7318, role: subset }    # RM #27 ER Model to Relational Database
+  - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, role: primary }   # RM #30 Modelling Database - 2
+
+x-person: &person "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));"
+x-property: &property "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));"
+x-booking: &booking "CREATE TABLE booking (id INTEGER NOT NULL PRIMARY KEY, property_id INTEGER, booked_by INTEGER, check_in DATETIME, FOREIGN KEY (property_id) REFERENCES property(id) ON DELETE CASCADE, FOREIGN KEY (booked_by) REFERENCES person(id) ON DELETE CASCADE);"
+x-guest: &guest "CREATE TABLE booking_guest (id INTEGER NOT NULL PRIMARY KEY, booking_id INTEGER, person_id INTEGER, FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE, FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE);"
+x-people: &people "INSERT INTO person VALUES (1, '{{star}}', 'Singer'), (2, '{{manager}}', 'Artist manager'), (3, '{{rival}}', 'Singer'), (6, '{{organiser}}', 'Event organiser'), (7, '{{sister}}', 'Student'), (9, '{{guest}}', 'Hotel guest');"
+x-data: &data "INSERT INTO person VALUES (1, '{{star}}', 'Singer'), (2, '{{manager}}', 'Artist manager'), (3, '{{rival}}', 'Singer'), (6, '{{organiser}}', 'Event organiser'), (7, '{{sister}}', 'Student'), (9, '{{guest}}', 'Hotel guest'); INSERT INTO property VALUES (1, '{{farm}}', '{{outskirts}}', 'Rural District'), (2, 'Lakeview Resort', 'Lake Road', 'Rural District'); INSERT INTO booking VALUES (71, 1, 9, '2026-11-20 12:00:00'), (88, 1, 2, '2026-12-12 18:45:00'), (90, 2, 3, '2026-12-20 11:00:00'); INSERT INTO booking_guest VALUES (1, 88, 2), (2, 88, NULL), (3, 71, 9), (4, 90, 3);"
+
+beats:
+  - id: S9.1
+    type: scene
+    speaker: mentor
+    body: "Photos, red strings, sticky notes… Our board is a mess. Let's turn it into an **ER model** — then into real tables."
+
+  - id: S9.2
+    type: note
+    rm_ref: { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Core Concepts in ER Model" }
+    see_also:
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Modelling Databases: Part 1" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Entity" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Attributes of an Entity" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Key Attribute" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Entity Type" }
+    body: |
+      - An **entity** is a real-world thing (a person, a farm stay, a booking).
+      - **Attributes** describe it (name, area, check-in time).
+      - A **key attribute** identifies each entity uniquely (an id).
+      - An **entity type** is the group of similar entities (all persons).
+
+  - id: S9.3
+    type: activity
+    kind: sort_into
+    rm_ref: { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Attributes of an Entity" }
+    prompt: "Sort the sticky notes: is each one an **entity type** or an **attribute**?"
+    buckets: ["Entity type", "Attribute"]
+    items:
+      - { text: "Person", bucket: "Entity type" }
+      - { text: "Property (farm stay)", bucket: "Entity type" }
+      - { text: "Booking", bucket: "Entity type" }
+      - { text: "check-in time", bucket: "Attribute" }
+      - { text: "area", bucket: "Attribute" }
+      - { text: "name", bucket: "Attribute" }
+
+  - id: S9.4
+    type: note
+    rm_ref: { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Types of Relationships" }
+    see_also:
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Relationships" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "One-to-One Relationship" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "One-to-Many Relationship" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Many-to-Many Relationship" }
+      - { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Cardinality Ratio" }
+    body: "Relationships connect entity types: **one-to-one (1:1)**, **one-to-many (1:N)**, **many-to-many (M:N)**. The **cardinality ratio** says which one."
+
+  - id: S9.5
+    type: activity
+    kind: match
+    rm_ref: { unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3, heading: "Cardinality Ratio" }
+    prompt: "Draw the red strings: pick the cardinality of each relationship."
+    pairs:
+      - { left: "A person and their smartwatch (each wears one, each watch belongs to one)", right: "One-to-One (1:1)" }
+      - { left: "A farm stay and its bookings (one farm, many bookings)", right: "One-to-Many (1:N)" }
+      - { left: "Bookings and their guests (a booking has many guests; a person can join many bookings)", right: "Many-to-Many (M:N)" }
+
+  - id: S9.6
+    type: note
+    rm_ref: { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "Applying ER Model Concepts" }
+    see_also:
+      - { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "E-commerce Application" }
+      - { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "Entity types" }
+      - { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "Relationships" }
+      - { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "Attributes" }
+      - { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "ER Model of e-commerce application" }
+    body: "The course builds an e-commerce ER model: customer–cart (1:1), customer–address (1:N), cart–product (M:N). Our case has the same shapes."
+
+  - id: S9.7
+    type: activity
+    kind: match
+    rm_ref: { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "ER Model of e-commerce application" }
+    prompt: "Same pattern, different story — match each case relationship to its e-commerce twin."
+    pairs:
+      - { left: "Person – smartwatch", right: "Customer – cart (1:1)" }
+      - { left: "Farm stay – bookings", right: "Customer – addresses (1:N)" }
+      - { left: "Bookings – guests", right: "Cart – products (M:N)" }
+
+  - id: S9.8
+    type: note
+    rm_ref: { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, heading: "Entity Type to Table" }
+    see_also:
+      - { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, heading: "ER Model to Relational Database" }
+      - { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, heading: "E-commerce Application" }
+    body: "Each **entity type becomes a table**; its attributes become columns; the key attribute becomes the **primary key**."
+
+  - id: S9.9
+    type: note
+    rm_ref: { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, heading: "Relationships" }
+    see_also:
+      - { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, heading: "E-commerce Usecase: ER Model to Relational Database" }
+      - { unit_id: 21b08636-88d8-4a75-9a69-8b45d3be7318, heading: "E-commerce Usecase: ER Model to Relational Database" }
+    body: "**1:1 and 1:N** relationships become a **foreign key** column. **M:N** needs a separate **junction table** (like `cart_product`)."
+
+  - id: S9.10
+    type: activity
+    kind: match
+    rm_ref: { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, heading: "Relationships" }
+    prompt: "Map the case board to tables."
+    pairs:
+      - { left: "Person (entity type)", right: "Table `person`" }
+      - { left: "Farm stay – bookings (1:N)", right: "Column `property_id` in `booking` (foreign key)" }
+      - { left: "Bookings – guests (M:N)", right: "Junction table `booking_guest`" }
+
+  - id: S9.11
+    type: note
+    rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Primary Key" }
+    see_also:
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Modelling Databse - 2" }
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Creating a Relational Database" }
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Foreign Key" }
+    body: |
+      ```sql
+      CREATE TABLE table_name (c1 t1 NOT NULL PRIMARY KEY, ...);
+      CREATE TABLE table2 (c1 t1 NOT NULL PRIMARY KEY, c2 t2,
+        FOREIGN KEY (c2) REFERENCES table1(c3) ON DELETE CASCADE);
+      ```
+      A **foreign key** can only hold values that exist in the referenced primary key.
+      `ON DELETE CASCADE`: delete a parent row and its child rows go too. (Foreign keys are switched on here, like on our platform.)
+
+  - id: S9.12
+    type: task
+    task_id: T9.1
+    minutes: 2
+    rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Creating Tables in Relational Database" }
+    ask: "Create `person` with `id` (INTEGER, NOT NULL, PRIMARY KEY), `name` (VARCHAR(250)), `role` (VARCHAR(100))."
+    ref: *person
+    grading:
+      inspect: "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('person');"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Customer Table" } }
+      - { tier: 2, skeleton: "CREATE TABLE person (\n  id INTEGER NOT NULL ____,\n  name VARCHAR(250),\n  role VARCHAR(100)\n);" }
+
+  - id: S9.13
+    type: task
+    task_id: T9.2
+    minutes: 2
+    ask: "Create `property` with `id` (INTEGER, NOT NULL, PRIMARY KEY), `name` (VARCHAR(250)), `area` (VARCHAR(250)), `district` (VARCHAR(100))."
+    setup: [*person]
+    ref: *property
+    grading:
+      inspect: "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('property');"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Product Table" } }
+      - { tier: 2, skeleton: "CREATE TABLE property (\n  id INTEGER NOT NULL PRIMARY KEY,\n  name VARCHAR(250),\n  area ____,\n  district ____\n);" }
+
+  - id: S9.14
+    type: task
+    task_id: T9.3
+    ask: |
+      Create `booking`: `id` (INTEGER, NOT NULL, PRIMARY KEY), `property_id` (INTEGER), `booked_by` (INTEGER), `check_in` (DATETIME),
+      with **foreign keys** `property_id` → `property(id)` and `booked_by` → `person(id)`, both `ON DELETE CASCADE`.
+    setup: [*person, *property]
+    ref: *booking
+    grading:
+      inspect: "SELECT 'col' AS kind, lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('booking') UNION ALL SELECT 'fk', lower(\"from\"), lower(\"table\") || '.' || lower(\"to\"), on_delete FROM pragma_foreign_key_list('booking');"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Address Table" } }
+      - { tier: 2, skeleton: "CREATE TABLE booking (\n  id INTEGER NOT NULL PRIMARY KEY,\n  property_id INTEGER,\n  booked_by INTEGER,\n  check_in DATETIME,\n  FOREIGN KEY (property_id) REFERENCES ____(id) ON DELETE CASCADE,\n  FOREIGN KEY (booked_by) REFERENCES ____(id) ON DELETE CASCADE\n);" }
+
+  - id: S9.15
+    type: task
+    task_id: T9.4
+    ask: "Create the **junction table** `booking_guest`: `id` (INTEGER, NOT NULL, PRIMARY KEY), `booking_id` (INTEGER), `person_id` (INTEGER), with foreign keys to `booking(id)` and `person(id)`, both `ON DELETE CASCADE`."
+    setup: [*person, *property, *booking]
+    ref: *guest
+    grading:
+      inspect: "SELECT 'col' AS kind, lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type, pk AS primary_key FROM pragma_table_info('booking_guest') UNION ALL SELECT 'fk', lower(\"from\"), lower(\"table\") || '.' || lower(\"to\"), on_delete FROM pragma_foreign_key_list('booking_guest');"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Cart Product Table (Junction Table)" } }
+      - { tier: 2, skeleton: "CREATE TABLE booking_guest (\n  id INTEGER NOT NULL PRIMARY KEY,\n  booking_id INTEGER,\n  person_id INTEGER,\n  FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE,\n  FOREIGN KEY (____) REFERENCES ____(id) ON DELETE CASCADE\n);" }
+
+  - id: S9.16
+    type: scene
+    speaker: analyst
+    body: |
+      WhatsApp from {{caretaker}}, the {{farm}} caretaker:
+      *"Booking **B-88**, 12 Dec, check-in **18:45**. Booked by Mr **{{manager}}**. 2 guests: Sir + 1 lady (name not given). Property: {{farm}}, {{outskirts}}, Rural District."*
+
+  - id: S9.17
+    type: task
+    task_id: T9.5
+    rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Inserting data into the respective tables" }
+    ask: |
+      Put the caretaker's message into the tables — **parents first**:
+      - `person`: `(2, '{{manager}}', 'Artist manager')`
+      - `property`: `(1, '{{farm}}', '{{outskirts}}', 'Rural District')`
+      - `booking`: `(88, 1, 2, '2026-12-12 18:45:00')`
+      - `booking_guest`: `(1, 88, 2)` and `(2, 88, NULL)` — the lady's name wasn't given
+    setup: [*person, *property, *booking, *guest]
+    ref: "INSERT INTO person (id, name, role) VALUES (2, '{{manager}}', 'Artist manager'); INSERT INTO property (id, name, area, district) VALUES (1, '{{farm}}', '{{outskirts}}', 'Rural District'); INSERT INTO booking (id, property_id, booked_by, check_in) VALUES (88, 1, 2, '2026-12-12 18:45:00'); INSERT INTO booking_guest (id, booking_id, person_id) VALUES (1, 88, 2), (2, 88, NULL);"
+    grading:
+      inspect: "SELECT booking.id, property.name, person.name, booking.check_in, (SELECT COUNT(*) FROM booking_guest WHERE booking_guest.booking_id = booking.id) FROM booking JOIN property ON property.id = booking.property_id JOIN person ON person.id = booking.booked_by;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Inserting data into the respective tables" } }
+      - { tier: 2, skeleton: "INSERT INTO person (id, name, role) VALUES (2, '{{manager}}', 'Artist manager');\nINSERT INTO property (id, name, area, district) VALUES (____);\nINSERT INTO booking (id, property_id, booked_by, check_in) VALUES (____);\nINSERT INTO booking_guest (id, booking_id, person_id) VALUES (1, 88, 2), (2, 88, NULL);" }
+    traps:
+      - id: child_first
+        rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Foreign Key" }
+        sql: "INSERT INTO booking (id, property_id, booked_by, check_in) VALUES (88, 1, 2, '2026-12-12 18:45:00');"
+        match: error
+        error_regex: "FOREIGN KEY constraint failed"
+        reply: "A foreign key can only hold values that **already exist** in the parent table. Insert the `person` and the `property` first, then the `booking`."
+
+  - id: S9.18
+    type: note
+    rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Querying in SQL" }
+    see_also:
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "1. One-to-Many Relationships" }
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "2. One-to-One Relationships" }
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "3. Many-to-Many Relationships" }
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Cart Table" }
+      - { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Cart Product Table" }
+    body: "Read related tables together with `JOIN … ON`: `SELECT * FROM customer JOIN address ON customer.id = address.customer_id;`"
+
+  - id: S9.19
+    type: task
+    task_id: T9.6
+    ask: "**1:N** — all bookings of `'{{farm}}'`: everything from `property` joined with `booking` on `property.id = booking.property_id`."
+    setup: [*person, *property, *booking, *guest, *data]
+    ref: "SELECT * FROM property JOIN booking ON property.id = booking.property_id WHERE property.name = '{{farm}}';"
+    grading: { expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "1. One-to-Many Relationships" } }
+      - { tier: 2, skeleton: "SELECT * FROM property JOIN booking ON property.id = ____ WHERE property.name = '{{farm}}';" }
+    reply_on_pass: "Two bookings at the farm. One is old (November). The other is **88**: `booked_by` 2, `check_in` **2026-12-12 18:45:00** — tonight."
+
+  - id: S9.20
+    type: task
+    task_id: T9.7
+    minutes: 2
+    ask: "**1:1** — each person with their smartwatch: `person.name`, `smartwatch.model`, `smartwatch.esim_number` (join on `person.id = smartwatch.person_id`)."
+    setup: [*person, *people]
+    ref: "SELECT person.name, smartwatch.model, smartwatch.esim_number FROM person JOIN smartwatch ON person.id = smartwatch.person_id;"
+    grading: { expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "2. One-to-One Relationships" } }
+      - { tier: 2, skeleton: "SELECT person.name, smartwatch.model, smartwatch.esim_number FROM person JOIN smartwatch ON ____ = ____;" }
+
+  - id: S9.21
+    type: task
+    task_id: T9.8
+    ask: "**M:N** — the registered guests of booking **88**: `person.name` from `booking_guest` joined with `person` on `booking_guest.person_id = person.id`."
+    setup: [*person, *property, *booking, *guest, *data]
+    ref: "SELECT person.name FROM booking_guest JOIN person ON booking_guest.person_id = person.id WHERE booking_guest.booking_id = 88;"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "3. Many-to-Many Relationships" } }
+      - { tier: 2, skeleton: "SELECT person.name FROM booking_guest JOIN person ON booking_guest.person_id = person.id WHERE booking_guest.booking_id = ____;" }
+    on_pass: { clue: S9-C1 }
+    reply_on_pass: "Two guests booked — one name came back. {{mentor.first}}: \"Remember this.\""
+
+  - id: S9.21b
+    type: check
+    source: authored
+    rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "3. Many-to-Many Relationships" }
+    prompt: "You inserted **two** `booking_guest` rows for booking 88, but the join returned **one** name. Why?"
+    options:
+      - { text: "The second guest's `person_id` is NULL — no name was registered, so there is no `person` row to match", correct: true }
+      - { text: "The join only ever returns one row" }
+      - { text: "The second row was deleted by ON DELETE CASCADE" }
+    explain: "`(2, 88, NULL)`: a guest with no `person_id`. JOIN keeps only rows that match on both sides, so the unnamed guest disappears. Two people checked in at 18:45 — we know the name of only one."
+
+  - id: S9.22
+    type: clue
+    clue_id: S9-C1
+    requires_task: T9.8
+    title: "Booking B-88"
+    body: "Your tables: {{farm}}, booking **88** — `booked_by` **{{manager}}**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+
+  - id: S9.23
+    type: task
+    task_id: T9.9
+    minutes: 2
+    rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Foreign Key" }
+    ask: "See `ON DELETE CASCADE` work: delete the property with `id` = 2 (Lakeview Resort). Its booking should disappear too."
+    setup: [*person, *property, *booking, *guest, *data]
+    ref: "DELETE FROM property WHERE id = 2;"
+    grading:
+      inspect: "SELECT id FROM booking;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Foreign Key" } }
+      - { tier: 2, skeleton: "DELETE FROM property WHERE ____ = 2;" }
+    reply_on_pass: "Booking 90 vanished with it. That's cascade — powerful, so never test it on real evidence!"
+
+  - id: S9.24
+    type: check
+    source: authored
+    rm_ref: { unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51, heading: "Relationships" }
+    prompt: "A many-to-many relationship becomes…"
+    options:
+      - { text: "a junction table", correct: true }
+      - { text: "a single foreign key column" }
+      - { text: "a primary key" }
+    explain: "M:N needs its own table holding a foreign key to each side — like `booking_guest` or `cart_product`."
+
+  - id: S9.25
+    type: hook
+    speaker: analyst
+    body: "I've loaded the full city data: people, UPI accounts, companies, rehearsal logs, insurance. Time to **join** everything."
+
+exit:
+  required_clues: [S9-C1]
+  required_beats: [S9.3, S9.5, S9.7, S9.10, S9.12, S9.13, S9.14, S9.15, S9.17, S9.19, S9.20, S9.21, S9.21b, S9.23]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: 113540cc-5232-4ce7-88c3-08637ddc56f3   # RM #26 Core Concepts of ER Model
+    from: S9.1
+    to: S9.5
+    closer:
+      speaker: mentor
+      body: |
+        Entities and relationships sorted. Next: see how the course models an online shop the same way.
+  - unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d   # RM #28 Applying ER Model Concepts
+    from: S9.6
+    to: S9.7
+    opener:
+      speaker: mentor
+      body: |
+        Previously: our case board is now **entity types** (people, vehicles, bookings) and **relationships** between them.
+        The course does the same for an online shop — same pattern, different story.
+    closer:
+      speaker: mentor
+      body: |
+        Pattern matched. Now turn the board into tables.
+  - unit_id: 7f4e3b64-3404-4efc-9b8a-52f3f883de51   # RM #29 ER Model to Relational Database
+    from: S9.8
+    to: S9.10
+    opener:
+      speaker: mentor
+      body: |
+        Previously: entities, attributes, relationships — our board is tidy, and it matches the course's e-commerce model.
+        Now each piece becomes a **table**, a **column** or a **foreign key**.
+    closer:
+      speaker: mentor
+      body: |
+        Tables designed. Time to build them in SQL.
+  - unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742   # RM #30 Modelling Database - 2
+    from: S9.11
+    to: S9.25
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the case board is mapped to tables with primary and foreign keys.
+        Now we **create** them in SQL with constraints — and load the farm stay bookings.
+  - unit_id: 21b08636-88d8-4a75-9a69-8b45d3be7318   # RM #27 ER Model to Relational Database — same text as RM #29
+    same_as: 7f4e3b64-3404-4efc-9b8a-52f3f883de51

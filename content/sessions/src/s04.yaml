@@ -1,0 +1,298 @@
+# Session 4 — "The Last Cab" (7:30 PM). Flow: docs/SESSION_PLAN.md › Session 4.
+session: 4
+title: "The Last Cab"
+story_clock: "2026-12-12 19:30:00"
+course_topic_id: 1ce5cadd-040d-45ac-b850-5f8584644dcb
+snapshot: s04
+est_minutes: 40
+reading_materials:
+  - { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, role: primary }   # RM #13 IN and BETWEEN
+  - { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, role: primary }   # RM #14 ORDER BY and DISTINCT
+  - { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, role: primary }   # RM #15 Pagination
+
+x-window: &window "pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'"
+
+beats:
+  - id: S4.1
+    type: scene
+    speaker: system
+    body: |
+      📱 Cab app: "{{star}} booked a ride at **17:55**. Status: **cancelled by rider**."
+      The app has shared today's rides in a table: `cab_rides`.
+
+  - id: S4.2
+    type: scene
+    speaker: mentor
+    body: "She cancelled her own cab? Something changed in those few minutes. Let's read the rides."
+
+  - id: S4.3
+    type: note
+    rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "IN Operator" }
+    see_also:
+      - { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "IN and BETWEEN Operators" }
+    body: |
+      `IN` checks if a value is **one of a list** of values — a short way to write many `OR`s:
+      ```sql
+      SELECT * FROM table_name WHERE c1 IN (v1, v2, ...);
+      ```
+
+  - id: S4.4
+    type: task
+    task_id: T4.1
+    minutes: 2
+    ask: |
+      Show the `rider_name` of every ride booked from **any** of these phone numbers:
+      `9876500001`, `9876500002`, `9876500003`, `9876500004`, `9876500005`, `9876500006`
+      (Tara and the five suspects).
+    ref: "SELECT rider_name FROM cab_rides WHERE rider_phone IN ('9876500001', '9876500002', '9876500003', '9876500004', '9876500005', '9876500006');"
+    grading: { expect_rows: 4 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "IN Operator" } }
+      - { tier: 2, skeleton: "SELECT rider_name FROM cab_rides WHERE rider_phone ____ ('9876500001', '9876500002', ...);" }
+    reply_on_pass: "Four rides. {{manager.first}} never booked a cab today — interesting."
+
+  - id: S4.5
+    type: note
+    rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "BETWEEN Operator" }
+    body: |
+      `BETWEEN` keeps values in a **range**, including both ends:
+      ```sql
+      SELECT * FROM table_name WHERE c1 BETWEEN lower AND upper;
+      ```
+      Times work too: `booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'`.
+
+  - id: S4.6
+    type: task
+    task_id: T4.2
+    ask: "Show the `ride_id` of rides picked up at `'{{hotel}}'` and booked **between 17:30 and 18:30**."
+    ref: "SELECT ride_id FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00';"
+    grading: { expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "BETWEEN Operator" } }
+      - { tier: 2, skeleton: "SELECT ride_id FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at ____ '2026-12-12 17:30:00' ____ '2026-12-12 18:30:00';" }
+    traps:
+      - id: reversed
+        rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "Possible Mistakes" }
+        sql: "SELECT ride_id FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 18:30:00' AND '2026-12-12 17:30:00';"
+        sql_regex: "BETWEEN\\s+'2026-12-12 18:30"
+        match: result
+        reply: "Empty — but that doesn't mean nobody booked! With `BETWEEN`, the **smaller value must come first**: 17:30, then 18:30."
+      - id: missing_limit
+        rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "Possible Mistakes" }
+        sql: "SELECT ride_id FROM cab_rides WHERE booked_at BETWEEN AND '2026-12-12 18:30:00';"
+        match: error
+        error_regex: "near \"AND\": syntax error"
+        reply: "`BETWEEN` needs **both** limits: `BETWEEN lower AND upper`."
+      - id: type_mismatch
+        rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "Possible Mistakes" }
+        sql: "SELECT ride_id FROM cab_rides WHERE rider_name BETWEEN 300 AND 500;"
+        sql_regex: "(rider_name|driver_name|pickup|drop_point)\\s+BETWEEN\\s+\\d"
+        match: result
+        reply: "Numbers as limits for a **text** column give a meaningless result. The column and the limits must have the same data type."
+
+  - id: S4.7
+    type: note
+    rm_ref: { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, heading: "ORDER BY" }
+    see_also:
+      - { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, heading: "ORDER BY and DISTINCT" }
+    body: |
+      `ORDER BY` sorts the result: `ASC` (default, small → big) or `DESC` (big → small).
+      ```sql
+      SELECT * FROM table_name ORDER BY c1 DESC;
+      ```
+
+  - id: S4.8
+    type: task
+    task_id: T4.3
+    minutes: 2
+    ask: "Same hotel rides between 17:30 and 18:30 — show `ride_id`, `status` and `booked_at`, **newest first**."
+    ref: "SELECT ride_id, status, booked_at FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' ORDER BY booked_at DESC;"
+    grading: { ordered: true, expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, heading: "ORDER BY" } }
+      - { tier: 2, skeleton: "SELECT ride_id, status, booked_at FROM cab_rides WHERE ... ORDER BY booked_at ____;" }
+
+  - id: S4.9
+    type: note
+    rm_ref: { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, heading: "ORDER BY with Multiple Columns" }
+    body: "Sort by one column, then by another for ties: `ORDER BY c1 ASC, c2 DESC`."
+
+  - id: S4.10
+    type: task
+    task_id: T4.4
+    minutes: 2
+    ask: "Show the same three columns sorted by `status` (A → Z), and for the same status, **newest first**."
+    ref: "SELECT ride_id, status, booked_at FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' ORDER BY status ASC, booked_at DESC;"
+    grading: { ordered: true, expect_rows: 3 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, heading: "ORDER BY with Multiple Columns" } }
+      - { tier: 2, skeleton: "... ORDER BY status ____, booked_at ____;" }
+    reply_on_pass: "The cancelled ride comes first: **R-2291**."
+
+  - id: S4.11
+    type: note
+    rm_ref: { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, heading: "DISTINCT" }
+    body: "`DISTINCT` removes repeated rows: `SELECT DISTINCT c1 FROM table_name;`"
+
+  - id: S4.12
+    type: task
+    task_id: T4.5
+    minutes: 2
+    ask: "Which drivers picked anyone up from `'{{hotel}}'` today? Show each `driver_name` **once**."
+    ref: "SELECT DISTINCT driver_name FROM cab_rides WHERE pickup = '{{hotel}}';"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7, heading: "DISTINCT" } }
+      - { tier: 2, skeleton: "SELECT ____ driver_name FROM cab_rides WHERE pickup = '{{hotel}}';" }
+
+  - id: S4.13
+    type: note
+    rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "LIMIT" }
+    see_also:
+      - { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "Pagination" }
+    body: "`LIMIT n` keeps only the first **n** rows. With `ORDER BY … DESC`, `LIMIT 1` gives the latest row."
+
+  - id: S4.14
+    type: task
+    task_id: T4.6
+    ask: "Get {{star.first}}'s **latest** booking: `ride_id`, `driver_name`, `booked_at`, `status`, `status_updated_at` for rider `'{{star}}'`."
+    ref: "SELECT ride_id, driver_name, booked_at, status, status_updated_at FROM cab_rides WHERE rider_name = '{{star}}' ORDER BY booked_at DESC LIMIT 1;"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "LIMIT" } }
+      - { tier: 2, skeleton: "SELECT ride_id, driver_name, booked_at, status, status_updated_at FROM cab_rides WHERE rider_name = '{{star}}' ORDER BY booked_at ____ LIMIT ____;" }
+    on_pass: { clue: S4-C1 }
+    reply_on_pass: "One row. Read `status` and `status_updated_at` before you continue."
+
+  - id: S4.14b
+    type: check
+    source: authored
+    rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "LIMIT" }
+    prompt: "Your row for ride R-2291: what happened to {{star.first}}'s booking, and when?"
+    options:
+      - { text: "CANCELLED_BY_RIDER — she cancelled it herself at 18:08:12, 13 minutes after booking", correct: true }
+      - { text: "COMPLETED — driver {{driver}} dropped her at the stadium" }
+      - { text: "CANCELLED_BY_DRIVER — {{driver}} never came" }
+    explain: "`status` = CANCELLED_BY_RIDER, `status_updated_at` = 18:08:12. Booked 17:55, cancelled by her at 18:08 — one minute before her key card hit the service lift (clue S2-C1, 18:09:40)."
+
+  - id: S4.15
+    type: clue
+    clue_id: S4-C1
+    requires_task: T4.6
+    title: "The cancelled cab"
+    body: "Your query on `cab_rides`: ride **R-2291**, driver **{{driver}}**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+
+  - id: S4.16
+    type: scene
+    speaker: mentor
+    body: "Comments are already saying *\"the driver did it\"*. Data first. Let's see {{driver.first}}'s whole day."
+
+  - id: S4.17
+    type: note
+    rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "OFFSET" }
+    see_also:
+      - { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "Possible Mistakes" }
+    body: |
+      `OFFSET n` skips the first **n** rows — perfect for pages. Page 2 of 5 rides: `LIMIT 5 OFFSET 5`.
+      In SQLite, `OFFSET` must come **after** `LIMIT`. The default offset is 0.
+
+  - id: S4.18
+    type: task
+    task_id: T4.7
+    ask: "{{driver.first}}'s rides, 5 per page, oldest first. Show **page 2**: `ride_id`, `rider_name`, `pickup`, `drop_point`, `booked_at` for driver `'{{driver}}'`."
+    ref: "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = '{{driver}}' ORDER BY booked_at LIMIT 5 OFFSET 5;"
+    grading: { ordered: true, expect_rows: 5 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "OFFSET" } }
+      - { tier: 2, skeleton: "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = '{{driver}}' ORDER BY booked_at LIMIT ____ OFFSET ____;" }
+    traps:
+      - id: offset_first
+        rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "Possible Mistakes" }
+        sql: "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = '{{driver}}' ORDER BY booked_at OFFSET 5 LIMIT 5;"
+        sql_regex: "OFFSET\\s+\\d+\\s+LIMIT"
+        match: error
+        error_regex: "syntax error"
+        reply: "In SQLite, `OFFSET` comes **after** `LIMIT`: `LIMIT 5 OFFSET 5`."
+      - id: offset_alone
+        rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "Possible Mistakes" }
+        sql: "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = '{{driver}}' ORDER BY booked_at OFFSET 5;"
+        sql_regex: "^(?![\\s\\S]*LIMIT)[\\s\\S]*OFFSET"
+        match: error
+        error_regex: "syntax error"
+        reply: "SQLite needs a `LIMIT` before `OFFSET`. Add `LIMIT 5`."
+    reply_on_pass: "Page 2. Find R-2291 — then read the row right after it."
+
+  - id: S4.18b
+    type: check
+    source: authored
+    rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "OFFSET" }
+    prompt: "On page 2, what did {{driver.first}} do right after {{star.first}}'s ride was cancelled?"
+    options:
+      - { text: "Ride R-2297 at 18:10 — he took {{passenger}} from the hotel to the railway station", correct: true }
+      - { text: "He drove {{star.first}} to City Stadium" }
+      - { text: "He had no more rides that evening" }
+    explain: "R-2291 (17:55, {{star.first}}) is followed by **R-2297 at 18:10**: pickup {{hotel}}, drop Central Railway Station, rider {{passenger}}. Two minutes after her cancellation he was driving someone else. He could not have taken her."
+
+  - id: S4.19
+    type: scene
+    speaker: driver
+    body: |
+      🎙️ Witness statement — {{driver.first}}'s voice note, after {{mentor.first}} called him:
+      "Madam, I reached the hotel at 18:06. She came out, but a man in a black jacket said *'Come, I'll drop you, it's faster'*.
+      She cancelled my ride and got into a **grey SUV**. Then I took another passenger — the railway station one."
+
+  - id: S4.20
+    type: clue
+    clue_id: S4-C2
+    requires_task: T4.7
+    title: "A grey SUV, someone she knew"
+    body: "**Data** (your page-2 query): at 18:10 {{driver}} drove {{passenger}} to the railway station (R-2297) — he is cleared. **Witness** ({{driver.first}}'s statement): {{star.first}} cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+
+  - id: S4.21
+    type: check
+    source: authored
+    rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "OFFSET" }
+    prompt: "Skip the first 10 rides, then show the next 5. Which is right?"
+    options:
+      - { text: "`LIMIT 5 OFFSET 10`", correct: true }
+      - { text: "`OFFSET 10 LIMIT 5`" }
+      - { text: "`LIMIT 10 OFFSET 5`" }
+    explain: "`LIMIT` = how many rows to show (5). `OFFSET` = how many to skip (10). In SQLite, `OFFSET` comes after `LIMIT`."
+
+  - id: S4.22
+    type: hook
+    speaker: sister
+    body: "📞 {{sister.first}}, crying: \"I just got a strange **₹1** from {{star.first}}'s smartwatch at 7 PM! Is she okay?\""
+
+exit:
+  required_clues: [S4-C1, S4-C2]
+  required_beats: [S4.4, S4.6, S4.8, S4.10, S4.12, S4.14, S4.14b, S4.18, S4.18b]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: 936e638c-7179-460d-9a9f-95f9f423c344   # RM #13 In and Between Operators
+    from: S4.1
+    to: S4.6
+    closer:
+      speaker: mentor
+      body: |
+        Rides found. Next: sort them to find the last one.
+  - unit_id: 47185b82-35b3-4539-a2c2-581f29be97b7   # RM #14 Order By and Distinct
+    from: S4.7
+    to: S4.12
+    opener:
+      speaker: mentor
+      body: |
+        Previously: {{star.first}} booked a cab at 17:55 and cancelled it herself. The cab company sent every ride from that evening, and we picked out the ones near the hotel.
+        Now we **sort** them to see what happened in those minutes.
+    closer:
+      speaker: mentor
+      body: |
+        Sorted and cleaned. Now only the first few rows matter.
+  - unit_id: b80e530f-8971-445c-bb90-bffa26db1910   # RM #15 Pagination
+    from: S4.13
+    to: S4.22
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the rides are sorted by time. Driver {{driver.first}} was booked for {{star.first}}'s cancelled ride.
+        Now we need just the top rows — and the one ride that matters.

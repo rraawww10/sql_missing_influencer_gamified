@@ -1,0 +1,333 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 6,
+  "title": "Phone Towers",
+  "story_clock": "2026-12-12 20:30:00",
+  "course_topic_id": "5759bbee-306a-4979-b957-ad1737eb4cc6",
+  "snapshot": "s06",
+  "est_minutes": 25,
+  "reading_materials": [
+    {
+      "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+      "role": "primary",
+      "rm": 18,
+      "learning_resource_id": "49d0cf36-4b2d-4550-bc91-5cf71b406c05"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S6-C1",
+      "S6-C2"
+    ],
+    "required_beats": [
+      "S6.2",
+      "S6.4",
+      "S6.4b",
+      "S6.7",
+      "S6.7b"
+    ]
+  },
+  "minutes_estimate": 17.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S6.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Her phone is off — but the telecom team confirmed her **smartwatch** has its own eSIM, and it never stopped talking to towers.\n`tower_pings`: every time a phone or watch talks to a tower, a row is saved — owner, device, tower, area, time.\nOne watch, thousands of pings. Each tower covers a few km². We need the tower she **keeps** hitting since she left the hotel — that's where she is.\n"
+    },
+    {
+      "id": "S6.2",
+      "type": "task",
+      "task_id": "T6.1",
+      "ask": "Warm-up: for Tara's **watch** (`device_owner` `'Tara Sen'`, `device_type` `'WATCH'`), show `tower_id`, `tower_area` and the number of pings as `pings`, per tower.",
+      "grading": {
+        "expect_rows": 5,
+        "expected_hash": "sha256:392df3ddd812fbd509890adeb7e5d021f6a34cb09a8e3416fca1c4052783b5d7"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+            "heading": "Group By with Having"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT tower_id, tower_area, COUNT(*) AS pings FROM tower_pings WHERE device_owner = 'Tara Sen' AND device_type = 'WATCH' GROUP BY ____, ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s06.json#T6.1"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S6.3",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+        "heading": "HAVING"
+      },
+      "body": "`HAVING` filters **groups** (after `GROUP BY`), using aggregates:\n```sql\nSELECT c1, COUNT(*) FROM table_name GROUP BY c1 HAVING COUNT(*) > 5;\n```\n"
+    },
+    {
+      "id": "S6.4",
+      "type": "task",
+      "task_id": "T6.2",
+      "ask": "Where has she been since she left? Towers with **more than 5** pings from `'Tara Sen'` **from 6 PM onwards**: show `tower_id`, `tower_area`, `pings`, and the first and last ping as `MIN(ts)` and `MAX(ts)`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:bcff7de3f0e7649f17fb16d5a3a4b953b2b5975d1e2cde1fd4664846e3bd33bd"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+            "heading": "HAVING"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT tower_id, tower_area, COUNT(*) AS pings, MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = 'Tara Sen' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area ____ pings > 5;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s06.json#T6.2"
+        }
+      ],
+      "traps": [
+        {
+          "id": "no_where",
+          "match": {
+            "result_hash": "sha256:153de2a6515d06916be861c6365f6cef368162df0007c6a8dae8f10d57e6536c"
+          },
+          "reply": "📱 Fans post *\"She's still in the hotel!\"* — because your result shows the hotel tower. But those pings are from **before** she left. Filter rows first with `WHERE ts >= …`, then groups with `HAVING`.",
+          "rm_ref": {
+            "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+            "heading": "WHERE vs HAVING:"
+          }
+        }
+      ],
+      "on_pass": {
+        "clue": "S6-C1"
+      },
+      "reply_on_pass": "One tower. Read all five columns."
+    },
+    {
+      "id": "S6.4b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+        "heading": "HAVING"
+      },
+      "prompt": "Your result has one row. What does it tell us?",
+      "options": [
+        {
+          "text": "Since 18:52 her watch has hit only tower RRO-17 (Ring Road outskirts) — 47 pings, the last one at 23:28, which is right now",
+          "correct": true
+        },
+        {
+          "text": "Her watch is switched off"
+        },
+        {
+          "text": "She is still at the hotel"
+        }
+      ],
+      "explain": "`tower_id` RRO-17, `tower_area` Ring Road outskirts, 47 pings, first 18:52, last 23:28. The watch has not left that tower's area all evening — and it is still pinging."
+    },
+    {
+      "id": "S6.5",
+      "type": "clue",
+      "clue_id": "S6-C1",
+      "requires_task": "T6.2",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "id": "S6.6",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+        "heading": "WHERE vs HAVING:"
+      },
+      "body": "`WHERE` filters **rows before** grouping. `HAVING` filters **groups after** grouping."
+    },
+    {
+      "id": "S6.6b",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Now the manager. You typed his alibi yourself in Episode 2: **\"In hotel lobby all evening\"**. The hotel's tower is **MGR-04**.\nIf he never left, his phone should show one tower only. Test his claim.\n"
+    },
+    {
+      "id": "S6.7",
+      "type": "task",
+      "task_id": "T6.3",
+      "ask": "Dev's phone (`'Dev Arora'`), from 6 PM: `tower_id`, `COUNT(*)`, `MIN(ts)`, `MAX(ts)` for towers with **more than 3** pings.",
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:4f61d0efdc674b618800dc52000110d3394ca3d705240df0f0bf35ad73d2eed4"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+            "heading": "HAVING"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT tower_id, COUNT(*), MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = 'Dev Arora' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area HAVING ____ > 3;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s06.json#T6.3"
+        }
+      ],
+      "on_pass": {
+        "clue": "S6-C2"
+      },
+      "reply_on_pass": "Two towers, not one. Compare the second row with Tara's.",
+      "traps": []
+    },
+    {
+      "id": "S6.7b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+        "heading": "WHERE vs HAVING:"
+      },
+      "prompt": "Dev said he was in the hotel lobby all evening. What do his two rows say?",
+      "options": [
+        {
+          "text": "Besides the hotel tower MGR-04, his phone hit RRO-17 six times between 18:52 and 19:22 — the same tower as Tara's watch",
+          "correct": true
+        },
+        {
+          "text": "His phone stayed on MGR-04 the whole evening — his alibi holds"
+        },
+        {
+          "text": "His phone was switched off after 6 PM"
+        }
+      ],
+      "explain": "Row 2: RRO-17 · 6 pings · 18:52 → 19:22. Row 1: MGR-04 before 18:10 and again from 19:55. For half an hour his phone was where her watch is — and he told us he never left."
+    },
+    {
+      "id": "S6.8",
+      "type": "clue",
+      "clue_id": "S6-C2",
+      "requires_task": "T6.3",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "id": "S6.9",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+        "heading": "HAVING"
+      },
+      "prompt": "Which clause filters **groups**?",
+      "options": [
+        {
+          "text": "WHERE"
+        },
+        {
+          "text": "HAVING",
+          "correct": true
+        },
+        {
+          "text": "ORDER BY"
+        }
+      ],
+      "explain": "HAVING runs after GROUP BY and filters the groups. WHERE filters rows before grouping."
+    },
+    {
+      "id": "S6.10",
+      "type": "hook",
+      "speaker": "analyst",
+      "body": "RRO-17 covers 6 km². We need something more exact. Her watch also logs **steps and heart rate**…"
+    }
+  ],
+  "unit": {
+    "n": 18,
+    "unit_id": "da74bf06-388d-4b82-8af9-f880dfb4f36f",
+    "learning_resource_id": "49d0cf36-4b2d-4550-bc91-5cf71b406c05",
+    "title": "Group By with Having",
+    "part": 1,
+    "parts": 1,
+    "finale": false
+  }
+}

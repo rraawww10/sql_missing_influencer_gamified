@@ -1,0 +1,313 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 11,
+  "title": "The Toll Plaza",
+  "story_clock": "2026-12-12 23:00:00",
+  "course_topic_id": "d828fceb-ce97-41f7-b8fa-b30644a51658",
+  "snapshot": "s11",
+  "est_minutes": 45,
+  "reading_materials": [
+    {
+      "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+      "role": "primary",
+      "rm": 32,
+      "learning_resource_id": "224113f2-7756-4a22-8f65-f46b1de89fa5"
+    },
+    {
+      "unit_id": "0e811a2d-4b18-4d14-ab00-22687218ad8d",
+      "role": "primary",
+      "rm": 33,
+      "learning_resource_id": "4c1b550e-4c11-472f-8c2f-130b00798feb"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S11-C1"
+    ],
+    "required_beats": [
+      "S11.3",
+      "S11.5",
+      "S11.5b",
+      "S11.8"
+    ]
+  },
+  "minutes_estimate": 15,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    },
+    {
+      "session": 9,
+      "clue_id": "S9-C1",
+      "title": "Booking B-88",
+      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    },
+    {
+      "session": 10,
+      "clue_id": "S10-C1",
+      "title": "The SUV is the manager's",
+      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 — S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S11.1",
+      "type": "scene",
+      "speaker": "analyst",
+      "body": "Highway data is in: `toll_crossings` (vehicle, plaza, direction, time). Plus `police_units` and `routes` for later."
+    },
+    {
+      "id": "S11.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+        "heading": "Joins on Multiple Tables"
+      },
+      "see_also": [
+        {
+          "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+          "heading": "Querying with Joins"
+        }
+      ],
+      "body": "Join more than two tables by joining the result again. Best practice: give the combined table an **alias**:\n```sql\nSELECT T.c1, t3.c2 FROM (table1 INNER JOIN table2 ON …) AS T INNER JOIN table3 AS t3 ON T.c = t3.c;\n```\n"
+    },
+    {
+      "id": "S11.3",
+      "type": "task",
+      "task_id": "T11.1",
+      "ask": "Toll crossings of vehicles owned by **Dev Arora**'s company: join `vehicles`+`company` (as `T`), then `people` (on `T.owner_person_id = people.person_id`),\nthen `toll_crossings` (on `vehicle_no`). Show `T.vehicle_no`, `people.name`, `plaza`, `direction`, `toll_crossings.ts`.\n",
+      "grading": {
+        "expect_rows": 2,
+        "expected_hash": "sha256:e8cb05ed3ece0443f064f18290080ccdb07c21c8fd114f192a3ad0008d4be9e7"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+            "heading": "Joins on Multiple Tables"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT T.vehicle_no, people.name, toll_crossings.plaza, toll_crossings.direction, toll_crossings.ts\nFROM (vehicles INNER JOIN company ON vehicles.company_id = company.company_id) AS T\nINNER JOIN people ON ____ = people.person_id\nINNER JOIN toll_crossings ON T.vehicle_no = ____\nWHERE people.name = 'Dev Arora';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s11.json#T11.1"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S11.4",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+        "heading": "Using joins with other clauses"
+      },
+      "body": "Joined results work with every clause you know: `WHERE`, `ORDER BY`, `LIMIT`…"
+    },
+    {
+      "id": "S11.5",
+      "type": "task",
+      "task_id": "T11.2",
+      "minutes": 2,
+      "ask": "Same query, in time order (`ORDER BY toll_crossings.ts`).",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 2,
+        "expected_hash": "sha256:47acd984a76ab6eff440f261936f4627700db64f391a130e8c3653ace94cd12e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+            "heading": "Using joins with other clauses"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "... WHERE people.name = 'Dev Arora' ORDER BY ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s11.json#T11.2"
+        }
+      ],
+      "on_pass": {
+        "clue": "S11-C1"
+      },
+      "reply_on_pass": "Two crossings. Read `direction` and `ts` in order.",
+      "traps": []
+    },
+    {
+      "id": "S11.5b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+        "heading": "Using joins with other clauses"
+      },
+      "prompt": "Your two rows, in time order: what did Dev's SUV do?",
+      "options": [
+        {
+          "text": "OUTBOUND through Ring Road Toll Plaza at 18:41, INBOUND at 19:30 — out of the city and back in 49 minutes",
+          "correct": true
+        },
+        {
+          "text": "It crossed once, outbound, and never came back"
+        },
+        {
+          "text": "Both crossings were inbound"
+        }
+      ],
+      "explain": "18:41:20 OUTBOUND, 19:30:45 INBOUND. Out towards the outskirts (where RRO-17 is), back towards the city — and at the hotel gate at 19:52 (S3-C1)."
+    },
+    {
+      "id": "S11.6",
+      "type": "clue",
+      "clue_id": "S11-C1",
+      "requires_task": "T11.2",
+      "title": "Out to the outskirts and back",
+      "body": "Your three-table join: the SUV crossed **Ring Road Toll Plaza** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+    },
+    {
+      "id": "S11.7",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+        "heading": "Using joins with aggregations"
+      },
+      "body": "Aggregations work on joined data too: `GROUP BY` the joined columns and `COUNT`, `SUM`, …"
+    },
+    {
+      "id": "S11.8",
+      "type": "task",
+      "task_id": "T11.3",
+      "ask": "Crossings per vehicle per direction: join `toll_crossings` with `vehicles` on `vehicle_no`; show `vehicle_no`, `direction`, `COUNT(*)`.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+            "heading": "Using joins with aggregations"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT toll_crossings.vehicle_no, toll_crossings.direction, COUNT(*) FROM toll_crossings INNER JOIN vehicles ON toll_crossings.vehicle_no = vehicles.vehicle_no GROUP BY ____, ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s11.json#T11.3"
+        }
+      ],
+      "grading": {
+        "expected_hash": "sha256:8e1d26fdc6e1f435a0aa6b650f5f2c1b48b64e74677331a672c75ce009a86b48"
+      },
+      "traps": []
+    },
+    {
+      "id": "U32.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "The SUV crossed the toll going out and came back. Next: joins that keep rows with **no** match.\n"
+    }
+  ],
+  "unit": {
+    "n": 32,
+    "unit_id": "bb8d2b11-76b3-40f8-a7f5-601cdf25f540",
+    "learning_resource_id": "224113f2-7756-4a22-8f65-f46b1de89fa5",
+    "title": "Querying with Joins | Part 2",
+    "part": 1,
+    "parts": 2,
+    "finale": false
+  }
+}

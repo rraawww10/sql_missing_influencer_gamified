@@ -1,0 +1,226 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 4,
+  "title": "The Last Cab",
+  "story_clock": "2026-12-12 19:30:00",
+  "course_topic_id": "1ce5cadd-040d-45ac-b850-5f8584644dcb",
+  "snapshot": "s04",
+  "est_minutes": 40,
+  "reading_materials": [
+    {
+      "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+      "role": "primary",
+      "rm": 13,
+      "learning_resource_id": "8ae04906-9dd5-473a-ba18-dcfe55c30e07"
+    },
+    {
+      "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+      "role": "primary",
+      "rm": 14,
+      "learning_resource_id": "87ec513d-dc17-44e1-8463-72594338ef5a"
+    },
+    {
+      "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+      "role": "primary",
+      "rm": 15,
+      "learning_resource_id": "82718ba5-8912-408c-91e8-80f538156e41"
+    }
+  ],
+  "exit": {
+    "required_clues": [],
+    "required_beats": [
+      "S4.4",
+      "S4.6"
+    ]
+  },
+  "minutes_estimate": 9.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "driver": {
+      "name": "Sunny Gill",
+      "role": "Cab driver",
+      "initials": "SG",
+      "color": "#a16207"
+    },
+    "sister": {
+      "name": "Mahi Sen",
+      "role": "Tara's younger sister",
+      "initials": "MS",
+      "color": "#be185d"
+    }
+  },
+  "beats": [
+    {
+      "id": "S4.1",
+      "type": "scene",
+      "speaker": "system",
+      "body": "📱 Cab app: \"Tara Sen booked a ride at **17:55**. Status: **cancelled by rider**.\"\nThe app has shared today's rides in a table: `cab_rides`.\n"
+    },
+    {
+      "id": "S4.2",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "She cancelled her own cab? Something changed in those few minutes. Let's read the rides."
+    },
+    {
+      "id": "S4.3",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+        "heading": "IN Operator"
+      },
+      "see_also": [
+        {
+          "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+          "heading": "IN and BETWEEN Operators"
+        }
+      ],
+      "body": "`IN` checks if a value is **one of a list** of values — a short way to write many `OR`s:\n```sql\nSELECT * FROM table_name WHERE c1 IN (v1, v2, ...);\n```\n"
+    },
+    {
+      "id": "S4.4",
+      "type": "task",
+      "task_id": "T4.1",
+      "minutes": 2,
+      "ask": "Show the `rider_name` of every ride booked from **any** of these phone numbers:\n`9876500001`, `9876500002`, `9876500003`, `9876500004`, `9876500005`, `9876500006`\n(Tara and the five suspects).\n",
+      "grading": {
+        "expect_rows": 4,
+        "expected_hash": "sha256:e50bba90cd74079a095206bd88ffb7fbdb0e6e94338a0223b94b5e6d76b1384e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "IN Operator"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT rider_name FROM cab_rides WHERE rider_phone ____ ('9876500001', '9876500002', ...);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.1"
+        }
+      ],
+      "reply_on_pass": "Four rides. Dev never booked a cab today — interesting.",
+      "traps": []
+    },
+    {
+      "id": "S4.5",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+        "heading": "BETWEEN Operator"
+      },
+      "body": "`BETWEEN` keeps values in a **range**, including both ends:\n```sql\nSELECT * FROM table_name WHERE c1 BETWEEN lower AND upper;\n```\nTimes work too: `booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'`.\n"
+    },
+    {
+      "id": "S4.6",
+      "type": "task",
+      "task_id": "T4.2",
+      "ask": "Show the `ride_id` of rides picked up at `'The Grand Residency'` and booked **between 17:30 and 18:30**.",
+      "grading": {
+        "expect_rows": 3,
+        "expected_hash": "sha256:7f458c5802510b0ac995a20fc1986bcda6efe8b859494049032d7fcc15250528"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "BETWEEN Operator"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ride_id FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at ____ '2026-12-12 17:30:00' ____ '2026-12-12 18:30:00';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.2"
+        }
+      ],
+      "traps": [
+        {
+          "id": "reversed",
+          "match": {
+            "result_hash": "sha256:294498e16c3b790f14681c8f25aefcf47559c7dd701f1ab61ef692fa4566f293",
+            "sql_regex": "BETWEEN\\s+'2026-12-12 18:30"
+          },
+          "reply": "Empty — but that doesn't mean nobody booked! With `BETWEEN`, the **smaller value must come first**: 17:30, then 18:30.",
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "Possible Mistakes"
+          }
+        },
+        {
+          "id": "missing_limit",
+          "match": {
+            "error_regex": "near \"AND\": syntax error"
+          },
+          "reply": "`BETWEEN` needs **both** limits: `BETWEEN lower AND upper`.",
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "Possible Mistakes"
+          }
+        },
+        {
+          "id": "type_mismatch",
+          "match": {
+            "result_hash": "sha256:294498e16c3b790f14681c8f25aefcf47559c7dd701f1ab61ef692fa4566f293",
+            "sql_regex": "(rider_name|driver_name|pickup|drop_point)\\s+BETWEEN\\s+\\d"
+          },
+          "reply": "Numbers as limits for a **text** column give a meaningless result. The column and the limits must have the same data type.",
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "Possible Mistakes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "U13.close",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Rides found. Next: sort them to find the last one.\n"
+    }
+  ],
+  "unit": {
+    "n": 13,
+    "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+    "learning_resource_id": "8ae04906-9dd5-473a-ba18-dcfe55c30e07",
+    "title": "In and Between Operators",
+    "part": 1,
+    "parts": 3,
+    "finale": false
+  }
+}

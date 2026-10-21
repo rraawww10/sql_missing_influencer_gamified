@@ -1,0 +1,48 @@
+{
+  "name": "missing-influencer-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "sync-content": "node scripts/sync-content.mjs",
+    "dev": "npm run sync-content && vite",
+    "build": "npm run sync-content && tsc --noEmit && vite build",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "smoke": "node scripts/smoke.mjs",
+    "build:deploy": "node scripts/build-deploy.mjs",
+    "build:s3": "node scripts/build-s3.mjs",
+    "build:s3:units": "node scripts/build-s3.mjs --units",
+    "smoke:deploy": "node scripts/smoke-deploy.mjs"
+  },
+  "dependencies": {
+    "@codemirror/lang-sql": "6.10.0",
+    "@codemirror/state": "6.7.6",
+    "@codemirror/view": "6.43.13",
+    "@fontsource/space-grotesk": "5.3.0",
+    "@fontsource/unbounded": "5.2.5",
+    "codemirror": "6.0.2",
+    "dexie": "4.4.6",
+    "dompurify": "3.4.16",
+    "marked": "14.1.4",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "sql.js": "1.14.2",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.7",
+    "@types/node": "20.19.43",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@types/sql.js": "1.4.11",
+    "@vitejs/plugin-react": "4.7.0",
+    "fake-indexeddb": "6.2.5",
+    "jsdom": "25.0.1",
+    "playwright-core": "1.63.0",
+    "typescript": "5.9.3",
+    "vite": "5.4.21",
+    "vitest": "2.1.9"
+  }
+}

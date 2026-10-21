@@ -1,0 +1,141 @@
+# Session 6 — "Phone Towers" (8:30 PM). Flow: docs/SESSION_PLAN.md › Session 6.
+session: 6
+title: "Phone Towers"
+story_clock: "2026-12-12 20:30:00"
+course_topic_id: 5759bbee-306a-4979-b957-ad1737eb4cc6
+snapshot: s06
+est_minutes: 25
+reading_materials:
+  - { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, role: primary }   # RM #18 Group By with Having
+
+beats:
+  - id: S6.1
+    type: scene
+    speaker: mentor
+    body: |
+      Her phone is off — but the telecom team confirmed her **smartwatch** has its own eSIM, and it never stopped talking to towers.
+      `tower_pings`: every time a phone or watch talks to a tower, a row is saved — owner, device, tower, area, time.
+      One watch, thousands of pings. Each tower covers a few km². We need the tower she **keeps** hitting since she left the hotel — that's where she is.
+
+  - id: S6.2
+    type: task
+    task_id: T6.1
+    ask: "Warm-up: for {{star.first}}'s **watch** (`device_owner` `'{{star}}'`, `device_type` `'WATCH'`), show `tower_id`, `tower_area` and the number of pings as `pings`, per tower."
+    ref: "SELECT tower_id, tower_area, COUNT(*) AS pings FROM tower_pings WHERE device_owner = '{{star}}' AND device_type = 'WATCH' GROUP BY tower_id, tower_area;"
+    grading: { expect_rows: 5 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "Group By with Having" } }
+      - { tier: 2, skeleton: "SELECT tower_id, tower_area, COUNT(*) AS pings FROM tower_pings WHERE device_owner = '{{star}}' AND device_type = 'WATCH' GROUP BY ____, ____;" }
+
+  - id: S6.3
+    type: note
+    rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "HAVING" }
+    body: |
+      `HAVING` filters **groups** (after `GROUP BY`), using aggregates:
+      ```sql
+      SELECT c1, COUNT(*) FROM table_name GROUP BY c1 HAVING COUNT(*) > 5;
+      ```
+
+  - id: S6.4
+    type: task
+    task_id: T6.2
+    ask: "Where has she been since she left? Towers with **more than 5** pings from `'{{star}}'` **from 6 PM onwards**: show `tower_id`, `tower_area`, `pings`, and the first and last ping as `MIN(ts)` and `MAX(ts)`."
+    ref: "SELECT tower_id, tower_area, COUNT(*) AS pings, MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = '{{star}}' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area HAVING pings > 5;"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "HAVING" } }
+      - { tier: 2, skeleton: "SELECT tower_id, tower_area, COUNT(*) AS pings, MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = '{{star}}' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area ____ pings > 5;" }
+    traps:
+      - id: no_where
+        rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "WHERE vs HAVING:" }
+        sql: "SELECT tower_id, tower_area, COUNT(*) AS pings, MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = '{{star}}' GROUP BY tower_id, tower_area HAVING pings > 5;"
+        match: result
+        reply: "📱 Fans post *\"She's still in the hotel!\"* — because your result shows the hotel tower. But those pings are from **before** she left. Filter rows first with `WHERE ts >= …`, then groups with `HAVING`."
+    on_pass: { clue: S6-C1 }
+    reply_on_pass: "One tower. Read all five columns."
+
+  - id: S6.4b
+    type: check
+    source: authored
+    rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "HAVING" }
+    prompt: "Your result has one row. What does it tell us?"
+    options:
+      - { text: "Since 18:52 her watch has hit only tower RRO-17 ({{outskirts}}) — 47 pings, the last one at 23:28, which is right now", correct: true }
+      - { text: "Her watch is switched off" }
+      - { text: "She is still at the hotel" }
+    explain: "`tower_id` RRO-17, `tower_area` {{outskirts}}, 47 pings, first 18:52, last 23:28. The watch has not left that tower's area all evening — and it is still pinging."
+
+  - id: S6.5
+    type: clue
+    clue_id: S6-C1
+    requires_task: T6.2
+    title: "The outskirts tower"
+    body: "Your query on `tower_pings`: since **18:52** {{star.first}}'s watch has pinged only tower **RRO-17 · {{outskirts}}** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+
+  - id: S6.6
+    type: note
+    rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "WHERE vs HAVING:" }
+    body: "`WHERE` filters **rows before** grouping. `HAVING` filters **groups after** grouping."
+
+  - id: S6.6b
+    type: scene
+    speaker: mentor
+    body: |
+      Now the manager. You typed his alibi yourself in Episode 2: **"In hotel lobby all evening"**. The hotel's tower is **MGR-04**.
+      If he never left, his phone should show one tower only. Test his claim.
+
+  - id: S6.7
+    type: task
+    task_id: T6.3
+    ask: "{{manager.first}}'s phone (`'{{manager}}'`), from 6 PM: `tower_id`, `COUNT(*)`, `MIN(ts)`, `MAX(ts)` for towers with **more than 3** pings."
+    ref: "SELECT tower_id, COUNT(*), MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = '{{manager}}' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area HAVING COUNT(*) > 3;"
+    grading: { expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "HAVING" } }
+      - { tier: 2, skeleton: "SELECT tower_id, COUNT(*), MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = '{{manager}}' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id, tower_area HAVING ____ > 3;" }
+    on_pass: { clue: S6-C2 }
+    reply_on_pass: "Two towers, not one. Compare the second row with {{star.first}}'s."
+
+  - id: S6.7b
+    type: check
+    source: authored
+    rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "WHERE vs HAVING:" }
+    prompt: "{{manager.first}} said he was in the hotel lobby all evening. What do his two rows say?"
+    options:
+      - { text: "Besides the hotel tower MGR-04, his phone hit RRO-17 six times between 18:52 and 19:22 — the same tower as {{star.first}}'s watch", correct: true }
+      - { text: "His phone stayed on MGR-04 the whole evening — his alibi holds" }
+      - { text: "His phone was switched off after 6 PM" }
+    explain: "Row 2: RRO-17 · 6 pings · 18:52 → 19:22. Row 1: MGR-04 before 18:10 and again from 19:55. For half an hour his phone was where her watch is — and he told us he never left."
+
+  - id: S6.8
+    type: clue
+    clue_id: S6-C2
+    requires_task: T6.3
+    title: "The manager was there too"
+    body: "Your query: {{manager.first}}'s phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as {{star.first}}'s watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+
+  - id: S6.9
+    type: check
+    source: authored
+    rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "HAVING" }
+    prompt: "Which clause filters **groups**?"
+    options:
+      - { text: "WHERE" }
+      - { text: "HAVING", correct: true }
+      - { text: "ORDER BY" }
+    explain: "HAVING runs after GROUP BY and filters the groups. WHERE filters rows before grouping."
+
+  - id: S6.10
+    type: hook
+    speaker: analyst
+    body: "RRO-17 covers 6 km². We need something more exact. Her watch also logs **steps and heart rate**…"
+
+exit:
+  required_clues: [S6-C1, S6-C2]
+  required_beats: [S6.2, S6.4, S6.4b, S6.7, S6.7b]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f   # RM #18 Group By with Having
+    from: S6.1
+    to: S6.10

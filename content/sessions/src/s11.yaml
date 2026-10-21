@@ -1,0 +1,205 @@
+# Session 11 — "The Toll Plaza" (11:00 PM). Flow: docs/SESSION_PLAN.md › Session 11.
+session: 11
+title: "The Toll Plaza"
+story_clock: "2026-12-12 23:00:00"
+course_topic_id: d828fceb-ce97-41f7-b8fa-b30644a51658
+snapshot: s11
+est_minutes: 45
+reading_materials:
+  - { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, role: primary }   # RM #32 Querying with Joins Part 2
+  - { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, role: primary }   # RM #33 Querying with Joins Part 3
+
+beats:
+  - id: S11.1
+    type: scene
+    speaker: analyst
+    body: "Highway data is in: `toll_crossings` (vehicle, plaza, direction, time). Plus `police_units` and `routes` for later."
+
+  - id: S11.2
+    type: note
+    rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Joins on Multiple Tables" }
+    see_also:
+      - { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Querying with Joins" }
+    body: |
+      Join more than two tables by joining the result again. Best practice: give the combined table an **alias**:
+      ```sql
+      SELECT T.c1, t3.c2 FROM (table1 INNER JOIN table2 ON …) AS T INNER JOIN table3 AS t3 ON T.c = t3.c;
+      ```
+
+  - id: S11.3
+    type: task
+    task_id: T11.1
+    ask: |
+      Toll crossings of vehicles owned by **{{manager}}**'s company: join `vehicles`+`company` (as `T`), then `people` (on `T.owner_person_id = people.person_id`),
+      then `toll_crossings` (on `vehicle_no`). Show `T.vehicle_no`, `people.name`, `plaza`, `direction`, `toll_crossings.ts`.
+    ref: "SELECT T.vehicle_no, people.name, toll_crossings.plaza, toll_crossings.direction, toll_crossings.ts FROM (vehicles INNER JOIN company ON vehicles.company_id = company.company_id) AS T INNER JOIN people ON T.owner_person_id = people.person_id INNER JOIN toll_crossings ON T.vehicle_no = toll_crossings.vehicle_no WHERE people.name = '{{manager}}';"
+    grading: { expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Joins on Multiple Tables" } }
+      - { tier: 2, skeleton: "SELECT T.vehicle_no, people.name, toll_crossings.plaza, toll_crossings.direction, toll_crossings.ts\nFROM (vehicles INNER JOIN company ON vehicles.company_id = company.company_id) AS T\nINNER JOIN people ON ____ = people.person_id\nINNER JOIN toll_crossings ON T.vehicle_no = ____\nWHERE people.name = '{{manager}}';" }
+
+  - id: S11.4
+    type: note
+    rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Using joins with other clauses" }
+    body: "Joined results work with every clause you know: `WHERE`, `ORDER BY`, `LIMIT`…"
+
+  - id: S11.5
+    type: task
+    task_id: T11.2
+    minutes: 2
+    ask: "Same query, in time order (`ORDER BY toll_crossings.ts`)."
+    ref: "SELECT T.vehicle_no, people.name, toll_crossings.plaza, toll_crossings.direction, toll_crossings.ts FROM (vehicles INNER JOIN company ON vehicles.company_id = company.company_id) AS T INNER JOIN people ON T.owner_person_id = people.person_id INNER JOIN toll_crossings ON T.vehicle_no = toll_crossings.vehicle_no WHERE people.name = '{{manager}}' ORDER BY toll_crossings.ts;"
+    grading: { ordered: true, expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Using joins with other clauses" } }
+      - { tier: 2, skeleton: "... WHERE people.name = '{{manager}}' ORDER BY ____;" }
+    on_pass: { clue: S11-C1 }
+    reply_on_pass: "Two crossings. Read `direction` and `ts` in order."
+
+  - id: S11.5b
+    type: check
+    source: authored
+    rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Using joins with other clauses" }
+    prompt: "Your two rows, in time order: what did {{manager.first}}'s SUV do?"
+    options:
+      - { text: "OUTBOUND through {{toll}} at 18:41, INBOUND at 19:30 — out of the city and back in 49 minutes", correct: true }
+      - { text: "It crossed once, outbound, and never came back" }
+      - { text: "Both crossings were inbound" }
+    explain: "18:41:20 OUTBOUND, 19:30:45 INBOUND. Out towards the outskirts (where RRO-17 is), back towards the city — and at the hotel gate at 19:52 (S3-C1)."
+
+  - id: S11.6
+    type: clue
+    clue_id: S11-C1
+    requires_task: T11.2
+    title: "Out to the outskirts and back"
+    body: "Your three-table join: the SUV crossed **{{toll}}** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+
+  - id: S11.7
+    type: note
+    rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Using joins with aggregations" }
+    body: "Aggregations work on joined data too: `GROUP BY` the joined columns and `COUNT`, `SUM`, …"
+
+  - id: S11.8
+    type: task
+    task_id: T11.3
+    ask: "Crossings per vehicle per direction: join `toll_crossings` with `vehicles` on `vehicle_no`; show `vehicle_no`, `direction`, `COUNT(*)`."
+    ref: "SELECT toll_crossings.vehicle_no, toll_crossings.direction, COUNT(*) FROM toll_crossings INNER JOIN vehicles ON toll_crossings.vehicle_no = vehicles.vehicle_no GROUP BY toll_crossings.vehicle_no, toll_crossings.direction;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Using joins with aggregations" } }
+      - { tier: 2, skeleton: "SELECT toll_crossings.vehicle_no, toll_crossings.direction, COUNT(*) FROM toll_crossings INNER JOIN vehicles ON toll_crossings.vehicle_no = vehicles.vehicle_no GROUP BY ____, ____;" }
+
+  - id: S11.9
+    type: note
+    rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "RIGHT JOIN" }
+    see_also:
+      - { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "JOINS Cont'd" }
+    body: "`RIGHT JOIN` is the mirror of LEFT JOIN: it keeps **every row of the right table**, with NULLs where the left has no match."
+
+  - id: S11.10
+    type: task
+    task_id: T11.4
+    ask: "Every guest row of booking **88**, even guests with no matching person: `booking_guest.booking_id`, `person.name` from `person RIGHT JOIN booking_guest` on `person.id = booking_guest.person_id`."
+    ref: "SELECT booking_guest.booking_id, person.name FROM person RIGHT JOIN booking_guest ON person.id = booking_guest.person_id WHERE booking_guest.booking_id = 88;"
+    grading: { expect_rows: 2 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "RIGHT JOIN" } }
+      - { tier: 2, skeleton: "SELECT booking_guest.booking_id, person.name FROM person ____ booking_guest ON person.id = booking_guest.person_id WHERE booking_guest.booking_id = 88;" }
+    reply_on_pass: "Two rows: {{manager.first}} — and **NULL**. The INNER JOIN in the case board hid her. The unregistered *\"+1 lady\"* is **{{star.first}}**."
+
+  - id: S11.11
+    type: note
+    rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "FULL JOIN" }
+    body: "`FULL JOIN` = LEFT + RIGHT: every row from **both** tables; NULL where one side has no match."
+
+  - id: S11.12
+    type: task
+    task_id: T11.5
+    ask: "Match hotel-gate vehicles with toll crossings: `DISTINCT gate_log.vehicle_no` as `at_hotel_gate` and `toll_crossings.vehicle_no` as `at_toll`, using `FULL JOIN` on `vehicle_no`."
+    ref: "SELECT DISTINCT gate_log.vehicle_no AS at_hotel_gate, toll_crossings.vehicle_no AS at_toll FROM gate_log FULL JOIN toll_crossings ON gate_log.vehicle_no = toll_crossings.vehicle_no;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "FULL JOIN" } }
+      - { tier: 2, skeleton: "SELECT DISTINCT gate_log.vehicle_no AS at_hotel_gate, toll_crossings.vehicle_no AS at_toll FROM gate_log ____ toll_crossings ON gate_log.vehicle_no = toll_crossings.vehicle_no;" }
+    reply_on_pass: "NULL on one side = seen in only one place. Only **{{suv}}** has a value on **both** sides."
+
+  - id: S11.13
+    type: note
+    rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "CROSS JOIN" }
+    body: "`CROSS JOIN` pairs **every** row of one table with **every** row of the other (m × n rows)."
+
+  - id: S11.14
+    type: task
+    task_id: T11.6
+    ask: "Plan the rescue: every `police_units` × `routes` pair for the unit based at `'Ring Road'`; show unit `name`, route `name`, `km`, shortest route first, **only 1**."
+    ref: "SELECT police_units.name, routes.name, routes.km FROM police_units CROSS JOIN routes WHERE police_units.base_area = 'Ring Road' ORDER BY routes.km LIMIT 1;"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "CROSS JOIN" } }
+      - { tier: 2, skeleton: "SELECT police_units.name, routes.name, routes.km FROM police_units ____ routes WHERE police_units.base_area = 'Ring Road' ORDER BY routes.km LIMIT 1;" }
+
+  - id: S11.15
+    type: note
+    rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "SELF JOIN" }
+    body: "A **self join** joins a table with itself, using two aliases (`AS p1`, `AS p2`). Write `p1.x < p2.x` so each pair shows once."
+
+  - id: S11.16
+    type: task
+    task_id: T11.7
+    ask: "Were they together? Join `tower_pings AS p1` with `tower_pings AS p2` on the same `tower_id` **and** the same `ts`, where `p1.device_owner < p2.device_owner` and the tower is `'RRO-17'`. Show `p1.device_owner`, `p2.device_owner`, `p1.tower_id`, `p1.ts`."
+    ref: "SELECT p1.device_owner, p2.device_owner, p1.tower_id, p1.ts FROM tower_pings AS p1 INNER JOIN tower_pings AS p2 ON p1.tower_id = p2.tower_id AND p1.ts = p2.ts WHERE p1.device_owner < p2.device_owner AND p1.tower_id = 'RRO-17';"
+    grading: { expect_rows: 6 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "SELF JOIN" } }
+      - { tier: 2, skeleton: "SELECT p1.device_owner, p2.device_owner, p1.tower_id, p1.ts FROM tower_pings AS p1 INNER JOIN tower_pings AS p2 ON p1.tower_id = p2.tower_id AND p1.ts = ____ WHERE p1.device_owner < p2.device_owner AND p1.tower_id = 'RRO-17';" }
+    on_pass: { clue: S11-C2 }
+    reply_on_pass: "Six rows, six identical minutes. Two devices, one place, one time."
+
+  - id: S11.17
+    type: clue
+    clue_id: S11-C2
+    requires_task: T11.7
+    title: "Same tower, same minute"
+    body: "Your self join: {{star.first}}'s watch and {{manager.first}}'s phone pinged **RRO-17** at the **same six minutes** — 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
+
+  - id: S11.18
+    type: activity
+    kind: match
+    rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "JOINS Summary" }
+    prompt: "JOINS summary — match each join you used tonight to what it keeps."
+    pairs:
+      - { left: "INNER JOIN", right: "Only rows that match on both sides" }
+      - { left: "LEFT JOIN", right: "Every row of the left table" }
+      - { left: "RIGHT JOIN", right: "Every row of the right table" }
+      - { left: "FULL JOIN", right: "Every row of both tables" }
+      - { left: "CROSS JOIN", right: "Every combination of rows" }
+
+  - id: S11.19
+    type: scene
+    speaker: mentor
+    body: "📻 \"Ring Road unit — {{farm}}, booking B-88, the village road is shortest. Go quietly. Her heart rate is calm; she's safe in a room.\""
+
+  - id: S11.20
+    type: hook
+    speaker: system
+    body: "📧 {{manager.first}}'s lawyer: *\"My client never left the hotel. And her contract says she **chose** to skip shows — check the label's system.\"*"
+
+exit:
+  required_clues: [S11-C1, S11-C2]
+  required_beats: [S11.3, S11.5, S11.5b, S11.8, S11.10, S11.12, S11.14, S11.16, S11.18]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540   # RM #32 Querying with Joins | Part 2
+    from: S11.1
+    to: S11.8
+    closer:
+      speaker: mentor
+      body: |
+        The SUV crossed the toll going out and came back. Next: joins that keep rows with **no** match.
+  - unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d   # RM #33 Querying with Joins | Part 3
+    from: S11.9
+    to: S11.20
+    opener:
+      speaker: mentor
+      body: |
+        Previously: joining `toll_crossings` with `vehicles` and `people` showed {{manager.first}}'s SUV crossing {{toll}} going out at 18:41 and back at 19:30.
+        Now we need joins that keep rows with **no** match — and a table joined with itself.

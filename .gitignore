@@ -1,0 +1,12 @@
+# dependencies
+node_modules/
+__pycache__/
+# build outputs (rebuild with the commands in README.md)
+app/dist/
+app/public/content/
+deploy/
+missing-influencer-v2/
+*.zip
+# local
+.vscode/
+.DS_Store

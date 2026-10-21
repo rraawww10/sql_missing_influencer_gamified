@@ -1,0 +1,271 @@
+# Session 5 — "Follow the Money" (8:00 PM). Flow: docs/SESSION_PLAN.md › Session 5.
+session: 5
+title: "Follow the Money"
+story_clock: "2026-12-12 20:00:00"
+course_topic_id: eab97311-acfb-4686-a901-2a86ad4d7b1d
+snapshot: s05
+est_minutes: 40
+reading_materials:
+  - { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, role: primary }   # RM #16 Aggregations
+  - { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, role: primary }   # RM #17 Group By
+
+beats:
+  - id: S5.1
+    type: scene
+    speaker: analyst
+    body: "The bank sent UPI payments for the last three days: `upi_payments` — who paid whom, how much, an optional note, and when."
+
+  - id: S5.2
+    type: note
+    rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Aggregation Functions" }
+    see_also:
+      - { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Aggregations" }
+    body: |
+      **Aggregation** combines many values into one:
+      `COUNT` (how many) · `SUM` (total) · `MIN` · `MAX` · `AVG` (average).
+      You can use several in one query: `SELECT SUM(c1), MAX(c1) FROM table_name;`
+
+  - id: S5.3
+    type: task
+    task_id: T5.1
+    ask: "{{manager}}'s payments **today** (from `'2026-12-12 00:00:00'`): show `SUM`, `COUNT`, `MAX`, `MIN` and `AVG` of `amount` — in that order."
+    ref: "SELECT SUM(amount), COUNT(amount), MAX(amount), MIN(amount), AVG(amount) FROM upi_payments WHERE from_name = '{{manager}}' AND ts >= '2026-12-12 00:00:00';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Aggregation Functions" } }
+      - { tier: 2, skeleton: "SELECT SUM(amount), COUNT(amount), MAX(amount), MIN(amount), AVG(amount) FROM upi_payments WHERE from_name = '____' AND ts >= '2026-12-12 00:00:00';" }
+    reply_on_pass: "₹54,450 in six payments — and one of them is **₹45,000**."
+
+  - id: S5.4
+    type: note
+    rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "COUNT Variants" }
+    see_also:
+      - { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Variant 1" }
+      - { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Variant 2" }
+      - { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Variant 3" }
+      - { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Output of Variant 1, Variant 2 and Variant 3" }
+    body: |
+      `COUNT(*)`, `COUNT(1)` and `COUNT()` all count **rows**.
+      `COUNT(column)` counts only the rows where that column is **not NULL**.
+
+  - id: S5.5
+    type: task
+    task_id: T5.2n
+    minutes: 2
+    ask: "How many of {{manager.first}}'s payments today have a **note**?"
+    ref: "SELECT COUNT(note) FROM upi_payments WHERE from_name = '{{manager}}' AND ts >= '2026-12-12 00:00:00';"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "COUNT Variants" } }
+      - { tier: 2, skeleton: "SELECT COUNT(____) FROM upi_payments WHERE from_name = '{{manager}}' AND ts >= '2026-12-12 00:00:00';" }
+    traps:
+      - id: count_star
+        rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "COUNT Variants" }
+        sql: "SELECT COUNT(*) FROM upi_payments WHERE from_name = '{{manager}}' AND ts >= '2026-12-12 00:00:00';"
+        match: result
+        reply: "`COUNT(*)` counts **every** payment (6). {{mentor.first}} asked how many have a note: `COUNT(note)` skips the NULLs."
+    reply_on_pass: "Only 2 have notes: *team lunch* and *Green Acres - 2 guests*."
+
+  - id: S5.6
+    type: note
+    rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Special Cases" }
+    body: |
+      Special cases:
+      - `SUM` on text gives `0.0` in SQLite (PostgreSQL gives None).
+      - `MIN` / `MAX` on text follow dictionary (lexicographic) order.
+      - `NULL` values are ignored by aggregations; on only NULLs, they return NULL (COUNT returns 0).
+
+  - id: S5.7
+    type: task
+    task_id: T5.sum_text
+    minutes: 1
+    ask: "Try it: what is `SUM(note)` over all of `upi_payments`?"
+    ref: "SELECT SUM(note) FROM upi_payments;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Special Cases" } }
+      - { tier: 2, skeleton: "SELECT SUM(____) FROM upi_payments;" }
+    reply_on_pass: "**0.0** — not zero money. You added up words, and SQLite treats text as 0."
+
+  - id: S5.8
+    type: note
+    rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Alias" }
+    body: "`AS` gives a column a readable name: `SELECT MAX(amount) AS biggest_payment FROM …`"
+
+  - id: S5.9
+    type: task
+    task_id: T5.2
+    minutes: 2
+    ask: "Show {{manager.first}}'s biggest payment ever, with the column named `biggest_payment`."
+    ref: "SELECT MAX(amount) AS biggest_payment FROM upi_payments WHERE from_name = '{{manager}}';"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Alias" } }
+      - { tier: 2, skeleton: "SELECT MAX(amount) ____ biggest_payment FROM upi_payments WHERE from_name = '{{manager}}';" }
+
+  - id: S5.9b
+    type: scene
+    speaker: mentor
+    body: |
+      Now {{sister.first}}'s call. She said: *"a strange ₹1 from {{star.first}}'s smartwatch at 7 PM."*
+      A payment of ₹1 is not money — it's a **message**. The bank's table keeps the sender, the amount, the note and the time. Find that payment and read its note.
+
+  - id: S5.10
+    type: task
+    task_id: T5.3
+    ask: "Find the ₹1 payment: show `from_name`, `amount`, `note`, `ts` of payments **to** `'{{sister}}'` with `amount` = 1."
+    ref: "SELECT from_name, amount, note, ts FROM upi_payments WHERE to_name = '{{sister}}' AND amount = 1;"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Aggregations" } }
+      - { tier: 2, skeleton: "SELECT from_name, amount, note, ts FROM upi_payments WHERE to_name = '{{sister}}' AND amount = ____;" }
+    on_pass: { clue: S5-C1 }
+    reply_on_pass: "One payment. Read the `note` column carefully."
+
+  - id: S5.10b
+    type: activity
+    kind: pick_cell
+    minutes: 1
+    rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "Aggregations" }
+    prompt: "This is the row your query returned. Tap the **note** — the only thing {{star.first}} could type."
+    tables:
+      - caption: "Your result"
+        columns: [from_name, amount, note, ts]
+        rows:
+          - ["{{star}} (Watch)", 1, "gReEn aCrEs", "2026-12-12 19:02:30"]
+    answer: { table: "Your result", row: 0, column: note }
+    feedback: "`gReEn aCrEs` — capital letters in odd places. Nobody types like that by accident. Sent from her **watch**, not her phone. Keep it; we decode it later."
+
+  - id: S5.11
+    type: clue
+    clue_id: S5-C1
+    requires_task: T5.3
+    title: "A ₹1 message"
+    body: "Your query on `upi_payments`: at **19:02:30**, *{{star}} (Watch)* sent **₹1** to {{sister.first}} with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+
+  - id: S5.12
+    type: note
+    rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY" }
+    see_also:
+      - { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "Group By" }
+    body: |
+      `GROUP BY` makes one group per value and runs the aggregation **per group**:
+      ```sql
+      SELECT c1, SUM(c2) FROM table_name GROUP BY c1;
+      ```
+
+  - id: S5.13
+    type: task
+    task_id: T5.4
+    ask: "Total money **received** per person today: `to_name` and `SUM(amount)` as `total`, for payments from `'2026-12-12 00:00:00'`."
+    ref: "SELECT to_name, SUM(amount) AS total FROM upi_payments WHERE ts >= '2026-12-12 00:00:00' GROUP BY to_name;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY" } }
+      - { tier: 2, skeleton: "SELECT to_name, SUM(amount) AS total FROM upi_payments WHERE ts >= '2026-12-12 00:00:00' GROUP BY ____;" }
+
+  - id: S5.14
+    type: note
+    rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY on Multiple Columns" }
+    body: "`GROUP BY c1, c2` makes one group for every **combination** of values."
+
+  - id: S5.15
+    type: task
+    task_id: T5.5
+    ask: "Who paid whom the **most** over the three days? For **each pair** `from_name`, `to_name`, show the `SUM(amount)` as `total` — biggest total first, **top 5** only."
+    ref: "SELECT from_name, to_name, SUM(amount) AS total FROM upi_payments GROUP BY from_name, to_name ORDER BY total DESC LIMIT 5;"
+    grading: { ordered: true, expect_rows: 5 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY on Multiple Columns" } }
+      - { tier: 2, skeleton: "SELECT from_name, to_name, SUM(amount) AS total FROM upi_payments GROUP BY ____, ____ ORDER BY total DESC LIMIT 5;" }
+    reply_on_pass: "Top of the list: **{{label}} → {{manager}}, ₹2,00,000**. Second: {{manager.first}} → {{farm}}, ₹45,000. Who is {{label}}, and why do they pay {{star.first}}'s manager?"
+
+  - id: S5.15b
+    type: task
+    task_id: T5.5b
+    minutes: 2
+    ask: "Open that payment: **all columns** of payments from `'{{label}}'` to `'{{manager}}'`."
+    ref: "SELECT * FROM upi_payments WHERE from_name = '{{label}}' AND to_name = '{{manager}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY with WHERE" } }
+      - { tier: 2, skeleton: "SELECT * FROM upi_payments WHERE from_name = '{{label}}' AND to_name = '____';" }
+    on_pass: { clue: S5-C3 }
+    reply_on_pass: "Read the `note` and the `ts`: *advance*, paid **yesterday** evening."
+
+  - id: S5.16
+    type: clue
+    clue_id: S5-C3
+    requires_task: T5.5b
+    title: "A rival label pays the manager"
+    body: "Your queries: the biggest payment in three days is **{{label}} → {{manager}}, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. {{star.first}} sings for {{own_label}}. Why does another label pay her manager an advance the night before her show?"
+
+  - id: S5.17
+    type: note
+    rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY with WHERE" }
+    body: "`WHERE` filters rows **first**, then `GROUP BY` makes groups from what's left."
+
+  - id: S5.18
+    type: task
+    task_id: T5.6
+    ask: "Only {{manager.first}}'s payments: `to_name` and `SUM(amount)` per receiver."
+    ref: "SELECT to_name, SUM(amount) FROM upi_payments WHERE from_name = '{{manager}}' GROUP BY to_name;"
+    grading: { expect_rows: 7 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY with WHERE" } }
+      - { tier: 2, skeleton: "SELECT to_name, SUM(amount) FROM upi_payments WHERE from_name = '{{manager}}' GROUP BY ____;" }
+    reply_on_pass: "Seven receivers. Fuel, biryani, a dhaba, the hotel… and **{{farm}}: ₹45,000**. A farm stay, on the day of her show?"
+
+  - id: S5.18b
+    type: task
+    task_id: T5.6b
+    minutes: 2
+    ask: "Open that payment: **all columns** of payments from `'{{manager}}'` to `'{{farm}}'`."
+    ref: "SELECT * FROM upi_payments WHERE from_name = '{{manager}}' AND to_name = '{{farm}}';"
+    grading: { expect_rows: 1 }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526, heading: "GROUP BY with WHERE" } }
+      - { tier: 2, skeleton: "SELECT * FROM upi_payments WHERE from_name = '{{manager}}' AND to_name = '____';" }
+    on_pass: { clue: S5-C2 }
+    reply_on_pass: "Read the `ts` and the `note`."
+
+  - id: S5.19
+    type: clue
+    clue_id: S5-C2
+    requires_task: T5.6b
+    title: "₹45,000 to a farm stay"
+    body: "Your query: {{manager}} paid **₹45,000** to **{{farm}}** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+
+  - id: S5.20
+    type: check
+    source: authored
+    rm_ref: { unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17, heading: "COUNT Variants" }
+    prompt: "What does `COUNT(note)` skip?"
+    options:
+      - { text: "Rows where `note` is NULL", correct: true }
+      - { text: "Rows with duplicate notes" }
+      - { text: "Nothing — it counts every row" }
+    explain: "`COUNT(column)` counts only non-NULL values. `COUNT(*)` counts every row."
+
+  - id: S5.21
+    type: hook
+    speaker: analyst
+    body: "Telecom team: \"{{star.first}}'s phone is off — but her **smartwatch** has an eSIM. We have its tower pings.\""
+
+exit:
+  required_clues: [S5-C1, S5-C2, S5-C3]
+  required_beats: [S5.3, S5.5, S5.9, S5.10, S5.10b, S5.13, S5.15, S5.15b, S5.18, S5.18b]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: 87f66cf3-b88a-44e8-9ce8-c6a7595d0b17   # RM #16 Aggregations
+    from: S5.1
+    to: S5.11
+    closer:
+      speaker: mentor
+      body: |
+        The ₹1 to {{sister.first}} is real, and its note is strange. Now: who paid whom, and how often?
+  - unit_id: 9fe2b23a-f2c1-4397-8464-1da99a1c6526   # RM #17 Group By
+    from: S5.12
+    to: S5.21
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the bank sent three days of UPI payments. We counted and totalled them, and found {{star.first}}'s ₹1 to {{sister.first}} at 19:02 — with a note in strange capitals.
+        Now we group the payments **per person** to see who paid whom — and who paid the most.

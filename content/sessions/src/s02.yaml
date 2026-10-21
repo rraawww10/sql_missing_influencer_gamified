@@ -1,0 +1,573 @@
+# Session 2 — "Build the Case File" (6:30 PM). Flow: docs/SESSION_PLAN.md › Session 2.
+# Build: node pipeline/build_sessions.mjs --only 2
+session: 2
+title: "Build the Case File"
+story_clock: "2026-12-12 18:30:00"
+course_topic_id: 9f5e3ac3-94b1-4b12-a167-12c4ef571903
+snapshot: s02
+est_minutes: 54
+reading_materials:
+  - { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, role: primary }   # RM #3 Create Table
+  - { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, role: primary }   # RM #4 Inserting Rows
+  - { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, role: primary }   # RM #5 Retrieving Data
+  - { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, role: primary }   # RM #6 Update Rows
+  - { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, role: primary }   # RM #7 Delete Rows
+  - { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, role: primary }   # RM #9 Alter Table (full)
+  - { unit_id: 5db3ad70-736e-49ee-8e01-9186191cab34, role: subset }    # RM #8 Alter Table
+
+# Table-structure tasks compare column names (any letter case), their order and the BASE type only:
+# SQLite does not enforce VARCHAR sizes, and RM #3 lists INT / INTEGER as the same type.
+# Shared setup: the state of `suspects` after earlier tasks
+x-create: &create "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
+x-insert: &insert "INSERT INTO suspects (name, role, phone, age) VALUES ('{{manager}}', 'manager', '9876500002', 38), ('{{rival}}', 'rival singer', '9876500003', 24), ('{{fan}}', 'fan page admin', '9876500004', 19), ('{{driver}}', 'cab driver', '9876500050', 45), ('{{organiser}}', 'event organiser', '9876500006', 41);"
+x-fix: &fix "UPDATE suspects SET phone = '9876500005' WHERE name = '{{driver}}';"
+
+beats:
+  - id: S2.1
+    type: scene
+    speaker: mentor
+    body: |
+      Five names keep coming up. Put them in a proper table — no notebook scribbles.
+      We talk to databases in **SQL**. Let's start.
+
+  - id: S2.2
+    type: note
+    rm_ref: { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, heading: "Data Types" }
+    see_also:
+      - { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, heading: "Introduction to SQL" }
+    body: |
+      Every column has a **data type**. These are used often:
+
+      | Data type | Syntax |
+      |---|---|
+      | Integer | INTEGER / INT |
+      | Float | FLOAT |
+      | String | VARCHAR |
+      | Text | TEXT |
+      | Date | DATE |
+      | Time | TIME |
+      | Datetime | DATETIME |
+      | Boolean | BOOLEAN |
+
+      Notes: Boolean values are stored as integers **0 (FALSE)** and **1 (TRUE)**.
+      A date looks like `'YYYY-MM-DD'`. A datetime looks like `'YYYY-MM-DD HH:MM:SS'`.
+
+  - id: S2.3
+    type: activity
+    kind: match
+    rm_ref: { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, heading: "Data Types" }
+    prompt: "Pick the best data type for each piece of case information."
+    pairs:
+      - { left: "Phone number, like 9876500002", right: "VARCHAR" }
+      - { left: "Age, like 38", right: "INTEGER" }
+      - { left: "Is the alibi verified? (yes/no)", right: "BOOLEAN" }
+      - { left: "Last seen at 2026-12-12 18:09:40", right: "DATETIME" }
+
+  - id: S2.4
+    type: note
+    minutes: 1
+    rm_ref: { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, heading: "Create Table" }
+    body: |
+      `CREATE TABLE` creates a new table in the database.
+      ```sql
+      CREATE TABLE table_name (
+        column1 type1,
+        column2 type2,
+        ...
+      );
+      ```
+
+  - id: S2.5
+    type: task
+    task_id: T2.1
+    ask: |
+      Create a table `suspects` with these columns:
+
+      | column_name | data_type |
+      |---|---|
+      | name | VARCHAR(200) |
+      | role | VARCHAR(100) |
+      | phone | VARCHAR(15) |
+      | age | INT |
+    ref: "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
+    grading:
+      inspect: "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type FROM pragma_table_info('suspects');"
+      ordered: true
+    hints:
+      - { tier: 1, rm_ref: { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, heading: "Create Table" } }
+      - { tier: 2, skeleton: "CREATE TABLE suspects (\n  name VARCHAR(200),\n  ____ VARCHAR(100),\n  phone ____,\n  age ____\n);" }
+    reply_on_pass: "Table ready. Empty, but ready."
+
+  - id: S2.6
+    type: note
+    minutes: 1
+    rm_ref: { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, heading: "PRAGMA" }
+    body: |
+      To check the details of a table, use `PRAGMA TABLE_INFO`:
+      ```sql
+      PRAGMA TABLE_INFO(table_name);
+      ```
+      It shows every column with its type.
+
+  - id: S2.7
+    type: task
+    task_id: T2.2
+    minutes: 2
+    ask: "Check the structure of your `suspects` table."
+    setup: [*create]
+    ref: "PRAGMA TABLE_INFO(suspects);"
+    grading: { ordered: true }
+    hints:
+      - { tier: 1, rm_ref: { unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963, heading: "PRAGMA" } }
+      - { tier: 2, skeleton: "PRAGMA ____(suspects);" }
+
+  - id: S2.8
+    type: note
+    rm_ref: { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Inserting Rows" }
+    see_also:
+      - { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Possible Mistakes" }
+    body: |
+      `INSERT INTO` adds rows to a table. You can add many rows in one query:
+      ```sql
+      INSERT INTO table_name (column1, column2, ...)
+      VALUES
+        (value1, value2, ...),
+        (value1, value2, ...);
+      ```
+      {{analyst.first}} warns: there are **4 common mistakes** with INSERT. He stamps every one in red.
+
+  - id: S2.9
+    type: task
+    task_id: T2.3
+    ask: |
+      {{mentor.first}}'s notebook has the five suspects. Insert all five rows into `suspects` — copy them exactly, even if something looks wrong.
+
+      | name | role | phone | age |
+      |---|---|---|---|
+      | {{manager}} | manager | 9876500002 | 38 |
+      | {{rival}} | rival singer | 9876500003 | 24 |
+      | {{fan}} | fan page admin | 9876500004 | 19 |
+      | {{driver}} | cab driver | 9876500050 | 45 |
+      | {{organiser}} | event organiser | 9876500006 | 41 |
+    setup: [*create]
+    ref: *insert
+    grading:
+      inspect: "SELECT name, role, phone, age FROM suspects;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Inserting Rows" } }
+      - { tier: 2, skeleton: "INSERT INTO suspects (name, role, phone, age)\nVALUES\n  ('{{manager}}', 'manager', '9876500002', 38),\n  (____),\n  ...;" }
+    traps:
+      - id: M1
+        rm_ref: { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Mistake 1" }
+        sql: "INSERT INTO suspects (name, role, phone, age) VALUES ('{{manager}}', 'manager');"
+        match: error
+        error_regex: "^\\d+ values for \\d+ columns"
+        reply: "🟥 {{analyst.first}}'s red stamp: **number of values ≠ number of columns**. You listed 4 columns, so every row needs 4 values."
+      - id: M3
+        rm_ref: { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Mistake 3" }
+        sql: "INSERT INTO suspects (name, role, phone, age) VALUES (('{{manager}}', 'manager', '9876500002', 38), ('{{driver}}', 'cab driver', '9876500050', 45));"
+        sql_regex: "VALUES\\s*\\(\\s*\\("
+        match: error
+        error_regex: "values for \\d+ columns"
+        reply: "🟥 Red stamp: **no extra brackets after VALUES**. Write `VALUES (...), (...)`, not `VALUES ((...), (...))`."
+      - id: M2
+        rm_ref: { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Mistake 2" }
+        sql: "INSERT INTO suspect_list (name, role, phone, age) VALUES ('{{manager}}', 'manager', '9876500002', 38);"
+        match: error
+        error_regex: "no such table"
+        reply: "🟥 Red stamp: **that table doesn't exist**. We only have `suspects`."
+      - id: M4
+        rm_ref: { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Mistake 4" }
+        sql: "INSERT INTO suspects (name, role, phone, age) VALUES ('{{manager}}', 'manager', '9876500002', 'Thirty-eight'), ('{{rival}}', 'rival singer', '9876500003', 24), ('{{fan}}', 'fan page admin', '9876500004', 19), ('{{driver}}', 'cab driver', '9876500050', 45), ('{{organiser}}', 'event organiser', '9876500006', 41);"
+        inspect: "SELECT COUNT(*) > 0 FROM suspects WHERE typeof(age) = 'text';"
+        match: result
+        reply: "⚠️ No error — but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`."
+
+  - id: S2.10
+    type: note
+    rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Retrieving Data" }
+    see_also:
+      - { unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0, heading: "Let's view the added data!" }
+    body: |
+      `SELECT` gets data from a table.
+      ```sql
+      SELECT * FROM table_name;            -- all columns
+      SELECT c1, c2 FROM table_name;       -- only some columns
+      ```
+
+  - id: S2.11
+    type: task
+    task_id: T2.4
+    minutes: 2
+    rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting All Columns" }
+    ask: "Let's view the added data! Show **all columns** of `suspects`."
+    setup: [*create, *insert]
+    ref: "SELECT * FROM suspects;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting All Columns" } }
+      - { tier: 2, skeleton: "SELECT ____ FROM suspects;" }
+
+  - id: S2.12
+    type: task
+    task_id: T2.5
+    minutes: 2
+    rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting Specific Columns" }
+    ask: "{{mentor.first}} only wants **name** and **role**. Show just those two columns."
+    setup: [*create, *insert]
+    ref: "SELECT name, role FROM suspects;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting Specific Columns" } }
+      - { tier: 2, skeleton: "SELECT ____, ____ FROM suspects;" }
+
+  - id: S2.13
+    type: note
+    minutes: 1
+    rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting Specific Rows" }
+    body: |
+      The `WHERE` clause keeps only the rows that satisfy a condition.
+      ```sql
+      SELECT * FROM table_name WHERE condition;
+      ```
+
+  - id: S2.13b
+    type: scene
+    speaker: analyst
+    body: |
+      Hotel IT just explained their guest table. Every guest's row in `hotel_guests` has two columns the key-card system fills in by itself:
+      `key_card_last_used` (the time of the last tap) and `key_card_last_location` (the door or lift it was tapped at).
+      {{mentor.first}}: "In Episode 1 we saw her status change to KEY_NOT_RETURNED between 5 and 6 PM. So her card was still with her when she left the room.
+      **Where** was it tapped last, and **when**? That's our first real question for the data."
+
+  - id: S2.14
+    type: task
+    task_id: T2.6
+    ask: "Find {{star.first}}'s row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"{{star}}\"**. Then read the last two columns — where and when was her key card used last?"
+    ref: "SELECT * FROM hotel_guests WHERE name = \"{{star}}\";"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting Specific Rows" } }
+      - { tier: 2, skeleton: "SELECT * FROM hotel_guests WHERE ____ = \"{{star}}\";" }
+    on_pass: { clue: S2-C1 }
+    reply_on_pass: "One row. Look at the last two columns before you continue."
+
+  - id: S2.14b
+    type: activity
+    kind: pick_cell
+    minutes: 1
+    rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting Specific Rows" }
+    prompt: "This is the row your query returned. Tap the cell that says **where** her key card was tapped last."
+    tables:
+      - caption: "Your result"
+        columns: [guest_id, name, room_no, check_in, status, key_card_last_used, key_card_last_location]
+        rows:
+          - [17, "{{star}}", 704, "2026-12-11 14:00:00", "KEY_NOT_RETURNED", "2026-12-12 18:09:40", "Service Lift"]
+    answer: { table: "Your result", row: 0, column: key_card_last_location }
+    feedback: "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries — and it opens next to the **service gate**."
+
+  - id: S2.15
+    type: clue
+    clue_id: S2-C1
+    requires_task: T2.6
+    title: "The service lift"
+    body: "Your query on `hotel_guests`: {{star.first}}'s key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+
+  - id: S2.16
+    type: note
+    rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update Rows" }
+    see_also:
+      - { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update All Rows" }
+    body: |
+      `UPDATE` changes data that is already in a table.
+      ```sql
+      UPDATE table_name SET c1 = value1;                    -- changes ALL rows
+      UPDATE table_name SET c1 = value1 WHERE condition;    -- changes only matching rows
+      ```
+
+  - id: S2.17
+    type: task
+    task_id: T2.7
+    rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update Specific Rows" }
+    ask: "The notebook had a typo: **{{driver}}'s** phone is really `9876500005`. Fix only his row."
+    setup: [*create, *insert]
+    ref: *fix
+    grading:
+      inspect: "SELECT name, phone FROM suspects;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update Specific Rows" } }
+      - { tier: 2, skeleton: "UPDATE suspects SET phone = '9876500005' WHERE ____ = '{{driver}}';" }
+    traps:
+      - id: update_all
+        rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update All Rows" }
+        sql: "UPDATE suspects SET phone = '9876500005';"
+        inspect: "SELECT COUNT(DISTINCT phone) FROM suspects;"
+        match: result
+        reply: "😬 Now **everyone** has {{driver.first}}'s number! Without `WHERE`, UPDATE changes **all rows**. Tap **↺ Reset DB**, then add a WHERE condition."
+
+  - id: S2.18
+    type: check
+    source: authored
+    rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "SQLite is Case Insensitive!" }
+    prompt: "`SELECT * FROM suspects;` and `select * from suspects;` — what happens?"
+    options:
+      - { text: "Only the first one works" }
+      - { text: "Both give the same output; writing keywords in UPPER CASE is the best practice", correct: true }
+      - { text: "The second one gives an error" }
+    explain: "SQLite is case insensitive for keywords. Both work, but UPPER CASE keywords are easier to read."
+
+  - id: S2.19
+    type: note
+    rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete Rows" }
+    see_also:
+      - { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete Specific Rows" }
+      - { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete All Rows" }
+    body: |
+      {{mentor.first}} made a `rumours` table from social media. Most of it is noise.
+      ```sql
+      DELETE FROM table_name WHERE condition;   -- deletes matching rows
+      DELETE FROM table_name;                   -- deletes ALL rows (table stays)
+      ```
+
+  - id: S2.20
+    type: task
+    task_id: T2.8a
+    rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete Specific Rows" }
+    ask: "Delete every rumour whose `source` is `'unverified_page'`."
+    ref: "DELETE FROM rumours WHERE source = 'unverified_page';"
+    grading:
+      inspect: "SELECT rumour_id FROM rumours;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete Specific Rows" } }
+      - { tier: 2, skeleton: "DELETE FROM rumours WHERE ____ = 'unverified_page';" }
+    reply_on_pass: "4 rumours gone. Only the two news-channel facts are left."
+
+  - id: S2.21
+    type: task
+    task_id: T2.8b
+    minutes: 2
+    rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete All Rows" }
+    ask: "The news facts are already in our case notes. Delete **all** rows from `rumours`, but keep the table."
+    setup: ["DELETE FROM rumours WHERE source = 'unverified_page';"]
+    ref: "DELETE FROM rumours;"
+    grading:
+      inspect: "SELECT COUNT(*) FROM rumours;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete All Rows" } }
+      - { tier: 2, skeleton: "DELETE FROM ____;" }
+
+  - id: S2.22
+    type: note
+    minutes: 1
+    rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Drop Table" }
+    body: |
+      `DROP TABLE` deletes the **whole table** from the database.
+      ```sql
+      DROP TABLE table_name;
+      ```
+
+  - id: S2.23
+    type: task
+    task_id: T2.8c
+    minutes: 2
+    ask: "We don't need the rumour board at all. Remove the `rumours` table from the database."
+    setup: ["DELETE FROM rumours;"]
+    ref: "DROP TABLE rumours;"
+    grading:
+      inspect: "SELECT COUNT(*) FROM sqlite_master WHERE name = 'rumours';"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Drop Table" } }
+      - { tier: 2, skeleton: "____ TABLE rumours;" }
+
+  - id: S2.24
+    type: activity
+    minutes: 1
+    kind: match
+    rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "DELETE VS DROP" }
+    prompt: "DELETE vs DROP — match each command to what it does."
+    pairs:
+      - { left: "DELETE FROM rumours WHERE …", right: "Removes specific rows; the table stays" }
+      - { left: "DROP TABLE rumours", right: "Removes the entire table from the database" }
+
+  - id: S2.25
+    type: note
+    rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "Alter Table" }
+    body: |
+      `ALTER TABLE` changes the **structure** of a table:
+      ```sql
+      ALTER TABLE table_name ADD column_name datatype;
+      ALTER TABLE table_name RENAME COLUMN c1 TO c2;
+      ALTER TABLE table_name DROP COLUMN column_name;
+      ```
+
+  - id: S2.26
+    type: task
+    task_id: T2.9
+    minutes: 2
+    rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "Add Column" }
+    ask: "Add a column `alibi` of type `VARCHAR(250)` to `suspects`."
+    setup: [*create, *insert, *fix]
+    ref: "ALTER TABLE suspects ADD alibi VARCHAR(250);"
+    grading:
+      inspect: "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type FROM pragma_table_info('suspects');"
+      ordered: true
+    hints:
+      - { tier: 1, rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "Add Column" } }
+      - { tier: 2, skeleton: "ALTER TABLE suspects ADD ____ VARCHAR(250);" }
+
+  - id: S2.27
+    type: task
+    task_id: T2.10
+    minutes: 2
+    rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "Rename Column" }
+    ask: "`role` is unclear. Rename it to `relation_to_case`."
+    setup: [*create, *insert, *fix, "ALTER TABLE suspects ADD alibi VARCHAR(250);"]
+    ref: "ALTER TABLE suspects RENAME COLUMN role TO relation_to_case;"
+    grading:
+      inspect: "SELECT lower(name) AS column_name FROM pragma_table_info('suspects');"
+      ordered: true
+    hints:
+      - { tier: 1, rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "Rename Column" } }
+      - { tier: 2, skeleton: "ALTER TABLE suspects RENAME COLUMN ____ TO ____;" }
+
+  - id: S2.28
+    type: task
+    task_id: T2.11
+    minutes: 2
+    rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "Drop Column" }
+    ask: "Age doesn't matter for alibis. Remove the `age` column."
+    setup: [*create, *insert, *fix, "ALTER TABLE suspects ADD alibi VARCHAR(250);", "ALTER TABLE suspects RENAME COLUMN role TO relation_to_case;"]
+    ref: "ALTER TABLE suspects DROP COLUMN age;"
+    grading:
+      inspect: "SELECT lower(name) AS column_name FROM pragma_table_info('suspects');"
+      ordered: true
+    hints:
+      - { tier: 1, rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "Drop Column" } }
+      - { tier: 2, skeleton: "ALTER TABLE suspects ____ COLUMN age;" }
+
+  - id: S2.29
+    type: task
+    task_id: T2.12
+    minutes: 2
+    rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update Specific Rows" }
+    ask: |
+      {{analyst.first}} has filled in what four suspects **claim**. {{manager.first}}'s is still empty.
+      {{manager.first}} says he was **"In hotel lobby all evening"**. Write it into his row.
+    setup: [*create, *insert, *fix, "ALTER TABLE suspects ADD alibi VARCHAR(250);", "ALTER TABLE suspects RENAME COLUMN role TO relation_to_case;", "ALTER TABLE suspects DROP COLUMN age;",
+            "UPDATE suspects SET alibi = 'At stadium rehearsal' WHERE name = '{{rival}}';",
+            "UPDATE suspects SET alibi = 'At a cafe in {{hometown}}' WHERE name = '{{fan}}';",
+            "UPDATE suspects SET alibi = 'Driving another passenger' WHERE name = '{{driver}}';",
+            "UPDATE suspects SET alibi = 'At stadium production office' WHERE name = '{{organiser}}';"]
+    ref: "UPDATE suspects SET alibi = 'In hotel lobby all evening' WHERE name = '{{manager}}';"
+    grading:
+      inspect: "SELECT name, alibi FROM suspects;"
+    hints:
+      - { tier: 1, rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update Specific Rows" } }
+      - { tier: 2, skeleton: "UPDATE suspects SET alibi = '____' WHERE name = '____';" }
+    traps:
+      - id: update_all_alibis
+        rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "Update All Rows" }
+        sql: "UPDATE suspects SET alibi = 'In hotel lobby all evening';"
+        inspect: "SELECT COUNT(DISTINCT alibi) FROM suspects;"
+        match: result
+        reply: "Oops — now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more."
+    reply_on_pass: "Noted. We'll check every claim later. Claims are not proof."
+
+  - id: S2.30
+    type: activity
+    kind: sort_into
+    rm_ref: { unit_id: d9b767b9-9365-4148-be92-121cc88a071d, heading: "ALTER VS UPDATE" }
+    prompt: "ALTER or UPDATE? Sort each change."
+    buckets: ["ALTER (changes the table's layout)", "UPDATE (changes the data)"]
+    items:
+      - { text: "Add an `alibi` column", bucket: "ALTER (changes the table's layout)" }
+      - { text: "Fix {{driver.first}}'s phone number", bucket: "UPDATE (changes the data)" }
+      - { text: "Rename `role` to `relation_to_case`", bucket: "ALTER (changes the table's layout)" }
+      - { text: "Write {{manager.first}}'s alibi", bucket: "UPDATE (changes the data)" }
+
+  - id: S2.33
+    type: check
+    source: authored
+    prompt: "Which command changes the **layout** of a table?"
+    options:
+      - { text: "UPDATE" }
+      - { text: "ALTER", correct: true }
+      - { text: "INSERT" }
+      - { text: "SELECT" }
+    explain: "ALTER adds, renames or drops columns. UPDATE only changes the data inside."
+
+  - id: S2.34
+    type: hook
+    speaker: system
+    body: |
+      📧 Hotel security: "Attaching the gate log — **300 entries** since noon."
+      {{mentor.first}}: "That service lift opens near the service gate. Find who used it."
+
+exit:
+  required_clues: [S2-C1]
+  required_beats: [S2.5, S2.9, S2.14, S2.14b, S2.17, S2.20, S2.23, S2.26, S2.27, S2.28, S2.29, S2.30]
+
+# Deployable units: one per reading material (a contiguous slice of the beats above; see content/sessions/README.md)
+units:
+  - unit_id: ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963   # RM #3 Create Table
+    from: S2.1
+    to: S2.7
+    closer:
+      speaker: mentor
+      body: |
+        Table ready. Next: put the five names into it.
+  - unit_id: 2f13bf2f-3532-4e12-9496-0715646dbbd0   # RM #4 Inserting Rows
+    from: S2.8
+    to: S2.9
+    opener:
+      speaker: mentor
+      body: |
+        Previously: we created an empty `suspects` table with four columns — name, role, phone, age.
+        {{analyst.first}} has the five names and phone numbers. Put them in.
+    closer:
+      speaker: mentor
+      body: |
+        Five rows in. Now let's read them back.
+  - unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb   # RM #5 Retrieving Data
+    from: S2.10
+    to: S2.15
+    opener:
+      speaker: mentor
+      body: |
+        Previously: our `suspects` table has five rows — {{manager.first}}, {{rival.first}}, {{fan.first}}, {{driver.first}} and {{organiser.first}}.
+        Time to ask the table questions — and to read the hotel's key-card log.
+    closer:
+      speaker: mentor
+      body: |
+        One phone number in our table is wrong. We fix it next.
+  - unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1   # RM #6 Update Rows
+    from: S2.16
+    to: S2.18
+    opener:
+      speaker: mentor
+      body: |
+        Previously: {{star.first}}'s key card was last used at the service lift. And {{driver.first}}'s phone number in our `suspects` table has a typo.
+        We need to change data that is already in the table.
+    closer:
+      speaker: mentor
+      body: |
+        Data fixed. Next: a table full of rumours that needs cleaning.
+  - unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b   # RM #7 Delete Rows
+    from: S2.19
+    to: S2.24
+    opener:
+      speaker: mentor
+      body: |
+        Previously: our `suspects` table is correct now. Meanwhile, social media is on fire.
+        I pulled the posts into a `rumours` table. Most of it is noise. We clean it.
+    closer:
+      speaker: mentor
+      body: |
+        Rumours cleared. One more thing: the suspects table needs an `alibi` column.
+  - unit_id: d9b767b9-9365-4148-be92-121cc88a071d   # RM #9 Alter Table
+    from: S2.25
+    to: S2.34
+    opener:
+      speaker: mentor
+      body: |
+        Previously: the `suspects` table is clean and the `rumours` table is gone.
+        Now each suspect gives an alibi — but there is no column for it. We change the table's **structure**, not its data.
+  - unit_id: 5db3ad70-736e-49ee-8e01-9186191cab34   # RM #8 Alter Table — same text as RM #9
+    same_as: d9b767b9-9365-4148-be92-121cc88a071d

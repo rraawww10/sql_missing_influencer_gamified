@@ -1,0 +1,483 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 8,
+  "title": "Clear the Innocent",
+  "story_clock": "2026-12-12 21:30:00",
+  "course_topic_id": "478ef25a-12f6-4aa2-b500-6940806a7983",
+  "snapshot": "s08",
+  "est_minutes": 40,
+  "reading_materials": [
+    {
+      "unit_id": "3b692841-a6a3-4e2f-99ce-c4fadd78c82f",
+      "role": "primary",
+      "rm": 23,
+      "learning_resource_id": "5945a93e-17d1-4499-a98b-223afa1c46aa"
+    },
+    {
+      "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+      "role": "primary",
+      "rm": 25,
+      "learning_resource_id": "50b00eb2-8a43-404a-ab6c-e286c60c9432"
+    },
+    {
+      "unit_id": "54a9517e-4844-4f5a-b278-18e0c971615f",
+      "role": "subset",
+      "rm": 24,
+      "learning_resource_id": "17584215-dd51-4cba-9ae9-2f289a1e403d"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S8-C1"
+    ],
+    "required_beats": [
+      "S8.8",
+      "S8.10",
+      "S8.11",
+      "S8.12",
+      "S8.13",
+      "S8.16",
+      "S8.18"
+    ]
+  },
+  "minutes_estimate": 26.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    }
+  },
+  "beats": [
+    {
+      "id": "U25.open",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Previously: five suspects. We labelled every row with `CASE` — near the outskirts tower or not, big payment or not.\nNow we compare whole lists — tower pings, payments, rehearsal logs — to clear the innocent.\n"
+    },
+    {
+      "id": "S8.6",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+        "heading": "Common Set Operators"
+      },
+      "see_also": [
+        {
+          "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+          "heading": "SQL Set Operations"
+        },
+        {
+          "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+          "heading": "INTERSECT"
+        },
+        {
+          "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+          "heading": "MINUS"
+        },
+        {
+          "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+          "heading": "UNION"
+        },
+        {
+          "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+          "heading": "UNION ALL"
+        }
+      ],
+      "body": "Set operators combine the results of two SELECTs:\n- `INTERSECT` — rows in **both**\n- `MINUS` — rows in the first but **not** the second (SQLite writes it as `EXCEPT`)\n- `UNION` — rows in **either** (duplicates removed) · `UNION ALL` — same, but **keeps** duplicates\n"
+    },
+    {
+      "id": "S8.7",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+        "heading": "Basic rules when combining two sql queries using set operations"
+      },
+      "see_also": [
+        {
+          "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+          "heading": "Applying Set Operations"
+        }
+      ],
+      "body": "Each SELECT must have the **same number of columns**, of **similar types**, in the **same order**."
+    },
+    {
+      "id": "S8.7b",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Two lists. List one: everyone whose device hit **RRO-17** tonight — your CASE query showed three names: Tara, Ramesh Pawar and Dev.\nList two: everyone who ever **paid Green Acres Farm Stays**. Being near the farm is not a crime. Paying for the farm is not a crime. Being on **both** lists tonight — that needs an explanation.\n"
+    },
+    {
+      "id": "S8.8",
+      "type": "task",
+      "task_id": "T8.3",
+      "ask": "Who was near **RRO-17** from 6 PM (`device_owner` in `tower_pings`) **and** paid `'Green Acres Farm Stays'` (`from_name` in `upi_payments`)? One list, only the names on both.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:4239cf8f146d22028a24faeece01b5a79d04cf20614f483e387882f4086c0a37"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "INTERSECT"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT device_owner FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' ____ SELECT from_name FROM upi_payments WHERE to_name = 'Green Acres Farm Stays';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.3"
+        }
+      ],
+      "on_pass": {
+        "clue": "S8-C1"
+      },
+      "reply_on_pass": "One name. Not Ramesh Pawar (he lives there, never paid), not Tara (she paid nobody).",
+      "traps": []
+    },
+    {
+      "id": "S8.9",
+      "type": "clue",
+      "clue_id": "S8-C1",
+      "requires_task": "T8.3",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    },
+    {
+      "id": "S8.10",
+      "type": "task",
+      "task_id": "T8.4",
+      "ask": "Everyone seen around the hotel between 17:30 and 18:30: `person_name` from `gate_log` **or** `rider_name` from hotel pickups in `cab_rides` — no duplicates.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "UNION"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT person_name FROM gate_log WHERE ts BETWEEN ... ____ SELECT rider_name FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN ...;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.4"
+        }
+      ],
+      "grading": {
+        "expected_hash": "sha256:8f06c3a1bbe4f06b727cc1c0628a8975db831eb43a226d98ae083e3c09db457d"
+      },
+      "traps": []
+    },
+    {
+      "id": "S8.11",
+      "type": "task",
+      "task_id": "T8.5",
+      "minutes": 2,
+      "ask": "Same two lists, but **keep duplicates** this time.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "UNION ALL"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "... UNION ____ SELECT rider_name FROM cab_rides ...;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.5"
+        }
+      ],
+      "reply_on_pass": "Anita Fernandes now appears **twice** — she walked out of the main gate *and* booked a cab. UNION ALL keeps both.",
+      "grading": {
+        "expected_hash": "sha256:e3cae0216dbf98be40bc7ecc587547eeae87df72671cfb65445f0ca714f116e6"
+      },
+      "traps": []
+    },
+    {
+      "id": "S8.12",
+      "type": "task",
+      "task_id": "T8.6",
+      "ask": "Suspects **minus** people with a **verified** alibi: `name` from `suspects` except `person_name` from `alibis` where `verified = 1`.",
+      "grading": {
+        "expect_rows": 3,
+        "expected_hash": "sha256:242774aa2498403a0b58e1587de66b72dba2eb2adab06b4c02a0e0ab74637f7c"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "MINUS"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT name FROM suspects ____ SELECT person_name FROM alibis WHERE verified = 1;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.6"
+        }
+      ],
+      "traps": [
+        {
+          "id": "column_count",
+          "match": {
+            "error_regex": "same number of result columns"
+          },
+          "reply": "Both SELECTs need the **same number of columns**. The second one has only `person_name`.",
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "Basic rules when combining two sql queries using set operations"
+          }
+        }
+      ],
+      "reply_on_pass": "Ishita Das and Sunny Gill drop out — their alibis are verified. Left: Dev, Nysa, Kunal."
+    },
+    {
+      "id": "S8.13",
+      "type": "task",
+      "task_id": "T8.fan",
+      "minutes": 2,
+      "ask": "Check the fan page: show each `tower_area` (once) of messages in `fan_dms` from `'@tara_squad'`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:bf17fdcfece6298332e971bd93e9254acb3ab6936d37dadac56205263c17d36e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "SQL Set Operations"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT DISTINCT tower_area FROM fan_dms WHERE sender_handle = '____';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.fan"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S8.14",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Every message from @tara_squad came from **Chandpur**, far from the city. Her *\"she's safe\"* post was a hopeful prayer, not knowledge.\nBeing a big fan isn't a crime. Following someone home would be. She didn't — she's cleared.\n"
+    },
+    {
+      "id": "S8.15",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+        "heading": "ORDER BY Clause in Set Operations"
+      },
+      "body": "`ORDER BY` may appear **only once**, at the very end. Sort by column **position**: `ORDER BY 1`."
+    },
+    {
+      "id": "S8.16",
+      "type": "task",
+      "task_id": "T8.7",
+      "minutes": 2,
+      "ask": "Repeat the 'suspects minus verified alibis' query, sorted A → Z by the first column.",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 3,
+        "expected_hash": "sha256:242774aa2498403a0b58e1587de66b72dba2eb2adab06b4c02a0e0ab74637f7c"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "ORDER BY Clause in Set Operations"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT name FROM suspects EXCEPT SELECT person_name FROM alibis WHERE verified = 1 ORDER BY ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.7"
+        }
+      ],
+      "traps": [
+        {
+          "id": "order_inside",
+          "match": {
+            "error_regex": "ORDER BY clause should come after"
+          },
+          "reply": "In set operations, `ORDER BY` goes **once, at the end** — not inside the first SELECT.",
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "ORDER BY Clause in Set Operations"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S8.17",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+        "heading": "Pagination in Set Operations"
+      },
+      "body": "`LIMIT` and `OFFSET` also go at the very end of the whole query."
+    },
+    {
+      "id": "S8.18",
+      "type": "task",
+      "task_id": "T8.8",
+      "minutes": 2,
+      "ask": "The no-duplicates hotel list (UNION) again, sorted Z → A by the first column, **first 5 only**.",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 5,
+        "expected_hash": "sha256:450bbd517cff518b7bf293e9c09d1bb043f3b207b1aa3a0a6ec9894f27f89c2f"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+            "heading": "Pagination in Set Operations"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "... UNION SELECT rider_name FROM cab_rides WHERE ... ORDER BY 1 ____ LIMIT ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s08.json#T8.8"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S8.19",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "777e1aeb-92cd-4978-8bda-c0543963353b",
+        "heading": "UNION ALL"
+      },
+      "prompt": "Which set operator **keeps** duplicates?",
+      "options": [
+        {
+          "text": "UNION"
+        },
+        {
+          "text": "UNION ALL",
+          "correct": true
+        },
+        {
+          "text": "INTERSECT"
+        }
+      ],
+      "explain": "UNION removes duplicates. UNION ALL keeps every row from both SELECTs."
+    },
+    {
+      "id": "S8.20",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "Our evidence is scattered across ten tables. Before we accuse anyone, let's **draw the full picture**."
+    }
+  ],
+  "unit": {
+    "n": 24,
+    "unit_id": "54a9517e-4844-4f5a-b278-18e0c971615f",
+    "learning_resource_id": "17584215-dd51-4cba-9ae9-2f289a1e403d",
+    "title": "SQL Set Operations",
+    "part": 2,
+    "parts": 2,
+    "finale": false,
+    "same_as": "777e1aeb-92cd-4978-8bda-c0543963353b"
+  }
+}
