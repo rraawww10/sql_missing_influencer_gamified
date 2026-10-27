@@ -22,9 +22,20 @@ export function SortInto({ beat, locked, parts, reveal, onSubmit }: WidgetProps<
     const cls = ['pill', picked === text && 'selected', parts && text in parts && (parts[text] ? 'right' : 'wrong')].filter(Boolean).join(' ');
     return (
       <button key={text} className={cls} disabled={locked} aria-pressed={picked === text}
-        onClick={() => {
-          if (shown[text]) { const { [text]: _, ...rest } = placement; setPlacement(rest); }
-          else setPicked(picked === text ? null : text);
+        onClick={(e) => {
+          // a placed pill sits inside its bucket, which is itself the drop target. With an item picked the
+          // whole box — pills included — means "drop it here", so let the click through to the bucket.
+          // With nothing picked the pill means "take this one back", and the bucket's handler (which writes
+          // the same state from a stale closure) must not run after it.
+          if (shown[text]) {
+            if (picked && !locked) return;
+            e.stopPropagation();
+            const { [text]: _, ...rest } = placement;
+            setPlacement(rest);
+          } else {
+            e.stopPropagation();
+            setPicked(picked === text ? null : text);
+          }
         }}>{text}</button>
     );
   };

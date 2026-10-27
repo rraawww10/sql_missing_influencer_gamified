@@ -8,9 +8,11 @@ npm run dev          # copies ../content into public/content, starts Vite → ht
 npm test             # Vitest: engine + UI widgets; plays the real session packs end to end in Node
 npm run build        # typecheck + production build
 npm run smoke        # after build: real Chrome reads the briefing and plays episodes 1–3 through the UI (SHOTS=dir saves screenshots)
+npm run hit-test     # after build: layout guard — at 3 viewport sizes × 5 scroll positions, every visible
+                     # interactive element must receive its own clicks (catches overlays that swallow taps)
 npm run build:deploy # ../deploy/intro (briefing) + ../deploy/sNN (13 episodes), self-contained, for tests; `-- s 3`, `-- intro`, `-- units` / `-- u 11 12` (unit sites, not shipped)
-npm run build:s3     # ../missing-influencer-v2: briefing + 13 episodes with ONE shared assets/ + content/ (~8 MB) — this is what gets uploaded (`--units` adds the 38 unit sites)
-npm run smoke:deploy # plays every deploy folder inside an iframe (`sessions` | `units` | `--only 11`); DEPLOY_DIR=missing-influencer-v2 tests the compact folder
+npm run build:s3     # ../missing-influencer-v3: briefing + 13 episodes with ONE shared assets/ + content/ (~8 MB) — this is what gets uploaded (`--units` adds the 38 unit sites)
+npm run smoke:deploy # plays every deploy folder inside an iframe (`sessions` | `units` | `--only 11`); DEPLOY_DIR=missing-influencer-v3 tests the compact folder
 ```
 
 Node ≥ 18 (the pipeline and scripts use top-level `await`); on this machine `~/.nvm/versions/node/v22.22.2/bin`.

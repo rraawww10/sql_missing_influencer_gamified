@@ -68,7 +68,7 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
         </section>
 
         <div className="stats">
-          <div className="stat rise" style={{ '--i': 0 } as React.CSSProperties}><b>~{Math.round(pack.minutes_estimate)}</b><span>minutes</span></div>
+          <div className="stat rise" style={{ '--i': 0 } as React.CSSProperties}><b>{Math.round(pack.minutes_estimate)}</b><span>minutes, about</span></div>
           {tasks > 0 && <div className="stat rise" style={{ '--i': 1 } as React.CSSProperties}><b>{tasks}</b><span>SQL task{tasks === 1 ? '' : 's'}</span></div>}
           {clues > 0 && <div className="stat rise" style={{ '--i': 2 } as React.CSSProperties}><b>{clues}</b><span>piece{clues === 1 ? '' : 's'} of evidence to find</span></div>}
           <div className="stat rise" style={{ '--i': 3 } as React.CSSProperties}><b>{ep.emoji}</b><span>{ep.learn}</span></div>

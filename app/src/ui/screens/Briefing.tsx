@@ -9,7 +9,7 @@ import { useServices } from '../services';
 import { storyTime } from '../speakers';
 import { SceneArt } from '../art/SceneArt';
 import { EPISODES, EPISODE_COUNT } from '../episodes';
-import { postToParent } from '../embed';
+import { isEmbedded, postToParent } from '../embed';
 import { themeVars } from '../theme';
 
 interface Props { onStart?(): void; onBack?(): void; standalone?: boolean }
@@ -52,11 +52,19 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
   const star = cast?.people.star?.name ?? 'Tara Sen';
   const mentor = cast?.people.mentor?.name ?? 'Ira Menon';
 
+  // Standalone the briefing is its own site. Inside the LMS iframe the host decides what comes next, so the
+  // button only reports "done"; opened directly there is no host, so it links to the first episode's site.
+  const embedded = isEmbedded();
+  const firstEpisode = `../s01/index.html${location.search}`;
   const imReady = () => {
     setReady(true);
     postToParent('completed', { session: 0, intro: true, points: 0, hints: 0, traps: 0 });
     onStart?.();
   };
+  // both "I'm ready" buttons are the same button, so they always say the same thing
+  const readyButton = (extra: string) => (embedded
+    ? <button className={`btn primary big ${extra}`} onClick={imReady} disabled={ready}>{ready ? '✓ Briefing complete' : "I'm ready →"}</button>
+    : <a className={`btn primary big ${extra}`} href={firstEpisode} onClick={imReady}>Start the first episode: {EPISODES[0].title} →</a>);
 
   return (
     <div className="page themed" style={themeVars(1) as React.CSSProperties}>
@@ -79,7 +87,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
             <h1 className="gradient-text">SQL: The Missing Influencer</h1>
             <p className="lede">{premise}</p>
             <div className="cta">
-              <button className="btn primary big go" onClick={standalone ? imReady : onStart}>{standalone ? "I'm ready →" : `▶ Start the first episode: ${EPISODES[0].title}`}</button>
+              {standalone ? readyButton('go') : <button className="btn primary big go" onClick={onStart}>{`▶ Start the first episode: ${EPISODES[0].title}`}</button>}
               <span className="muted small">No SQL needed to start. You learn everything inside the case.</span>
             </div>
           </div>
@@ -159,10 +167,12 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
         <section className="ready" aria-label="Ready">
           <h2>Ready, intern?</h2>
           <p>{standalone
-            ? (ready ? `Briefing done. Open the first episode, "${EPISODES[0].title}", from your course to begin.` : `Next in your course: the first episode, "${EPISODES[0].title}" — ${storyTime(1)}.`)
+            ? (embedded
+                ? (ready ? `Briefing done. Open the first episode, "${EPISODES[0].title}", from your course to begin.` : `Next in your course: the first episode, "${EPISODES[0].title}" — ${storyTime(1)}.`)
+                : `The first episode, "${EPISODES[0].title}", starts at ${storyTime(1)}.`)
             : `The first episode, "${EPISODES[0].title}", starts at ${storyTime(1)}.`}</p>
           {standalone
-            ? <button className="btn primary big" onClick={imReady} disabled={ready}>{ready ? '✓ Briefing complete' : "I'm ready →"}</button>
+            ? readyButton('')
             : <button className="btn primary big go" onClick={onStart}>▶ Start: {EPISODES[0].title}</button>}
         </section>
       </div>

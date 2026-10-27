@@ -72,6 +72,19 @@ async function playSession(n, { trap, leaveAt } = {}) {
         await tabs().getByRole('button', { name: 'suspects' }).waitFor();
         console.log('  ✓ "suspects" tab shown at T2.7 (from the task setup)');
       }
+      if (b.task_id === 'T3.1') {
+        // the console header advertises Ctrl+Enter: it must run the query, not insert a blank line
+        await page.locator('.cm-content').fill(sol[b.task_id].ref);
+        await page.locator('.cm-content').press('Control+Enter');
+        await page.getByText('✓ Correct.').waitFor({ timeout: 10000 });
+        console.log('  ⌨ Ctrl+Enter runs the query');
+        // and the editor autocompletes the case tables, not just SQL keywords
+        await page.locator('.cm-content').fill('');
+        await page.locator('.cm-content').pressSequentially('SELECT * FROM gat', { delay: 60 });
+        await page.locator('.cm-tooltip-autocomplete .cm-completionLabel').filter({ hasText: 'gate_log' }).first().waitFor({ timeout: 5000 });
+        await page.keyboard.press('Escape');
+        console.log('  ⌨ autocomplete offers the table "gate_log"');
+      }
       if (trap?.task === b.task_id) {
         await runSql(page, sol[b.task_id].traps.find((t) => t.id === trap.id).sql);
         await page.locator('.verdict.trap').waitFor();

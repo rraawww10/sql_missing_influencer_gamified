@@ -9,6 +9,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "smoke": "node scripts/smoke.mjs",
+    "hit-test": "node scripts/hit-test.mjs",
     "build:deploy": "node scripts/build-deploy.mjs",
     "build:s3": "node scripts/build-s3.mjs",
     "build:s3:units": "node scripts/build-s3.mjs --units",

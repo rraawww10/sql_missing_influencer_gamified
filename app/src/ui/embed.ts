@@ -19,6 +19,9 @@ import type { ProgressEvent, ProgressStore } from '../ports/progress';
 const embedded = typeof window !== 'undefined' && window.parent !== window;
 const targetOrigin = (typeof location !== 'undefined' && new URLSearchParams(location.search).get('parent_origin')) || '*';
 
+// true when the game runs inside an iframe (the LMS case). Standalone pages have to route themselves.
+export const isEmbedded = () => embedded;
+
 export function postToParent(type: string, data: Record<string, unknown> = {}) {
   if (!embedded) return;
   try { window.parent.postMessage({ source: 'tmi', type, ...data }, targetOrigin); } catch { /* parent gone */ }

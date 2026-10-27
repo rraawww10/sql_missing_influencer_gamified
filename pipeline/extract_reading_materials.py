@@ -19,6 +19,13 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# Windows consoles default to cp1252 and would die on the em dash printed at the end — force UTF-8.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding='utf-8', errors='replace')
+    except AttributeError:
+        pass
+
 ROOT = Path(__file__).resolve().parent.parent
 SRC = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "intro_to_databases.json"
 OUT = Path(sys.argv[2]) if len(sys.argv) > 2 else ROOT / "content" / "reading_materials.json"

@@ -1,0 +1,17 @@
+# Keep every text file LF in the repo and in the working tree. Without this, Windows checkouts rewrite
+# generated JSON (content/sessions, content/units) and content/case_db/runtime/*.sql — and that SQL is
+# embedded verbatim into the packs, so the Windows build stops matching the Linux one byte for byte.
+* text=auto eol=lf
+
+*.sqlite binary
+*.db     binary
+*.wasm   binary
+*.woff   binary
+*.woff2  binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.webp   binary
+*.gif    binary
+*.pdf    binary
+*.ico    binary

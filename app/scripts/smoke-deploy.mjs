@@ -6,7 +6,8 @@
 //             its last part. Also tries ?user_id and a 'restore' from the host page.
 // Checks the parent page receives ready / progress / completed / resize messages.
 // Usage: npm run build:deploy && node scripts/smoke-deploy.mjs [sessions|units|all] [--only 11 12]
-//        DEPLOY_DIR=../missing-influencer-v2 node scripts/smoke-deploy.mjs …   (the compact S3 layout: shared assets + content)
+//        DEPLOY_DIR=missing-influencer-v3 node scripts/smoke-deploy.mjs …    (the compact S3 layout: shared assets + content)
+//        DEPLOY_DIR is resolved against the REPO ROOT, not app/ — a folder that isn't there used to pass silently.
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
@@ -17,7 +18,7 @@ import { playBeats, runSql } from './smoke-lib.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DEPLOY = path.resolve(ROOT, process.env.DEPLOY_DIR ?? 'deploy');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.sqlite': 'application/octet-stream', '.sql': 'text/plain', '.woff2': 'font/woff2', '.woff': 'font/woff' };
-// a site's content: next to its index.html (deploy/) or shared at the top (missing-influencer-v2/)
+// a site's content: next to its index.html (deploy/) or shared at the top (missing-influencer-v3/)
 const contentFile = (id, rel) => [path.join(DEPLOY, id, 'content', rel), path.join(DEPLOY, 'content', rel)].find((f) => fs.existsSync(f));
 const readJson = (id, rel) => JSON.parse(fs.readFileSync(contentFile(id, rel), 'utf8'));
 
@@ -39,9 +40,24 @@ const pick = (rows) => rows.filter((r) => !only.length || only.includes(r.n));
 const readIndex = (f) => fs.existsSync(path.join(DEPLOY, f)) ? JSON.parse(fs.readFileSync(path.join(DEPLOY, f), 'utf8')) : [];
 const sessions = mode === 'u' ? [] : pick(readIndex('sessions.json'));
 const units = mode === 's' ? [] : pick(readIndex('units.json'));   // empty unless unit sites were built (`build:deploy -- units`)
+if (!fs.existsSync(DEPLOY)) { console.error(`smoke-deploy: FAIL — no such folder: ${DEPLOY}`); process.exit(1); }
+if (!sessions.length && !units.length) { console.error(`smoke-deploy: FAIL — nothing to play in ${DEPLOY}: no sessions.json / units.json`); process.exit(1); }
+
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 let failed = false;
 try {
+  // the briefing site opened directly, with no LMS iframe around it: its button has to go somewhere
+  if (mode !== 'u' && fs.existsSync(path.join(DEPLOY, 'intro/index.html'))) {
+    const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    const page = await context.newPage();
+    await page.goto('http://localhost:4190/lms/games/intro/index.html');
+    await page.getByRole('link', { name: /Start the first episode/ }).first().click();
+    await page.waitForURL(/\/s01\/index\.html/);
+    await page.getByRole('button', { name: /Start the episode|Continue where I left off/ }).waitFor();
+    console.log('  BRIEFING opened directly: the button opens the first episode');
+    await context.close();
+  }
+
   for (const s of sessions) {
     const pack = readJson(s.id, `sessions/${s.id}.json`);
     const sol = readJson(s.id, `solutions/${s.id}.json`);

@@ -3,6 +3,13 @@ result of that SQL on the session snapshot, the beats just before, and the clue 
 (numbers/times/words) do not appear in the result."""
 import json, re, shutil, sqlite3, sys, tempfile, os
 
+# Windows consoles default to cp1252, which cannot print the arrows and dashes below — force UTF-8 on stdout/stderr.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding='utf-8', errors='replace')
+    except AttributeError:
+        pass
+
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'content')
 only = [int(a) for a in sys.argv[1:]] or range(1, 14)
 
@@ -29,12 +36,12 @@ def short(s, n=160):
 # Facts may also come from earlier PINNED clues (cited by id) — collect every clue body of earlier sessions
 earlier = ''
 for m in range(1, min(only) if only else 1):
-    earlier += ' '.join(b['body'] for b in json.load(open(f'{ROOT}/sessions/s{m:02d}.json'))['beats'] if b['type'] == 'clue') + ' '
+    earlier += ' '.join(b['body'] for b in json.load(open(f'{ROOT}/sessions/s{m:02d}.json', encoding='utf-8'))['beats'] if b['type'] == 'clue') + ' '
 
 flags = 0
 for n in only:
-    pack = json.load(open(f'{ROOT}/sessions/s{n:02d}.json'))
-    sol = json.load(open(f'{ROOT}/sessions/solutions/s{n:02d}.json'))
+    pack = json.load(open(f'{ROOT}/sessions/s{n:02d}.json', encoding='utf-8'))
+    sol = json.load(open(f'{ROOT}/sessions/solutions/s{n:02d}.json', encoding='utf-8'))
     beats = pack['beats']
     print(f"\n{'='*100}\nS{n} · {pack['title']}  snapshot={pack['snapshot']}")
     seen = earlier   # + results and clue cards the learner has already seen in THIS session

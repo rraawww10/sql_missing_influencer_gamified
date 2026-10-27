@@ -52,6 +52,27 @@ describe('activity widgets', () => {
     expect(got).toEqual({ kind: 'sort_into', placement: { register: 'Data', rumour: 'Not data' } });
   });
 
+  it('SortInto: a placed item goes back to the tray, and a box still takes a drop on top of one', async () => {
+    const beat = { id: 'x', type: 'activity', kind: 'sort_into', prompt: 'p', buckets: ['Data', 'Not data'],
+      items: [{ text: 'register', bucket: 'Data' }, { text: 'rumour', bucket: 'Not data' }] } as ActivityBeat & { kind: 'sort_into' };
+    render(<SortInto beat={beat} locked={false} reveal={false} onSubmit={() => {}} />);
+    const bucket = () => screen.getByRole('button', { name: 'Put in Data' });
+    await userEvent.click(screen.getByRole('button', { name: 'register' }));
+    await userEvent.click(bucket());
+    expect(bucket().textContent).toContain('register');
+
+    // with another item picked, clicking the placed pill means "drop it in this box" — the pill is the box
+    await userEvent.click(screen.getByRole('button', { name: 'rumour' }));
+    await userEvent.click(screen.getByRole('button', { name: 'register' }));
+    expect(bucket().textContent).toContain('rumour');
+    expect(bucket().textContent).toContain('register');
+
+    // with nothing picked, the same pill takes the item back out (the bucket must not re-place it)
+    await userEvent.click(screen.getByRole('button', { name: 'register' }));
+    expect(bucket().textContent).not.toContain('register');
+    expect(screen.getByLabelText('Items to sort').textContent).toContain('register');
+  });
+
   it('MatchPairs: one dropdown per item; reveal shows the key', () => {
     const beat = { id: 'm', type: 'activity', kind: 'match', prompt: 'p',
       pairs: [{ left: 'age', right: 'INTEGER' }, { left: 'phone', right: 'VARCHAR' }] } as ActivityBeat & { kind: 'match' };

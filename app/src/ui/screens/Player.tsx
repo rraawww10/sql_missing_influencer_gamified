@@ -163,7 +163,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
           {fullBleed ? stage : <div className={`stage-content ${beat.type === 'task' ? 'wide' : beat.type === 'note' ? 'reading' : ''}`} style={beat.type === 'clue' ? { minHeight: '100%', display: 'grid' } : undefined}>{stage}</div>}
         </div>
 
-        <div className="dock">
+        <div className={`dock${fullBleed ? ' floating' : ''}`}>
           <button className="btn" onClick={back} disabled={view === 0} aria-label="Back to the previous step">← Back</button>
           <div className={`status ${canGo && !review ? 'ok' : ''}`} aria-live="polite">
             {review ? `Step ${view + 1} of ${beats.length} · review` : canGo ? (last ? (multiPart ? 'Last step — finish this part' : 'Last step — finish the episode') : 'Ready when you are') : TODO[beat.type] ?? ''}

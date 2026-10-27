@@ -1,7 +1,7 @@
-// Builds the COMPACT upload folder for S3 (or any static host): ../missing-influencer-v2
+// Builds the COMPACT upload folder for S3 (or any static host): ../missing-influencer-v3
 // The briefing + the 13 episodes (one site per course topic). The app bundle and the content are stored ONCE:
 //
-//   missing-influencer-v2/
+//   missing-influencer-v3/
 //     assets/            the app (JS, CSS, SQLite wasm, fonts) — one copy
 //     content/           snapshots, episode packs, solutions, course notes, cast — one copy
 //     intro/index.html   the briefing            ← <meta name="tmi-intro">
@@ -12,7 +12,7 @@
 // Each site is opened by its own URL (…/s03/index.html) and embedded in an iframe.
 // The per-reading-material unit sites (u01 … u38) are NOT shipped (decision 2026-10-19); `--units` adds them back.
 //
-// Usage: npm run build:s3                     (→ ../missing-influencer-v2)
+// Usage: npm run build:s3                     (→ ../missing-influencer-v3)
 //        npm run build:s3 -- /path            (another output folder)
 //        npm run build:s3 -- --units          (also the 38 unit sites + units.json)
 import fs from 'node:fs';
@@ -26,7 +26,9 @@ const ROOT = path.resolve(APP, '..');
 const CONTENT = path.join(ROOT, 'content');
 const args = process.argv.slice(2);
 const WITH_UNITS = args.includes('--units');
-const OUT = path.resolve(args.find((a) => !a.startsWith('--')) ?? path.join(ROOT, 'missing-influencer-v2'));
+// the one place the upload folder is named — bump it here and in README.md when the version changes
+const UPLOAD_DIR = 'missing-influencer-v3';
+const OUT = path.resolve(args.find((a) => !a.startsWith('--')) ?? path.join(ROOT, UPLOAD_DIR));
 const pad = (n) => String(n).padStart(2, '0');
 const SITE_SUFFIX = ' — SQL: The Missing Influencer';
 
