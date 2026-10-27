@@ -1,0 +1,251 @@
+=========================================================================
+ SQL: THE MISSING INFLUENCER - HOW TO PLAY IT AND HOW TO TEST IT
+ Written 2026-10-27. Plain steps, in order. Windows / PowerShell.
+=========================================================================
+
+Project folder:  D:\missing_influencer\sql-missing-influencer
+Open PowerShell and run:   cd D:\missing_influencer\sql-missing-influencer
+
+IMPORTANT (PowerShell): do NOT join commands with "&&" - it does not work
+in Windows PowerShell 5.1. Run each line one at a time.
+
+
+-------------------------------------------------------------------------
+ PART A - SET UP (do this ONCE on a new machine)
+-------------------------------------------------------------------------
+
+You need: Node 18 or newer (22+ is best) and Python 3.
+Check them:
+
+    node -v
+    python --version
+
+Install the packages (two folders, so two installs):
+
+    cd D:\missing_influencer\sql-missing-influencer\pipeline
+    npm install
+    cd D:\missing_influencer\sql-missing-influencer\app
+    npm install
+
+That is all. Nothing else to install, no database to set up - the game
+runs SQLite inside the browser.
+
+
+-------------------------------------------------------------------------
+ PART B - PLAY IT YOURSELF (the fast way, for development)
+-------------------------------------------------------------------------
+
+1. Start the dev server:
+
+       cd D:\missing_influencer\sql-missing-influencer\app
+       npm run dev
+
+2. It prints a web address. Open it in Chrome:
+
+       http://localhost:5173
+
+   You land on the CASE MAP - all 13 episodes in a list.
+
+3. To jump straight to one screen, add this to the end of the address:
+
+       http://localhost:5173/?intro=1       the case briefing
+       http://localhost:5173/?session=3     episode 3 only
+       http://localhost:5173/?session=7     episode 7 only
+       http://localhost:5173/?unit=11       one reading material only
+
+4. How to actually play a screen:
+
+   - Story screens: read, then press "Continue" at the bottom.
+   - Quiz / sort / match screens: answer, then "Continue".
+   - SQL screens: type a query in the dark editor box and press
+     "Run" (or hit Ctrl+Enter). If it is right you get a green
+     "Correct" and the Continue button lights up.
+   - Stuck? Press the "Hints" button on that screen - hints are free
+     and get more specific each time you press.
+
+   The buttons in the top-right corner of every episode:
+       Tables  (box icon)   - the tables you are allowed to query
+       Pin + a number       - the Evidence Board, your collected clues
+       Reset (circle arrow) - replay this episode from the start
+
+   The chip under the title ("Step 4/19") opens the list of all steps,
+   so you can see where you are and jump back to an earlier one.
+
+5. To stop the server: click the PowerShell window and press Ctrl+C.
+
+
+-------------------------------------------------------------------------
+ PART C - PLAY THE REAL BUILT VERSION (what students will get)
+-------------------------------------------------------------------------
+
+This is the version in the folder "missing-influencer-v3". It is already
+built, but rebuild it whenever you change the game:
+
+    cd D:\missing_influencer\sql-missing-influencer\app
+    npm run build:s3
+
+You CANNOT just double-click index.html - you will get a blank page.
+It must be served over http. Open a SECOND PowerShell window and run:
+
+    cd D:\missing_influencer\sql-missing-influencer
+    python -m http.server 8731 --directory missing-influencer-v3
+
+Leave that window running, then open in Chrome:
+
+    http://127.0.0.1:8731/intro/index.html     the briefing (start here)
+    http://127.0.0.1:8731/s01/index.html       episode 1
+    http://127.0.0.1:8731/s03/index.html       episode 3
+    ... and so on up to s13
+
+Each episode is its own mini website. That is on purpose - the LMS
+embeds them one at a time.
+
+Stop the server with Ctrl+C in that window.
+
+
+-------------------------------------------------------------------------
+ PART D - TEST IT THE WAY THE LMS WILL SHOW IT (inside an iframe)
+-------------------------------------------------------------------------
+
+With the python server from PART C still running, open:
+
+    http://127.0.0.1:8731/embed-demo.html
+
+This is a fake LMS page. Pick an episode from the dropdown and it loads
+inside a box, exactly like the real platform. The messages the game
+sends to the platform (ready / progress / completed) are printed at the
+bottom of the page, so you can see progress being reported.
+
+
+-------------------------------------------------------------------------
+ PART E - THE AUTOMATED TESTS (run these before you ship anything)
+-------------------------------------------------------------------------
+
+Run them in this order. Every one should end with OK / all passed.
+The browser ones (5, 6, 7) take 2-5 minutes each - that is normal.
+
+CONTENT TESTS - run from the project folder:
+
+    cd D:\missing_influencer\sql-missing-influencer
+    node pipeline/build_sessions.mjs        rebuilds the 13 episodes
+    node pipeline/test_grader.mjs           expect 239/239
+    node pipeline/check_case_db.mjs         expect 115/115
+    python pipeline/audit_clues.py          expect it to finish quietly
+
+APP TESTS - run from the app folder:
+
+    cd D:\missing_influencer\sql-missing-influencer\app
+
+ 1. npm run typecheck      - finds broken TypeScript. Should print nothing.
+ 2. npm test               - 113 unit tests, about 20 seconds.
+ 3. npm run build          - makes sure it actually builds.
+ 4. npm run build:s3       - rebuilds the upload folder.
+ 5. npm run smoke          - opens a REAL Chrome and plays episodes 1-3
+                             by itself. Checks Ctrl+Enter and the table
+                             autocomplete too.
+ 6. npm run hit-test       - the layout guard. Checks that every button
+                             on screen can actually be clicked, at phone,
+                             laptop and desktop sizes. 375 checks.
+                             To check a different episode:
+                                 $env:HIT_SESSION="7"
+                                 npm run hit-test
+ 7. The full 13-episode run against the built folder:
+                                 $env:DEPLOY_DIR="missing-influencer-v3"
+                                 node scripts/smoke-deploy.mjs sessions
+                             (In PowerShell you MUST set the variable on
+                             its own line like that.)
+
+If a browser test fails it saves a screenshot and tells you the path -
+open the screenshot first, it usually shows the problem immediately.
+
+
+-------------------------------------------------------------------------
+ PART F - HINTS, TRICKS AND FIXES
+-------------------------------------------------------------------------
+
+** I am stuck on a SQL question and the in-game hints are not enough **
+   The answers are in the project, in this folder:
+
+       D:\missing_influencer\sql-missing-influencer\content\sessions\solutions\
+
+   One file per episode: s01.json, s02.json ... s13.json
+   Open the one you need in Notepad. Find the task id (for example
+   "T3.1") and the line "ref" is the correct query. Copy it into the
+   game. ("traps" are the common wrong answers the game recognises.)
+
+** I want to replay an episode from the start **
+   Press the red Reset button (circle arrow) in the top-right corner
+   while playing, then "Yes, reset". It is also on the episode intro
+   screen as "Reset progress" once you have started that episode.
+   Either way it clears only that one episode.
+
+** I want to wipe EVERYTHING and start as a brand new student **
+   In Chrome press F12 to open DevTools -> "Application" tab ->
+   on the left click "Storage" -> "Clear site data".
+   Reload the page. You are now a fresh user.
+
+** I want to test as a specific student (like the LMS does) **
+   Add ?user_id=something to the address, for example:
+       http://127.0.0.1:8731/s01/index.html?user_id=test123
+   Progress is saved against that id. Change the id to get a fresh run.
+
+** The page is blank / white **
+   You almost certainly opened index.html by double-clicking it.
+   Go back to PART C and serve it with python instead.
+
+** "npm is not recognised" **
+   Node is not installed, or the PowerShell window was opened before you
+   installed it. Close PowerShell, open a new one, try again.
+
+** Port 5173 or 8731 is already in use **
+   Another window is still running the server. Find it and press Ctrl+C,
+   or just use a different number, e.g. 8732.
+
+** The game feels slow the first time an episode loads **
+   Normal. It is downloading the SQLite engine (about 1 MB). It is
+   cached after that.
+
+
+-------------------------------------------------------------------------
+ THE 13 EPISODES (in order, with how long each one takes)
+-------------------------------------------------------------------------
+
+    intro  Case briefing            - start here
+     1.  She is Gone                24 min
+     2.  Build the Case File        56 min
+     3.  Hotel Gate Log             37 min
+     4.  The Last Cab               34 min
+     5.  Follow the Money           40 min
+     6.  Phone Towers               18 min
+     7.  Smartwatch Secrets         47 min
+     8.  Clear the Innocent         36 min
+     9.  The Case Board             46 min
+    10.  Connect the Dots           23 min
+    11.  The Toll Plaza             36 min
+    12.  The Edited Contract        53 min
+    13.  Showtime                   21 min
+
+The story runs on a clock from 6 PM to 12 AM, so play them in order the
+first time - later episodes refer back to clues you found earlier.
+
+
+-------------------------------------------------------------------------
+ THE SHORT VERSION (if you only read one box)
+-------------------------------------------------------------------------
+
+   To play:
+       cd D:\missing_influencer\sql-missing-influencer\app
+       npm run dev
+       open http://localhost:5173
+
+   To check nothing is broken:
+       cd D:\missing_influencer\sql-missing-influencer\app
+       npm test
+       npm run build
+       npm run smoke
+       npm run hit-test
+
+   Answers when stuck:
+       content\sessions\solutions\sNN.json  ->  the "ref" line
+
+=========================================================================

@@ -1,0 +1,557 @@
+===============================================================================
+ SQL: THE MISSING INFLUENCER
+ STORY / CLUE / EPISODE CONTINUITY REVIEW
+ Date: 2026-10-27      Reviewer: Claude (read-only pass - NOTHING WAS CHANGED)
+===============================================================================
+
+WHAT YOU ASKED
+   "Check whether all the episodes, levels and stages in the game story connect
+    and sync with one another - the theme, the story and the clues. With proof."
+
+WHAT I DID
+   Read all 13 episode sources end to end (content/sessions/src/s01..s13.yaml,
+   3,667 lines), the design doc (docs/SESSION_PLAN.md, 692 lines), the cast file
+   (content/story/cast.json), and the 13 case-database snapshots. Then I did not
+   trust the text: I ran every claim against the actual data with SQL, and wrote
+   small scripts to check the clue graph, the hook-to-opening chain, the beat/unit
+   coverage and the story clock. Every finding below has the query or the file
+   and line number that proves it.
+
+VERDICT IN ONE PARAGRAPH
+   The spine is genuinely strong. All 19 clues form one backward-only chain with
+   no dangling references, all 12 hooks land on the next episode's opening, the
+   database grows table-by-table exactly as the story says it does, and work the
+   learner does in one episode survives into the next (the alibi you type in
+   Episode 2 is still there in Episode 6 and is used to catch the culprit). The
+   numbers in the clue cards are real - 239/239 grader checks and 115/115 data
+   checks pass, and the clue auditor flags 0 clue facts.
+
+   BUT there are 3 real breaks and about 8 smaller ones. The most serious is a
+   single sentence in Episode 12 that contradicts the learner's own query result.
+   The other two are "story clock" problems: Episodes 3 and 6 show the learner
+   data from hours in their own future, and Episode 6 openly calls a 23:28
+   timestamp "right now" while the screen header says 8:30 PM.
+
+   Nothing here is a code bug. Everything is content wording or data timing.
+
+
+===============================================================================
+ PART 1 - WHAT CONNECTS CORRECTLY  (the proof that the spine holds)
+===============================================================================
+
+1.1  THE CLUE GRAPH IS SOUND - no dangling, no forward references
+     19 clues: S1-C1, S2-C1, S3-C1, S4-C1, S4-C2, S5-C1, S5-C3, S5-C2, S6-C1,
+     S6-C2, S7-C1, S8-C1, S9-C1, S10-C1, S11-C1, S11-C2, S12-C1, S12-C2, S13-C1.
+
+     I extracted every "SNN-CN" mention from all 13 YAML files and matched it to
+     where that clue is defined. Result: every cited clue is defined in an
+     EARLIER session or the same one. Zero undefined references. Zero forward
+     references (no clue is ever cited before it can be earned).
+
+     The cross-episode web:
+        Episode 3  cites S2-C1
+        Episode 4  cites S2-C1, S3-C1
+        Episode 7  cites S5-C1, S5-C2
+        Episode 9  cites S5-C2
+        Episode 10 cites S3-C1
+        Episode 11 cites S3-C1, S6-C1
+        Episode 12 cites S5-C3, S3-C1
+
+1.2  EVERY EPISODE CARRIES ALL EARLIER CLUES FORWARD
+     Each built pack has a "previously" list. Proof (content/sessions/sNN.json):
+        s02 previously: [S1-C1]
+        s07 previously: [S1-C1 ... S6-C2]        (10 clues)
+        s13 previously: [S1-C1 ... S12-C2]       (18 clues)
+     So when Episode 12's clue says "(S3-C1)", the learner can open the Evidence
+     Board and find that exact card - even if they only ever played Episode 12.
+     The board tags every card with its clue id, so the reference resolves.
+
+1.3  ALL 12 HOOKS LAND ON THE NEXT EPISODE'S OPENING
+        Ep1  hook "build our suspect list in SQL"       -> Ep2  S2.1  "Five names..."     OK
+        Ep2  hook "gate log, 300 entries"               -> Ep3  S3.1  gate_log            OK
+        Ep3  hook "booked 17:55, cancelled by rider"    -> Ep4  S4.1  same words          OK
+        Ep4  hook "Mahi: a weird Rs 1 at 7 PM"          -> Ep5  S5.9b same words          OK
+        Ep5  hook "her smartwatch has an eSIM"          -> Ep6  S6.1  tower_pings         OK
+        Ep6  hook "RRO-17 covers 6 km2 / steps + HR"    -> Ep7  S7.1  watch_log           OK
+        Ep7  hook "#IshitaKnows"                        -> Ep8  S8.1  "Hashtags don't..." OK
+        Ep8  hook "evidence scattered in ten tables"    -> Ep9  S9.1  the case board      OK
+        Ep9  hook "loaded the full city data, join it"  -> Ep10 S10.1 new tidy tables     OK
+        Ep10 hook "where did it go? why back at 19:52?" -> Ep11 S11.1 toll_crossings      OK
+        Ep11 hook "lawyer: check the label's system"    -> Ep12 S12.1 contracts/txn_log   OK
+        Ep12 hook "We have her. She's okay."            -> Ep13 S13.1 video call          OK
+
+1.4  THE DATABASE GROWS EXACTLY AS THE STORY SAYS IT DOES
+     Tables present in each snapshot (I listed sqlite_master for all 13):
+        s01  1 tbl  + hotel_guests
+        s02  2      + rumours
+        s03  4      + gate_log, vehicles, suspects   - rumours REMOVED
+        s04  5      + cab_rides
+        s05  6      + upi_payments
+        s06  7      + tower_pings
+        s07  8      + watch_log
+        s08 10      + alibis, fan_dms
+        s09 11      + smartwatch
+        s10 21      + people, upi_accounts, company, rehearsal_attendance,
+                      event_schedule, insurance_claims, person, property,
+                      booking, booking_guest
+        s11 24      + toll_crossings, police_units, routes
+        s12 27      + contracts, label_payments, txn_log
+        s13 27      (no new)
+     Note the two best details: `rumours` DISAPPEARS in s03 because the learner
+     DROPped it in Episode 2, and `suspects` APPEARS in s03 because the learner
+     created it. The world remembers what the player did.
+
+1.5  THE PLAYER'S OWN WORK SURVIVES ACROSS EPISODES  (the strongest link)
+     In Episode 2 the learner creates `suspects`, renames `role` to
+     `relation_to_case`, drops `age`, fixes Sunny's phone and types Dev's alibi.
+     Query of the s06 and s08 snapshots:
+        columns: name, relation_to_case, phone, alibi      <- the ALTERed shape
+        ('Dev Arora',   'manager',         '9876500002', 'In hotel lobby all evening')
+        ('Sunny Gill',  'cab driver',      '9876500005', 'Driving another passenger')
+        ... (the typo 9876500050 is gone - the UPDATE stuck)
+     And Episode 6 then uses it: S6.6b says "You typed his alibi yourself in
+     Episode 2" and S6-C2 breaks it with tower data. That is a four-episode
+     payoff on a single line the learner typed.
+
+1.6  STATE CHANGES PROPAGATE BETWEEN EPISODES
+     The `alibis.verified` flags across snapshots:
+        s08 / s09 : Ishita=1, Sunny=1, Dev=0, Nysa=0, Kunal=0
+        s11 / s12 : Ishita=1, Sunny=1, Nysa=1, Kunal=1, Dev=0
+     Nysa and Kunal are cleared DURING Episode 10 (tasks T10.2 and T10.3), and
+     the next snapshot has them verified. The finale's final query then returns
+     exactly one "Charged":
+        Dev Arora   -> Charged
+        Nysa, Ishita, Sunny, Kunal -> Cleared
+
+1.7  THE STORY CLOCK IS A CLEAN 30-MINUTE LADDER
+     story_clock in the YAML: 18:00, 18:30, 19:00, 19:30, 20:00, 20:30, 21:00,
+     21:30, 22:00, 22:30, 23:00, 23:30, and 2026-12-13 00:00 for the finale.
+     13 episodes x 30 min = exactly the 6 PM -> midnight window, and the concert
+     is at midnight, which matches Episode 1's "6 hrs before the concert".
+     (The app computes the same ladder: app/src/ui/speakers.ts:15-20.)
+
+1.8  THE NUMBERS IN THE STORY ARE THE REAL NUMBERS
+     Every count the dialogue states, checked against the snapshots:
+        "300 entries since noon" (Ep2 hook)    -> gate_log      = 300 rows   OK
+        "144 rows" (T3.1 reply)                -> ts >= 18:00   = 144        OK
+        "22 rows" / "same as gate <> MAIN"     -> both          = 22         OK
+        "180 rows" (T3.7 reply)                -> NOT LIKE HTL% = 180        OK
+        3 days of UPI                          -> upi_payments  = 600 rows   OK
+        today's rides                          -> cab_rides     = 400 rows   OK
+        ~5,000 pings                           -> tower_pings   = 5,000      OK
+        1 row per 5 min                        -> watch_log     = 216 rows   OK
+        "Rs 54,450 in six payments, one of them Rs 45,000"
+                 -> SUM=54450, COUNT=6, MAX=45000                            OK
+        RRO-17 after 6 PM: Tara 47 / Ramesh 24 / Dev 6  (drives the CASE in Ep8) OK
+
+1.9  THE RED HERRINGS ARE REAL DATA, NOT HAND-WAVING
+        Ep3 trap "#FanDidIt": the fan van really is at the STAFF gate and really
+            is WHITE  -> (151,'STAFF','IN','17:40:12','24 BH 2210 FC','White',...)
+            so the precedence mistake really does drag it in.
+        Ep3 near-miss plate: '26 BH 4417 EY' exists, is Grey, and is at the MAIN
+            gate - so '%' instead of '_' really does over-match.
+        Ep3 "a catering van at 18:55": (177,'SERVICE','OUT','18:55:09',
+            '21 BH 5090 CT','White','Catering van')                           OK
+        Ep4: R-2291 Tara -> City Stadium, CANCELLED_BY_RIDER at 18:08:12, and
+            R-2297 Farhan Ali -> Central Railway Station booked 18:10.         OK
+     Every trap in the game is a real "Possible Mistake" from a reading material
+     AND a real wrong lead in the story. That is a rare and deliberate alignment.
+
+1.10 THE THEME IS CARRIED BY THE MECHANICS, NOT JUST THE DIALOGUE
+     "Evidence, not noise" appears as an actual game rule, episode after episode:
+        Ep1  "data is our only witness"
+        Ep2  "Claims are not proof"                      (after typing the alibis)
+        Ep3  wrong precedence -> "#FanDidIt" trends
+        Ep4  "Comments say the driver did it. Data first."
+        Ep6  forgetting WHERE -> fans post "She's still in the hotel!"
+        Ep7  hook "#IshitaKnows"
+        Ep8  "Being a big fan isn't a crime. Following someone home would be."
+        Ep10 wrong NATURAL JOIN -> "Nysa skipped rehearsal!"
+        Ep13 "to everyone who looked for me with facts, not rumours"
+     Every single red herring in the game is also a social-media rumour. The SQL
+     mistake and the story's moral are the same mistake. This is the best piece
+     of design in the project.
+
+1.11 THE CAST IS FULLY WIRED
+     I checked whether any character or place in cast.json is dead weight.
+     Six keys (label_head, rival_manager, rival_label, studio, fan_cafe,
+     hotel_company) appear in NO episode text - but they are all used by
+     pipeline/build_case_db.py (lines 272, 311, 423, 460, 467, 469, 561, 569-570)
+     to generate the case data. So "rename in cast.json, rebuild, done" really
+     does hold. Neil Mehta and Pia Iyer exist as rows in `people` even though
+     nobody ever says their names - that is depth, not debris.
+
+1.12 EVERY EPISODE BEAT IS REACHABLE IN LMS UNIT MODE
+     I compared the beats of each episode to the union of its deployable units.
+     Result for all 13: "not-in-any-unit = none". Units add extra bridge beats
+     ("Previously: ...") that only exist in unit mode - 40 of them - and those
+     recaps are accurate.
+
+
+===============================================================================
+ PART 2 - THE BREAKS  (ranked. nothing was changed; fixes are suggestions only)
+===============================================================================
+
+-------------------------------------------------------------------------------
+ BREAK 1  [SERIOUS]  Episode 12's clue contradicts the learner's own result
+-------------------------------------------------------------------------------
+WHERE   content/sessions/src/s12.yaml:318   (beat S12.22, clue S12-C2)
+        Also shipped in content/sessions/s12.json and missing-influencer-v3/.
+
+THE TEXT
+   "...user darora wrote Applicable at 18:05 (T7 - lost in the 18:07 crash)
+    and again at 18:20 (T9 - committed...).
+    >>> Both writes came AFTER she left the hotel in his SUV at 18:12 (S3-C1). <<<
+    She never agreed to skip the show."
+
+THE PROOF  (SELECT * FROM txn_log ORDER BY lsn, on the s12 snapshot)
+   lsn 4   T7  START  darora  2026-12-12 18:05:10
+   lsn 5   T7  WRITE  contract_C12.missed_show_clause  Not Applicable -> Applicable
+                                         darora  2026-12-12 18:05:40   <<< 18:05
+   lsn 6       CRASH  system          2026-12-12 18:07:00
+   lsn 10  T9  START  darora          2026-12-12 18:20:05
+   lsn 11  T9  WRITE  ...missed_show_clause   darora  18:20:30
+   lsn 12  T9  WRITE  ...manager_bonus 0 -> 2500000   darora  18:20:40
+   lsn 13  T9  COMMIT darora          18:21:00
+
+WHY IT IS WRONG
+   The first write is at 18:05:40. She left by the service gate at 18:12:05
+   (S3-C1), her key card hit the service lift at 18:09:40 (S2-C1), and she
+   cancelled her cab at 18:08:12 (S4-C1). So the T7 write came BEFORE all three.
+   "Both writes came after" is false, and the same clue card states 18:05 two
+   lines above - the card contradicts itself inside one paragraph.
+
+WHY IT MATTERS MORE THAN A TYPO
+   a) The learner has the log on screen (T12.9 returns those exact 7 rows). A
+      sharp learner will see 18:05 and lose trust in the clue cards.
+   b) It breaks the project's own evidence rule (SESSION_PLAN.md section 0.5:
+      "states only what the result showed").
+   c) The truth is actually a BETTER story. 18:05 is before she was taken - that
+      is premeditation, not a cover-up. The current wording throws away the
+      strongest fact in the episode.
+
+NOTE  Two other places in the same episode get it right, which shows this is a
+      slip, not a design decision:
+        - S12.19b's explain (s12.yaml:291): "T7 WRITE by darora 18:05:40 ... CRASH
+          18:07 ... T9 18:20:30" - correct.
+        - the unit opener for RM #37: "edited by login darora at 18:20 - after
+          Tara was already gone" - correct, because it only cites T9.
+        - Episode 13's S13-C1 says "his committed contract change at 18:20" -
+          correct.
+
+SUGGESTED FIX (one sentence, no data change)
+      "The first attempt came minutes BEFORE she left the hotel at 18:12 (S3-C1);
+       the committed one came eight minutes after. She never agreed to skip the show."
+
+-------------------------------------------------------------------------------
+ BREAK 2  [SERIOUS]  Episode 6 calls 23:28 "right now" - the header says 8:30 PM
+-------------------------------------------------------------------------------
+WHERE   content/sessions/src/s06.yaml:63, :66, :73   (S6.4b and clue S6-C1)
+
+THE TEXT
+   S6.4b correct answer : "...47 pings, the last one at 23:28, WHICH IS RIGHT NOW"
+   S6.4b explain        : "...last 23:28 ... and it is still pinging"
+   S6-C1 clue           : "...the last at 23:28. ... she is still there NOW."
+
+THE PROOF
+   Episode 6's story_clock is "2026-12-12 20:30:00" (s06.yaml:6), and the game
+   header renders it with storyTime(6) = 8:30 PM (app/src/ui/speakers.ts:15-20).
+   Meanwhile the s06 snapshot contains:
+      Tara's pings >= 18:00 : min 18:00:00, max 23:28:00, count 54
+      whole tower_pings max ts : 2026-12-12 23:59:56
+   So at 8:30 PM in the story, the table already holds data up to 11:59 PM, and
+   the clue tells the learner that 11:28 PM is the present moment.
+
+WHY IT MATTERS
+   The clock is on screen the whole time ("8:30 PM - Police Data Cell", top bar).
+   The contradiction is visible without leaving the page. It is a three-hour gap.
+
+SUGGESTED FIX  (two options, both content-only)
+   a) Cheapest: drop the "right now" wording. "...the last at 23:28, and it has
+      not left that tower's area since 18:52." Still true, no clock claim.
+   b) Properly: cut tower_pings at the episode's own clock in the s06 snapshot
+      (her RRO-17 count would then read 17, not 47) - but that ripples into
+      Episode 8's CASE counts and Episode 11's self join, so (a) is safer.
+
+-------------------------------------------------------------------------------
+ BREAK 3  [MODERATE]  Episode 3 pins 19:52 as evidence at 7:00 PM
+-------------------------------------------------------------------------------
+WHERE   content/sessions/src/s03.yaml:143, :155, :244, :247, :254
+
+THE TEXT (clue S3-C1, line 254)
+   "...grey SUV 26 BH 4471 EX went OUT by the service gate at 18:12:05 ...
+    The same SUV came back IN at 19:52:10, and the guard wrote the driver's
+    name: Dev Arora."
+   and S3.12's reply (line 155): "Dev Arora ... was driving that SUV when it came
+   back at 19:52. Ira: 'He told us he never left the lobby.'"
+
+THE PROOF
+   Episode 3's story_clock is 19:00:00 -> the header reads 7:00 PM.
+   The two rows T3.3c returns from the s03 snapshot:
+      (160,'SERVICE','OUT','2026-12-12 18:12:05','26 BH 4471 EX','Grey',None)
+      (197,'SERVICE','IN' ,'2026-12-12 19:52:10','26 BH 4471 EX','Grey','Dev Arora')
+   And the snapshot as a whole:
+      MAX(ts) in gate_log  = 2026-12-12 23:58:58
+      rows after 19:00     = 123
+   So at 7:00 PM the hotel has already sent the log for the rest of the night,
+   and the episode's central clue depends on an event 52 minutes in the future.
+
+WHY IT MATTERS
+   Less glaring than Break 2 (nobody says "right now"), but it is the same fault
+   and it is load-bearing: the whole of Episode 3's payoff - Dev's name on the
+   gate log - comes from the future row.
+
+SUGGESTED FIX
+   Shift Episode 3's story clock later, OR have Kabir say the log is a full-day
+   export pulled at 23:00 and Ira is reading it back. One line of dialogue in
+   S3.1 would close it for all 300 rows at once.
+
+-------------------------------------------------------------------------------
+ BREAK 4  [MINOR but visible]  A guest has two different surnames
+-------------------------------------------------------------------------------
+WHERE   content/sessions/src/s01.yaml:162 and :168   (beat S1.14, the very first
+        activity the learner ever does)  vs  content/story/cast.json:76
+
+   Episode 1's printout : [31, "Anita Desai",     512, "IN_ROOM"]
+   cast.json "guest"    :      "Anita Fernandes"
+   hotel_guests row 31  : (31,'Anita Fernandes',512,'2026-12-12 11:30:00','OUT',
+                              '2026-12-12 18:17:02','Lobby')
+
+   Same guest_id, same room number, different surname. The name is HARDCODED in
+   s01.yaml instead of using {{guest}} - so it also breaks the "rename in
+   cast.json and rebuild" promise for that one row.
+
+   Visible to a learner who does Episode 1 and then runs SELECT * FROM
+   hotel_guests in Episode 2 (which is exactly what T2.6 teaches them to do).
+   Also note Anita appears again by name in Episode 8 (T8.5's reply) as
+   "Anita Fernandes".
+
+-------------------------------------------------------------------------------
+ BREAK 5  [MINOR]  Six clue cards skip the "read it" step the design mandates
+-------------------------------------------------------------------------------
+   SESSION_PLAN.md section 0.5 sets a four-step rule for every clue:
+      1 lead scene -> 2 the learner's query -> 3 READ IT (a pick_cell or a check
+      on their own result) -> 4 the clue card.
+
+   I walked the built packs and listed what actually sits between the unlocking
+   task and the clue card:
+
+      clue      unlocking task   between task and card        read-it?
+      S2-C1     T2.6             pick_cell                    yes
+      S3-C1     T3.8             check                        yes
+      S4-C1     T4.6             check                        yes
+      S4-C2     T4.7             check, witness scene         yes
+      S5-C1     T5.3             pick_cell                    yes
+      S5-C3     T5.5b            (nothing)                    NO
+      S5-C2     T5.6b            (nothing)                    NO
+      S6-C1     T6.2             check                        yes
+      S6-C2     T6.3             check                        yes
+      S7-C1     T7.11            check                        yes
+      S8-C1     T8.3             (nothing)                    NO
+      S9-C1     T9.8             check                        yes
+      S10-C1    T10.5b           (nothing)                    NO
+      S11-C1    T11.2            check                        yes
+      S11-C2    T11.7            (nothing)                    NO
+      S12-C1    T12.5b           (nothing)                    NO
+      S12-C2    T12.10           ACID match activity          partly*
+      S13-C1    T13.1            (nothing)                    n/a (recap card)
+      S1-C1     (no task)        pick_cell S1.14 precedes it  yes, by design
+
+   * S12-C2 does have a read-it check (S12.19b) but it is attached to the
+     PREVIOUS task (T12.9), not to T12.10 which unlocks the clue.
+
+   In all six "NO" cases the task's reply_on_pass does point at the right columns
+   ("Read the ts and the note"), so it is a softened version of the rule rather
+   than narration. Still: 6 of 18 query-backed clues do not get the step the
+   design doc says they all get.
+
+-------------------------------------------------------------------------------
+ BREAK 6  [MINOR]  Two reading materials lose a heading in standalone unit mode
+-------------------------------------------------------------------------------
+   `node pipeline/build_sessions.mjs` prints exactly two warnings:
+      warn S2 unit u04 (RM #4): heading "Let's view the added data!" is only
+           covered elsewhere in the session
+      warn S7 unit u19 (RM #19): heading "Expressions in HAVING Clause" is only
+           covered elsewhere in the session
+
+   Meaning: in the FULL episode both headings are taught. But a learner who is
+   served only unit u04 (Inserting Rows) or only u19 (SQL Expression) in the LMS
+   never meets them, because the beat that covers them sits inside the NEXT
+   unit's slice (S2.11 lives in the RM #5 unit; S7.15/S7.16 live in the RM #20
+   unit). This is the one place where "episode" and "level" genuinely do not sync.
+
+-------------------------------------------------------------------------------
+ BREAK 7  [COSMETIC]  "3 minutes after" is really 2 minutes 25 seconds
+-------------------------------------------------------------------------------
+   s03.yaml:254, clue S3-C1: "...at 18:12:05 - 3 minutes after her key card was
+   tapped at the service lift (clue S2-C1)."
+   Key card: 18:09:40. Gate: 18:12:05. Gap = 2 min 25 s, which rounds to 2.
+   (By contrast S4-C1's "one minute before" for 18:08:12 -> 18:09:40 is 1 min
+   28 s, which is fine.)
+   The clue auditor cannot catch this class of error because it only checks that
+   literal values appear in the result, not arithmetic between two clues.
+
+-------------------------------------------------------------------------------
+ BREAK 8  [COSMETIC]  S4-C2 has no on_pass hook
+-------------------------------------------------------------------------------
+   s04.yaml beat S4.18 (task T4.7) has no `on_pass: { clue: S4-C2 }`, so
+   audit_clues.py prints "!! NO TASK unlocks this clue (requires_task = T4.7)".
+   I checked the engine: it is NOT broken for the learner. SessionRunner.pin()
+   (app/src/engine/runner/sessionRunner.ts:270-273) looks up requires_task and
+   still attaches the learner's passing SQL to the card, so the Evidence Board
+   card still says "Proved by your query (T4.7)". It only blinds the audit tool
+   and skips the in-player "clue unlocked" moment at the task.
+   (The other audit flag, S1-C1, is correct by design - Episode 1 has no SQL.)
+
+
+===============================================================================
+ PART 3 - THE DESIGN DOC HAS DRIFTED FROM THE GAME
+===============================================================================
+docs/SESSION_PLAN.md says it is "the design; the YAML files are the source of
+truth". It is, but it has drifted far enough to mislead whoever reads it next:
+
+   DOC SAYS                                   GAME ACTUALLY HAS
+   -----------------------------------------  ---------------------------------
+   S1.1 "MEGHNA RAO MISSING"                  {{star}} = Tara Sen  (old name!)
+   S12 view named `vikram_timeline`           `suv_timeline` ("Vikram" is not in
+                                              the cast at all - older draft name)
+   T3.1 "-> 154 rows"                         144 rows (grading expects 144)
+   T3.7 "-> 186 rows"                         180 rows
+   S3 watchman "ended with 71"                guard says "ended with EX"
+   S9 beat list jumps 5 -> 8                  beats 6 and 7 do not exist
+   Several "Est. time" values                 differ from est_minutes in the YAML
+   (and docs/HANDOVER.md says "1 benign       the build prints TWO warnings
+    warning" from build_sessions)             (see Break 6)
+
+None of this affects a learner. All of it will cost the next person a day.
+
+
+===============================================================================
+ PART 4 - OBSERVATIONS  (judgement calls, not errors - your decision)
+===============================================================================
+
+4.1  THE EPISODE 10 REVEAL IS PRE-SPOILED
+     Episode 10's clue S10-C1 is written as the reveal: "The car she left in is
+     her MANAGER'S." But by then the learner already knows:
+        Ep3  S3-C1: "the guard wrote the driver's name: Dev Arora" (he drove the
+             SUV back at 19:52)
+        Ep3  S3.20 reply: owner is "DA Talent Management Pvt Ltd" - and the
+             initials DA are not subtle
+        Ep6  S6-C2: Dev's phone was at the farm tower, breaking his alibi
+     So Episode 10's two joins confirm something settled four episodes earlier.
+     Mechanically it is a good JOIN lesson; dramatically it is a flat beat.
+     If you want the reveal to land, Episode 3's guard could write an illegible
+     or partial name, and the gate_log `person_name` for row 197 could be left
+     NULL until the joins fill it in.
+
+4.2  THE FINALE DOES NOT PROVE THE BEST CLUE
+     Episode 13 asks for five claims: the SUV's owner, its round trip, the tower,
+     the farm booking, and the contract edit. The Rs 1 "gReEn aCrEs" message -
+     the one clue the VICTIM created, and the emotional centre of the story
+     (S5-C1 and S7-C1) - is not one of the five. It is only recapped in Tara's
+     opening dialogue. The learner never re-proves the clue that actually found her.
+
+4.3  `person` AND `people` ARE THE SAME TWELVE PEOPLE
+     From Episode 10 on, both tables exist with the SAME ids and the SAME names:
+        person : (1,'Tara Sen'),(2,'Dev Arora'),(3,'Nysa Kapoor'),...,(12,'Pia Iyer')
+        people : (1,'Tara Sen','missing'),(2,'Dev Arora','suspect'),...
+     Episode 11 then uses `people` in T11.1/T11.3 and `person` in T11.4, with no
+     line of dialogue explaining why there are two. Add `suspects` (Episode 2)
+     and that is three overlapping people lists on screen at once.
+     Also: the learner only ever INSERTS Dev into `person` (T9.5), but the s10
+     snapshot has all 12 rows - the table is silently back-filled between
+     episodes with no story beat to cover it.
+
+4.4  ISHITA IS CLEARED BY THE DATA BEFORE THE STORY CLEARS HER
+     Episode 8's hook is "#IshitaKnows". But T8.6's EXCEPT (beat S8.12) already
+     drops her, because alibis.verified = 1 for her in the s08 seed. Only AFTER
+     that does T8.fan check her DMs (S8.13) and the scene clear her (S8.14).
+     The payoff arrives one beat before its proof.
+
+4.5  EPISODE 5 PINS ITS CLUES OUT OF NUMERICAL ORDER
+     Play order is S5-C1, then S5-C3, then S5-C2. The Evidence Board re-sorts
+     alphabetically (EvidenceBoard.tsx:22), so the board shows C1, C2, C3 while
+     the learner earned them C1, C3, C2. Harmless today because neither C2 nor C3
+     cites the other - but it is an accident waiting to become a contradiction.
+
+4.6  TIGHT BUT DEFENSIBLE: the 6 PM printout
+     Episode 1 says the room was empty and the key card unreturned "by 6:00 PM",
+     yet the card's last tap is 18:09:40. That works only if the status flipped
+     when she left the ROOM and the card was tapped nine minutes later at the
+     service lift. The game never says this outright. It holds, but a careful
+     learner may ask, and the answer is not on screen anywhere.
+
+
+===============================================================================
+ PART 5 - PER-EPISODE SCORECARD
+===============================================================================
+ Ep  Title                 Hook->next  Clues ok  Data ok  Issue
+ --  --------------------  ----------  --------  -------  --------------------
+  1  She's Gone            OK          OK        OK       Break 4 (Anita Desai)
+  2  Build the Case File   OK          OK        OK       Break 6 (unit u04)
+  3  Hotel Gate Log        OK          OK        OK       Break 3, Break 7
+  4  The Last Cab          OK          OK        OK       Break 8 (audit only)
+  5  Follow the Money      OK          OK        OK       Break 5 x2, Obs 4.5
+  6  Phone Towers          OK          OK        OK       BREAK 2
+  7  Smartwatch Secrets    OK          OK        OK       Break 6 (unit u19)
+  8  Clear the Innocent    OK          OK        OK       Break 5, Obs 4.4
+  9  The Case Board        OK          OK        OK       -
+ 10  Connect the Dots      OK          OK        OK       Break 5, Obs 4.1, 4.3
+ 11  The Toll Plaza        OK          OK        OK       Break 5
+ 12  The Edited Contract   OK          OK        OK       BREAK 1
+ 13  Showtime              n/a         OK        OK       Obs 4.2
+
+
+===============================================================================
+ PART 6 - SUGGESTED ORDER OF WORK  (nothing done yet - your call)
+===============================================================================
+ 1. Break 1  - one sentence in s12.yaml:318. Biggest payoff, smallest edit, and
+               the corrected version is a better story.
+ 2. Break 2  - remove "right now" / "still there now" from s06.yaml:63,66,73.
+ 3. Break 4  - s01.yaml:162,168: "Anita Desai" -> {{guest}}.
+ 4. Break 3  - one line in S3.1 explaining the log is a full-night export.
+ 5. Break 7  - "3 minutes" -> "2 minutes" in s03.yaml:254.
+ 6. Break 6  - move S2.11 into unit u04's slice and S7.15/S7.16 into u19's.
+ 7. Break 5  - add a check beat before S5.16, S5.19, S8.9, S10.11, S11.17, S12.10.
+ 8. Part 3   - refresh SESSION_PLAN.md (Meghna Rao, vikram_timeline, row counts).
+ 9. Obs 4.1 / 4.2 - story decisions, not fixes. Worth one conversation.
+
+ After ANY content edit:   node pipeline/build_sessions.mjs
+                           node pipeline/test_grader.mjs      (expect 239/239)
+                           node pipeline/check_case_db.mjs    (expect 115/115)
+                           python pipeline/audit_clues.py
+                           cd app && npm test && npm run build:s3
+
+
+===============================================================================
+ APPENDIX - HOW TO REPRODUCE EVERY PROOF IN THIS FILE
+===============================================================================
+ Run from  D:\missing_influencer\sql-missing-influencer
+
+ The transaction log behind Break 1:
+   python -c "import sqlite3;[print(r) for r in sqlite3.connect('content/case_db/snapshots/s12.sqlite').execute('SELECT * FROM txn_log ORDER BY lsn')]"
+
+ The ping range behind Break 2:
+   python -c "import sqlite3;print(sqlite3.connect('content/case_db/snapshots/s06.sqlite').execute(\"SELECT MIN(ts),MAX(ts),COUNT(*) FROM tower_pings WHERE device_owner='Tara Sen' AND ts>='2026-12-12 18:00:00'\").fetchone())"
+
+ The future gate rows behind Break 3:
+   python -c "import sqlite3;d=sqlite3.connect('content/case_db/snapshots/s03.sqlite');print(d.execute('SELECT MAX(ts) FROM gate_log').fetchone());print(d.execute(\"SELECT COUNT(*) FROM gate_log WHERE ts>'2026-12-12 19:00:00'\").fetchone())"
+
+ The name mismatch behind Break 4:
+   python -c "import sqlite3;[print(r) for r in sqlite3.connect('content/case_db/snapshots/s02.sqlite').execute('SELECT guest_id,name,room_no FROM hotel_guests WHERE guest_id=31')]"
+   findstr /N "Anita" content\sessions\src\s01.yaml
+
+ The unit warnings behind Break 6:
+   node pipeline/build_sessions.mjs 2>&1 | findstr warn
+
+ The clue audit (0 fact flags, 2 structural flags):
+   python pipeline/audit_clues.py
+
+ The full-story clue trace for any episode:
+   python pipeline/audit_clues.py 6
+
+===============================================================================
+ END OF REPORT - no file in sql-missing-influencer was modified by this review.
+ (Verified with `git status --short`: the tree is exactly as it was left after
+  the bug-fix session, and rebuilding the content produced byte-identical output.)
+===============================================================================
