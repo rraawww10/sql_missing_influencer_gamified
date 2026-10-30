@@ -302,7 +302,7 @@ export class SessionRunner {
       user_id: this.state.userId,
       sitting_id: sittingId,
       verb,
-      object: { ...object, session: this.pack.session, ...(this.pack.unit ? { unit: this.pack.unit.n } : {}) },
+      object: { ...object, session: this.pack.session, ...(this.pack.unit ? { unit: this.pack.unit.n } : {}), ...(beat ? { beat: beat.id } : {}) },
       course_ref: { topic_id: this.pack.course_topic_id, ...(unit ? { unit_id: unit } : {}),
         ...(rm ? { learning_resource_id: rm.learning_resource_id } : {}) },
       ...(result ? { result } : {}),

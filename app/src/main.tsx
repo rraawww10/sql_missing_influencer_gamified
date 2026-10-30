@@ -13,6 +13,7 @@ import { UrlAuth } from './adapters/urlAuth';
 import { SittingStore } from './engine/runner/sitting';
 import type { RunnerState } from './engine/runner/sessionRunner';
 import { EmbedProgressStore, listenForRestore } from './ui/embed';
+import { Outbox, RemoteProgressStore, startHeartbeat } from './adapters/remoteSync';
 
 // What this page is: the full case map (npm run dev), the briefing (before the first episode), one session, or one unit
 // (one reading material). scripts/build-deploy.mjs writes <meta name="tmi-intro"> / <meta name="tmi-session"> / <meta name="tmi-unit">
@@ -26,7 +27,10 @@ const INTRO = Number(import.meta.env.VITE_INTRO ?? meta('tmi-intro') ?? query.ge
 // content folder for every site and says so with <meta name="tmi-content" content="../content">.
 const CONTENT_BASE = meta('tmi-content') ?? undefined;
 
-const store = new EmbedProgressStore(new LocalProgressStore());
+// Analytics (admin dashboard, ../analytics): on only when the build names the server, e.g. VITE_ANALYTICS_URL=https://… npm run build:s3
+const ANALYTICS_URL = (import.meta.env.VITE_ANALYTICS_URL as string | undefined)?.replace(/\/+$/, '');
+const remote = ANALYTICS_URL ? new RemoteProgressStore(new LocalProgressStore(), new Outbox(ANALYTICS_URL, localStorage)) : null;
+const store = new EmbedProgressStore(remote ?? new LocalProgressStore());
 const auth = new UrlAuth(new GuestAuth());   // ?user_id=… from the embedding platform, else a guest id on this device
 const services: Services = {
   loader: new ContentLoader(undefined, CONTENT_BASE, UNIT || null),
@@ -35,7 +39,10 @@ const services: Services = {
   auth,
   sittings: new SittingStore<RunnerState>(localStorage),
 };
-auth.currentUser().then((u) => listenForRestore(store, u.id));
+auth.currentUser().then((u) => {
+  listenForRestore(store, u.id);
+  if (remote) { startHeartbeat(remote, u.id, INTRO ? 0 : SESSION); void remote.outbox.flush(); }
+});
 
 // A unit site: load the unit pack first (it says which session it belongs to), then play it like a session
 function UnitApp({ unit }: { unit: number }) {

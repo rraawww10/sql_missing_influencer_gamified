@@ -18,7 +18,8 @@ export interface ProgressEvent {
   sitting_id: string;              // one attempt at one session (resumable any time)
   verb: Verb;
   // unit: set when the event comes from a standalone unit site (one reading material = a slice of the session)
-  object: { type: 'session' | 'beat' | 'task' | 'activity' | 'check' | 'clue' | 'hint'; id: string; session: number; unit?: number };
+  // beat: the beat (step) this event came from, so analytics can measure progress and time step by step
+  object: { type: 'session' | 'beat' | 'task' | 'activity' | 'check' | 'clue' | 'hint'; id: string; session: number; unit?: number; beat?: string };
   course_ref: CourseRef;
   result?: Record<string, unknown>;
   client_ts: string;              // ISO time

@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Missing Influencer Analytics</title>
+<style>
+:root{
+  --bg:#f5f6f8;--panel:#fff;--panel-2:#f0f2f5;--line:#e2e5ea;--text:#16191f;--muted:#5d6573;--faint:#8a93a3;
+  --accent:#4f46e5;--accent-soft:#e8e7fd;--good:#15803d;--good-soft:#dcfce7;--warn:#b45309;--warn-soft:#fef3c7;--bad:#b91c1c;--bad-soft:#fee2e2;
+  --bar:#6366f1;--bar-2:#c7d2fe;--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1115;--panel:#171a21;--panel-2:#1e222b;--line:#2a2f3a;--text:#e8eaef;--muted:#a3abb9;--faint:#727b8b;
+  --accent:#8b85ff;--accent-soft:#25234a;--good:#4ade80;--good-soft:#11331f;--warn:#fbbf24;--warn-soft:#3a2c0b;--bad:#f87171;--bad-soft:#3b1414;
+  --bar:#8b85ff;--bar-2:#353a6b;--shadow:none}}
+:root[data-theme="dark"]{
+  --bg:#0f1115;--panel:#171a21;--panel-2:#1e222b;--line:#2a2f3a;--text:#e8eaef;--muted:#a3abb9;--faint:#727b8b;
+  --accent:#8b85ff;--accent-soft:#25234a;--good:#4ade80;--good-soft:#11331f;--warn:#fbbf24;--warn-soft:#3a2c0b;--bad:#f87171;--bad-soft:#3b1414;
+  --bar:#8b85ff;--bar-2:#353a6b;--shadow:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1320px;margin:0 auto;padding:0 16px}
+header{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0}
+.top h1{font-size:16px;margin:0;font-weight:650;letter-spacing:-.01em}
+.top h1 small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.spacer{flex:1}
+.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select,input[type=search],input[type=password],textarea{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn:hover{background:var(--panel-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+label.chk{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:13px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto}
+nav.tabs button{border:0;background:none;padding:10px 12px;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
+nav.tabs button[aria-selected=true]{color:var(--text);border-color:var(--accent);font-weight:600}
+main{padding:20px 0 60px}
+.grid{display:grid;gap:12px}
+.kpis{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.kpi .l{color:var(--muted);font-size:12.5px}
+.kpi .s{color:var(--faint);font-size:12px;margin-top:2px}
+.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));margin-top:12px}
+.card h2{font-size:14px;margin:0 0 2px;font-weight:620}
+.card .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{fill:var(--muted);font-size:10px}
+.legend{display:flex;gap:14px;color:var(--muted);font-size:12px;margin-top:6px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.hbar{display:grid;grid-template-columns:minmax(120px,190px) 1fr auto;gap:8px 10px;align-items:center;font-size:13px}
+.hbar .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track{position:relative;height:16px;background:var(--panel-2);border-radius:4px;overflow:hidden}
+.track b{position:absolute;inset:0 auto 0 0;background:var(--bar-2);border-radius:4px}
+.track b.on{background:var(--bar)}
+.num{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px;white-space:nowrap}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12px;background:var(--panel-2);position:sticky;top:0;cursor:pointer;user-select:none}
+th.nosort{cursor:default}
+th[aria-sort=ascending]::after{content:" ▲";font-size:9px}th[aria-sort=descending]::after{content:" ▼";font-size:9px}
+tbody tr:hover{background:var(--panel-2)}
+tr.click{cursor:pointer}
+td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
+td.wrap{white-space:normal;min-width:260px}
+.pbar{display:flex;align-items:center;gap:8px;min-width:130px}
+.pbar .track{flex:1;height:8px}
+.chip{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:550}
+.chip.good{background:var(--good-soft);color:var(--good)}.chip.warn{background:var(--warn-soft);color:var(--warn)}
+.chip.bad{background:var(--bad-soft);color:var(--bad)}.chip.mute{background:var(--panel-2);color:var(--muted)}
+.chip.acc{background:var(--accent-soft);color:var(--accent)}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input[type=search]{min-width:min(100%,260px)}
+.hot{background:var(--warn-soft)}
+.drawer{position:fixed;inset:0;display:none;z-index:20}
+.drawer.open{display:block}
+.drawer .scrim{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+.drawer .sheet{position:absolute;top:0;right:0;bottom:0;width:min(940px,100%);background:var(--bg);overflow:auto;box-shadow:-8px 0 30px rgba(0,0,0,.2)}
+.sheet .head{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;gap:12px;align-items:center;z-index:2}
+.sheet .body{padding:16px}
+details.ep{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:8px}
+details.ep summary{list-style:none;cursor:pointer;padding:10px 12px;display:grid;grid-template-columns:minmax(150px,1.4fr) minmax(120px,1fr) 80px 90px auto;gap:10px;align-items:center}
+details.ep summary::-webkit-details-marker{display:none}
+details.ep[open] summary{border-bottom:1px solid var(--line)}
+details.ep .inner{padding:8px 12px 12px;overflow-x:auto}
+code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--panel-2);padding:6px 8px;border-radius:6px;max-width:520px}
+.login{max-width:360px;margin:12vh auto;padding:0 16px}
+.login .card{padding:24px}
+.login h1{font-size:18px;margin:0 0 4px}
+.login input{width:100%;margin:14px 0 10px}
+.err{color:var(--bad);font-size:13px;min-height:18px}
+.empty{padding:28px;text-align:center;color:var(--muted)}
+.defs{margin-top:12px;color:var(--muted);font-size:12.5px}
+.defs dt{font-weight:600;color:var(--text);display:inline}.defs dd{display:inline;margin:0}
+.defs div{margin-bottom:4px}
+.type{font-size:11px;padding:1px 6px;border-radius:4px;background:var(--panel-2);color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.type.task{background:var(--accent-soft);color:var(--accent)}
+[hidden]{display:none!important}
+@media (max-width:640px){details.ep summary{grid-template-columns:1fr 1fr}.hbar{grid-template-columns:110px 1fr auto}}
+</style>
+</head>
+<body>
+
+<div id="login" class="login" hidden>
+  <form class="card" id="loginForm">
+    <h1>Missing Influencer Analytics</h1>
+    <div class="muted">Admin sign in</div>
+    <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" required>
+    <div class="err" id="loginErr"></div>
+    <button class="btn primary" style="width:100%">Sign in</button>
+  </form>
+</div>
+
+<div id="app" hidden>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <h1>SQL: The Missing Influencer <small>Student engagement &amp; progress</small></h1>
+      <div class="spacer"></div>
+      <div class="ctl">
+        <select id="batch" aria-label="Batch"><option value="">All batches</option></select>
+        <label class="chk"><input type="checkbox" id="guests"> Include guests</label>
+        <button class="btn" id="refresh" title="Reload the numbers">↻ Refresh</button>
+        <a class="btn" id="export" href="/api/admin/export.csv" style="text-decoration:none">⬇ Export CSV</a>
+        <button class="btn" id="theme" title="Switch light / dark">Theme</button>
+        <button class="btn" id="logout">Sign out</button>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
+      <button role="tab" data-tab="students" aria-selected="false">Students</button>
+      <button role="tab" data-tab="episodes" aria-selected="false">Episodes &amp; beats</button>
+      <button role="tab" data-tab="roster" aria-selected="false">Roster</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="tab-overview"></section>
+  <section id="tab-students" hidden>
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="Search name or student ID">
+      <select id="statusFilter" aria-label="Status">
+        <option value="">Everyone</option><option value="active">Active in last 7 days</option>
+        <option value="inactive">Inactive 7+ days</option><option value="finished">Finished all 13</option>
+        <option value="notstarted">On roster, not started</option>
+      </select>
+      <span class="muted" id="count"></span>
+    </div>
+    <div class="tablewrap"><table id="studentsTable"></table></div>
+  </section>
+  <section id="tab-episodes" hidden>
+    <div class="toolbar"><select id="epPick" aria-label="Episode"></select><span class="muted" id="epSummary"></span></div>
+    <div id="epBody"></div>
+  </section>
+  <section id="tab-roster" hidden>
+    <div class="grid two" style="margin-top:0">
+      <div class="card">
+        <h2>Upload the student list</h2>
+        <p class="sub">A CSV with a header row: <b>student_id</b>, <b>name</b>, <b>batch</b>. The student_id must be the same id the platform passes to the game (<code>?user_id=</code>). Uploading again updates names and batches.</p>
+        <input type="file" id="csvFile" accept=".csv,text/csv">
+        <p class="sub" style="margin-top:12px">…or paste it:</p>
+        <textarea id="csvText" rows="7" style="width:100%" placeholder="student_id,name,batch&#10;STU1001,Aarav Sharma,Beta-A"></textarea>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn primary" id="upload">Save roster</button>
+          <label class="chk"><input type="checkbox" id="replace"> Replace the whole list</label>
+        </div>
+        <div id="uploadMsg" class="muted"></div>
+      </div>
+      <div class="card">
+        <h2>On the roster but not started</h2>
+        <p class="sub">These students have never opened the game.</p>
+        <div id="notStarted"></div>
+      </div>
+    </div>
+  </section>
+</main>
+</div>
+
+<div class="drawer" id="drawer" aria-hidden="true">
+  <div class="scrim" data-close></div>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+    <div class="head"><div style="flex:1;min-width:0"><div id="dTitle" style="font-weight:650;font-size:16px"></div><div id="dSub" class="muted"></div></div><button class="btn" data-close>✕ Close</button></div>
+    <div class="body" id="dBody"></div>
+  </div>
+</div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const fmtNum = (n) => Number(n ?? 0).toLocaleString('en-IN');
+const dur = (sec) => { sec = Math.round(sec || 0); if (sec < 60) return sec ? `${sec}s` : '0m'; const h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60); return h ? `${h}h ${m}m` : `${m}m`; };
+const ago = (iso) => { if (!iso) return '—'; const d = (Date.now() - Date.parse(iso)) / 1000; if (d < 3600) return `${Math.max(1, Math.round(d / 60))} min ago`; if (d < 86400) return `${Math.round(d / 3600)} h ago`; const days = Math.round(d / 86400); return days === 1 ? 'yesterday' : `${days} days ago`; };
+const when = (iso) => iso ? new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '—';
+const pbar = (p) => `<div class="pbar"><div class="track"><b class="on" style="width:${Math.min(100, p)}%"></b></div><span class="num">${p}%</span></div>`;
+const TYPE_NAMES = { scene: 'Scene', note: 'Case Note', activity: 'Activity', task: 'SQL task', check: 'Check', clue: 'Clue', hook: 'Teaser', demo: 'Demo' };
+const typeChip = (t) => `<span class="type ${t === 'task' ? 'task' : ''}">${esc(TYPE_NAMES[t] ?? t)}</span>`;
+
+const state = { tab: 'overview', overview: null, students: [], notStarted: [], sort: { key: 'last_seen', dir: -1 }, ep: 1 };
+
+// ---------------------------------------------------------------- api + auth
+async function api(path, opts) {
+  const res = await fetch(path, { credentials: 'same-origin', ...opts });
+  if (res.status === 401 && path.startsWith('/api/admin')) { showLogin(); throw new Error('login'); }
+  const body = res.headers.get('content-type')?.includes('json') ? await res.json() : await res.text();
+  if (!res.ok) throw new Error(body?.error ?? res.statusText);
+  return body;
+}
+const qs = () => { const p = new URLSearchParams(); const b = $('#batch').value; if (b) p.set('batch', b); if ($('#guests').checked) p.set('guests', '1'); const s = p.toString(); return s ? `?${s}` : ''; };
+function showLogin() { $('#app').hidden = true; $('#login').hidden = false; $('#pw').focus(); }
+$('#loginForm').onsubmit = async (e) => {
+  e.preventDefault(); $('#loginErr').textContent = '';
+  try { await api('/api/login', { method: 'POST', body: JSON.stringify({ password: $('#pw').value }) }); $('#pw').value = ''; boot(); }
+  catch (err) { $('#loginErr').textContent = err.message; }
+};
+$('#logout').onclick = async () => { await api('/api/logout', { method: 'POST' }); showLogin(); };
+
+// ---------------------------------------------------------------- theme
+try { const t = localStorage.getItem('tmi-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+$('#theme').onclick = () => {
+  const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.dataset.theme = dark ? 'light' : 'dark';
+  try { localStorage.setItem('tmi-theme', document.documentElement.dataset.theme); } catch {}
+};
+
+// ---------------------------------------------------------------- tabs
+document.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => setTab(b.dataset.tab));
+function setTab(t) {
+  state.tab = t;
+  document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
+  for (const id of ['overview', 'students', 'episodes', 'roster']) $(`#tab-${id}`).hidden = id !== t;
+  if (t === 'episodes') loadEpisode();
+}
+
+// ---------------------------------------------------------------- charts (inline SVG)
+function columnChart(rows, { key, key2, label, h = 170 }) {
+  const W = 640, pad = { l: 34, r: 8, t: 8, b: 22 }, iw = W - pad.l - pad.r, ih = h - pad.t - pad.b;
+  const max = Math.max(1, ...rows.map((r) => r[key])), step = iw / rows.length, bw = Math.max(2, step * 0.66);
+  const max2 = key2 ? Math.max(1, ...rows.map((r) => r[key2])) : 1;
+  const ticks = [0, 0.5, 1].map((f) => Math.round(max * f));
+  let s = `<svg viewBox="0 0 ${W} ${h}" role="img">`;
+  for (const t of ticks) { const y = pad.t + ih - (t / max) * ih; s += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${pad.l - 6}" y="${y + 3}" text-anchor="end">${t}</text>`; }
+  rows.forEach((r, i) => {
+    const x = pad.l + i * step + (step - bw) / 2, bh = (r[key] / max) * ih;
+    s += `<rect x="${x}" y="${pad.t + ih - bh}" width="${bw}" height="${Math.max(0, bh)}" rx="2" fill="var(--bar)"><title>${esc(label(r))}</title></rect>`;
+    if (i % Math.ceil(rows.length / 8) === 0) s += `<text x="${x + bw / 2}" y="${h - 6}" text-anchor="middle">${esc(r._x)}</text>`;
+  });
+  if (key2) {
+    const pts = rows.map((r, i) => `${pad.l + i * step + step / 2},${pad.t + ih - (r[key2] / max2) * ih}`).join(' ');
+    s += `<polyline points="${pts}" fill="none" stroke="var(--warn)" stroke-width="2"/>`;
+  }
+  return s + '</svg>';
+}
+const hbars = (rows) => `<div class="hbar">${rows.map((r) => `<div class="name" title="${esc(r.name)}">${esc(r.name)}</div>
+  <div class="track">${r.back != null ? `<b style="width:${r.back}%"></b>` : ''}<b class="on" style="width:${r.pct}%"></b></div><div class="num">${r.text}</div>`).join('')}</div>`;
+
+// ---------------------------------------------------------------- overview
+function renderOverview() {
+  const o = state.overview, t = o.totals;
+  const kpi = (v, l, s = '') => `<div class="card kpi"><div class="v">${v}</div><div class="l">${l}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+  const maxStarted = Math.max(1, ...o.funnel.map((f) => f.started));
+  const maxLevel = Math.max(1, ...o.levels.map((l) => l.students));
+  const maxBucket = Math.max(1, ...o.progress_buckets.map((b) => b.students));
+  const daily = o.daily.map((d) => ({ ...d, _x: d.date.slice(5).replace('-', '/') }));
+  const hours = o.hours.map((h) => ({ ...h, _x: `${h.hour}` }));
+  const funnelRows = o.funnel.map((f) => ({ name: `${f.n}. ${f.title}`, back: (f.started / maxStarted) * 100, pct: (f.completed / maxStarted) * 100,
+    text: `${f.completed}/${f.started} done · ${f.avg_minutes}m avg` }));
+  $('#tab-overview').innerHTML = `
+    <div class="grid kpis">
+      ${kpi(fmtNum(t.playing), 'Students who played', t.roster ? `of ${fmtNum(t.roster)} on the roster · ${fmtNum(t.not_started)} not started` : 'upload a roster to see who hasn’t started')}
+      ${kpi(fmtNum(t.active_today), 'Active today', `${fmtNum(t.active_7d)} in the last 7 days`)}
+      ${kpi(`${fmtNum(t.total_hours)} h`, 'Total active play time', 'idle and background time not counted')}
+      ${kpi(dur(t.avg_minutes_per_student * 60), 'Avg time per student')}
+      ${kpi(`${t.avg_progress_pct}%`, 'Avg game progress', 'beats completed across all 13 episodes')}
+      ${kpi(fmtNum(t.finished_game), 'Finished all 13 episodes')}
+      ${kpi(fmtNum(t.inactive_7d), 'Inactive 7+ days', 'started, then stopped')}
+    </div>
+    <div class="grid two">
+      <div class="card chart"><h2>Daily activity</h2><p class="sub">Students active per day (bars) and minutes played (line), last 30 days</p>
+        ${columnChart(daily, { key: 'students', key2: 'minutes', label: (d) => `${d.date}: ${d.students} students, ${d.minutes} min` })}
+        <div class="legend"><span><i style="background:var(--bar)"></i>Active students</span><span><i style="background:var(--warn)"></i>Minutes played</span></div></div>
+      <div class="card"><h2>Episode funnel</h2><p class="sub">Light bar: started · dark bar: completed. Where the dark bar drops is where students stop.</p>${hbars(funnelRows)}</div>
+      <div class="card"><h2>Where students are now</h2><p class="sub">Each student’s furthest episode</p>
+        ${hbars(o.levels.map((l) => ({ name: `${l.n}. ${l.title}`, pct: (l.students / maxLevel) * 100, text: `${l.students}` })))}</div>
+      <div class="card"><h2>Progress distribution</h2><p class="sub">Students by overall game progress</p>
+        ${hbars(o.progress_buckets.map((b) => ({ name: b.label, pct: (b.students / maxBucket) * 100, text: `${b.students}` })))}
+        <h2 style="margin-top:18px">When students play</h2><p class="sub">Minutes played by hour of day</p>
+        <div class="chart">${columnChart(hours, { key: 'minutes', h: 120, label: (h) => `${h.hour}:00 – ${h.minutes} min` })}</div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h2>Episode summary</h2><p class="sub">Time is active play time. “First-pass” is SQL attempts that were correct.</p>
+      <div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">Episode</th><th class="r nosort">Beats</th><th class="r nosort">Started</th><th class="r nosort">Completed</th><th class="r nosort">Completion</th><th class="r nosort">Avg time</th><th class="r nosort">Median to finish</th><th class="r nosort">Planned</th><th class="r nosort">SQL attempts</th><th class="r nosort">Correct</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th></tr></thead><tbody>
+      ${o.funnel.map((f) => `<tr class="click" data-ep="${f.n}"><td>${f.n}. ${esc(f.title)}</td><td class="r">${f.beats}</td><td class="r">${f.started}</td><td class="r">${f.completed}</td><td class="r">${f.completion_pct}%</td><td class="r">${f.avg_minutes}m</td><td class="r">${f.median_finish_minutes == null ? '—' : f.median_finish_minutes + 'm'}</td><td class="r faint">${f.est_minutes ?? '—'}m</td><td class="r">${fmtNum(f.attempts)}</td><td class="r">${f.first_pass_pct}%</td><td class="r">${f.hints}</td><td class="r">${f.traps}</td></tr>`).join('')}
+      </tbody></table></div></div>
+    <dl class="defs card" style="margin-top:12px">${Object.entries(o.definitions).map(([k, v]) => `<div><dt>${esc(k.replace('_', ' '))}:</dt> <dd>${esc(v)}</dd></div>`).join('')}</dl>`;
+  $('#tab-overview').querySelectorAll('[data-ep]').forEach((r) => r.onclick = () => { state.ep = Number(r.dataset.ep); $('#epPick').value = state.ep; setTab('episodes'); });
+}
+
+// ---------------------------------------------------------------- students
+const COLS = [
+  ['name', 'Student'], ['batch', 'Batch'], ['level', 'Current level'], ['progress_pct', 'Progress', 'r'], ['episodes_done', 'Episodes done', 'r'],
+  ['seconds', 'Time played', 'r'], ['active_days', 'Active days', 'r'], ['accuracy_pct', 'SQL correct', 'r'], ['hints', 'Hints', 'r'], ['last_seen', 'Last active'],
+];
+const weekAgo = () => Date.now() - 7 * 86400_000;
+function statusChip(r) {
+  if (r.episodes_done >= 13) return '<span class="chip good">Finished</span>';
+  if (Date.parse(r.last_seen) >= weekAgo()) return '<span class="chip acc">Active</span>';
+  return '<span class="chip warn">Inactive</span>';
+}
+function renderStudents() {
+  const q = $('#q').value.trim().toLowerCase(), f = $('#statusFilter').value;
+  const table = $('#studentsTable');
+  if (f === 'notstarted') {
+    const rows = state.notStarted.filter((r) => !q || `${r.name} ${r.student_id}`.toLowerCase().includes(q));
+    $('#count').textContent = `${rows.length} students`;
+    table.innerHTML = `<thead><tr><th class="nosort">Student</th><th class="nosort">Student ID</th><th class="nosort">Batch</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${esc(r.name ?? '—')}</td><td>${esc(r.student_id)}</td><td>${esc(r.batch ?? '—')}</td></tr>`).join('') || '<tr><td colspan="3" class="empty">Nobody — everyone on the roster has started.</td></tr>'}</tbody>`;
+    return;
+  }
+  let rows = state.students.filter((r) => !q || `${r.name ?? ''} ${r.student_id}`.toLowerCase().includes(q));
+  if (f === 'active') rows = rows.filter((r) => Date.parse(r.last_seen) >= weekAgo());
+  if (f === 'inactive') rows = rows.filter((r) => Date.parse(r.last_seen) < weekAgo() && r.episodes_done < 13);
+  if (f === 'finished') rows = rows.filter((r) => r.episodes_done >= 13);
+  const { key, dir } = state.sort;
+  const val = (r) => key === 'name' ? (r.name ?? r.student_id).toLowerCase() : key === 'level' ? r.level * 10 + (r.level_status === 'completed' ? 1 : 0) : r[key] ?? '';
+  rows.sort((a, b) => (val(a) < val(b) ? -1 : val(a) > val(b) ? 1 : 0) * dir);
+  $('#count').textContent = `${rows.length} students`;
+  table.innerHTML = `<thead><tr>${COLS.map(([k, l, c]) => `<th class="${c ?? ''}" data-k="${k}" aria-sort="${key === k ? (dir > 0 ? 'ascending' : 'descending') : 'none'}">${l}</th>`).join('')}<th class="nosort">Status</th></tr></thead>
+    <tbody>${rows.map((r) => `<tr class="click" data-id="${esc(r.student_id)}">
+      <td><b>${esc(r.name ?? r.student_id)}</b>${r.name ? `<div class="faint">${esc(r.student_id)}</div>` : ''}${r.is_guest ? ' <span class="chip mute">guest</span>' : ''}</td>
+      <td>${esc(r.batch ?? '—')}</td>
+      <td>${r.level ? `${r.level}. ${esc(r.level_title)}<div class="faint">${esc(r.level_status)}</div>` : '<span class="faint">Briefing only</span>'}</td>
+      <td class="r">${pbar(r.progress_pct)}</td><td class="r">${r.episodes_done}/13</td><td class="r">${dur(r.seconds)}</td><td class="r">${r.active_days}</td>
+      <td class="r">${r.attempts ? r.accuracy_pct + '%' : '—'}</td><td class="r">${r.hints}</td>
+      <td title="${esc(when(r.last_seen))}">${ago(r.last_seen)}</td><td>${statusChip(r)}</td></tr>`).join('') || `<tr><td colspan="${COLS.length + 1}" class="empty">No students yet. They appear here as soon as they open the game.</td></tr>`}</tbody>`;
+  table.querySelectorAll('th[data-k]').forEach((th) => th.onclick = () => {
+    state.sort = { key: th.dataset.k, dir: state.sort.key === th.dataset.k ? -state.sort.dir : (['name', 'batch'].includes(th.dataset.k) ? 1 : -1) };
+    renderStudents();
+  });
+  table.querySelectorAll('tr[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
+}
+$('#q').oninput = renderStudents;
+$('#statusFilter').onchange = renderStudents;
+
+// ---------------------------------------------------------------- one student
+async function openStudent(id) {
+  const d = await api(`/api/admin/students/${encodeURIComponent(id)}`);
+  $('#dTitle').textContent = d.name ?? d.student_id;
+  $('#dSub').textContent = [d.name ? d.student_id : null, d.batch, `first played ${when(d.first_seen)}`, `last active ${ago(d.last_seen)}`].filter(Boolean).join(' · ');
+  const kpi = (v, l) => `<div class="card kpi"><div class="v" style="font-size:22px">${v}</div><div class="l">${l}</div></div>`;
+  const maxDay = Math.max(1, ...d.daily.map((x) => x.minutes));
+  const RVERB = { session_started: 'Started episode', session_resumed: 'Came back to episode', session_completed: 'Solved episode', session_reset: 'Reset episode',
+    session_abandoned: 'Started episode over', task_attempted: 'Ran SQL', task_passed: 'Solved SQL task', hint_used: 'Used a hint', trap_hit: 'Hit a trap',
+    activity_done: 'Finished activity', check_answered: 'Answered check', clue_pinned: 'Pinned a clue', beat_viewed: 'Read' };
+  $('#dBody').innerHTML = `
+    <div class="grid kpis">${kpi(`${d.progress_pct}%`, 'Game progress')}${kpi(`${d.episodes_done}/13`, 'Episodes solved')}${kpi(dur(d.seconds), 'Active play time')}
+      ${kpi(d.active_days, 'Days active')}${kpi(d.attempts ? d.accuracy_pct + '%' : '—', `SQL correct (${d.tasks_passed}/${d.attempts})`)}${kpi(`${d.hints} / ${d.traps}`, 'Hints / traps')}</div>
+    <div class="card" style="margin-top:12px"><h2>Time played per day</h2>
+      ${d.daily.length ? hbars(d.daily.slice(-14).map((x) => ({ name: x.date, pct: (x.minutes / maxDay) * 100, text: `${x.minutes} min` }))) : '<div class="muted">No time recorded yet.</div>'}</div>
+    <h2 style="font-size:14px;margin:18px 0 8px">Episodes <span class="muted" style="font-weight:400">— open one to see time on every beat</span></h2>
+    ${d.episodes.map((e) => {
+      const maxB = Math.max(1, ...e.beats.map((b) => b.seconds));
+      const chip = e.status === 'completed' ? '<span class="chip good">Solved</span>' : e.status === 'in progress' ? '<span class="chip acc">In progress</span>' : '<span class="chip mute">Not started</span>';
+      return `<details class="ep"${e.status === 'in progress' ? ' open' : ''}><summary><b>${e.n}. ${esc(e.title)}</b>${pbar(e.progress_pct)}<span class="num">${dur(e.seconds)}</span><span class="num">${e.attempts} SQL runs</span>${chip}</summary>
+        ${e.beats.length ? `<div class="inner"><table><thead><tr><th class="nosort">#</th><th class="nosort">Beat</th><th class="nosort">Time on it</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="nosort">Done</th></tr></thead><tbody>
+          ${e.beats.map((b, i) => `<tr class="${b.hints >= 2 || b.attempts >= 6 ? 'hot' : ''}"><td class="faint">${i + 1}</td><td class="wrap">${typeChip(b.type)} ${esc(b.label)}</td>
+            <td><div class="pbar"><div class="track"><b class="on" style="width:${(b.seconds / maxB) * 100}%"></b></div><span class="num">${dur(b.seconds)}</span></div></td>
+            <td class="r">${b.attempts || ''}</td><td class="r">${b.hints || ''}</td><td class="r">${b.traps || ''}</td><td>${b.done ? '✓' : '<span class="faint">—</span>'}</td></tr>`).join('')}
+          </tbody></table><div class="faint" style="margin-top:6px">${e.started_at ? `Started ${when(e.started_at)}` : ''}${e.completed_at ? ` · solved ${when(e.completed_at)}` : ''}${e.points != null ? ` · ${e.points} points` : ''}${e.resets ? ` · reset ${e.resets}×` : ''}. Highlighted rows: many SQL runs or hints.</div></div>` : ''}
+      </details>`;
+    }).join('')}
+    <div class="card" style="margin-top:12px"><h2>Recent activity</h2><p class="sub">Latest 40 actions, newest first (time checks not shown)</p>
+      <div class="tablewrap" style="border:0"><table><tbody>${d.recent.map((r) => `<tr><td class="faint">${when(r.at)}</td><td>${r.session ? `Ep ${r.session}` : 'Briefing'}</td>
+        <td>${esc(RVERB[r.verb] ?? r.verb)} ${r.verb === 'task_attempted' ? `<span class="chip ${r.detail?.status === 'pass' ? 'good' : r.detail?.status === 'trap' ? 'warn' : 'bad'}">${esc(r.detail?.status)}</span>` : ''}${r.detail?.tier ? ` tier ${esc(r.detail.tier)}` : ''}${r.detail?.points != null ? ` · ${esc(r.detail.points)} pts` : ''}</td>
+        <td class="wrap">${r.detail?.sql ? `<code class="sql">${esc(r.detail.sql)}</code>` : `<span class="faint">${esc(r.id ?? '')}</span>`}</td></tr>`).join('')}</tbody></table></div></div>`;
+  $('#drawer').classList.add('open'); $('#drawer').setAttribute('aria-hidden', 'false');
+}
+const closeDrawer = () => { $('#drawer').classList.remove('open'); $('#drawer').setAttribute('aria-hidden', 'true'); };
+document.querySelectorAll('[data-close]').forEach((b) => b.onclick = closeDrawer);
+addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
+
+// ---------------------------------------------------------------- one episode, beat by beat
+async function loadEpisode() {
+  const e = await api(`/api/admin/episodes/${state.ep}${qs()}`);
+  const maxT = Math.max(1, ...e.beats.map((b) => b.avg_seconds));
+  const worst = [...e.beats].sort((a, b) => b.here_now - a.here_now)[0];
+  $('#epSummary').textContent = `${e.started} started · ${e.completed} completed${worst?.here_now ? ` · most unfinished students are on beat ${worst.index + 1}` : ''}`;
+  $('#epBody').innerHTML = e.started ? `<div class="tablewrap"><table><thead><tr><th class="nosort">#</th><th class="nosort">Beat</th><th class="nosort">Reached &amp; completed</th><th class="nosort">Avg time</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="r nosort">Stopped here</th></tr></thead><tbody>
+    ${e.beats.map((b) => `<tr class="${b.here_now >= Math.max(2, e.started * 0.05) ? 'hot' : ''}"><td class="faint">${b.index + 1}</td><td class="wrap">${typeChip(b.type)} ${esc(b.label)}</td>
+      <td>${pbar(b.done_pct)}</td><td><div class="pbar"><div class="track"><b class="on" style="width:${(b.avg_seconds / maxT) * 100}%"></b></div><span class="num">${dur(b.avg_seconds)}</span></div></td>
+      <td class="r">${b.attempts || ''}</td><td class="r">${b.hints || ''}</td><td class="r">${b.traps || ''}</td><td class="r">${b.here_now ? `<b>${b.here_now}</b>` : ''}</td></tr>`).join('')}
+    </tbody></table></div><p class="faint">“Stopped here”: students who started this episode, haven’t solved it, and whose next step is this beat. Highlighted rows are where students get stuck.</p>`
+    : '<div class="card empty">Nobody has opened this episode yet.</div>';
+}
+$('#epPick').onchange = () => { state.ep = Number($('#epPick').value); loadEpisode(); };
+
+// ---------------------------------------------------------------- roster
+function renderNotStarted() {
+  const r = state.notStarted;
+  $('#notStarted').innerHTML = r.length ? `<div class="tablewrap" style="max-height:420px"><table><thead><tr><th class="nosort">Name</th><th class="nosort">Student ID</th><th class="nosort">Batch</th></tr></thead><tbody>${r.map((x) => `<tr><td>${esc(x.name ?? '—')}</td><td>${esc(x.student_id)}</td><td>${esc(x.batch ?? '—')}</td></tr>`).join('')}</tbody></table></div>`
+    : `<div class="muted">${state.overview?.totals.roster ? 'Everyone on the roster has started.' : 'No roster uploaded yet.'}</div>`;
+}
+$('#csvFile').onchange = async () => { const f = $('#csvFile').files[0]; if (f) $('#csvText').value = await f.text(); };
+$('#upload').onclick = async () => {
+  const text = $('#csvText').value.trim();
+  if (!text) { $('#uploadMsg').textContent = 'Choose a file or paste the CSV first.'; return; }
+  if ($('#replace').checked && !confirm('Replace the whole roster with this list?')) return;
+  try {
+    const r = await api(`/api/admin/roster${$('#replace').checked ? '?replace=1' : ''}`, { method: 'POST', body: text });
+    $('#uploadMsg').textContent = `Saved ${r.saved} students. Roster: ${r.roster} · played: ${r.roster_played} · not started: ${r.roster_not_started}.`;
+    loadAll();
+  } catch (e) { $('#uploadMsg').textContent = e.message; }
+};
+
+// ---------------------------------------------------------------- load
+async function loadBatches() {
+  const b = await api('/api/admin/batches'), cur = $('#batch').value;
+  $('#batch').innerHTML = '<option value="">All batches</option>' + b.map((x) => `<option value="${esc(x.batch)}">${esc(x.batch)} (${x.students})</option>`).join('');
+  $('#batch').value = cur;
+}
+async function loadAll() {
+  const [o, s] = await Promise.all([api(`/api/admin/overview${qs()}`), api(`/api/admin/students${qs()}`)]);
+  state.overview = o; state.students = s.students; state.notStarted = s.not_started;
+  $('#export').href = `/api/admin/export.csv${qs()}`;
+  if (!$('#epPick').options.length) $('#epPick').innerHTML = o.funnel.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.title)}</option>`).join('');
+  renderOverview(); renderStudents(); renderNotStarted();
+  if (state.tab === 'episodes') loadEpisode();
+}
+$('#batch').onchange = loadAll; $('#guests').onchange = loadAll; $('#refresh').onclick = () => { loadBatches(); loadAll(); };
+async function boot() {
+  try { await loadBatches(); } catch { return; }
+  $('#login').hidden = true; $('#app').hidden = false;
+  await loadAll();
+}
+setInterval(() => { if (!$('#app').hidden && !document.hidden) loadAll().catch(() => {}); }, 120_000);
+boot();
+</script>
+</body>
+</html>

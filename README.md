@@ -55,6 +55,7 @@ Open `http://localhost:5173/#/intro` for the briefing, `#/s/3` for an episode in
 | `app/` | The game: React + TypeScript + Vite. `src/ui` screens and components, `src/engine` (SQL worker, session runner, progress), `scripts/` (build, smoke tests) | ✅ |
 | `missing-influencer-v3/` | **The built upload folder** (briefing + 13 episodes). Rebuilt by `npm run build:s3` | ❌ generated — rebuild, don't edit |
 | `shared/` | Grader, result hashing, SQL feature map — used by both the pipeline and the app | |
+| `analytics/` | **Admin engagement dashboard**: server that collects progress events + active-time heartbeats, and the dashboard (students, time played, progress %, stuck beats). See `analytics/README.md`; build the game with `VITE_ANALYTICS_URL=…` to switch it on | ✅ |
 | `docs/SESSION_PLAN.md` | **The design**: beat-by-beat flow of every episode, the case truth, the evidence-chain rule (§0.5) | keep in sync with the YAML |
 | `docs/screenshots/after/` | Screenshots of every screen | |
 | `PLAN.md` | Original concept, audience, safety rules | |
