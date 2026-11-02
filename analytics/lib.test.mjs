@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openDb, loadCatalogue, ingest, parseRoster, Analytics } from './lib.mjs';
+import { openDb, loadCatalogue, ingest, ingestFeedback, parseRoster, Analytics } from './lib.mjs';
 
 const cat = loadCatalogue(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'sessions'));
 const ep1 = cat.get(1);
@@ -97,4 +97,31 @@ test('CSV export neutralises spreadsheet formulas', () => {
   ingest(db, [ev('lms:X', 'session_started', 1, { type: 'session', id: 'S1' })]);
   a.saveRoster([{ student_id: 'X', name: '=HYPERLINK("evil")', batch: null }]);
   assert.match(a.exportCsv().split('\n')[1], /^X,"'=HYPERLINK\(""evil""\)"/);
+});
+
+test('feedback: validated, one row per student per episode, summarised per episode', () => {
+  const { db, a } = setup();
+  assert.ok(ingestFeedback(db, { user_id: 'lms:A', session: 1, rating: 9 }).error);
+  assert.ok(ingestFeedback(db, { user_id: 'lms:A', session: 99, rating: 4 }).error);
+  assert.ok(ingestFeedback(db, { user_id: 'lms:A', session: 1, rating: 2, mood: 'Boring', difficulty: 'hard', client_ts: new Date().toISOString() }).ok);
+  ingestFeedback(db, { user_id: 'lms:A', session: 1, rating: 5, mood: 'Loved it', difficulty: 'right', liked: ['Inspector Kaal'], comment: '=cmd()', sound_on: true });
+  ingestFeedback(db, { user_id: 'lms:B', session: 1, rating: 3, mood: 'not-a-mood', difficulty: 'easy' });
+  ingestFeedback(db, { user_id: 'guest-1', session: 2, rating: 1 });
+  const d = a.feedback();
+  assert.equal(d.totals.responses, 2);                      // A's resend replaced the first; guest hidden
+  assert.equal(d.totals.avg_rating, 4);
+  assert.equal(d.episodes[0].responses, 2);
+  assert.equal(d.moods['Loved it'], 1);
+  assert.equal(d.responses.find((r) => r.student_id === 'B').mood, null);
+  assert.deepEqual(d.liked, [{ what: 'Inspector Kaal', n: 1 }]);
+  assert.equal(a.feedback({ guests: true }).totals.responses, 3);
+  assert.match(a.feedbackCsv(), /"'=cmd\(\)"/);
+});
+
+test('live: students with an event in the last 5 minutes', () => {
+  const { db, a } = setup();
+  ingest(db, [ev('lms:A', 'beat_viewed', 3, { beat: ep1.beats[0].id }), ev('lms:B', 'beat_viewed', 1, {}, undefined, new Date(Date.now() - 3600_000).toISOString())]);
+  const l = a.live();
+  assert.equal(l.count, 1);
+  assert.equal(l.students[0].session, 3);
 });

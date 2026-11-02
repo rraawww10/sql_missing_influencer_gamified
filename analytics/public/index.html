@@ -35,6 +35,9 @@ select,input[type=search],input[type=password],textarea{background:var(--panel);
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 label.chk{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:13px}
 nav.tabs{display:flex;gap:4px;overflow-x:auto}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);padding:0 8px;white-space:nowrap}
+.live .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 #22c55e88;animation:livepulse 2s infinite}
+@keyframes livepulse{70%{box-shadow:0 0 0 8px #22c55e00}100%{box-shadow:0 0 0 0 #22c55e00}}
 nav.tabs button{border:0;background:none;padding:10px 12px;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
 nav.tabs button[aria-selected=true]{color:var(--text);border-color:var(--accent);font-weight:600}
 main{padding:20px 0 60px}
@@ -127,6 +130,7 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
         <label class="chk"><input type="checkbox" id="guests"> Include guests</label>
         <button class="btn" id="refresh" title="Reload the numbers">↻ Refresh</button>
         <a class="btn" id="export" href="/api/admin/export.csv" style="text-decoration:none">⬇ Export CSV</a>
+        <span class="live" id="liveNow" title="Students with any activity in the last 5 minutes"></span>
         <button class="btn" id="theme" title="Switch light / dark">Theme</button>
         <button class="btn" id="logout">Sign out</button>
       </div>
@@ -135,6 +139,7 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
       <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
       <button role="tab" data-tab="students" aria-selected="false">Students</button>
       <button role="tab" data-tab="episodes" aria-selected="false">Episodes &amp; beats</button>
+      <button role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
       <button role="tab" data-tab="roster" aria-selected="false">Roster</button>
     </nav>
   </div>
@@ -157,6 +162,12 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
   <section id="tab-episodes" hidden>
     <div class="toolbar"><select id="epPick" aria-label="Episode"></select><span class="muted" id="epSummary"></span></div>
     <div id="epBody"></div>
+  </section>
+  <section id="tab-feedback" hidden>
+    <div class="toolbar"><select id="fbEp" aria-label="Episode"><option value="">All episodes</option></select>
+      <select id="fbFilter" aria-label="Show"><option value="">All responses</option><option value="comments">With a comment</option><option value="low">1–2 stars</option><option value="hard">Said “too hard”</option><option value="confusing">Confusing / boring</option></select>
+      <input type="search" id="fbQ" placeholder="Search comments, names"><a class="btn" id="fbExport" href="/api/admin/feedback.csv">Export feedback CSV</a><span class="muted" id="fbCount"></span></div>
+    <div id="fbBody"></div>
   </section>
   <section id="tab-roster" hidden>
     <div class="grid two" style="margin-top:0">
@@ -233,8 +244,9 @@ document.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => setTab(
 function setTab(t) {
   state.tab = t;
   document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
-  for (const id of ['overview', 'students', 'episodes', 'roster']) $(`#tab-${id}`).hidden = id !== t;
+  for (const id of ['overview', 'students', 'episodes', 'feedback', 'roster']) $(`#tab-${id}`).hidden = id !== t;
   if (t === 'episodes') loadEpisode();
+  if (t === 'feedback') loadFeedback();
 }
 
 // ---------------------------------------------------------------- charts (inline SVG)
@@ -416,6 +428,57 @@ $('#upload').onclick = async () => {
 };
 
 // ---------------------------------------------------------------- load
+// ---------------------------------------------------------------- feedback
+const STARS = (n) => '★'.repeat(n) + '<span class="faint">' + '★'.repeat(5 - n) + '</span>';
+async function loadFeedback() {
+  const ep = $('#fbEp').value;
+  const p = new URLSearchParams(qs().slice(1)); if (ep) p.set('session', ep);
+  state.fb = await api(`/api/admin/feedback?${p}`);
+  $('#fbExport').href = `/api/admin/feedback.csv${qs()}`;
+  renderFeedback();
+}
+function renderFeedback() {
+  const d = state.fb; if (!d) return;
+  const t = d.totals, q = $('#fbQ').value.trim().toLowerCase(), f = $('#fbFilter').value;
+  const kpi = (v, l, s = '') => `<div class="card kpi"><div class="v">${v}</div><div class="l">${l}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+  const maxStar = Math.max(1, ...d.stars.map((x) => x.responses));
+  const moodTotal = Math.max(1, ...Object.values(d.moods));
+  const diffTotal = Math.max(1, d.difficulty.easy + d.difficulty.right + d.difficulty.hard);
+  const maxLiked = Math.max(1, ...d.liked.map((x) => x.n));
+  const rows = d.responses.filter((r) => (!q || `${r.name ?? ''} ${r.student_id} ${r.comment ?? ''}`.toLowerCase().includes(q))
+    && (f !== 'comments' || r.comment) && (f !== 'low' || r.rating <= 2) && (f !== 'hard' || r.difficulty === 'hard') && (f !== 'confusing' || r.mood === 'Confusing' || r.mood === 'Boring'));
+  $('#fbCount').textContent = `${rows.length} response${rows.length === 1 ? '' : 's'}`;
+  const MOOD_E = { 'Loved it': '🤩', Fun: '😀', Okay: '😐', Confusing: '😕', Boring: '😴' };
+  $('#fbBody').innerHTML = `
+    <div class="grid kpis">
+      ${kpi(t.avg_rating ?? '—', 'Average rating', 'out of 5 stars')}
+      ${kpi(fmtNum(t.responses), 'Responses', `from ${fmtNum(t.students)} students`)}
+      ${kpi(fmtNum(t.comments), 'Written comments')}
+      ${kpi(`${d.difficulty.hard ? Math.round(d.difficulty.hard / diffTotal * 100) : 0}%`, 'Said “too hard”', `${Math.round(d.difficulty.easy / diffTotal * 100)}% too easy`)}
+      ${kpi(`${t.sound_on_pct}%`, 'Played with sound on')}
+    </div>
+    <div class="grid two">
+      <div class="card"><h2>Ratings</h2>${hbars([...d.stars].reverse().map((x) => ({ name: '★'.repeat(x.stars), pct: x.responses / maxStar * 100, text: `${x.responses}` })))}
+        <h2 style="margin-top:18px">How it felt</h2>${hbars(Object.entries(d.moods).map(([m, n]) => ({ name: `${MOOD_E[m] ?? ''} ${m}`, pct: n / moodTotal * 100, text: `${n}` })))}</div>
+      <div class="card"><h2>Difficulty of the SQL</h2>${hbars([['easy', '🟢 Too easy'], ['right', '🟡 Just right'], ['hard', '🔴 Too hard']].map(([k, l]) => ({ name: l, pct: d.difficulty[k] / diffTotal * 100, text: `${d.difficulty[k]} · ${Math.round(d.difficulty[k] / diffTotal * 100)}%` })))}
+        <h2 style="margin-top:18px">What students liked</h2>${d.liked.length ? hbars(d.liked.map((x) => ({ name: x.what, pct: x.n / maxLiked * 100, text: `${x.n}` }))) : '<p class="faint">Nothing picked yet.</p>'}</div>
+    </div>
+    <div class="card" style="margin-top:12px"><h2>By episode</h2><p class="sub">Rows in red: average under 3.5 or a third of students said “too hard”.</p>
+      <div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">Episode</th><th class="r nosort">Responses</th><th class="nosort">Avg rating</th><th class="r nosort">Too easy</th><th class="r nosort">Just right</th><th class="r nosort">Too hard</th><th class="r nosort">Confusing / boring</th></tr></thead><tbody>
+      ${d.episodes.map((e) => `<tr class="${e.responses && (e.avg_rating < 3.5 || e.hard / e.responses >= 1 / 3) ? 'hot' : ''}"><td>${e.n}. ${esc(e.title)}</td><td class="r">${e.responses}</td><td>${e.avg_rating == null ? '—' : `${STARS(Math.round(e.avg_rating))} ${e.avg_rating}`}</td><td class="r">${e.easy}</td><td class="r">${e.right}</td><td class="r">${e.hard}</td><td class="r">${e.confusing}</td></tr>`).join('')}
+      </tbody></table></div></div>
+    <div class="card" style="margin-top:12px"><h2>Responses</h2>
+      <div class="tablewrap" style="border:0;max-height:620px"><table><thead><tr><th class="nosort">When</th><th class="nosort">Student</th><th class="nosort">Episode</th><th class="nosort">Rating</th><th class="nosort">Felt</th><th class="nosort">SQL was</th><th class="nosort">Liked</th><th class="nosort">Comment</th></tr></thead><tbody>
+      ${rows.slice(0, 500).map((r) => `<tr class="click" data-id="${esc(r.student_id)}"><td class="faint">${when(r.at)}</td><td>${esc(r.name ?? r.student_id)}</td><td>${r.session}</td><td>${STARS(r.rating)}</td><td>${MOOD_E[r.mood] ?? ''} ${esc(r.mood ?? '')}</td><td>${esc(r.difficulty ?? '')}</td><td class="wrap faint">${esc(r.liked.join(', '))}</td><td class="wrap">${esc(r.comment ?? '')}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">No feedback yet.</td></tr>'}
+      </tbody></table></div></div>`;
+  $('#fbBody').querySelectorAll('tr[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
+}
+$('#fbEp').onchange = loadFeedback; $('#fbFilter').onchange = renderFeedback; $('#fbQ').oninput = renderFeedback;
+
+async function loadLive() {
+  try { const l = await api(`/api/admin/live${qs()}`); $('#liveNow').innerHTML = `<i class="dot"></i>${l.count} playing now`; $('#liveNow').title = l.students.slice(0, 30).map((s) => `${s.name ?? s.student_id} — ${s.title ?? ''}`).join('\n'); } catch { /* ignore */ }
+}
+
 async function loadBatches() {
   const b = await api('/api/admin/batches'), cur = $('#batch').value;
   $('#batch').innerHTML = '<option value="">All batches</option>' + b.map((x) => `<option value="${esc(x.batch)}">${esc(x.batch)} (${x.students})</option>`).join('');
@@ -426,8 +489,10 @@ async function loadAll() {
   state.overview = o; state.students = s.students; state.notStarted = s.not_started;
   $('#export').href = `/api/admin/export.csv${qs()}`;
   if (!$('#epPick').options.length) $('#epPick').innerHTML = o.funnel.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.title)}</option>`).join('');
-  renderOverview(); renderStudents(); renderNotStarted();
+  if ($('#fbEp').options.length < 2) $('#fbEp').innerHTML += o.funnel.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.title)}</option>`).join('');
+  renderOverview(); renderStudents(); renderNotStarted(); loadLive();
   if (state.tab === 'episodes') loadEpisode();
+  if (state.tab === 'feedback') loadFeedback();
 }
 $('#batch').onchange = loadAll; $('#guests').onchange = loadAll; $('#refresh').onclick = () => { loadBatches(); loadAll(); };
 async function boot() {
@@ -436,6 +501,7 @@ async function boot() {
   await loadAll();
 }
 setInterval(() => { if (!$('#app').hidden && !document.hidden) loadAll().catch(() => {}); }, 120_000);
+setInterval(() => { if (!$('#app').hidden && !document.hidden) loadLive(); }, 30_000);
 boot();
 </script>
 </body>

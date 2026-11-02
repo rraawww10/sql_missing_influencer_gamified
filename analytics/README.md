@@ -49,6 +49,24 @@ VITE_ANALYTICS_URL=https://analytics.example.com npm run build:s3
 
 Without `VITE_ANALYTICS_URL` the game behaves exactly as before (nothing is sent).
 
+## Feedback (v4)
+
+The game's solved screen asks for a 1–5 star rating, a mood, "the SQL was too easy / just right / too hard", what they liked,
+and an optional comment → `POST /api/feedback` (one row per student per episode; a resend replaces it). The dashboard's
+**Feedback** tab shows the average rating, rating / mood / difficulty / "liked" charts, a per-episode table (red rows = rating
+under 3.5 or a third saying "too hard"), every response with search and filters, and **Export feedback CSV**.
+The header also shows **"N playing now"** (any event in the last 5 minutes; refreshes every 30 s).
+
+## Scale (measured 2026-11-02, for ~500 students)
+
+* `npm run demo` seeds 80 students; `node --no-warnings seed-demo.mjs 500` seeds 500 (~400k events).
+* `node --no-warnings bench.mjs` times every admin query on that database. At 500 students / 250k events the overview went from
+  **2 980 ms → 429 ms** (the "median time to finish" used a correlated `EXISTS`; now computed in JS) — others ≤ 140 ms.
+  Overview and students responses are also cached for 20 s on the server, so many admins refreshing cost one computation.
+* `node loadtest.mjs <url> 500 6` — 500 students posting at the same instant, 6 rounds: **3 000 requests / 24 000 events in
+  2.8 s, 0 failures, p95 381 ms**, plus 500 feedback posts. Real traffic is spread over 30 s heartbeats, so this is the worst case.
+* Don't rate-limit `/api/events` per IP: a whole campus can sit behind one NAT address.
+
 ## What the dashboard shows
 
 * **Overview** — students who played (vs the roster), active today / 7 days, total and average active time, average progress,

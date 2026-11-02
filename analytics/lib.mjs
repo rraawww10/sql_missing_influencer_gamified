@@ -44,6 +44,22 @@ export function openDb(file) {
     CREATE INDEX IF NOT EXISTS ev_student ON events(student_id, session);
     CREATE INDEX IF NOT EXISTS ev_verb ON events(verb, session);
     CREATE INDEX IF NOT EXISTS ev_ts ON events(client_ts);
+    CREATE INDEX IF NOT EXISTS ev_student_verb ON events(student_id, session, verb);
+    -- one row per student per episode (a resend replaces it): the end-of-episode feedback card
+    CREATE TABLE IF NOT EXISTS feedback (
+      student_id  TEXT NOT NULL,
+      is_guest    INTEGER NOT NULL,
+      session     INTEGER NOT NULL,
+      rating      INTEGER NOT NULL,       -- 1-5 stars
+      mood        TEXT,
+      difficulty  TEXT,                   -- easy | right | hard
+      liked       TEXT,                   -- JSON array
+      comment     TEXT,
+      sound_on    INTEGER,
+      client_ts   TEXT NOT NULL,
+      received_at TEXT NOT NULL,
+      PRIMARY KEY (student_id, session)
+    );
     CREATE TABLE IF NOT EXISTS students (
       student_id TEXT PRIMARY KEY,
       name       TEXT,
@@ -121,6 +137,28 @@ export function ingest(db, events) {
     db.exec('COMMIT');
   } catch (err) { db.exec('ROLLBACK'); throw err; }
   return { added, duplicates: events.length - added - rejected, rejected };
+}
+
+// a CSV cell, with spreadsheet formulas neutralised
+export const csvCell = (v) => { const t = v == null ? '' : String(v); return /[",\n]/.test(t) || /^[=+\-@]/.test(t) ? `"${t.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""')}"` : t; };
+
+// ---------------------------------------------------------------- feedback
+const MOODS = new Set(['Loved it', 'Fun', 'Okay', 'Confusing', 'Boring']);
+const DIFFICULTY = new Set(['easy', 'right', 'hard']);
+export function ingestFeedback(db, f) {
+  const session = Number(f?.session), rating = Number(f?.rating);
+  if (!f || !str(f.user_id, 220) || !Number.isInteger(session) || session < 1 || session > SESSION_COUNT
+      || !Number.isInteger(rating) || rating < 1 || rating > 5) return { error: 'bad feedback' };
+  const lms = f.user_id.startsWith('lms:');
+  const liked = Array.isArray(f.liked) ? f.liked.filter((x) => typeof x === 'string').map((x) => x.slice(0, 40)).slice(0, 12) : [];
+  const ts = Number.isNaN(Date.parse(f.client_ts)) ? new Date().toISOString() : new Date(Math.min(Date.parse(f.client_ts), Date.now())).toISOString();
+  db.prepare(`INSERT OR REPLACE INTO feedback (student_id, is_guest, session, rating, mood, difficulty, liked, comment, sound_on, client_ts, received_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?)`).run(
+    lms ? f.user_id.slice(4) : f.user_id, lms ? 0 : 1, session, rating,
+    MOODS.has(f.mood) ? f.mood : null, DIFFICULTY.has(f.difficulty) ? f.difficulty : null, JSON.stringify(liked),
+    typeof f.comment === 'string' && f.comment.trim() ? f.comment.trim().slice(0, 1000) : null,
+    typeof f.sound_on === 'boolean' ? Number(f.sound_on) : null, ts, new Date().toISOString());
+  return { ok: true };
 }
 
 // ---------------------------------------------------------------- roster CSV
@@ -289,11 +327,13 @@ export class Analytics {
       FROM events e WHERE e.session > 0 ${s.sql} GROUP BY e.session`, s.params).map((r) => [r.session, r]));
     // median minutes to finish, from students who completed it
     const finish = new Map();
+    // (computed in JS: a correlated EXISTS here took ~3 s at 250k events)
+    const completed = this.completedBySession(f);
     for (const r of this.all(`
       SELECT e.session, e.student_id, SUM(e.seconds) AS seconds FROM events e
       WHERE e.verb = 'heartbeat' AND e.session > 0 ${s.sql}
-        AND EXISTS (SELECT 1 FROM events c WHERE c.student_id = e.student_id AND c.session = e.session AND c.verb = 'session_completed')
       GROUP BY e.session, e.student_id`, s.params)) {
+      if (!completed.get(r.student_id)?.has(r.session)) continue;
       if (!finish.has(r.session)) finish.set(r.session, []);
       finish.get(r.session).push(r.seconds);
     }
@@ -393,6 +433,55 @@ export class Analytics {
     };
   }
 
+  // Who is playing right now: any event in the last 5 minutes, with the episode and beat they are on
+  live(f = {}) {
+    const s = this.scope(f);
+    const since = new Date(Date.now() - 5 * 60_000).toISOString();
+    const rows = this.all(`SELECT e.student_id, MAX(e.client_ts) AS at,
+        (SELECT x.session FROM events x WHERE x.student_id = e.student_id ORDER BY x.client_ts DESC LIMIT 1) AS session
+      FROM events e WHERE e.client_ts >= ? ${s.sql} GROUP BY e.student_id ORDER BY at DESC`, [since, ...s.params]);
+    const names = new Map(this.all('SELECT student_id, name, batch FROM students').map((r) => [r.student_id, r]));
+    return { since, count: rows.length, students: rows.map((r) => ({ ...r, name: names.get(r.student_id)?.name ?? null, batch: names.get(r.student_id)?.batch ?? null,
+      title: r.session ? this.cat.get(r.session)?.title ?? null : 'Briefing' })) };
+  }
+
+  // Feedback tab: headline numbers, per-episode ratings + difficulty split, mood and "liked" counts, every comment
+  feedback(f = {}) {
+    const where = []; const params = [];
+    if (!f.guests) where.push('fb.is_guest = 0');
+    if (f.batch) { where.push('fb.student_id IN (SELECT student_id FROM students WHERE batch = ?)'); params.push(f.batch); }
+    if (f.session) { where.push('fb.session = ?'); params.push(Number(f.session)); }
+    const w = where.length ? `WHERE ${where.join(' AND ')}` : '';
+    const rows = this.all(`SELECT fb.*, s.name, s.batch FROM feedback fb LEFT JOIN students s USING (student_id) ${w} ORDER BY fb.client_ts DESC`, params);
+    const count = (key, vals) => Object.fromEntries(vals.map((v) => [v, rows.filter((r) => r[key] === v).length]));
+    const liked = {};
+    for (const r of rows) for (const x of JSON.parse(r.liked || '[]')) liked[x] = (liked[x] ?? 0) + 1;
+    const avg = (xs) => xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length * 10) / 10 : null;
+    return {
+      totals: { responses: rows.length, students: new Set(rows.map((r) => r.student_id)).size, avg_rating: avg(rows.map((r) => r.rating)),
+        comments: rows.filter((r) => r.comment).length, sound_on_pct: pct(rows.filter((r) => r.sound_on === 1).length, rows.filter((r) => r.sound_on != null).length) },
+      stars: [1, 2, 3, 4, 5].map((n) => ({ stars: n, responses: rows.filter((r) => r.rating === n).length })),
+      moods: count('mood', [...MOODS]),
+      difficulty: count('difficulty', [...DIFFICULTY]),
+      liked: Object.entries(liked).sort((a, b) => b[1] - a[1]).map(([what, n]) => ({ what, n })),
+      episodes: this.cat.sessions.map((ep) => {
+        const r = rows.filter((x) => x.session === ep.n);
+        return { n: ep.n, title: ep.title, responses: r.length, avg_rating: avg(r.map((x) => x.rating)),
+          easy: r.filter((x) => x.difficulty === 'easy').length, right: r.filter((x) => x.difficulty === 'right').length, hard: r.filter((x) => x.difficulty === 'hard').length,
+          confusing: r.filter((x) => x.mood === 'Confusing' || x.mood === 'Boring').length };
+      }),
+      responses: rows.slice(0, 2000).map((r) => ({ student_id: r.student_id, name: r.name, batch: r.batch, session: r.session, rating: r.rating, mood: r.mood,
+        difficulty: r.difficulty, liked: JSON.parse(r.liked || '[]'), comment: r.comment, sound_on: r.sound_on, at: r.client_ts })),
+    };
+  }
+
+  feedbackCsv(f = {}) {
+    const d = this.feedback(f);
+    const head = ['student_id', 'name', 'batch', 'episode', 'rating', 'mood', 'difficulty', 'liked', 'comment', 'sound_on', 'at'];
+    const lines = d.responses.map((r) => [r.student_id, r.name, r.batch, r.session, r.rating, r.mood, r.difficulty, r.liked.join('; '), r.comment, r.sound_on, r.at].map(csvCell).join(','));
+    return [head.join(','), ...lines].join('\n');
+  }
+
   saveRoster(rows, replace = false) {
     const up = this.db.prepare(`INSERT INTO students (student_id, name, batch) VALUES (?,?,?)
       ON CONFLICT(student_id) DO UPDATE SET name = COALESCE(excluded.name, students.name), batch = COALESCE(excluded.batch, students.batch)`);
@@ -417,7 +506,7 @@ export class Analytics {
   exportCsv(f = {}) {
     const cols = ['student_id', 'name', 'batch', 'level', 'level_title', 'level_status', 'episodes_done', 'progress_pct', 'minutes', 'active_days',
       'attempts', 'tasks_passed', 'accuracy_pct', 'hints', 'traps', 'clues', 'first_seen', 'last_seen'];
-    const q = (v) => { const t = v == null ? '' : String(v); return /[",\n]/.test(t) || /^[=+\-@]/.test(t) ? `"${t.replace(/^([=+\-@])/, "'$1").replace(/"/g, '""')}"` : t; };
+    const q = csvCell;
     const rows = this.students(f).map((r) => ({ ...r, minutes: Math.round(r.seconds / 60) }));
     for (const r of this.notStarted(f)) rows.push({ ...r, level: 0, level_title: 'Not started', level_status: 'not started', episodes_done: 0, progress_pct: 0, minutes: 0 });
     return [cols.join(','), ...rows.map((r) => cols.map((c) => q(r[c])).join(','))].join('\n');

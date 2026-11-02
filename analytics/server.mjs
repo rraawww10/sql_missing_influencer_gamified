@@ -2,6 +2,9 @@
 // Zero dependencies: Node 22+ (node:http + the built-in node:sqlite). One SQLite file holds everything.
 //
 //   POST /api/events                 the game sends batches of events here (public, CORS open, idempotent by event_id)
+//   POST /api/feedback               end-of-episode feedback card (public, one row per student per episode)
+//   GET  /api/admin/feedback(.csv)   feedback dashboard / export
+//   GET  /api/admin/live             students active in the last 5 minutes
 //   POST /api/login | /api/logout    admin session cookie (password = ADMIN_PASSWORD)
 //   GET  /api/admin/overview         headline numbers, daily activity, episode funnel
 //   GET  /api/admin/students         one row per student: level, progress %, active time, last seen
@@ -18,7 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { openDb, loadCatalogue, Analytics, ingest, parseRoster } from './lib.mjs';
+import { openDb, loadCatalogue, Analytics, ingest, ingestFeedback, parseRoster } from './lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 8787);
@@ -59,6 +62,16 @@ function tooManyTries(ip) {
   return t.length >= 10;
 }
 
+// Heavy dashboard reads are cached for 20 s: with ~500 students and several admins refreshing, the numbers are computed once
+const CACHE_MS = 20_000; const cache = new Map();
+function cached(key, fn) {
+  const hit = cache.get(key);
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.v;
+  const v = fn(); cache.set(key, { at: Date.now(), v });
+  if (cache.size > 200) cache.delete(cache.keys().next().value);
+  return v;
+}
+
 // ---------------------------------------------------------------- http helpers
 const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-allow-headers': 'content-type' };
 const SECURITY = { 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer' };
@@ -91,6 +104,15 @@ const server = http.createServer(async (req, res) => {
       return send(res, r.error ? 400 : 200, r, CORS);
     }
 
+    if (p === '/api/feedback') {
+      if (req.method === 'OPTIONS') return send(res, 204, '', CORS);
+      if (req.method !== 'POST') return send(res, 405, 'POST only', CORS);
+      let body;
+      try { body = JSON.parse(await readBody(req, 20_000)); } catch { return send(res, 400, 'bad body', CORS); }
+      const r = ingestFeedback(db, body);
+      return send(res, r.error ? 400 : 200, r, CORS);
+    }
+
     if (p === '/api/login' && req.method === 'POST') {
       const ip = req.socket.remoteAddress ?? '?';
       if (tooManyTries(ip)) return send(res, 429, { error: 'Too many attempts. Try again in 15 minutes.' });
@@ -106,9 +128,13 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith('/api/admin/')) {
       if (!isAdmin(req)) return send(res, 401, { error: 'login required' });
       const f = filters(u);
-      if (p === '/api/admin/overview') return send(res, 200, analytics.overview(f));
-      if (p === '/api/admin/students') return send(res, 200, { students: analytics.students(f), not_started: analytics.notStarted(f) });
+      if (p === '/api/admin/overview') return send(res, 200, cached(`o${JSON.stringify(f)}${u.searchParams.get('fresh') ?? ''}`, () => analytics.overview(f)));
+      if (p === '/api/admin/students') return send(res, 200, cached(`s${JSON.stringify(f)}${u.searchParams.get('fresh') ?? ''}`, () => ({ students: analytics.students(f), not_started: analytics.notStarted(f) })));
       if (p === '/api/admin/batches') return send(res, 200, analytics.batches());
+      if (p === '/api/admin/live') return send(res, 200, analytics.live(f));
+      if (p === '/api/admin/feedback') return send(res, 200, analytics.feedback({ ...f, session: u.searchParams.get('session') || null }));
+      if (p === '/api/admin/feedback.csv')
+        return send(res, 200, analytics.feedbackCsv(f), { 'content-type': 'text/csv; charset=utf-8', 'content-disposition': 'attachment; filename="feedback.csv"' });
       let m;
       if ((m = /^\/api\/admin\/students\/(.+)$/.exec(p))) {
         const s = analytics.student(decodeURIComponent(m[1]));
