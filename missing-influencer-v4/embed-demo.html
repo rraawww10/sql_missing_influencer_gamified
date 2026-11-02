@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Embed demo — SQL: The Missing Influencer</title>
+<style>body{font:15px system-ui,sans-serif;margin:0;padding:16px;background:#f4f5f8;color:#1b1f2a}
+select,button,input{font:inherit;padding:6px 10px}iframe{width:100%;border:1px solid #d9dde6;border-radius:12px;background:#fff;height:min(900px,88vh)}
+pre{background:#fff;border:1px solid #d9dde6;border-radius:8px;padding:8px;max-height:30vh;overflow:auto;font-size:12px}</style></head>
+<body>
+<p><label>Site <select id="pick"><option value="intro">intro · Case briefing (before the first episode)</option><option value="s01">s01 · She's Gone</option><option value="s02">s02 · Build the Case File</option><option value="s03">s03 · Hotel Gate Log</option><option value="s04">s04 · The Last Cab</option><option value="s05">s05 · Follow the Money</option><option value="s06">s06 · Phone Towers</option><option value="s07">s07 · Smartwatch Secrets</option><option value="s08">s08 · Clear the Innocent</option><option value="s09">s09 · The Case Board</option><option value="s10">s10 · Connect the Dots</option><option value="s11">s11 · The Toll Plaza</option><option value="s12">s12 · The Edited Contract</option><option value="s13">s13 · Showtime</option></select></label>
+   <label style="margin-left:12px">user_id <input id="user" size="12" placeholder="(guest)"></label>
+   <button id="restore" title="Replay every progress message this page has seen into the game (what an LMS would do on another device)">Restore progress</button></p>
+<iframe id="game" title="SQL: The Missing Influencer" src="intro/index.html"></iframe>
+<p>Messages from the game (postMessage):</p><pre id="log"></pre>
+<script>
+  const game = document.getElementById('game'), log = document.getElementById('log'), user = document.getElementById('user');
+  const load = () => { const q = user.value ? '?user_id=' + encodeURIComponent(user.value) : ''; game.src = document.getElementById('pick').value + '/index.html' + q; log.textContent = ''; };
+  document.getElementById('pick').onchange = load;
+  user.onchange = load;
+  window.tmiSaved = [];
+  document.getElementById('restore').onclick = () => game.contentWindow.postMessage({ source: 'tmi-host', type: 'restore', events: window.tmiSaved }, '*');
+  addEventListener('message', (e) => {
+    if (!e.data || e.data.source !== 'tmi') return;
+    if (e.data.type === 'progress') window.tmiSaved.push(e.data.event);
+    const line = e.data.type + ' ' + JSON.stringify(e.data.type === 'progress' ? { verb: e.data.event.verb, id: e.data.event.object.id, unit: e.data.event.object.unit } : e.data);
+    log.textContent = line + '\n' + log.textContent;
+    (window.tmiMessages ||= []).push(e.data);
+  });
+</script>
+</body></html>

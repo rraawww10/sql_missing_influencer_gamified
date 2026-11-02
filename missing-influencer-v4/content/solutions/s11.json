@@ -1,0 +1,30 @@
+{
+  "T11.1": {
+    "ref": "SELECT T.vehicle_no, people.name, toll_crossings.plaza, toll_crossings.direction, toll_crossings.ts FROM (vehicles INNER JOIN company ON vehicles.company_id = company.company_id) AS T INNER JOIN people ON T.owner_person_id = people.person_id INNER JOIN toll_crossings ON T.vehicle_no = toll_crossings.vehicle_no WHERE people.name = 'Dev Arora';",
+    "traps": []
+  },
+  "T11.2": {
+    "ref": "SELECT T.vehicle_no, people.name, toll_crossings.plaza, toll_crossings.direction, toll_crossings.ts FROM (vehicles INNER JOIN company ON vehicles.company_id = company.company_id) AS T INNER JOIN people ON T.owner_person_id = people.person_id INNER JOIN toll_crossings ON T.vehicle_no = toll_crossings.vehicle_no WHERE people.name = 'Dev Arora' ORDER BY toll_crossings.ts;",
+    "traps": []
+  },
+  "T11.3": {
+    "ref": "SELECT toll_crossings.vehicle_no, toll_crossings.direction, COUNT(*) FROM toll_crossings INNER JOIN vehicles ON toll_crossings.vehicle_no = vehicles.vehicle_no GROUP BY toll_crossings.vehicle_no, toll_crossings.direction;",
+    "traps": []
+  },
+  "T11.4": {
+    "ref": "SELECT booking_guest.booking_id, person.name FROM person RIGHT JOIN booking_guest ON person.id = booking_guest.person_id WHERE booking_guest.booking_id = 88;",
+    "traps": []
+  },
+  "T11.5": {
+    "ref": "SELECT DISTINCT gate_log.vehicle_no AS at_hotel_gate, toll_crossings.vehicle_no AS at_toll FROM gate_log FULL JOIN toll_crossings ON gate_log.vehicle_no = toll_crossings.vehicle_no;",
+    "traps": []
+  },
+  "T11.6": {
+    "ref": "SELECT police_units.name, routes.name, routes.km FROM police_units CROSS JOIN routes WHERE police_units.base_area = 'Ring Road' ORDER BY routes.km LIMIT 1;",
+    "traps": []
+  },
+  "T11.7": {
+    "ref": "SELECT p1.device_owner, p2.device_owner, p1.tower_id, p1.ts FROM tower_pings AS p1 INNER JOIN tower_pings AS p2 ON p1.tower_id = p2.tower_id AND p1.ts = p2.ts WHERE p1.device_owner < p2.device_owner AND p1.tower_id = 'RRO-17';",
+    "traps": []
+  }
+}

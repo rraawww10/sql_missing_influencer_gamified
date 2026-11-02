@@ -1,0 +1,26 @@
+{
+  "T13.c1": {
+    "ref": "SELECT vehicles.vehicle_no, people.name FROM vehicles INNER JOIN company ON vehicles.company_id = company.company_id INNER JOIN people ON company.owner_person_id = people.person_id WHERE vehicles.vehicle_no = '26 BH 4471 EX';",
+    "traps": []
+  },
+  "T13.c2": {
+    "ref": "SELECT direction, ts FROM toll_crossings WHERE vehicle_no = '26 BH 4471 EX' ORDER BY ts;",
+    "traps": []
+  },
+  "T13.c3": {
+    "ref": "SELECT tower_id, COUNT(*) FROM tower_pings WHERE device_owner = 'Tara Sen' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id HAVING COUNT(*) > 5;",
+    "traps": []
+  },
+  "T13.c4": {
+    "ref": "SELECT booking.id, property.name, person.name, booking.check_in FROM booking INNER JOIN property ON booking.property_id = property.id INNER JOIN person ON booking.booked_by = person.id WHERE booking.id = 88;",
+    "traps": []
+  },
+  "T13.c5": {
+    "ref": "SELECT user_name, new_value, ts FROM txn_log WHERE entry_type = 'WRITE' AND data_item = 'contract_C12.missed_show_clause' AND txn_id IN (SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT');",
+    "traps": []
+  },
+  "T13.1": {
+    "ref": "SELECT people.name, CASE WHEN people.name IN (SELECT person_name FROM alibis WHERE verified = 1) THEN 'Cleared' ELSE 'Charged' END AS status FROM people WHERE role = 'suspect' ORDER BY status;",
+    "traps": []
+  }
+}

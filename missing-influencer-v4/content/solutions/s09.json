@@ -1,0 +1,43 @@
+{
+  "T9.1": {
+    "ref": "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
+    "traps": []
+  },
+  "T9.2": {
+    "ref": "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
+    "traps": []
+  },
+  "T9.3": {
+    "ref": "CREATE TABLE booking (id INTEGER NOT NULL PRIMARY KEY, property_id INTEGER, booked_by INTEGER, check_in DATETIME, FOREIGN KEY (property_id) REFERENCES property(id) ON DELETE CASCADE, FOREIGN KEY (booked_by) REFERENCES person(id) ON DELETE CASCADE);",
+    "traps": []
+  },
+  "T9.4": {
+    "ref": "CREATE TABLE booking_guest (id INTEGER NOT NULL PRIMARY KEY, booking_id INTEGER, person_id INTEGER, FOREIGN KEY (booking_id) REFERENCES booking(id) ON DELETE CASCADE, FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE);",
+    "traps": []
+  },
+  "T9.5": {
+    "ref": "INSERT INTO person (id, name, role) VALUES (2, 'Dev Arora', 'Artist manager'); INSERT INTO property (id, name, area, district) VALUES (1, 'Green Acres Farm Stays', 'Ring Road outskirts', 'Rural District'); INSERT INTO booking (id, property_id, booked_by, check_in) VALUES (88, 1, 2, '2026-12-12 18:45:00'); INSERT INTO booking_guest (id, booking_id, person_id) VALUES (1, 88, 2), (2, 88, NULL);",
+    "traps": [
+      {
+        "id": "child_first",
+        "sql": "INSERT INTO booking (id, property_id, booked_by, check_in) VALUES (88, 1, 2, '2026-12-12 18:45:00');"
+      }
+    ]
+  },
+  "T9.6": {
+    "ref": "SELECT * FROM property JOIN booking ON property.id = booking.property_id WHERE property.name = 'Green Acres Farm Stays';",
+    "traps": []
+  },
+  "T9.7": {
+    "ref": "SELECT person.name, smartwatch.model, smartwatch.esim_number FROM person JOIN smartwatch ON person.id = smartwatch.person_id;",
+    "traps": []
+  },
+  "T9.8": {
+    "ref": "SELECT person.name FROM booking_guest JOIN person ON booking_guest.person_id = person.id WHERE booking_guest.booking_id = 88;",
+    "traps": []
+  },
+  "T9.9": {
+    "ref": "DELETE FROM property WHERE id = 2;",
+    "traps": []
+  }
+}

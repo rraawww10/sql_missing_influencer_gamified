@@ -37,6 +37,13 @@ export function objectiveOf(beat: Beat): string {
     default: return 'Follow the story';
   }
 }
+// Chapters: an episode is cut at every clue (evidence card), so a learner can play in short bites with a clear stopping point
+export function chapterOf(beats: Beat[], index: number): { n: number; of: number } {
+  const ends = beats.map((b, i) => (b.type === 'clue' ? i : -1)).filter((i) => i >= 0);
+  if (!ends.length || ends[ends.length - 1] < beats.length - 1) ends.push(beats.length - 1);
+  const n = ends.findIndex((e) => index <= e) + 1;
+  return { n: n || ends.length, of: ends.length };
+}
 const KAAL_ON: Partial<Record<Beat['type'], KaalEvent>> = { note: 'note', task: 'task', activity: 'activity', check: 'check', clue: 'clue', demo: 'demo', hook: 'hook' };
 
 // One runner per session per page load (React StrictMode mounts effects twice in dev)
@@ -72,6 +79,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
   const [viewAt, setViewAt] = useState<number | null>(null);   // null = the live step
   const [sheet, setSheet] = useState<'steps' | 'evidence' | 'tables' | null>(null);
   const [bump, setBump] = useState(false);
+  const [checkpoint, setCheckpoint] = useState<number | null>(null);
   const pinsBefore = useRef(0);
   const scroller = useRef<HTMLDivElement>(null);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
@@ -123,8 +131,17 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
     if (!runner) return;
     if (review) { setViewAt(view + 1 >= runner.index ? null : view + 1); return; }
     if (!runner.canAdvance()) return;
+    const was = runner.pack.beats[runner.index];
     const { finished } = await runner.advance();
-    if (finished) { forgetRunner(session); onFinished(); } else { setViewAt(null); refresh(); }
+    if (finished) { forgetRunner(session); onFinished(); } else {
+      if (was.type === 'clue') {
+        const c = chapterOf(runner.pack.beats, runner.index - 1);
+        setCheckpoint(c.n);
+        kaal('pinned', { line: `Chapter ${c.n} of ${c.of} closed — your progress is saved. Good place for a break, partner… or keep going?`, silent: true });
+        setTimeout(() => setCheckpoint(null), 6000);
+      }
+      setViewAt(null); refresh();
+    }
   }, [runner, review, view, session, onFinished, refresh]);
   const back = useCallback(() => { if (view > 0) setViewAt(view - 1); }, [view]);
 
@@ -195,6 +212,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
             <span className="ico" aria-hidden="true">{ICON[beat.type]}</span>
             <span className="lbl">{KIND[beat.type]}{beatLabel(runner, beat, true) !== KIND[beat.type] && <> · {beatLabel(runner, beat, true)}</>}</span>
             <span className="count">Step {runner.index + 1}/{beats.length}</span>
+            <span className="chapter hide-phone">Ch. {chapterOf(beats, view).n}/{chapterOf(beats, view).of}</span>
           </button>
           {!review && <span className="objective hide-phone" title={objectiveOf(beat)}><b>🎯 Objective</b>{objectiveOf(beat)}</span>}
           <span className="muted small hide-phone">{beats.filter((b) => runner.beatState(b.id)?.done).length} of {beats.length} done</span>
@@ -207,6 +225,9 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
             <span>👀 Looking back at an earlier step — <b>{beatLabel(runner, beat, true)}</b>. Nothing here changes your progress.</span>
             <button className="btn small primary" onClick={() => setViewAt(null)}>Back to current step ⏭</button>
           </div>
+        )}
+        {checkpoint && !review && (
+          <div className="checkpoint" role="status">💾 <b>Chapter {checkpoint} closed · progress saved.</b> <span className="hide-phone">Stop here any time — you’ll continue from this point.</span></div>
         )}
         <div className="stage-scroll" ref={scroller}>
           {fullBleed ? stage : <div className={`stage-content ${beat.type === 'task' ? 'wide' : beat.type === 'note' ? 'reading' : ''}`} style={beat.type === 'clue' ? { minHeight: '100%', display: 'grid' } : undefined}>{stage}</div>}

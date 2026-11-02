@@ -1,0 +1,140 @@
+{
+  "about": "Single source of every character, place and number plate. Session text, checks and the case DB use {{key}} / {{key.first}} placeholders (people) and {{key}} (places, plates). Rename here, rebuild, done. All names are fictional; surnames are deliberately from across India; places are names found in most Indian cities; plates use the national BH series.",
+  "premise": "Six hours before her first stadium concert, the reel star from {{hometown}} vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "people": {
+    "star": {
+      "name": "Tara Sen",
+      "first": "Tara",
+      "role": "Singer, @TARA on reels",
+      "initials": "TS",
+      "color": "#7c3aed"
+    },
+    "mentor": {
+      "name": "Ira Menon",
+      "first": "Ira",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "first": "Kabir",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    },
+    "sister": {
+      "name": "Mahi Sen",
+      "first": "Mahi",
+      "role": "{{star.first}}'s younger sister",
+      "initials": "MS",
+      "color": "#be185d"
+    },
+    "manager": {
+      "name": "Dev Arora",
+      "first": "Dev",
+      "role": "{{star.first}}'s manager",
+      "initials": "DA",
+      "color": "#475569"
+    },
+    "rival": {
+      "name": "Nysa Kapoor",
+      "first": "Nysa",
+      "role": "Singer",
+      "initials": "NK",
+      "color": "#9333ea"
+    },
+    "fan": {
+      "name": "Ishita Das",
+      "first": "Ishita",
+      "role": "Runs @tara_squad",
+      "initials": "ID",
+      "color": "#db2777"
+    },
+    "driver": {
+      "name": "Sunny Gill",
+      "first": "Sunny",
+      "role": "Cab driver",
+      "initials": "SG",
+      "color": "#a16207"
+    },
+    "organiser": {
+      "name": "Kunal Bajaj",
+      "first": "Kunal",
+      "role": "Event organiser",
+      "initials": "KB",
+      "color": "#0369a1"
+    },
+    "caretaker": {
+      "name": "Ramesh Pawar",
+      "first": "Ramesh",
+      "role": "Farm stay caretaker",
+      "initials": "RP",
+      "color": "#4d7c0f"
+    },
+    "guest": {
+      "name": "Anita Fernandes",
+      "first": "Anita",
+      "role": "Hotel guest",
+      "initials": "AF",
+      "color": "#64748b"
+    },
+    "label_head": {
+      "name": "Neil Mehta",
+      "first": "Neil",
+      "role": "Head, {{label}}",
+      "initials": "NM",
+      "color": "#64748b"
+    },
+    "passenger": {
+      "name": "Farhan Ali",
+      "first": "Farhan",
+      "role": "Cab passenger",
+      "initials": "FA",
+      "color": "#64748b"
+    },
+    "rival_manager": {
+      "name": "Pia Iyer",
+      "first": "Pia",
+      "role": "Artist manager",
+      "initials": "PI",
+      "color": "#64748b"
+    },
+    "guard": {
+      "name": "Mohan",
+      "first": "Mohan",
+      "role": "Hotel guard, service gate",
+      "initials": "MG",
+      "color": "#4d7c0f"
+    }
+  },
+  "handles": {
+    "fan_handle": "@tara_squad"
+  },
+  "places": {
+    "hometown": "Chandpur",
+    "hotel": "The Grand Residency",
+    "hotel_area": "MG Road",
+    "hotel_company": "Grand Residency Hotels",
+    "stadium": "City Stadium",
+    "farm": "Green Acres Farm Stays",
+    "outskirts": "Ring Road outskirts",
+    "toll": "Ring Road Toll Plaza",
+    "studio": "Lake Road Studio",
+    "talent_company": "DA Talent Management Pvt Ltd",
+    "label": "Skyline Records",
+    "own_label": "Folk Beats Label",
+    "rival_label": "Rhythm House Music",
+    "fan_cafe": "Chai Corner, Chandpur"
+  },
+  "plates": {
+    "suv": "26 BH 4471 EX",
+    "suv_near_miss": "26 BH 4417 EY",
+    "company_sedan": "26 BH 1001 DA",
+    "fan_van": "24 BH 2210 FC",
+    "laundry_van": "22 BH 2031 LV",
+    "flower_van": "23 BH 7740 DL",
+    "catering_van": "21 BH 5090 CT",
+    "ends_ex_other": "23 BH 1171 EX"
+  }
+}

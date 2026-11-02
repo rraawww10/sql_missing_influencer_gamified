@@ -1,0 +1,52 @@
+{
+  "T4.1": {
+    "ref": "SELECT rider_name FROM cab_rides WHERE rider_phone IN ('9876500001', '9876500002', '9876500003', '9876500004', '9876500005', '9876500006');",
+    "traps": []
+  },
+  "T4.2": {
+    "ref": "SELECT ride_id FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00';",
+    "traps": [
+      {
+        "id": "reversed",
+        "sql": "SELECT ride_id FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN '2026-12-12 18:30:00' AND '2026-12-12 17:30:00';"
+      },
+      {
+        "id": "missing_limit",
+        "sql": "SELECT ride_id FROM cab_rides WHERE booked_at BETWEEN AND '2026-12-12 18:30:00';"
+      },
+      {
+        "id": "type_mismatch",
+        "sql": "SELECT ride_id FROM cab_rides WHERE rider_name BETWEEN 300 AND 500;"
+      }
+    ]
+  },
+  "T4.3": {
+    "ref": "SELECT ride_id, status, booked_at FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' ORDER BY booked_at DESC;",
+    "traps": []
+  },
+  "T4.4": {
+    "ref": "SELECT ride_id, status, booked_at FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' ORDER BY status ASC, booked_at DESC;",
+    "traps": []
+  },
+  "T4.5": {
+    "ref": "SELECT DISTINCT driver_name FROM cab_rides WHERE pickup = 'The Grand Residency';",
+    "traps": []
+  },
+  "T4.6": {
+    "ref": "SELECT ride_id, driver_name, booked_at, status, status_updated_at FROM cab_rides WHERE rider_name = 'Tara Sen' ORDER BY booked_at DESC LIMIT 1;",
+    "traps": []
+  },
+  "T4.7": {
+    "ref": "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = 'Sunny Gill' ORDER BY booked_at LIMIT 5 OFFSET 5;",
+    "traps": [
+      {
+        "id": "offset_first",
+        "sql": "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = 'Sunny Gill' ORDER BY booked_at OFFSET 5 LIMIT 5;"
+      },
+      {
+        "id": "offset_alone",
+        "sql": "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = 'Sunny Gill' ORDER BY booked_at OFFSET 5;"
+      }
+    ]
+  }
+}

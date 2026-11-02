@@ -1,0 +1,407 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 10,
+  "title": "Connect the Dots",
+  "story_clock": "2026-12-12 22:30:00",
+  "course_topic_id": "aeedb625-863e-403a-ace0-35b01a781b92",
+  "snapshot": "s10",
+  "est_minutes": 25,
+  "reading_materials": [
+    {
+      "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+      "role": "primary",
+      "rm": 31,
+      "learning_resource_id": "2ec002f4-c403-405c-86f6-3941fe458d67"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S10-C1"
+    ],
+    "required_beats": [
+      "S10.3",
+      "S10.5",
+      "S10.6",
+      "S10.8",
+      "S10.9",
+      "S10.10"
+    ]
+  },
+  "minutes_estimate": 22.5,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C1",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "session": 4,
+      "clue_id": "S4-C2",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C1",
+      "title": "A ₹1 message",
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C3",
+      "title": "A rival label pays the manager",
+      "body": "Your queries: the biggest payment in three days is **Skyline Records → Dev Arora, ₹2,00,000**, on **11 Dec at 21:30**, note *advance*. Tara sings for Folk Beats Label. Why does another label pay her manager an advance the night before her show?"
+    },
+    {
+      "session": 5,
+      "clue_id": "S5-C2",
+      "title": "₹45,000 to a farm stay",
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C1",
+      "title": "The outskirts tower",
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    },
+    {
+      "session": 6,
+      "clue_id": "S6-C2",
+      "title": "The manager was there too",
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    },
+    {
+      "session": 7,
+      "clue_id": "S7-C1",
+      "title": "Green Acres",
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    },
+    {
+      "session": 8,
+      "clue_id": "S8-C1",
+      "title": "Only one name in both lists",
+      "body": "Your INTERSECT: of the three people near **RRO-17** tonight, only **Dev Arora** also paid **Green Acres Farm Stays**. The caretaker lives there; Tara is the guest. One person booked the place and went there."
+    },
+    {
+      "session": 9,
+      "clue_id": "S9-C1",
+      "title": "Booking B-88",
+      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S10.1",
+      "type": "scene",
+      "speaker": "analyst",
+      "body": "New, tidy tables: `people`, `upi_accounts`, `company`, `rehearsal_attendance`, `event_schedule`, `insurance_claims`\n(and `vehicles` now has a `company_id`). Each table holds one kind of thing — so we must **join** them.\n"
+    },
+    {
+      "id": "S10.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+        "heading": "Natural JOIN"
+      },
+      "see_also": [
+        {
+          "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+          "heading": "JOINS"
+        }
+      ],
+      "body": "`NATURAL JOIN` combines two tables on **every column with the same name**: `SELECT * FROM table1 NATURAL JOIN table2;`"
+    },
+    {
+      "id": "S10.3",
+      "type": "task",
+      "task_id": "T10.1",
+      "minutes": 2,
+      "ask": "Every UPI handle with its owner: `people.name` and `upi_accounts.upi_id`, using `NATURAL JOIN` (both tables have `person_id`).",
+      "grading": {
+        "expect_rows": 53,
+        "expected_hash": "sha256:4dbfbd21d3af0dfb9ab6bac9d58cf5d8ac3db22e40556067b6ae59732cdb77c8"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+            "heading": "Natural JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT people.name, upi_accounts.upi_id FROM people ____ upi_accounts;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s10.json#T10.1"
+        }
+      ],
+      "reply_on_pass": "Note `tara.watch@oknavyug` — the handle her watch paid from.",
+      "traps": []
+    },
+    {
+      "id": "S10.4",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+        "heading": "INNER JOIN"
+      },
+      "body": "`INNER JOIN … ON` joins on the condition **you** choose (any comparison operator works):\n```sql\nSELECT * FROM table1 INNER JOIN table2 ON table1.c1 = table2.c2;\n```\n"
+    },
+    {
+      "id": "S10.5",
+      "type": "task",
+      "task_id": "T10.2",
+      "ask": "Nysa says she was rehearsing. Show `people.name`, `rehearsal_attendance.check_in`, `rehearsal_attendance.check_out` for everyone who checked in at `'City Stadium'` (join on `person_id`).",
+      "grading": {
+        "expect_rows": 11,
+        "expected_hash": "sha256:b610cab80680295205676964b16bac61d7374f1743f80c7b94bbbeb3cb1fde8c"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+            "heading": "INNER JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT people.name, rehearsal_attendance.check_in, rehearsal_attendance.check_out FROM people INNER JOIN rehearsal_attendance ON ____ = ____ WHERE rehearsal_attendance.venue = 'City Stadium';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s10.json#T10.2"
+        }
+      ],
+      "traps": [
+        {
+          "id": "natural_multi",
+          "match": {
+            "result_hash": "sha256:23d5dc04183b428240797639347cb6648c9c602655bd7c3a0c0dbd0f1efbaed7"
+          },
+          "reply": "📱 *\"Nysa skipped rehearsal!\"* — no: both tables have `person_id` **and** `venue`, and `NATURAL JOIN` matched on **both**.\nHer usual venue is the studio, so she dropped out. Use `INNER JOIN … ON person_id` to say exactly what to match.\n",
+          "rm_ref": {
+            "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+            "heading": "NATURAL JOIN on multiple common Columns"
+          }
+        }
+      ],
+      "reply_on_pass": "Nysa Kapoor was on stage **16:00–21:30**, with 3,000 crew around. Cleared."
+    },
+    {
+      "id": "S10.6",
+      "type": "task",
+      "task_id": "T10.3",
+      "ask": "Kunal filed an insurance claim early. Join `insurance_claims` with `event_schedule` **on** `filed_at >= artist_checkin_deadline`,\nkeep rows where the `event_id`s match, and show `claim_id`, `filed_at`, `auto_generated`.\n",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:891e74c5663aaa350bf4bf519f52b96696d635ced07768022f01b8661e9b3162"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+            "heading": "INNER JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT insurance_claims.claim_id, insurance_claims.filed_at, insurance_claims.auto_generated FROM insurance_claims INNER JOIN event_schedule ON insurance_claims.filed_at ____ event_schedule.artist_checkin_deadline WHERE insurance_claims.event_id = event_schedule.event_id;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s10.json#T10.3"
+        }
+      ],
+      "reply_on_pass": "Claim C-501 at 19:00:01 — `auto_generated = 1`. The insurance system files automatically when the artist misses check-in. Kunal didn't even know. Cleared.",
+      "traps": []
+    },
+    {
+      "id": "S10.7",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+        "heading": "LEFT JOIN"
+      },
+      "body": "`LEFT JOIN` keeps **every** row of the left table; when there's no match, the right side is `NULL`. `WHERE right.c IS NULL` finds the rows with **no** match."
+    },
+    {
+      "id": "S10.8",
+      "type": "task",
+      "task_id": "T10.4",
+      "ask": "Ira has marked Nysa's and Kunal's alibis verified. Which **suspect** (`people.role = 'suspect'`) has **no** verified alibi?\n`LEFT JOIN alibis ON people.name = alibis.person_name AND alibis.verified = 1`, keep rows where `alibis.person_name IS NULL`; show `people.name`.\n",
+      "setup": [
+        "UPDATE alibis SET verified = 1, verified_by = 'rehearsal attendance log' WHERE person_name = 'Nysa Kapoor';",
+        "UPDATE alibis SET verified = 1, verified_by = 'insurance system: auto-generated claim' WHERE person_name = 'Kunal Bajaj';"
+      ],
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:4239cf8f146d22028a24faeece01b5a79d04cf20614f483e387882f4086c0a37"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+            "heading": "LEFT JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT people.name FROM people ____ alibis ON people.name = alibis.person_name AND alibis.verified = 1 WHERE alibis.person_name ____ AND people.role = 'suspect';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s10.json#T10.4"
+        }
+      ],
+      "reply_on_pass": "One name left: **Dev Arora**.",
+      "traps": []
+    },
+    {
+      "id": "S10.8b",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Back to the SUV. In Episode 3, `vehicles` said its owner is **DA Talent Management Pvt Ltd** — a company, not a person.\nTonight Kabir loaded `company`, and every company has an `owner_person_id`. Two joins and we have a name.\n"
+    },
+    {
+      "id": "S10.9",
+      "type": "task",
+      "task_id": "T10.5a",
+      "minutes": 2,
+      "ask": "Who owns the grey SUV? Join `vehicles` with `company` on `company_id`; show `vehicle_no`, `company.name`, `company.owner_person_id` for `'26 BH 4471 EX'`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:1128a5237fa0c021284559477668463114a56f2d0abc2f9d25fdf7c4924cea61"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+            "heading": "INNER JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT vehicles.vehicle_no, company.name, company.owner_person_id FROM vehicles INNER JOIN company ON ____ = ____ WHERE vehicles.vehicle_no = '26 BH 4471 EX';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s10.json#T10.5a"
+        }
+      ],
+      "reply_on_pass": "DA Talent Management Pvt Ltd, `owner_person_id` = **2**. Now: who is person 2?",
+      "traps": []
+    },
+    {
+      "id": "S10.10",
+      "type": "task",
+      "task_id": "T10.5b",
+      "minutes": 2,
+      "ask": "And who is that owner? Join `company` with `people` on `owner_person_id = person_id`; show `company.name`, `people.name` for `'DA Talent Management Pvt Ltd'`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:fb4d2e8c7112e52d564e47f765d6faac527e2499257bffedff2648ea89726da7"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+            "heading": "INNER JOIN"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT company.name, people.name FROM company INNER JOIN people ON company.owner_person_id = ____ WHERE company.name = 'DA Talent Management Pvt Ltd';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s10.json#T10.5b"
+        }
+      ],
+      "on_pass": {
+        "clue": "S10-C1"
+      },
+      "reply_on_pass": "Person 2 is **Dev Arora**. The chain is complete.",
+      "traps": []
+    },
+    {
+      "id": "S10.11",
+      "type": "clue",
+      "clue_id": "S10-C1",
+      "requires_task": "T10.5b",
+      "title": "The SUV is the manager's",
+      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 — S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
+    },
+    {
+      "id": "S10.12",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "4d96750f-6381-45d1-b3e5-a0cd05387956",
+        "heading": "LEFT JOIN"
+      },
+      "prompt": "In a LEFT JOIN, a left row with **no match** gets ___ on the right side.",
+      "options": [
+        {
+          "text": "NULL",
+          "correct": true
+        },
+        {
+          "text": "0"
+        },
+        {
+          "text": "it is removed"
+        }
+      ],
+      "explain": "LEFT JOIN keeps every left row; missing right values are NULL — that's how `IS NULL` finds rows with no match."
+    },
+    {
+      "id": "S10.13",
+      "type": "hook",
+      "speaker": "mentor",
+      "body": "The car is Dev's. But where did it **go**? And why was he back at the hotel at 19:52?"
+    }
+  ]
+}

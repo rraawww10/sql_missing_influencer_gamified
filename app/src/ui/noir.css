@@ -198,7 +198,7 @@ h1, h2, h3, h4 { font-family: var(--display); letter-spacing: .01em; text-transf
   background: linear-gradient(135deg, transparent 49.5%, rgb(0 0 0 / 7%) 50%, transparent 50.5%) 0 0 / 100% 100%, linear-gradient(45deg, transparent 49.5%, rgb(0 0 0 / 7%) 50%, transparent 50.5%) 0 0 / 100% 100%, linear-gradient(180deg, #ecdcb4, #dcc797);
   box-shadow: 0 3px 0 #a99368, 0 12px 26px rgb(0 0 0 / 45%); font: inherit; transition: transform .15s; }
 .envelope:hover:not(:disabled) { transform: translateY(-3px) rotate(-.6deg); }
-.envelope.next { animation: envelopeWiggle 2.4s ease-in-out infinite; }
+.envelope.next { animation: envelopeWiggle 1.2s ease-in-out 3; box-shadow: 0 3px 0 #a99368, 0 0 0 2px var(--lamp), 0 12px 30px rgb(255 181 71 / 30%); }
 .envelope:disabled { cursor: default; filter: grayscale(.5) brightness(.75); }
 .envelope .seal { position: absolute; left: 16px; top: 50%; margin-top: -26px; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; color: #fbe3c0;
   background: radial-gradient(circle at 35% 30%, #d1404c, #8b1e2d 70%); box-shadow: 0 0 0 3px rgb(139 30 45 / 35%), 0 4px 8px rgb(0 0 0 / 40%); font: 700 13px/1.05 var(--display); text-align: center; letter-spacing: .02em; }
@@ -365,3 +365,10 @@ h1, h2, h3, h4 { font-family: var(--display); letter-spacing: .01em; text-transf
 .newspaper .stat b { color: #1d160e; }
 .newspaper .solved-stamp { margin: 6px 0 2px; }
 .editor .cm-placeholder { color: #3f7553; }
+.nowchip .chapter { font-family: var(--type); color: var(--lamp); font-size: 12px; margin-left: 4px; }
+.checkpoint { margin: 8px auto 0; padding: 8px 14px; border-radius: 6px; background: linear-gradient(90deg, rgb(47 214 123 / 18%), rgb(47 214 123 / 6%)); border: 1px solid rgb(47 214 123 / 45%);
+  color: var(--text); font-size: 14px; animation: rise .4s var(--ease) both; max-width: min(760px, calc(100% - 24px)); text-align: center; }
+.checkpoint b { color: var(--verified); }
+.board-cork .evidence { position: relative; z-index: 1; }
+.board-cork .evi.briefed { background: #e9e4d8; }
+.board-cork .evi pre.sql { background: #1a1410; color: var(--lamp-2); }

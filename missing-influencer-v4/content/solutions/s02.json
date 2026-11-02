@@ -1,0 +1,85 @@
+{
+  "T2.1": {
+    "ref": "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+    "traps": []
+  },
+  "T2.2": {
+    "ref": "PRAGMA TABLE_INFO(suspects);",
+    "traps": []
+  },
+  "T2.3": {
+    "ref": "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);",
+    "traps": [
+      {
+        "id": "M1",
+        "sql": "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager');"
+      },
+      {
+        "id": "M3",
+        "sql": "INSERT INTO suspects (name, role, phone, age) VALUES (('Dev Arora', 'manager', '9876500002', 38), ('Sunny Gill', 'cab driver', '9876500050', 45));"
+      },
+      {
+        "id": "M2",
+        "sql": "INSERT INTO suspect_list (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38);"
+      },
+      {
+        "id": "M4",
+        "sql": "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 'Thirty-eight'), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);"
+      }
+    ]
+  },
+  "T2.4": {
+    "ref": "SELECT * FROM suspects;",
+    "traps": []
+  },
+  "T2.5": {
+    "ref": "SELECT name, role FROM suspects;",
+    "traps": []
+  },
+  "T2.6": {
+    "ref": "SELECT * FROM hotel_guests WHERE name = \"Tara Sen\";",
+    "traps": []
+  },
+  "T2.7": {
+    "ref": "UPDATE suspects SET phone = '9876500005' WHERE name = 'Sunny Gill';",
+    "traps": [
+      {
+        "id": "update_all",
+        "sql": "UPDATE suspects SET phone = '9876500005';"
+      }
+    ]
+  },
+  "T2.8a": {
+    "ref": "DELETE FROM rumours WHERE source = 'unverified_page';",
+    "traps": []
+  },
+  "T2.8b": {
+    "ref": "DELETE FROM rumours;",
+    "traps": []
+  },
+  "T2.8c": {
+    "ref": "DROP TABLE rumours;",
+    "traps": []
+  },
+  "T2.9": {
+    "ref": "ALTER TABLE suspects ADD alibi VARCHAR(250);",
+    "traps": []
+  },
+  "T2.10": {
+    "ref": "ALTER TABLE suspects RENAME COLUMN role TO relation_to_case;",
+    "traps": []
+  },
+  "T2.11": {
+    "ref": "ALTER TABLE suspects DROP COLUMN age;",
+    "traps": []
+  },
+  "T2.12": {
+    "ref": "UPDATE suspects SET alibi = 'In hotel lobby all evening' WHERE name = 'Dev Arora';",
+    "traps": [
+      {
+        "id": "update_all_alibis",
+        "sql": "UPDATE suspects SET alibi = 'In hotel lobby all evening';"
+      }
+    ]
+  }
+}

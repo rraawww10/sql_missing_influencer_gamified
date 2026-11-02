@@ -1,0 +1,31 @@
+{
+  "T10.1": {
+    "ref": "SELECT people.name, upi_accounts.upi_id FROM people NATURAL JOIN upi_accounts;",
+    "traps": []
+  },
+  "T10.2": {
+    "ref": "SELECT people.name, rehearsal_attendance.check_in, rehearsal_attendance.check_out FROM people INNER JOIN rehearsal_attendance ON people.person_id = rehearsal_attendance.person_id WHERE rehearsal_attendance.venue = 'City Stadium';",
+    "traps": [
+      {
+        "id": "natural_multi",
+        "sql": "SELECT people.name, rehearsal_attendance.check_in, rehearsal_attendance.check_out FROM people NATURAL JOIN rehearsal_attendance;"
+      }
+    ]
+  },
+  "T10.3": {
+    "ref": "SELECT insurance_claims.claim_id, insurance_claims.filed_at, insurance_claims.auto_generated FROM insurance_claims INNER JOIN event_schedule ON insurance_claims.filed_at >= event_schedule.artist_checkin_deadline WHERE insurance_claims.event_id = event_schedule.event_id;",
+    "traps": []
+  },
+  "T10.4": {
+    "ref": "SELECT people.name FROM people LEFT JOIN alibis ON people.name = alibis.person_name AND alibis.verified = 1 WHERE alibis.person_name IS NULL AND people.role = 'suspect';",
+    "traps": []
+  },
+  "T10.5a": {
+    "ref": "SELECT vehicles.vehicle_no, company.name, company.owner_person_id FROM vehicles INNER JOIN company ON vehicles.company_id = company.company_id WHERE vehicles.vehicle_no = '26 BH 4471 EX';",
+    "traps": []
+  },
+  "T10.5b": {
+    "ref": "SELECT company.name, people.name FROM company INNER JOIN people ON company.owner_person_id = people.person_id WHERE company.name = 'DA Talent Management Pvt Ltd';",
+    "traps": []
+  }
+}

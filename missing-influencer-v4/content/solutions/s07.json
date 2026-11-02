@@ -1,0 +1,56 @@
+{
+  "T7.1": {
+    "ref": "SELECT ts, heart_rate - resting_hr AS hr_rise FROM watch_log;",
+    "traps": []
+  },
+  "T7.2": {
+    "ref": "SELECT ts, distance_m / 1000.0 AS distance_km FROM watch_log;",
+    "traps": []
+  },
+  "T7.3": {
+    "ref": "SELECT * FROM watch_log WHERE log_id % 3 = 0;",
+    "traps": []
+  },
+  "T7.4": {
+    "ref": "SELECT ts || ' - ' || heart_rate || ' bpm' AS reading FROM watch_log WHERE log_id = 147;",
+    "traps": []
+  },
+  "T7.5": {
+    "ref": "SELECT * FROM watch_log WHERE (heart_rate - resting_hr) >= 40;",
+    "traps": []
+  },
+  "T7.6": {
+    "ref": "UPDATE watch_log SET distance_m = distance_m / 100 WHERE ts >= '2026-12-12 18:00:00';",
+    "traps": [
+      {
+        "id": "update_all",
+        "sql": "UPDATE watch_log SET distance_m = distance_m / 100;"
+      }
+    ]
+  },
+  "T7.8": {
+    "ref": "SELECT strftime('%H', ts) AS hour, SUM(steps) AS steps FROM watch_log GROUP BY hour;",
+    "traps": []
+  },
+  "T7.7": {
+    "ref": "SELECT strftime('%H', ts) AS hour FROM watch_log GROUP BY hour HAVING AVG(heart_rate - resting_hr) > 25;",
+    "traps": []
+  },
+  "T7.9": {
+    "ref": "SELECT * FROM watch_log WHERE CAST(strftime('%H', ts) AS INTEGER) >= 18;",
+    "traps": [
+      {
+        "id": "text_vs_number",
+        "sql": "SELECT * FROM watch_log WHERE strftime('%H', ts) >= 18;"
+      }
+    ]
+  },
+  "T7.10": {
+    "ref": "SELECT ROUND(SUM(distance_m) / 1000.0, 1) AS km, CEIL(SUM(distance_m) / 1000.0) AS km_ceil, FLOOR(SUM(distance_m) / 1000.0) AS km_floor FROM watch_log WHERE ts >= '2026-12-12 18:45:00';",
+    "traps": []
+  },
+  "T7.11": {
+    "ref": "SELECT from_name, to_name, amount, note, ts FROM upi_payments WHERE UPPER(note) LIKE UPPER('%green acres%');",
+    "traps": []
+  }
+}

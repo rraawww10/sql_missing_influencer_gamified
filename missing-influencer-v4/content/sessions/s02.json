@@ -1,0 +1,993 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 2,
+  "title": "Build the Case File",
+  "story_clock": "2026-12-12 18:30:00",
+  "course_topic_id": "9f5e3ac3-94b1-4b12-a167-12c4ef571903",
+  "snapshot": "s02",
+  "est_minutes": 54,
+  "reading_materials": [
+    {
+      "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+      "role": "primary",
+      "rm": 3,
+      "learning_resource_id": "1860df1f-8fcf-4221-83ba-cad49900d581"
+    },
+    {
+      "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+      "role": "primary",
+      "rm": 4,
+      "learning_resource_id": "480c4d22-60fa-4dd7-8fe9-1a97d9710891"
+    },
+    {
+      "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+      "role": "primary",
+      "rm": 5,
+      "learning_resource_id": "0f23f352-800f-40f1-a119-918cd7a45451"
+    },
+    {
+      "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+      "role": "primary",
+      "rm": 6,
+      "learning_resource_id": "0ffb983d-fdc2-4cc3-bf17-91255ac56bae"
+    },
+    {
+      "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+      "role": "primary",
+      "rm": 7,
+      "learning_resource_id": "b41f7ad3-c07f-4685-a76e-a2678d1fc26b"
+    },
+    {
+      "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+      "role": "primary",
+      "rm": 9,
+      "learning_resource_id": "3a340dab-2544-49e7-bb4b-023be16975b5"
+    },
+    {
+      "unit_id": "5db3ad70-736e-49ee-8e01-9186191cab34",
+      "role": "subset",
+      "rm": 8,
+      "learning_resource_id": "da01c855-64bf-45e0-be84-f473e20bf2ef"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S2-C1"
+    ],
+    "required_beats": [
+      "S2.5",
+      "S2.9",
+      "S2.14",
+      "S2.14b",
+      "S2.17",
+      "S2.20",
+      "S2.23",
+      "S2.26",
+      "S2.27",
+      "S2.28",
+      "S2.29",
+      "S2.30"
+    ]
+  },
+  "minutes_estimate": 56,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "analyst": {
+      "name": "Kabir Shaikh",
+      "role": "Data Cell",
+      "initials": "KS",
+      "color": "#0f766e"
+    }
+  },
+  "beats": [
+    {
+      "id": "S2.1",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Five names keep coming up. Put them in a proper table — no notebook scribbles.\nWe talk to databases in **SQL**. Let's start.\n"
+    },
+    {
+      "id": "S2.2",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "Data Types"
+      },
+      "see_also": [
+        {
+          "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+          "heading": "Introduction to SQL"
+        }
+      ],
+      "body": "Every column has a **data type**. These are used often:\n\n| Data type | Syntax |\n|---|---|\n| Integer | INTEGER / INT |\n| Float | FLOAT |\n| String | VARCHAR |\n| Text | TEXT |\n| Date | DATE |\n| Time | TIME |\n| Datetime | DATETIME |\n| Boolean | BOOLEAN |\n\nNotes: Boolean values are stored as integers **0 (FALSE)** and **1 (TRUE)**.\nA date looks like `'YYYY-MM-DD'`. A datetime looks like `'YYYY-MM-DD HH:MM:SS'`.\n"
+    },
+    {
+      "id": "S2.3",
+      "type": "activity",
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "Data Types"
+      },
+      "prompt": "Pick the best data type for each piece of case information.",
+      "pairs": [
+        {
+          "left": "Phone number, like 9876500002",
+          "right": "VARCHAR"
+        },
+        {
+          "left": "Age, like 38",
+          "right": "INTEGER"
+        },
+        {
+          "left": "Is the alibi verified? (yes/no)",
+          "right": "BOOLEAN"
+        },
+        {
+          "left": "Last seen at 2026-12-12 18:09:40",
+          "right": "DATETIME"
+        }
+      ]
+    },
+    {
+      "id": "S2.4",
+      "type": "note",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "Create Table"
+      },
+      "body": "`CREATE TABLE` creates a new table in the database.\n```sql\nCREATE TABLE table_name (\n  column1 type1,\n  column2 type2,\n  ...\n);\n```\n"
+    },
+    {
+      "id": "S2.5",
+      "type": "task",
+      "task_id": "T2.1",
+      "ask": "Create a table `suspects` with these columns:\n\n| column_name | data_type |\n|---|---|\n| name | VARCHAR(200) |\n| role | VARCHAR(100) |\n| phone | VARCHAR(15) |\n| age | INT |\n",
+      "grading": {
+        "inspect": "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type FROM pragma_table_info('suspects');",
+        "ordered": true,
+        "expected_hash": "sha256:b0d02aab6349aefd985f76946ebf0b9e292acdd8a3c156919cb6c01317e36698"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+            "heading": "Create Table"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "CREATE TABLE suspects (\n  name VARCHAR(200),\n  ____ VARCHAR(100),\n  phone ____,\n  age ____\n);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.1"
+        }
+      ],
+      "reply_on_pass": "Table ready. Empty, but ready.",
+      "traps": []
+    },
+    {
+      "id": "S2.6",
+      "type": "note",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+        "heading": "PRAGMA"
+      },
+      "body": "To check the details of a table, use `PRAGMA TABLE_INFO`:\n```sql\nPRAGMA TABLE_INFO(table_name);\n```\nIt shows every column with its type.\n"
+    },
+    {
+      "id": "S2.7",
+      "type": "task",
+      "task_id": "T2.2",
+      "minutes": 2,
+      "ask": "Check the structure of your `suspects` table.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
+      ],
+      "grading": {
+        "ordered": true,
+        "expected_hash": "sha256:c17a69a7cda6b01d58023a6622fc0a4992935f3fcc9e2b63fba87a53a12edbdc"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "ba96ed66-4cb3-4bd8-b7e7-4b176a7a0963",
+            "heading": "PRAGMA"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "PRAGMA ____(suspects);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.2"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.8",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+        "heading": "Inserting Rows"
+      },
+      "see_also": [
+        {
+          "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+          "heading": "Possible Mistakes"
+        }
+      ],
+      "body": "`INSERT INTO` adds rows to a table. You can add many rows in one query:\n```sql\nINSERT INTO table_name (column1, column2, ...)\nVALUES\n  (value1, value2, ...),\n  (value1, value2, ...);\n```\nKabir warns: there are **4 common mistakes** with INSERT. He stamps every one in red.\n"
+    },
+    {
+      "id": "S2.9",
+      "type": "task",
+      "task_id": "T2.3",
+      "ask": "Ira's notebook has the five suspects. Insert all five rows into `suspects` — copy them exactly, even if something looks wrong.\n\n| name | role | phone | age |\n|---|---|---|---|\n| Dev Arora | manager | 9876500002 | 38 |\n| Nysa Kapoor | rival singer | 9876500003 | 24 |\n| Ishita Das | fan page admin | 9876500004 | 19 |\n| Sunny Gill | cab driver | 9876500050 | 45 |\n| Kunal Bajaj | event organiser | 9876500006 | 41 |\n",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
+      ],
+      "grading": {
+        "inspect": "SELECT name, role, phone, age FROM suspects;",
+        "expected_hash": "sha256:e6a71c8bde29c6db6c64cb360e446d896138a85261b7cfa2ac680f09c51b3338"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Inserting Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "INSERT INTO suspects (name, role, phone, age)\nVALUES\n  ('Dev Arora', 'manager', '9876500002', 38),\n  (____),\n  ...;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.3"
+        }
+      ],
+      "traps": [
+        {
+          "id": "M1",
+          "match": {
+            "error_regex": "^\\d+ values for \\d+ columns"
+          },
+          "reply": "🟥 Kabir's red stamp: **number of values ≠ number of columns**. You listed 4 columns, so every row needs 4 values.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 1"
+          }
+        },
+        {
+          "id": "M3",
+          "match": {
+            "error_regex": "values for \\d+ columns",
+            "sql_regex": "VALUES\\s*\\(\\s*\\("
+          },
+          "reply": "🟥 Red stamp: **no extra brackets after VALUES**. Write `VALUES (...), (...)`, not `VALUES ((...), (...))`.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 3"
+          }
+        },
+        {
+          "id": "M2",
+          "match": {
+            "error_regex": "no such table"
+          },
+          "reply": "🟥 Red stamp: **that table doesn't exist**. We only have `suspects`.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 2"
+          }
+        },
+        {
+          "id": "M4",
+          "match": {
+            "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
+            "inspect": "SELECT COUNT(*) > 0 FROM suspects WHERE typeof(age) = 'text';"
+          },
+          "reply": "⚠️ No error — but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`.",
+          "rm_ref": {
+            "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+            "heading": "Mistake 4"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S2.10",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+        "heading": "Retrieving Data"
+      },
+      "see_also": [
+        {
+          "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
+          "heading": "Let's view the added data!"
+        }
+      ],
+      "body": "`SELECT` gets data from a table.\n```sql\nSELECT * FROM table_name;            -- all columns\nSELECT c1, c2 FROM table_name;       -- only some columns\n```\n"
+    },
+    {
+      "id": "S2.11",
+      "type": "task",
+      "task_id": "T2.4",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+        "heading": "Selecting All Columns"
+      },
+      "ask": "Let's view the added data! Show **all columns** of `suspects`.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);"
+      ],
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+            "heading": "Selecting All Columns"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ____ FROM suspects;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.4"
+        }
+      ],
+      "grading": {
+        "expected_hash": "sha256:e6a71c8bde29c6db6c64cb360e446d896138a85261b7cfa2ac680f09c51b3338"
+      },
+      "traps": []
+    },
+    {
+      "id": "S2.12",
+      "type": "task",
+      "task_id": "T2.5",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+        "heading": "Selecting Specific Columns"
+      },
+      "ask": "Ira only wants **name** and **role**. Show just those two columns.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);"
+      ],
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+            "heading": "Selecting Specific Columns"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ____, ____ FROM suspects;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.5"
+        }
+      ],
+      "grading": {
+        "expected_hash": "sha256:d864c8749271eaf0ba18b24b14ee6cdef2832cf27dcac6a0f5be57be5afdfc5f"
+      },
+      "traps": []
+    },
+    {
+      "id": "S2.13",
+      "type": "note",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+        "heading": "Selecting Specific Rows"
+      },
+      "body": "The `WHERE` clause keeps only the rows that satisfy a condition.\n```sql\nSELECT * FROM table_name WHERE condition;\n```\n"
+    },
+    {
+      "id": "S2.13b",
+      "type": "scene",
+      "speaker": "analyst",
+      "body": "Hotel IT just explained their guest table. Every guest's row in `hotel_guests` has two columns the key-card system fills in by itself:\n`key_card_last_used` (the time of the last tap) and `key_card_last_location` (the door or lift it was tapped at).\nIra: \"In Episode 1 we saw her status change to KEY_NOT_RETURNED between 5 and 6 PM. So her card was still with her when she left the room.\n**Where** was it tapped last, and **when**? That's our first real question for the data.\"\n"
+    },
+    {
+      "id": "S2.14",
+      "type": "task",
+      "task_id": "T2.6",
+      "ask": "Find Tara's row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"Tara Sen\"**. Then read the last two columns — where and when was her key card used last?",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+            "heading": "Selecting Specific Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT * FROM hotel_guests WHERE ____ = \"Tara Sen\";"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.6"
+        }
+      ],
+      "on_pass": {
+        "clue": "S2-C1"
+      },
+      "reply_on_pass": "One row. Look at the last two columns before you continue.",
+      "grading": {
+        "expected_hash": "sha256:3f5fb2d3c9236bd91f810c3e6eae8cc24bc9208e44b7285a628affc8b2fb4bdc"
+      },
+      "traps": []
+    },
+    {
+      "id": "S2.14b",
+      "type": "activity",
+      "kind": "pick_cell",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "260f447a-0940-4540-8e9a-4af867a9e6fb",
+        "heading": "Selecting Specific Rows"
+      },
+      "prompt": "This is the row your query returned. Tap the cell that says **where** her key card was tapped last.",
+      "tables": [
+        {
+          "caption": "Your result",
+          "columns": [
+            "guest_id",
+            "name",
+            "room_no",
+            "check_in",
+            "status",
+            "key_card_last_used",
+            "key_card_last_location"
+          ],
+          "rows": [
+            [
+              17,
+              "Tara Sen",
+              704,
+              "2026-12-11 14:00:00",
+              "KEY_NOT_RETURNED",
+              "2026-12-12 18:09:40",
+              "Service Lift"
+            ]
+          ]
+        }
+      ],
+      "answer": {
+        "table": "Your result",
+        "row": 0,
+        "column": "key_card_last_location"
+      },
+      "feedback": "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries — and it opens next to the **service gate**."
+    },
+    {
+      "id": "S2.15",
+      "type": "clue",
+      "clue_id": "S2-C1",
+      "requires_task": "T2.6",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "id": "S2.16",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+        "heading": "Update Rows"
+      },
+      "see_also": [
+        {
+          "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+          "heading": "Update All Rows"
+        }
+      ],
+      "body": "`UPDATE` changes data that is already in a table.\n```sql\nUPDATE table_name SET c1 = value1;                    -- changes ALL rows\nUPDATE table_name SET c1 = value1 WHERE condition;    -- changes only matching rows\n```\n"
+    },
+    {
+      "id": "S2.17",
+      "type": "task",
+      "task_id": "T2.7",
+      "rm_ref": {
+        "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+        "heading": "Update Specific Rows"
+      },
+      "ask": "The notebook had a typo: **Sunny Gill's** phone is really `9876500005`. Fix only his row.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);"
+      ],
+      "grading": {
+        "inspect": "SELECT name, phone FROM suspects;",
+        "expected_hash": "sha256:c81a2f85935159c7a1296a896e935dd56eb14a4a006424ab125d287d2b4702ce"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+            "heading": "Update Specific Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "UPDATE suspects SET phone = '9876500005' WHERE ____ = 'Sunny Gill';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.7"
+        }
+      ],
+      "traps": [
+        {
+          "id": "update_all",
+          "match": {
+            "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
+            "inspect": "SELECT COUNT(DISTINCT phone) FROM suspects;"
+          },
+          "reply": "😬 Now **everyone** has Sunny's number! Without `WHERE`, UPDATE changes **all rows**. Tap **↺ Reset DB**, then add a WHERE condition.",
+          "rm_ref": {
+            "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+            "heading": "Update All Rows"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S2.18",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+        "heading": "SQLite is Case Insensitive!"
+      },
+      "prompt": "`SELECT * FROM suspects;` and `select * from suspects;` — what happens?",
+      "options": [
+        {
+          "text": "Only the first one works"
+        },
+        {
+          "text": "Both give the same output; writing keywords in UPPER CASE is the best practice",
+          "correct": true
+        },
+        {
+          "text": "The second one gives an error"
+        }
+      ],
+      "explain": "SQLite is case insensitive for keywords. Both work, but UPPER CASE keywords are easier to read."
+    },
+    {
+      "id": "S2.19",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Delete Rows"
+      },
+      "see_also": [
+        {
+          "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+          "heading": "Delete Specific Rows"
+        },
+        {
+          "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+          "heading": "Delete All Rows"
+        }
+      ],
+      "body": "Ira made a `rumours` table from social media. Most of it is noise.\n```sql\nDELETE FROM table_name WHERE condition;   -- deletes matching rows\nDELETE FROM table_name;                   -- deletes ALL rows (table stays)\n```\n"
+    },
+    {
+      "id": "S2.20",
+      "type": "task",
+      "task_id": "T2.8a",
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Delete Specific Rows"
+      },
+      "ask": "Delete every rumour whose `source` is `'unverified_page'`.",
+      "grading": {
+        "inspect": "SELECT rumour_id FROM rumours;",
+        "expected_hash": "sha256:0f86aa30e8305656ef6c533a8613c2351ccb716308e9f3accbec880b2baa4a3d"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+            "heading": "Delete Specific Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "DELETE FROM rumours WHERE ____ = 'unverified_page';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.8a"
+        }
+      ],
+      "reply_on_pass": "4 rumours gone. Only the two news-channel facts are left.",
+      "traps": []
+    },
+    {
+      "id": "S2.21",
+      "type": "task",
+      "task_id": "T2.8b",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Delete All Rows"
+      },
+      "ask": "The news facts are already in our case notes. Delete **all** rows from `rumours`, but keep the table.",
+      "setup": [
+        "DELETE FROM rumours WHERE source = 'unverified_page';"
+      ],
+      "grading": {
+        "inspect": "SELECT COUNT(*) FROM rumours;",
+        "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+            "heading": "Delete All Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "DELETE FROM ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.8b"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.22",
+      "type": "note",
+      "minutes": 1,
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "Drop Table"
+      },
+      "body": "`DROP TABLE` deletes the **whole table** from the database.\n```sql\nDROP TABLE table_name;\n```\n"
+    },
+    {
+      "id": "S2.23",
+      "type": "task",
+      "task_id": "T2.8c",
+      "minutes": 2,
+      "ask": "We don't need the rumour board at all. Remove the `rumours` table from the database.",
+      "setup": [
+        "DELETE FROM rumours;"
+      ],
+      "grading": {
+        "inspect": "SELECT COUNT(*) FROM sqlite_master WHERE name = 'rumours';",
+        "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+            "heading": "Drop Table"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "____ TABLE rumours;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.8c"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.24",
+      "type": "activity",
+      "minutes": 1,
+      "kind": "match",
+      "rm_ref": {
+        "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
+        "heading": "DELETE VS DROP"
+      },
+      "prompt": "DELETE vs DROP — match each command to what it does.",
+      "pairs": [
+        {
+          "left": "DELETE FROM rumours WHERE …",
+          "right": "Removes specific rows; the table stays"
+        },
+        {
+          "left": "DROP TABLE rumours",
+          "right": "Removes the entire table from the database"
+        }
+      ]
+    },
+    {
+      "id": "S2.25",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+        "heading": "Alter Table"
+      },
+      "body": "`ALTER TABLE` changes the **structure** of a table:\n```sql\nALTER TABLE table_name ADD column_name datatype;\nALTER TABLE table_name RENAME COLUMN c1 TO c2;\nALTER TABLE table_name DROP COLUMN column_name;\n```\n"
+    },
+    {
+      "id": "S2.26",
+      "type": "task",
+      "task_id": "T2.9",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+        "heading": "Add Column"
+      },
+      "ask": "Add a column `alibi` of type `VARCHAR(250)` to `suspects`.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);",
+        "UPDATE suspects SET phone = '9876500005' WHERE name = 'Sunny Gill';"
+      ],
+      "grading": {
+        "inspect": "SELECT lower(name) AS column_name, CASE WHEN upper(type) IN ('INT', 'INTEGER') THEN 'INTEGER' ELSE upper(trim(substr(type, 1, instr(type || '(', '(') - 1))) END AS data_type FROM pragma_table_info('suspects');",
+        "ordered": true,
+        "expected_hash": "sha256:08590e9cac2ab13c27e276b64f4fd7e50debedde4e6b26b177307cbbec94ff9e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+            "heading": "Add Column"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "ALTER TABLE suspects ADD ____ VARCHAR(250);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.9"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.27",
+      "type": "task",
+      "task_id": "T2.10",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+        "heading": "Rename Column"
+      },
+      "ask": "`role` is unclear. Rename it to `relation_to_case`.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);",
+        "UPDATE suspects SET phone = '9876500005' WHERE name = 'Sunny Gill';",
+        "ALTER TABLE suspects ADD alibi VARCHAR(250);"
+      ],
+      "grading": {
+        "inspect": "SELECT lower(name) AS column_name FROM pragma_table_info('suspects');",
+        "ordered": true,
+        "expected_hash": "sha256:bebc4a36486bee9a42891deeeffd2a0707a44ae0cc313ee5832628c678563989"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+            "heading": "Rename Column"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "ALTER TABLE suspects RENAME COLUMN ____ TO ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.10"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.28",
+      "type": "task",
+      "task_id": "T2.11",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+        "heading": "Drop Column"
+      },
+      "ask": "Age doesn't matter for alibis. Remove the `age` column.",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);",
+        "UPDATE suspects SET phone = '9876500005' WHERE name = 'Sunny Gill';",
+        "ALTER TABLE suspects ADD alibi VARCHAR(250);",
+        "ALTER TABLE suspects RENAME COLUMN role TO relation_to_case;"
+      ],
+      "grading": {
+        "inspect": "SELECT lower(name) AS column_name FROM pragma_table_info('suspects');",
+        "ordered": true,
+        "expected_hash": "sha256:1d7707d16583b43e1a8e7300bf3b9b3c3031210612de14980974de23f1f33c6b"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+            "heading": "Drop Column"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "ALTER TABLE suspects ____ COLUMN age;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.11"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S2.29",
+      "type": "task",
+      "task_id": "T2.12",
+      "minutes": 2,
+      "rm_ref": {
+        "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+        "heading": "Update Specific Rows"
+      },
+      "ask": "Kabir has filled in what four suspects **claim**. Dev's is still empty.\nDev says he was **\"In hotel lobby all evening\"**. Write it into his row.\n",
+      "setup": [
+        "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);",
+        "INSERT INTO suspects (name, role, phone, age) VALUES ('Dev Arora', 'manager', '9876500002', 38), ('Nysa Kapoor', 'rival singer', '9876500003', 24), ('Ishita Das', 'fan page admin', '9876500004', 19), ('Sunny Gill', 'cab driver', '9876500050', 45), ('Kunal Bajaj', 'event organiser', '9876500006', 41);",
+        "UPDATE suspects SET phone = '9876500005' WHERE name = 'Sunny Gill';",
+        "ALTER TABLE suspects ADD alibi VARCHAR(250);",
+        "ALTER TABLE suspects RENAME COLUMN role TO relation_to_case;",
+        "ALTER TABLE suspects DROP COLUMN age;",
+        "UPDATE suspects SET alibi = 'At stadium rehearsal' WHERE name = 'Nysa Kapoor';",
+        "UPDATE suspects SET alibi = 'At a cafe in Chandpur' WHERE name = 'Ishita Das';",
+        "UPDATE suspects SET alibi = 'Driving another passenger' WHERE name = 'Sunny Gill';",
+        "UPDATE suspects SET alibi = 'At stadium production office' WHERE name = 'Kunal Bajaj';"
+      ],
+      "grading": {
+        "inspect": "SELECT name, alibi FROM suspects;",
+        "expected_hash": "sha256:7ee22c0b8d18d2c0bd169ac4813352c778ccc69270d53a8eb6bc8d0188cbce36"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+            "heading": "Update Specific Rows"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "UPDATE suspects SET alibi = '____' WHERE name = '____';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s02.json#T2.12"
+        }
+      ],
+      "traps": [
+        {
+          "id": "update_all_alibis",
+          "match": {
+            "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
+            "inspect": "SELECT COUNT(DISTINCT alibi) FROM suspects;"
+          },
+          "reply": "Oops — now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more.",
+          "rm_ref": {
+            "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
+            "heading": "Update All Rows"
+          }
+        }
+      ],
+      "reply_on_pass": "Noted. We'll check every claim later. Claims are not proof."
+    },
+    {
+      "id": "S2.30",
+      "type": "activity",
+      "kind": "sort_into",
+      "rm_ref": {
+        "unit_id": "d9b767b9-9365-4148-be92-121cc88a071d",
+        "heading": "ALTER VS UPDATE"
+      },
+      "prompt": "ALTER or UPDATE? Sort each change.",
+      "buckets": [
+        "ALTER (changes the table's layout)",
+        "UPDATE (changes the data)"
+      ],
+      "items": [
+        {
+          "text": "Add an `alibi` column",
+          "bucket": "ALTER (changes the table's layout)"
+        },
+        {
+          "text": "Fix Sunny's phone number",
+          "bucket": "UPDATE (changes the data)"
+        },
+        {
+          "text": "Rename `role` to `relation_to_case`",
+          "bucket": "ALTER (changes the table's layout)"
+        },
+        {
+          "text": "Write Dev's alibi",
+          "bucket": "UPDATE (changes the data)"
+        }
+      ]
+    },
+    {
+      "id": "S2.33",
+      "type": "check",
+      "source": "authored",
+      "prompt": "Which command changes the **layout** of a table?",
+      "options": [
+        {
+          "text": "UPDATE"
+        },
+        {
+          "text": "ALTER",
+          "correct": true
+        },
+        {
+          "text": "INSERT"
+        },
+        {
+          "text": "SELECT"
+        }
+      ],
+      "explain": "ALTER adds, renames or drops columns. UPDATE only changes the data inside."
+    },
+    {
+      "id": "S2.34",
+      "type": "hook",
+      "speaker": "system",
+      "body": "📧 Hotel security: \"Attaching the gate log — **300 entries** since noon.\"\nIra: \"That service lift opens near the service gate. Find who used it.\"\n"
+    }
+  ]
+}

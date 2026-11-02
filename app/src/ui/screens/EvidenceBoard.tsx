@@ -7,6 +7,7 @@ import { useProgress } from '../useProgress';
 import { Markdown } from '../components/Markdown';
 import { storyTime } from '../speakers';
 import { episodeTitle } from '../episodes';
+import { KaalCard } from '../kaal/KaalCard';
 
 export function EvidenceBoard({ onBack, session }: { onBack(): void; session?: number }) {
   const { loader } = useServices();
@@ -33,7 +34,16 @@ export function EvidenceBoard({ onBack, session }: { onBack(): void; session?: n
         <p className="muted" style={{ marginTop: 0 }}>
           Every clue you proved, with the query that proved it.{briefed.length > 0 && ' Grey cards were briefed by the team from earlier parts of the case.'}
         </p>
-        <div className="wall">
+        <div style={{ margin: '14px 0 18px' }}>
+          <KaalCard mood={cards.length ? 'think' : 'point'} line={cards.length
+            ? `${cards.length} piece${cards.length === 1 ? '' : 's'} of evidence, partner. Read them in order — the red string shows how the night unfolds.`
+            : 'An empty board. Solve a task, pin what you prove, and it starts to fill.'} />
+        </div>
+        <div className="wall board-cork">
+          {cards.length > 1 && <svg className="strings" aria-hidden="true" preserveAspectRatio="none" viewBox="0 0 100 100">
+            {cards.slice(1).map((_, i) => { const n = cards.length; const x1 = 8 + (i % 3) * 33, y1 = 6 + Math.floor(i / 3) * (88 / Math.ceil(n / 3)); const x2 = 8 + ((i + 1) % 3) * 33, y2 = 6 + Math.floor((i + 1) / 3) * (88 / Math.ceil(n / 3));
+              return <path key={i} d={`M${x1 + 10} ${y1} Q ${(x1 + x2) / 2 + 10} ${Math.max(y1, y2) + 6} ${x2 + 10} ${y2}`} vectorEffect="non-scaling-stroke" style={{ animationDelay: `${i * 0.15}s` }} />; })}
+          </svg>}
           {progress && cards.length === 0 && <p className="muted" style={{ margin: 0 }}>No clues yet. Solve tasks to pin evidence here.</p>}
           <div className="evidence">
             {cards.map((c, i) => (

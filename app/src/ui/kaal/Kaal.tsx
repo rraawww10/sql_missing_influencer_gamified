@@ -4,7 +4,7 @@
 //   <Kaal mood="happy" size={96} />        the figure alone
 //   <KaalDock />                           the companion that lives in the corner of the game, with a speech bubble
 import { useEffect, useRef, useState } from 'react';
-import type { KaalMood } from './lines';
+import type { KaalEvent, KaalMood } from './lines';
 import { useKaal } from './bus';
 
 export function Kaal({ mood = 'idle', size = 96, title = 'Inspector Kaal' }: { mood?: KaalMood; size?: number; title?: string }) {
@@ -78,6 +78,8 @@ export function Kaal({ mood = 'idle', size = 96, title = 'Inspector Kaal' }: { m
   );
 }
 
+const PASSIVE = new Set<KaalEvent>(['scene', 'note', 'task', 'activity', 'check', 'clue', 'demo', 'hook', 'review', 'resume', 'running']);
+
 // The companion in the corner. Speaks when something happens (useKaal), the bubble fades after a while.
 // Tapping him repeats / hides the line. Collapses to a small avatar on phones.
 export function KaalDock({ hint }: { hint?: string }) {
@@ -86,6 +88,8 @@ export function KaalDock({ hint }: { hint?: string }) {
   const timer = useRef<number>();
   useEffect(() => {
     if (!k.line) { setOpen(false); return; }
+    // on a phone the bubble would cover the story: there Kaal only speaks when something happens, not on every step
+    if (k.event && PASSIVE.has(k.event) && typeof matchMedia === 'function' && matchMedia('(max-width: 640px)').matches) { setOpen(false); return; }
     setOpen(true);
     window.clearTimeout(timer.current);
     timer.current = window.setTimeout(() => setOpen(false), Math.min(9000, 3500 + k.line.length * 45));

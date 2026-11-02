@@ -6,7 +6,7 @@
 //             its last part. Also tries ?user_id and a 'restore' from the host page.
 // Checks the parent page receives ready / progress / completed / resize messages.
 // Usage: npm run build:deploy && node scripts/smoke-deploy.mjs [sessions|units|all] [--only 11 12]
-//        DEPLOY_DIR=missing-influencer-v3 node scripts/smoke-deploy.mjs …    (the compact S3 layout: shared assets + content)
+//        DEPLOY_DIR=missing-influencer-v4 node scripts/smoke-deploy.mjs …    (the compact S3 layout: shared assets + content)
 //        DEPLOY_DIR is resolved against the REPO ROOT, not app/ — a folder that isn't there used to pass silently.
 import fs from 'node:fs';
 import http from 'node:http';
@@ -18,7 +18,7 @@ import { playBeats, runSql } from './smoke-lib.mjs';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DEPLOY = path.resolve(ROOT, process.env.DEPLOY_DIR ?? 'deploy');
 const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm', '.sqlite': 'application/octet-stream', '.sql': 'text/plain', '.woff2': 'font/woff2', '.woff': 'font/woff' };
-// a site's content: next to its index.html (deploy/) or shared at the top (missing-influencer-v3/)
+// a site's content: next to its index.html (deploy/) or shared at the top (missing-influencer-v4/)
 const contentFile = (id, rel) => [path.join(DEPLOY, id, 'content', rel), path.join(DEPLOY, 'content', rel)].find((f) => fs.existsSync(f));
 const readJson = (id, rel) => JSON.parse(fs.readFileSync(contentFile(id, rel), 'utf8'));
 

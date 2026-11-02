@@ -1,0 +1,65 @@
+{
+  "T12.1": {
+    "ref": "CREATE VIEW suv_timeline AS SELECT 'gate' AS source, ts, gate AS place FROM gate_log WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'toll', ts, plaza FROM toll_crossings WHERE vehicle_no = '26 BH 4471 EX' UNION ALL SELECT 'tower', ts, tower_area FROM tower_pings WHERE device_owner = 'Dev Arora';",
+    "traps": []
+  },
+  "T12.2": {
+    "ref": "SELECT * FROM suv_timeline WHERE source <> 'tower' ORDER BY ts;",
+    "traps": [
+      {
+        "id": "write_view",
+        "sql": "UPDATE suv_timeline SET place = 'MAIN';"
+      }
+    ]
+  },
+  "T12.3": {
+    "ref": "SELECT name FROM sqlite_master WHERE type = 'view';",
+    "traps": []
+  },
+  "T12.4": {
+    "ref": "DROP VIEW draft_suspects;",
+    "traps": []
+  },
+  "T12.5": {
+    "ref": "SELECT payer, payee, amount FROM label_payments WHERE amount > (SELECT AVG(amount) FROM label_payments);",
+    "traps": [
+      {
+        "id": "aggregate_in_where",
+        "sql": "SELECT payer, payee, amount FROM label_payments WHERE amount > AVG(amount);"
+      },
+      {
+        "id": "two_columns_where",
+        "sql": "SELECT payer, payee, amount FROM label_payments WHERE amount > (SELECT amount, payment_id FROM label_payments);"
+      }
+    ]
+  },
+  "T12.5b": {
+    "ref": "SELECT * FROM contracts WHERE artist_name = 'Tara Sen';",
+    "traps": []
+  },
+  "T12.6": {
+    "ref": "SELECT payment_id, payer, payee, amount - (SELECT AVG(amount) FROM label_payments) AS above_avg FROM label_payments;",
+    "traps": [
+      {
+        "id": "two_columns_select",
+        "sql": "SELECT payment_id, payer, payee, amount - (SELECT AVG(amount), MAX(amount) FROM label_payments) AS above_avg FROM label_payments;"
+      }
+    ]
+  },
+  "T12.7": {
+    "ref": "SELECT payment_id, CASE WHEN amount > (SELECT AVG(amount) FROM label_payments) THEN 'Above Average' ELSE 'Below Average' END AS tag FROM label_payments;",
+    "traps": []
+  },
+  "T12.8": {
+    "ref": "SELECT payee, AVG(monthly_total) FROM (SELECT payee, strftime('%m', ts) AS month, SUM(amount) AS monthly_total FROM label_payments GROUP BY payee, month) AS monthly_totals GROUP BY payee;",
+    "traps": []
+  },
+  "T12.9": {
+    "ref": "SELECT lsn, txn_id, entry_type, data_item, old_value, new_value, user_name, ts FROM txn_log WHERE txn_id IN ('T7', 'T9') OR entry_type = 'CRASH' ORDER BY lsn;",
+    "traps": []
+  },
+  "T12.10": {
+    "ref": "SELECT txn_id FROM txn_log WHERE entry_type = 'START' EXCEPT SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT';",
+    "traps": []
+  }
+}

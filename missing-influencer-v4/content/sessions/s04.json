@@ -1,0 +1,563 @@
+{
+  "generated_by": "pipeline/build_sessions.mjs — do not edit; edit content/sessions/src instead",
+  "session": 4,
+  "title": "The Last Cab",
+  "story_clock": "2026-12-12 19:30:00",
+  "course_topic_id": "1ce5cadd-040d-45ac-b850-5f8584644dcb",
+  "snapshot": "s04",
+  "est_minutes": 40,
+  "reading_materials": [
+    {
+      "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+      "role": "primary",
+      "rm": 13,
+      "learning_resource_id": "8ae04906-9dd5-473a-ba18-dcfe55c30e07"
+    },
+    {
+      "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+      "role": "primary",
+      "rm": 14,
+      "learning_resource_id": "87ec513d-dc17-44e1-8463-72594338ef5a"
+    },
+    {
+      "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+      "role": "primary",
+      "rm": 15,
+      "learning_resource_id": "82718ba5-8912-408c-91e8-80f538156e41"
+    }
+  ],
+  "exit": {
+    "required_clues": [
+      "S4-C1",
+      "S4-C2"
+    ],
+    "required_beats": [
+      "S4.4",
+      "S4.6",
+      "S4.8",
+      "S4.10",
+      "S4.12",
+      "S4.14",
+      "S4.14b",
+      "S4.18",
+      "S4.18b"
+    ]
+  },
+  "minutes_estimate": 34,
+  "premise": "Six hours before her first stadium concert, the reel star from Chandpur vanished from her hotel in the city. You're the new intern at the City Police Data Cell. Your only witness is the data.",
+  "headline": "Tara Sen is missing.",
+  "previously": [
+    {
+      "session": 1,
+      "clue_id": "S1-C1",
+      "title": "Left Room 704",
+      "body": "Tara was in Room 704 at **5:00 PM**. By **6:00 PM** the room was empty and her key card was not returned."
+    },
+    {
+      "session": 2,
+      "clue_id": "S2-C1",
+      "title": "The service lift",
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    },
+    {
+      "session": 3,
+      "clue_id": "S3-C1",
+      "title": "Grey SUV at the service gate",
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+    }
+  ],
+  "cast": {
+    "mentor": {
+      "name": "Ira Menon",
+      "role": "SI, your mentor, Data Cell",
+      "initials": "IM",
+      "color": "#2f4fd8"
+    },
+    "driver": {
+      "name": "Sunny Gill",
+      "role": "Cab driver",
+      "initials": "SG",
+      "color": "#a16207"
+    },
+    "sister": {
+      "name": "Mahi Sen",
+      "role": "Tara's younger sister",
+      "initials": "MS",
+      "color": "#be185d"
+    }
+  },
+  "beats": [
+    {
+      "id": "S4.1",
+      "type": "scene",
+      "speaker": "system",
+      "body": "📱 Cab app: \"Tara Sen booked a ride at **17:55**. Status: **cancelled by rider**.\"\nThe app has shared today's rides in a table: `cab_rides`.\n"
+    },
+    {
+      "id": "S4.2",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "She cancelled her own cab? Something changed in those few minutes. Let's read the rides."
+    },
+    {
+      "id": "S4.3",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+        "heading": "IN Operator"
+      },
+      "see_also": [
+        {
+          "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+          "heading": "IN and BETWEEN Operators"
+        }
+      ],
+      "body": "`IN` checks if a value is **one of a list** of values — a short way to write many `OR`s:\n```sql\nSELECT * FROM table_name WHERE c1 IN (v1, v2, ...);\n```\n"
+    },
+    {
+      "id": "S4.4",
+      "type": "task",
+      "task_id": "T4.1",
+      "minutes": 2,
+      "ask": "Show the `rider_name` of every ride booked from **any** of these phone numbers:\n`9876500001`, `9876500002`, `9876500003`, `9876500004`, `9876500005`, `9876500006`\n(Tara and the five suspects).\n",
+      "grading": {
+        "expect_rows": 4,
+        "expected_hash": "sha256:e50bba90cd74079a095206bd88ffb7fbdb0e6e94338a0223b94b5e6d76b1384e"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "IN Operator"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT rider_name FROM cab_rides WHERE rider_phone ____ ('9876500001', '9876500002', ...);"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.1"
+        }
+      ],
+      "reply_on_pass": "Four rides. Dev never booked a cab today — interesting.",
+      "traps": []
+    },
+    {
+      "id": "S4.5",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+        "heading": "BETWEEN Operator"
+      },
+      "body": "`BETWEEN` keeps values in a **range**, including both ends:\n```sql\nSELECT * FROM table_name WHERE c1 BETWEEN lower AND upper;\n```\nTimes work too: `booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'`.\n"
+    },
+    {
+      "id": "S4.6",
+      "type": "task",
+      "task_id": "T4.2",
+      "ask": "Show the `ride_id` of rides picked up at `'The Grand Residency'` and booked **between 17:30 and 18:30**.",
+      "grading": {
+        "expect_rows": 3,
+        "expected_hash": "sha256:7f458c5802510b0ac995a20fc1986bcda6efe8b859494049032d7fcc15250528"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "BETWEEN Operator"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ride_id FROM cab_rides WHERE pickup = 'The Grand Residency' AND booked_at ____ '2026-12-12 17:30:00' ____ '2026-12-12 18:30:00';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.2"
+        }
+      ],
+      "traps": [
+        {
+          "id": "reversed",
+          "match": {
+            "result_hash": "sha256:294498e16c3b790f14681c8f25aefcf47559c7dd701f1ab61ef692fa4566f293",
+            "sql_regex": "BETWEEN\\s+'2026-12-12 18:30"
+          },
+          "reply": "Empty — but that doesn't mean nobody booked! With `BETWEEN`, the **smaller value must come first**: 17:30, then 18:30.",
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "Possible Mistakes"
+          }
+        },
+        {
+          "id": "missing_limit",
+          "match": {
+            "error_regex": "near \"AND\": syntax error"
+          },
+          "reply": "`BETWEEN` needs **both** limits: `BETWEEN lower AND upper`.",
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "Possible Mistakes"
+          }
+        },
+        {
+          "id": "type_mismatch",
+          "match": {
+            "result_hash": "sha256:294498e16c3b790f14681c8f25aefcf47559c7dd701f1ab61ef692fa4566f293",
+            "sql_regex": "(rider_name|driver_name|pickup|drop_point)\\s+BETWEEN\\s+\\d"
+          },
+          "reply": "Numbers as limits for a **text** column give a meaningless result. The column and the limits must have the same data type.",
+          "rm_ref": {
+            "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
+            "heading": "Possible Mistakes"
+          }
+        }
+      ]
+    },
+    {
+      "id": "S4.7",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+        "heading": "ORDER BY"
+      },
+      "see_also": [
+        {
+          "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+          "heading": "ORDER BY and DISTINCT"
+        }
+      ],
+      "body": "`ORDER BY` sorts the result: `ASC` (default, small → big) or `DESC` (big → small).\n```sql\nSELECT * FROM table_name ORDER BY c1 DESC;\n```\n"
+    },
+    {
+      "id": "S4.8",
+      "type": "task",
+      "task_id": "T4.3",
+      "minutes": 2,
+      "ask": "Same hotel rides between 17:30 and 18:30 — show `ride_id`, `status` and `booked_at`, **newest first**.",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 3,
+        "expected_hash": "sha256:2cbec7a81880100277c518fceea3189312b62febbe8f6ac4c53bf5145f56b173"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+            "heading": "ORDER BY"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ride_id, status, booked_at FROM cab_rides WHERE ... ORDER BY booked_at ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.3"
+        }
+      ],
+      "traps": []
+    },
+    {
+      "id": "S4.9",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+        "heading": "ORDER BY with Multiple Columns"
+      },
+      "body": "Sort by one column, then by another for ties: `ORDER BY c1 ASC, c2 DESC`."
+    },
+    {
+      "id": "S4.10",
+      "type": "task",
+      "task_id": "T4.4",
+      "minutes": 2,
+      "ask": "Show the same three columns sorted by `status` (A → Z), and for the same status, **newest first**.",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 3,
+        "expected_hash": "sha256:c84cb8b3899569089eb904cd51b4e8d913c9a88d5e0f0679bd4e15af74602bad"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+            "heading": "ORDER BY with Multiple Columns"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "... ORDER BY status ____, booked_at ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.4"
+        }
+      ],
+      "reply_on_pass": "The cancelled ride comes first: **R-2291**.",
+      "traps": []
+    },
+    {
+      "id": "S4.11",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+        "heading": "DISTINCT"
+      },
+      "body": "`DISTINCT` removes repeated rows: `SELECT DISTINCT c1 FROM table_name;`"
+    },
+    {
+      "id": "S4.12",
+      "type": "task",
+      "task_id": "T4.5",
+      "minutes": 2,
+      "ask": "Which drivers picked anyone up from `'The Grand Residency'` today? Show each `driver_name` **once**.",
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "47185b82-35b3-4539-a2c2-581f29be97b7",
+            "heading": "DISTINCT"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ____ driver_name FROM cab_rides WHERE pickup = 'The Grand Residency';"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.5"
+        }
+      ],
+      "grading": {
+        "expected_hash": "sha256:013ec0941871669f5ca68754ebfe0e54a53fc99dd0eed27af21c850efb30e125"
+      },
+      "traps": []
+    },
+    {
+      "id": "S4.13",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+        "heading": "LIMIT"
+      },
+      "see_also": [
+        {
+          "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+          "heading": "Pagination"
+        }
+      ],
+      "body": "`LIMIT n` keeps only the first **n** rows. With `ORDER BY … DESC`, `LIMIT 1` gives the latest row."
+    },
+    {
+      "id": "S4.14",
+      "type": "task",
+      "task_id": "T4.6",
+      "ask": "Get Tara's **latest** booking: `ride_id`, `driver_name`, `booked_at`, `status`, `status_updated_at` for rider `'Tara Sen'`.",
+      "grading": {
+        "expect_rows": 1,
+        "expected_hash": "sha256:14eb15e660b09176b46cfbe3d8bd73f135161d6befe07f0d6d039904cb4cb061"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+            "heading": "LIMIT"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ride_id, driver_name, booked_at, status, status_updated_at FROM cab_rides WHERE rider_name = 'Tara Sen' ORDER BY booked_at ____ LIMIT ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.6"
+        }
+      ],
+      "on_pass": {
+        "clue": "S4-C1"
+      },
+      "reply_on_pass": "One row. Read `status` and `status_updated_at` before you continue.",
+      "traps": []
+    },
+    {
+      "id": "S4.14b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+        "heading": "LIMIT"
+      },
+      "prompt": "Your row for ride R-2291: what happened to Tara's booking, and when?",
+      "options": [
+        {
+          "text": "CANCELLED_BY_RIDER — she cancelled it herself at 18:08:12, 13 minutes after booking",
+          "correct": true
+        },
+        {
+          "text": "COMPLETED — driver Sunny Gill dropped her at the stadium"
+        },
+        {
+          "text": "CANCELLED_BY_DRIVER — Sunny Gill never came"
+        }
+      ],
+      "explain": "`status` = CANCELLED_BY_RIDER, `status_updated_at` = 18:08:12. Booked 17:55, cancelled by her at 18:08 — one minute before her key card hit the service lift (clue S2-C1, 18:09:40)."
+    },
+    {
+      "id": "S4.15",
+      "type": "clue",
+      "clue_id": "S4-C1",
+      "requires_task": "T4.6",
+      "title": "The cancelled cab",
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    },
+    {
+      "id": "S4.16",
+      "type": "scene",
+      "speaker": "mentor",
+      "body": "Comments are already saying *\"the driver did it\"*. Data first. Let's see Sunny's whole day."
+    },
+    {
+      "id": "S4.17",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+        "heading": "OFFSET"
+      },
+      "see_also": [
+        {
+          "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+          "heading": "Possible Mistakes"
+        }
+      ],
+      "body": "`OFFSET n` skips the first **n** rows — perfect for pages. Page 2 of 5 rides: `LIMIT 5 OFFSET 5`.\nIn SQLite, `OFFSET` must come **after** `LIMIT`. The default offset is 0.\n"
+    },
+    {
+      "id": "S4.18",
+      "type": "task",
+      "task_id": "T4.7",
+      "ask": "Sunny's rides, 5 per page, oldest first. Show **page 2**: `ride_id`, `rider_name`, `pickup`, `drop_point`, `booked_at` for driver `'Sunny Gill'`.",
+      "grading": {
+        "ordered": true,
+        "expect_rows": 5,
+        "expected_hash": "sha256:6e91412e3de338ed851eabd30a3e8b70b38c5daae022a1ec5c26e749b55251a4"
+      },
+      "hints": [
+        {
+          "tier": 1,
+          "rm_ref": {
+            "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+            "heading": "OFFSET"
+          }
+        },
+        {
+          "tier": 2,
+          "skeleton": "SELECT ride_id, rider_name, pickup, drop_point, booked_at FROM cab_rides WHERE driver_name = 'Sunny Gill' ORDER BY booked_at LIMIT ____ OFFSET ____;"
+        },
+        {
+          "tier": 3,
+          "solution_ref": "solutions/s04.json#T4.7"
+        }
+      ],
+      "traps": [
+        {
+          "id": "offset_first",
+          "match": {
+            "error_regex": "syntax error",
+            "sql_regex": "OFFSET\\s+\\d+\\s+LIMIT"
+          },
+          "reply": "In SQLite, `OFFSET` comes **after** `LIMIT`: `LIMIT 5 OFFSET 5`.",
+          "rm_ref": {
+            "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+            "heading": "Possible Mistakes"
+          }
+        },
+        {
+          "id": "offset_alone",
+          "match": {
+            "error_regex": "syntax error",
+            "sql_regex": "^(?![\\s\\S]*LIMIT)[\\s\\S]*OFFSET"
+          },
+          "reply": "SQLite needs a `LIMIT` before `OFFSET`. Add `LIMIT 5`.",
+          "rm_ref": {
+            "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+            "heading": "Possible Mistakes"
+          }
+        }
+      ],
+      "reply_on_pass": "Page 2. Find R-2291 — then read the row right after it."
+    },
+    {
+      "id": "S4.18b",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+        "heading": "OFFSET"
+      },
+      "prompt": "On page 2, what did Sunny do right after Tara's ride was cancelled?",
+      "options": [
+        {
+          "text": "Ride R-2297 at 18:10 — he took Farhan Ali from the hotel to the railway station",
+          "correct": true
+        },
+        {
+          "text": "He drove Tara to City Stadium"
+        },
+        {
+          "text": "He had no more rides that evening"
+        }
+      ],
+      "explain": "R-2291 (17:55, Tara) is followed by **R-2297 at 18:10**: pickup The Grand Residency, drop Central Railway Station, rider Farhan Ali. Two minutes after her cancellation he was driving someone else. He could not have taken her."
+    },
+    {
+      "id": "S4.19",
+      "type": "scene",
+      "speaker": "driver",
+      "body": "🎙️ Witness statement — Sunny's voice note, after Ira called him:\n\"Madam, I reached the hotel at 18:06. She came out, but a man in a black jacket said *'Come, I'll drop you, it's faster'*.\nShe cancelled my ride and got into a **grey SUV**. Then I took another passenger — the railway station one.\"\n"
+    },
+    {
+      "id": "S4.20",
+      "type": "clue",
+      "clue_id": "S4-C2",
+      "requires_task": "T4.7",
+      "title": "A grey SUV, someone she knew",
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    },
+    {
+      "id": "S4.21",
+      "type": "check",
+      "source": "authored",
+      "rm_ref": {
+        "unit_id": "b80e530f-8971-445c-bb90-bffa26db1910",
+        "heading": "OFFSET"
+      },
+      "prompt": "Skip the first 10 rides, then show the next 5. Which is right?",
+      "options": [
+        {
+          "text": "`LIMIT 5 OFFSET 10`",
+          "correct": true
+        },
+        {
+          "text": "`OFFSET 10 LIMIT 5`"
+        },
+        {
+          "text": "`LIMIT 10 OFFSET 5`"
+        }
+      ],
+      "explain": "`LIMIT` = how many rows to show (5). `OFFSET` = how many to skip (10). In SQLite, `OFFSET` comes after `LIMIT`."
+    },
+    {
+      "id": "S4.22",
+      "type": "hook",
+      "speaker": "sister",
+      "body": "📞 Mahi, crying: \"I just got a strange **₹1** from Tara's smartwatch at 7 PM! Is she okay?\""
+    }
+  ]
+}

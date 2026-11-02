@@ -1,0 +1,47 @@
+{
+  "T5.1": {
+    "ref": "SELECT SUM(amount), COUNT(amount), MAX(amount), MIN(amount), AVG(amount) FROM upi_payments WHERE from_name = 'Dev Arora' AND ts >= '2026-12-12 00:00:00';",
+    "traps": []
+  },
+  "T5.2n": {
+    "ref": "SELECT COUNT(note) FROM upi_payments WHERE from_name = 'Dev Arora' AND ts >= '2026-12-12 00:00:00';",
+    "traps": [
+      {
+        "id": "count_star",
+        "sql": "SELECT COUNT(*) FROM upi_payments WHERE from_name = 'Dev Arora' AND ts >= '2026-12-12 00:00:00';"
+      }
+    ]
+  },
+  "T5.sum_text": {
+    "ref": "SELECT SUM(note) FROM upi_payments;",
+    "traps": []
+  },
+  "T5.2": {
+    "ref": "SELECT MAX(amount) AS biggest_payment FROM upi_payments WHERE from_name = 'Dev Arora';",
+    "traps": []
+  },
+  "T5.3": {
+    "ref": "SELECT from_name, amount, note, ts FROM upi_payments WHERE to_name = 'Mahi Sen' AND amount = 1;",
+    "traps": []
+  },
+  "T5.4": {
+    "ref": "SELECT to_name, SUM(amount) AS total FROM upi_payments WHERE ts >= '2026-12-12 00:00:00' GROUP BY to_name;",
+    "traps": []
+  },
+  "T5.5": {
+    "ref": "SELECT from_name, to_name, SUM(amount) AS total FROM upi_payments GROUP BY from_name, to_name ORDER BY total DESC LIMIT 5;",
+    "traps": []
+  },
+  "T5.5b": {
+    "ref": "SELECT * FROM upi_payments WHERE from_name = 'Skyline Records' AND to_name = 'Dev Arora';",
+    "traps": []
+  },
+  "T5.6": {
+    "ref": "SELECT to_name, SUM(amount) FROM upi_payments WHERE from_name = 'Dev Arora' GROUP BY to_name;",
+    "traps": []
+  },
+  "T5.6b": {
+    "ref": "SELECT * FROM upi_payments WHERE from_name = 'Dev Arora' AND to_name = 'Green Acres Farm Stays';",
+    "traps": []
+  }
+}
