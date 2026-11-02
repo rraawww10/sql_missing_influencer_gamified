@@ -4,6 +4,19 @@ import { EditorView, keymap, placeholder as cmPlaceholder } from '@codemirror/vi
 import { Compartment, EditorState, Prec } from '@codemirror/state';
 import { basicSetup } from 'codemirror';
 import { sql, SQLite } from '@codemirror/lang-sql';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { tags as t } from '@lezer/highlight';
+
+// green-phosphor police terminal palette (v4 noir) — readable on the dark console
+const noirHighlight = HighlightStyle.define([
+  { tag: t.keyword, color: '#ffc861', fontWeight: '700' },
+  { tag: [t.string, t.special(t.string)], color: '#ff9eb0' },
+  { tag: [t.number, t.bool, t.null], color: '#8fd8ff' },
+  { tag: [t.typeName, t.standard(t.name)], color: '#c7a6ff' },
+  { tag: [t.operator, t.punctuation, t.separator, t.paren], color: '#9fe8bb' },
+  { tag: t.comment, color: '#5e8a6c', fontStyle: 'italic' },
+  { tag: [t.name, t.propertyName, t.variableName], color: '#d6ffe4' },
+]);
 
 export interface SqlEditorHandle { insert(text: string): void; set(text: string): void; focus(): void }
 
@@ -40,6 +53,7 @@ export function SqlEditor({ initial, schema, onChange, onRun, handle }: Props) {
           // before basicSetup: its defaultKeymap binds Mod-Enter to insertBlankLine, and in CodeMirror 6
           // the *earlier* extension wins, so the run shortcut has to outrank it explicitly
           Prec.highest(keymap.of([{ key: 'Mod-Enter', run: () => { run.current(); return true; } }])),
+          Prec.high(syntaxHighlighting(noirHighlight)),
           basicSetup,
           lang.current.of(sql({ dialect: SQLite, schema: latest.current, upperCaseKeywords: true })),
           cmPlaceholder('Write your SQL here…'),

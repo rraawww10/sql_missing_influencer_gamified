@@ -7,6 +7,8 @@ import { resolveCastText } from '../../content/types';
 import { POINTS, RANKS } from '../../engine/progress/derive';
 import { useServices } from '../services';
 import { storyTime } from '../speakers';
+import { KaalCard } from '../kaal/KaalCard';
+import { SoundToggle } from '../components/SoundToggle';
 import { SceneArt } from '../art/SceneArt';
 import { EPISODES, EPISODE_COUNT } from '../episodes';
 import { isEmbedded, postToParent } from '../embed';
@@ -71,7 +73,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">Police Data Cell · Case briefing</span>
-          {onBack && <button className="btn small ghost" onClick={onBack}>← Case map</button>}
+          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" />{onBack && <button className="btn small ghost" onClick={onBack}>← Case map</button>}</span>
         </nav>
 
         <section className="brief-hero" aria-label="The case">
@@ -104,6 +106,11 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
           <div className="loop">
             {LOOP.map((s, i) => <div key={s.title} className="how rise" style={{ '--i': i } as React.CSSProperties}><div className="ico">{s.ico}</div><b>{s.title}</b><p>{s.text}</p></div>)}
           </div>
+        </section>
+
+        <section className="section" aria-label="Your partner">
+          <h2>Your partner tonight</h2>
+          <KaalCard size={110} mood="whisper" line={`SI ${mentor} sent me. Name's Kaal — Inspector Kaal. I'll be in the corner of your screen the whole night. Stuck? Ask me for an envelope. Right? I'll know. Wrong? I'll tell you why. Let's find ${star}.`} />
         </section>
 
         <section className="section" aria-label="Tonight's timeline">

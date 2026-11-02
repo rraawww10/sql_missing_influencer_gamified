@@ -1,3 +1,4 @@
+import { kaal } from '../kaal/bus';
 // Story steps on the stage: a cinematic scene (with a "typing…" beat before each new line), a Case Note card, and a clue reveal.
 import { useEffect, useState } from 'react';
 import type { Beat, CastEntry, ClueBeat } from '../../content/types';
@@ -105,7 +106,7 @@ export function ClueStage({ runner, beat, review, onChanged }: { runner: Session
         </article>
         <div className="row" style={{ justifyContent: 'center', marginTop: 22 }}>
           {!pinned && !review && (
-            <button className="btn primary big go" disabled={!canPin} onClick={async () => { await runner.pinClue(); setJustPinned(true); onChanged(); }}>📌 Pin to Evidence Board</button>
+            <button className="btn primary big go" disabled={!canPin} onClick={async () => { await runner.pinClue(); setJustPinned(true); kaal('pinned'); onChanged(); }}>📌 Pin to Evidence Board</button>
           )}
           {!pinned && !canPin && <p className="muted small">Solve task {beat.requires_task} first.</p>}
           {pinned && <p className="muted" style={{ margin: 0 }}>📌 On your Evidence Board</p>}

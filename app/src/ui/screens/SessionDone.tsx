@@ -8,7 +8,15 @@ import { ResetControl } from '../components/ResetControl';
 import { Confetti } from '../components/Confetti';
 import { progressOf } from '../../engine/progress/derive';
 import type { SessionPack } from '../../content/types';
-import { episodeOf, episodeTitle, unitLabel } from '../episodes';
+import { episodeOf, episodeTitle, unitLabel, EPISODE_COUNT } from '../episodes';
+import { storyTime } from '../speakers';
+import { FeedbackCard } from '../components/FeedbackCard';
+import { KaalCard } from '../kaal/KaalCard';
+import { TEASE } from '../kaal/lines';
+import { sfx } from '../sound';
+import { kaal } from '../kaal/bus';
+
+const RANK_ICON: Record<string, string> = { Intern: '🎓', Constable: '🛡️', 'Sub-Inspector': '⭐', Inspector: '🏅' };
 
 interface Props { session: number; onNext(): void; onMap(): void; onReset(): void; hasNext: boolean; standalone?: boolean }
 
@@ -47,7 +55,9 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
       ...(unit ? { unit: unit.n, unit_id: unit.unit_id, part: unit.part, parts: unit.parts, session_completed: whole?.status === 'completed' } : {}) });
   }, [p, session, unit, whole?.status]);
 
+  useEffect(() => { const t = setTimeout(() => { sfx('solved'); kaal('solved', { silent: true }); }, 300); return () => clearTimeout(t); }, []);
   const multiPart = !!unit && unit.parts > 1;
+  const nextN = session + 1 <= EPISODE_COUNT ? session + 1 : null;
   return (
     <div className="page">
       <Confetti count={60} rain />
@@ -57,9 +67,11 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
           <button className="btn small ghost" onClick={onMap}>{standalone ? '📌 Evidence Board' : '← Case map'}</button>
         </nav>
         <section className="poster art-only"><SceneArt session={session} /></section>
-        <section className="panel result-hero pop-in">
+        <section className="newspaper result-hero">
+          <div className="masthead">The City Night Times</div>
+          <div className="dateline"><span>Late edition</span><span>{storyTime(session)}</span><span>Police Data Cell</span></div>
+          <div className="row" style={{ justifyContent: 'center' }}><span className="solved-stamp">Case update</span></div>
           <div className="medal" aria-hidden="true">{ep.emoji}</div>
-          <div className="row" style={{ justifyContent: 'center' }}><span className="sticker">Case update</span></div>
           <h2>{multiPart ? `Part ${unit!.part} of ${unit!.parts} solved` : `Solved: ${title}`}</h2>
           {unit && !unit.finale && <p className="muted" style={{ marginTop: 0 }}>📖 {unitLabel(unit)}{whole?.status === 'completed' && multiPart && <> · ✓ all {unit.parts} parts of {title} done</>}</p>}
           {p && (
@@ -69,17 +81,26 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
               <div className="stat"><b>{p.trapsFound}</b><span>trap{p.trapsFound === 1 ? '' : 's'} spotted</span></div>
             </div>
           )}
-          {progress && !standalone && <p className="muted">Rank: <b>{progress.rank}</b>{progress.badges.length > 0 && <> · 🏅 {progress.badges.join(', ')}</>}</p>}
+          {progress && <p><span className="rank-badge"><i aria-hidden="true">{RANK_ICON[progress.rank] ?? '🎖️'}</i>Rank: {progress.rank}</span>{progress.badges.length > 0 && <span className="muted"> · 🏅 {progress.badges.join(', ')}</span>}</p>}
           {clues.length > 0 && <p>New on your Evidence Board: {clues.map((c) => <span key={c.clue_id} className="chip accent" style={{ margin: 3 }}>📌 {c.title}</span>)}</p>}
           {standalone && <p className="muted">Well done. {unit && unit.part < unit.parts ? 'Open the next reading material to continue the case.' : 'Continue with the next part of your course to follow the case.'}</p>}
           <div className="row" style={{ justifyContent: 'center', marginTop: 16 }}>
             {hasNext && <button className="btn primary big go" onClick={onNext}>Next episode: {episodeOf(session + 1).title} →</button>}
             <button className={`btn ${hasNext ? '' : 'primary big'}`} onClick={onMap}>{standalone ? 'See the Evidence Board' : 'Back to the case map'}</button>
           </div>
+          {nextN && !multiPart && (
+            <div className="next-lead" style={{ marginTop: 18 }}>
+              <h3>{episodeOf(nextN).emoji} {episodeOf(nextN).title} · {storyTime(nextN)}</h3>
+              <p>{TEASE[nextN] ?? episodeOf(nextN).teaser}</p>
+              <p className="blur" aria-hidden="true" style={{ marginTop: 8 }}>Suspect file 0{nextN} · Evidence ref #{1000 + nextN * 37} · Location: classified</p>
+            </div>
+          )}
           <div className="row" style={{ justifyContent: 'center', marginTop: 14 }}>
             <ResetControl session={session} label={multiPart ? '↺ Reset this part and play again' : '↺ Reset this episode and play again'} small onDone={onReset} />
           </div>
         </section>
+        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={session === EPISODE_COUNT ? 'We did it, partner. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, partner. File it — and don’t go far. The night isn’t over.'} /></div>
+        <FeedbackCard session={session} />
       </div>
     </div>
   );

@@ -608,3 +608,21 @@ The bug queue is empty. What is worth doing next, in order:
 
 Resolved earlier: English only · no time limit, continue any time, per-episode reset (2026-10-05) · pilot hosting yes
 (small Postgres + API) · unit sites not shipped (2026-10-19).
+
+---
+
+## 10. Rework log — v4 (Nov 2026) · branch `rework-v4`
+
+**Goal (from the review):** noir detective visual overhaul with an animated companion, sound effects, better game flow,
+easy sessions, a feedback dashboard, analytics hardened for ~500 students. **v1 due Thursday 5 Nov 2026, first half.**
+Decisions (2026-11-02, with the user): companion = **Inspector Kaal**, a new character assigned to the learner as a helper
+by their senior (SI Ira Menon); sound has an **on/off toggle** the student controls; all work on branch `rework-v4`; new
+build goes to `missing-influencer-v4/` (v3 untouched). Kaal's lines live in the UI layer (no YAML changes → content build rules untouched).
+
+Note: §1–§9 above predate commit `16c82db` (analytics). The v3 fixes in §7 *are* committed (`f91cfdc`).
+
+### Log
+| When | What | Files | Verified |
+|---|---|---|---|
+| 2026-11-02 | Branch `rework-v4` created; fonts `@fontsource/special-elite`, `@fontsource/oswald` added | `app/package.json` | — |
+| 2026-11-02 | **Noir UI + Inspector Kaal + sound (game side).** New `noir.css` layer over `styles.css` (rain, film grain, vignette, headlight sweep, paper memos, dossier Case Notes, green-phosphor terminal with scanlines + syntax palette, rubber-stamp verdicts VERIFIED/DENIED/TRAP/ERROR, MATCH FOUND flash, polaroid clues, physical buttons with ripple). **Kaal** = SVG+CSS animated detective with 8 moods (`kaal/Kaal.tsx`), line banks + per-episode teasers (`kaal/lines.ts`), event bus that also fires sounds (`kaal/bus.ts`); docked in the Player, on episode intro / briefing / solved page (`kaal/KaalCard.tsx`, typewriter text); nudges after 50 s idle. **Hints** → three sealed envelopes ("Ask Kaal"). **Sound**: Web Audio synth, 11 effects, 🔊/🔇 toggle remembered per device (`sound.ts`, `components/SoundToggle.tsx`, global click fx `fx.ts`). **Flow**: 🎯 objective chip in HUD, "Previously on the case" polaroid reel + CONFIDENTIAL stamp on intro, solved screen = *City Night Times* front page + rank badge + NEXT LEAD teaser. **Feedback card** on solved screen (`components/FeedbackCard.tsx`, `feedback.ts`; posts `feedback` to parent + `POST /api/feedback`). | `app/src/ui/**`, `app/src/main.tsx`, `app/package.json` | `tsc` clean · 118/118 vitest · episode 3 played end-to-end in Chrome with screenshots |

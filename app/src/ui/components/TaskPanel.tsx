@@ -16,6 +16,9 @@ import { SqlEditor, type SqlEditorHandle } from './SqlEditor';
 import { Sheet } from './Sheet';
 import { Confetti } from './Confetti';
 import { TablesDrawer } from './TablesDrawer';
+import { kaal } from '../kaal/bus';
+import { Kaal } from '../kaal/Kaal';
+import { sfx } from '../sound';
 
 // A plain-English line under SQLite's own message
 export function friendlyError(msg: string): string {
@@ -28,6 +31,12 @@ export function friendlyError(msg: string): string {
 }
 
 const HINT_LABEL = { 1: 'Case Note', 2: 'Fill in the blanks', 3: 'Show the answer' } as const;
+// the three sealed envelopes Kaal hands over
+const ENVELOPE = {
+  1: { name: 'The Lead', blurb: 'The course note that explains exactly the tool you need.' },
+  2: { name: 'The Sketch', blurb: 'The query with blanks. You fill in the missing words.' },
+  3: { name: 'Full Reveal', blurb: 'The complete query, typed into the console for you.' },
+} as const;
 
 interface Props { runner: SessionRunner; beat: TaskBeat; review?: boolean; onChanged(): void; onContinue?(): void }
 
@@ -63,7 +72,15 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
         const r = await engine.runScript(runner.pack.snapshot, [...(beat.setup ?? []), sql].join(';\n'));
         setPractice({ result: r.result as QueryResult | undefined, error: r.error });
       } else {
-        setOut(await runner.submitSql(sql));
+        kaal('running', { silent: true });
+        const o = await runner.submitSql(sql);
+        setOut(o);
+        const after = runner.beatState(beat.id);
+        const s = o.verdict.status;
+        if (s === 'pass') { kaal(after.attempts <= 1 && after.hintTier === 0 ? 'passFirst' : 'pass'); setTimeout(() => sfx('stamp'), 250); }
+        else if (s === 'trap') kaal('trap');
+        else if (s === 'error') kaal('error');
+        else kaal('wrong');
         onChanged();
       }
       loadSchema(sql);   // a table the query created (CREATE TABLE) appears in the list
@@ -84,6 +101,7 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
     if (tier === 3 && !confirmAnswer) { setConfirmAnswer(true); return; }
     setConfirmAnswer(false);
     const h = await runner.hint(tier);
+    kaal(`hint${tier}` as 'hint1');
     setHints((prev) => [...prev.filter((x) => x.tier !== tier), h]);
     if (h.tier === 3) { editor.current?.set(h.sql); setHintsOpen(false); }
     onChanged();
@@ -115,14 +133,14 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
             <button className="btn small ghost ide-tables-btn" onClick={() => setSheet('tables')}>🗄 Tables</button>
             <span className="kbd">Ctrl + Enter</span>
           </div>
-          <SqlEditor key={beat.id} initial={sql} schema={schema} onChange={setSql} onRun={run} handle={(h) => { editor.current = h; }} />
+          <SqlEditor key={beat.id} initial={sql} schema={schema} onChange={(t) => { if (Math.abs(t.length - sql.length) === 1) sfx('type'); setSql(t); }} onRun={run} handle={(h) => { editor.current = h; }} />
           <div className="terminal-actions">
             <button className="btn pop" onClick={run} disabled={busy || !sql.trim()}>{busy ? 'Running…' : 'Run ▶'}</button>
             <button className="btn small" onClick={resetDb} disabled={busy} title="Put every table back to this task's starting state">↺ Reset DB</button>
             <button className="btn small ghost" onClick={() => editor.current?.set('')} disabled={busy}>Clear editor</button>
             <span className="spacer" />
             {!review && !st.done && (
-              <button className="btn small" onClick={() => setHintsOpen(true)}>💡 Hints{st.hintTier > 0 && ` (${st.hintTier}/3)`}</button>
+              <button className="btn small" onClick={() => setHintsOpen(true)}>✉ Ask Kaal{st.hintTier > 0 && ` (${st.hintTier}/3)`}</button>
             )}
             {!review && !st.done && hints.length > 0 && !hintsOpen && (
               <button className="btn ghost small" onClick={() => setHintsOpen(true)}>Show my hints</button>
@@ -137,7 +155,7 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
             {review && !practice && st.passSql && <p className="muted small" style={{ margin: 0 }}>Your solving query is in the editor. Press <b>Run</b> to see its result again.</p>}
 
             {v?.status === 'pass' && (
-              <div className="verdict pass"><Confetti count={30} /><span className="badge">✓</span>
+              <div className="verdict pass" key={`p${st.attempts}`}><Confetti count={30} /><span className="match-found" aria-hidden="true">MATCH FOUND</span><span className="stampmark" aria-hidden="true">Verified</span><span className="badge">✓</span>
                 <div>
                   <b>✓ Correct.</b> {out?.replyOnPass && <Markdown source={out.replyOnPass} />}
                   {out?.clueUnlocked && <p className="small" style={{ margin: '6px 0 0' }}>🔎 New evidence unlocked — it’s on the next step.</p>}
@@ -146,13 +164,13 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
               </div>
             )}
             {v?.status === 'trap' && (
-              <div className="verdict trap"><span className="badge">⚠</span><div><Markdown source={v.trap.reply} />{v.error && <p className="small">SQLite says: <code>{v.error}</code></p>}</div></div>
+              <div className="verdict trap" key={`t${st.attempts}`}><span className="stampmark" aria-hidden="true">Trap!</span><span className="badge">⚠</span><div><Markdown source={v.trap.reply} />{v.error && <p className="small">SQLite says: <code>{v.error}</code></p>}</div></div>
             )}
             {v?.status === 'error' && (
-              <div className="verdict error"><span className="badge">!</span><div>SQLite says: <code>{v.error}</code><p className="small" style={{ margin: '4px 0 0' }}>{friendlyError(v.error)}</p></div></div>
+              <div className="verdict error" key={`e${st.attempts}`}><span className="stampmark" aria-hidden="true">Error</span><span className="badge">!</span><div>SQLite says: <code>{v.error}</code><p className="small" style={{ margin: '4px 0 0' }}>{friendlyError(v.error)}</p></div></div>
             )}
             {v?.status === 'wrong' && (
-              <div className="verdict wrong"><span className="badge">✗</span>
+              <div className="verdict wrong" key={`w${st.attempts}`}><span className="stampmark" aria-hidden="true">Denied</span><span className="badge">✗</span>
                 <div><b>Not quite.</b> The query ran, but the result isn’t what {mentor.key === 'narrator' ? 'the task' : mentor.name.split(' ')[0]} asked for.
                   {beat.grading.expect_rows !== undefined && result && <> Expected <b>{beat.grading.expect_rows}</b> row{beat.grading.expect_rows === 1 ? '' : 's'}; you got <b>{result.values.length}</b>.</>}
                 </div>
@@ -177,28 +195,39 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
       )}
 
       {hintsOpen && (
-        <Sheet title="Hints" onClose={() => { setHintsOpen(false); setConfirmAnswer(false); }}>
-          <p className="muted small" style={{ marginTop: 0 }}>Each hint helps more — and lowers this task’s points a little.</p>
-          {[...hints].sort((a, b) => a.tier - b.tier).map((h) => (
-            <div key={h.tier} className="hint-card">
-              <div className="tier">Hint {h.tier} · {HINT_LABEL[h.tier]}</div>
-              {h.tier === 1 && <><b>{h.title} › {h.heading}</b><Markdown source={h.markdown} /></>}
-              {h.tier === 2 && <pre className="sql">{h.skeleton}</pre>}
-              {h.tier === 3 && <p style={{ margin: 0 }}>The answer is now in the editor. Read it, then press <b>Run</b>.</p>}
-            </div>
-          ))}
-          {st.hintTier < 3 && !st.done && (
-            <div className="hint-card next">
-              {confirmAnswer && <p style={{ marginTop: 0 }}>Sure? The full answer will be typed into the editor.</p>}
-              <div className="row">
-                <button className="btn primary small" onClick={() => openHint(nextTier)}>
-                  {nextTier === 3 && confirmAnswer ? 'Yes, show the answer' : `💡 Hint ${nextTier}: ${HINT_LABEL[nextTier]}`}
-                </button>
-                {confirmAnswer && <button className="btn small ghost" onClick={() => setConfirmAnswer(false)}>Cancel</button>}
-              </div>
-              <p className="muted small" style={{ marginBottom: 0 }}>Task then worth up to {Math.max(POINTS.taskPassed - POINTS.hintPenalty[nextTier], POINTS.taskMinimum)} pts</p>
-            </div>
-          )}
+        <Sheet title="Kaal’s envelopes" onClose={() => { setHintsOpen(false); setConfirmAnswer(false); }}>
+          <div className="kaal-hint-head"><Kaal mood={st.hintTier >= 2 ? 'whisper' : 'think'} size={54} /><span>“Three envelopes, partner. Open them in order. Each one helps more — and costs a few points.”</span></div>
+          <div className="envelopes">
+            {([1, 2, 3] as const).map((tier) => {
+              const opened = hints.find((h) => h.tier === tier) ?? (st.hintTier >= tier ? { tier } as HintContent : undefined);
+              const isNext = tier === nextTier && !st.done;
+              const worth = Math.max(POINTS.taskPassed - POINTS.hintPenalty[tier], POINTS.taskMinimum);
+              return (
+                <div key={tier}>
+                  <button className={`envelope ${opened ? 'opened' : ''} ${isNext && !confirmAnswer ? 'next' : ''}`} disabled={!!opened || !isNext}
+                    onClick={() => openHint(tier)} aria-label={`Envelope ${tier}: ${ENVELOPE[tier].name}${opened ? ' (opened)' : isNext ? '' : ' (open the earlier envelope first)'}`}>
+                    <span className="seal" aria-hidden="true">{opened ? '✓' : <>{tier}<small>−{POINTS.hintPenalty[tier]} pts</small></>}</span>
+                    <h4>{ENVELOPE[tier].name} <span className="small" style={{ fontFamily: 'var(--type)', letterSpacing: 0, textTransform: 'none' }}>· {HINT_LABEL[tier]}</span></h4>
+                    <p>{opened ? 'Opened.' : isNext ? `${ENVELOPE[tier].blurb} Task then worth up to ${worth} pts.` : 'Sealed. Open the earlier envelope first.'}</p>
+                  </button>
+                  {isNext && tier === 3 && confirmAnswer && (
+                    <div className="hint-letter" style={{ marginTop: 10 }}>
+                      <p style={{ marginTop: 0 }}>Sure? The full answer will be typed into the console.</p>
+                      <div className="row"><button className="btn primary small" onClick={() => openHint(3)}>Yes, show the answer</button><button className="btn small ghost" onClick={() => setConfirmAnswer(false)} style={{ color: 'var(--paper-ink)' }}>Cancel</button></div>
+                    </div>
+                  )}
+                  {hints.filter((h) => h.tier === tier).map((h) => (
+                    <div key={h.tier} className="hint-letter" style={{ marginTop: 10 }}>
+                      <div className="tier">Envelope {h.tier} · {ENVELOPE[h.tier].name}</div>
+                      {h.tier === 1 && <><b>{h.title} › {h.heading}</b><Markdown source={h.markdown} /></>}
+                      {h.tier === 2 && <pre className="sql">{h.skeleton}</pre>}
+                      {h.tier === 3 && <p style={{ margin: 0 }}>The answer is now in the console. Read it, then press <b>Run</b>.</p>}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </Sheet>
       )}
     </div>

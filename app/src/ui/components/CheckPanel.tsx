@@ -1,3 +1,4 @@
+import { kaal } from '../kaal/bus';
 // A quick check from the mentor: one answer; the explanation is the lesson either way.
 import { useState } from 'react';
 import type { CheckBeat } from '../../content/types';
@@ -12,7 +13,8 @@ export function CheckPanel({ runner, beat, onChanged }: { runner: SessionRunner;
   const mentor = runner.pack.cast.mentor ? speakerOf('mentor', runner.pack.cast) : null;
   const answer = async (i: number) => {
     setPicked(i);
-    await runner.answerCheck(i);
+    const r = await runner.answerCheck(i);
+    kaal(r.correct ? 'checkRight' : 'checkWrong');
     onChanged();
   };
   const correctIdx = beat.options.findIndex((o) => o.correct);

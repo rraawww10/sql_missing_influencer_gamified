@@ -1,6 +1,7 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './ui/styles.css';
+import './ui/noir.css';
 import { App } from './ui/App';
 import { BriefingApp, SessionApp } from './ui/SessionApp';
 import { ServicesProvider, type Services } from './ui/services';
@@ -14,6 +15,9 @@ import { SittingStore } from './engine/runner/sitting';
 import type { RunnerState } from './engine/runner/sessionRunner';
 import { EmbedProgressStore, listenForRestore } from './ui/embed';
 import { Outbox, RemoteProgressStore, startHeartbeat } from './adapters/remoteSync';
+import { installButtonFx } from './ui/fx';
+
+installButtonFx();
 
 // What this page is: the full case map (npm run dev), the briefing (before the first episode), one session, or one unit
 // (one reading material). scripts/build-deploy.mjs writes <meta name="tmi-intro"> / <meta name="tmi-session"> / <meta name="tmi-unit">

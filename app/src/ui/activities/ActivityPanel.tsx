@@ -1,3 +1,4 @@
+import { kaal } from '../kaal/bus';
 // Runs one activity: renders the right widget, submits to the runner, shows feedback.
 // After MAX_ACTIVITY_TRIES wrong tries the answer is revealed and the learner can continue.
 import { useState } from 'react';
@@ -29,7 +30,9 @@ export function ActivityPanel({ runner, beat, review = false, onChanged }: Props
   const reveal = !!st.revealed || (review && done);   // looking back: show the right answer
 
   const submit = async (answer: ActivityAnswer) => {
-    setLast(await runner.answerActivity(answer));
+    const r = await runner.answerActivity(answer);
+    setLast(r);
+    kaal((r as { correct?: boolean }).correct ? 'activityRight' : 'activityWrong');
     onChanged();
   };
 

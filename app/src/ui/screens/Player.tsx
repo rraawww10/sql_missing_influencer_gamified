@@ -17,6 +17,27 @@ import { storyTime } from '../speakers';
 import { episodeTitle, unitLabel } from '../episodes';
 import { ResetControl } from '../components/ResetControl';
 import { TablesDrawer } from '../components/TablesDrawer';
+import { SoundToggle } from '../components/SoundToggle';
+import { KaalDock } from '../kaal/Kaal';
+import { kaal } from '../kaal/bus';
+import type { KaalEvent } from '../kaal/lines';
+import { sfx } from '../sound';
+
+// One short line under the HUD: what the learner is doing right now (plain text, never an answer)
+const plain = (md: string) => md.replace(/```[\s\S]*?```/g, '').replace(/\|.*\|/g, '').replace(/[*_`#>]/g, '').replace(/\{\{[^}]+\}\}/g, '').replace(/\s+/g, ' ').trim();
+export function objectiveOf(beat: Beat): string {
+  switch (beat.type) {
+    case 'task': { const t = plain(beat.ask).split(/(?<=[.?!:])\s/)[0]; return t.length > 90 ? t.slice(0, 88) + '…' : t; }
+    case 'activity': { const t = plain(beat.prompt); return t.length > 90 ? t.slice(0, 88) + '…' : t; }
+    case 'check': return 'Answer Kaal’s quick question';
+    case 'clue': return 'Read the evidence your query found — then pin it';
+    case 'note': return `Learn the tool: ${beat.rm_ref.heading}`;
+    case 'demo': return 'Run the demo and watch the clock';
+    case 'hook': return 'Something is coming…';
+    default: return 'Follow the story';
+  }
+}
+const KAAL_ON: Partial<Record<Beat['type'], KaalEvent>> = { note: 'note', task: 'task', activity: 'activity', check: 'check', clue: 'clue', demo: 'demo', hook: 'hook' };
 
 // One runner per session per page load (React StrictMode mounts effects twice in dev)
 const opening = new Map<number, Promise<SessionRunner>>();
@@ -65,6 +86,31 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
   const view = viewAt ?? index;
   const review = view < index;
   useEffect(() => { scroller.current?.scrollTo({ top: 0 }); }, [view, runner]);
+
+  // Kaal reacts to every new step (and the page turns with a whoosh)
+  const firstStep = useRef(true);
+  useEffect(() => {
+    if (!runner) return;
+    const b = runner.pack.beats[view];
+    if (!firstStep.current) sfx('whoosh');
+    if (review) { if (firstStep.current) kaal('review', { silent: true }); }
+    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: 'Partner. New lead tonight — stay close.' } : {});
+    else if (KAAL_ON[b.type]) kaal(KAAL_ON[b.type]!, { silent: true });
+    else if (b.type === 'scene' && view % 4 === 0) kaal('scene', { silent: true });
+    firstStep.current = false;
+  }, [view, runner, review, session]);
+
+  // stuck for 50 s on something to do → Kaal nudges (once per step)
+  useEffect(() => {
+    if (!runner || review) return;
+    const b = runner.pack.beats[view];
+    if (!['task', 'activity', 'check'].includes(b.type) || runner.beatState(b.id)?.done) return;
+    let t = window.setTimeout(nudge, 50_000);
+    function nudge() { if (!runner!.beatState(b.id)?.done) kaal('idle', { silent: true }); }
+    const reset = () => { window.clearTimeout(t); t = window.setTimeout(nudge, 50_000); };
+    addEventListener('keydown', reset); addEventListener('pointerdown', reset);
+    return () => { window.clearTimeout(t); removeEventListener('keydown', reset); removeEventListener('pointerdown', reset); };
+  }, [view, runner, review]);
 
   // the evidence counter bounces when a clue gets pinned
   const pins = runner?.pinned.length ?? 0;
@@ -130,6 +176,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
 
   return (
     <div className="game">
+      <div className="vignette" aria-hidden="true" /><div className="headlight" aria-hidden="true" />
       <header className="hud">
         <button className="btn small ghost" onClick={onExit} aria-label={exitLabel}><span className="hide-phone">{exitLabel}</span><span className="only-phone" aria-hidden="true">←</span></button>
         <div className="ep">
@@ -137,6 +184,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
           <h1>{title}{unit && !unit.finale && <small>{unitLabel(unit)}</small>}</h1>
         </div>
         <div className="tools">
+          <SoundToggle />
           <button className="hud-stat" onClick={() => setSheet('tables')} aria-label="Open the case database tables">🗄<span className="hide-phone"> Tables</span></button>
           <button className={`hud-stat pins ${bump ? 'bump' : ''}`} onClick={() => setSheet('evidence')} aria-label={`Evidence: ${runner.pinned.length} clues pinned`}>📌 {runner.pinned.length}</button>
           <ResetControl session={session} small popover label="↺ Reset" onDone={() => { setRunner(null); setViewAt(null); setAttempt((a) => a + 1); }} />
@@ -148,6 +196,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
             <span className="lbl">{KIND[beat.type]}{beatLabel(runner, beat, true) !== KIND[beat.type] && <> · {beatLabel(runner, beat, true)}</>}</span>
             <span className="count">Step {runner.index + 1}/{beats.length}</span>
           </button>
+          {!review && <span className="objective hide-phone" title={objectiveOf(beat)}><b>🎯 Objective</b>{objectiveOf(beat)}</span>}
           <span className="muted small hide-phone">{beats.filter((b) => runner.beatState(b.id)?.done).length} of {beats.length} done</span>
         </div>
       </header>
@@ -174,6 +223,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
         </div>
       </main>
 
+      <KaalDock />
       {sheet === 'steps' && <Sheet title="Steps in this episode" side="left" onClose={() => setSheet(null)}><StepsList runner={runner} viewing={view} onPick={pickStep} /></Sheet>}
       {sheet === 'tables' && (
         <Sheet title="Case database" wide onClose={() => setSheet(null)}>

@@ -11,6 +11,9 @@ import { useProgress } from '../useProgress';
 import { progressOf } from '../../engine/progress/derive';
 import { packScope } from '../../content/types';
 import { episodeOf, episodeTitle, unitLabel } from '../episodes';
+import { KaalCard } from '../kaal/KaalCard';
+import { TEASE } from '../kaal/lines';
+import { SoundToggle } from '../components/SoundToggle';
 
 interface Props { session: number; onStart(): void; onBack(): void; onBriefing?(): void; standalone?: boolean }
 
@@ -50,10 +53,12 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">SQL: The Missing Influencer</span>
-          <button className="btn small ghost" onClick={onBack}>{standalone ? '📌 Evidence Board' : '← Case map'}</button>
+          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" />
+          <button className="btn small ghost" onClick={onBack}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
         </nav>
 
-        <section className="poster pop-in">
+        <section className="poster pop-in" style={{ position: 'relative' }}>
+          <span className="confidential-stamp" aria-hidden="true">Case file · Confidential</span>
           <SceneArt session={session} />
           <div className="poster-body">
             <div className="stickers">
@@ -66,6 +71,26 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
             <p>{standalone ? <><b>{pack.headline}</b> {pack.premise}</> : ep.teaser}</p>
           </div>
         </section>
+
+        <div style={{ margin: '18px 0' }}>
+          <KaalCard mood={first ? 'whisper' : 'think'} line={first
+            ? `SI Ira Menon assigned me to you — I'm Inspector Kaal. ${TEASE[1]} Stay close, partner.`
+            : resumable ? `Welcome back, partner. ${TEASE[session] ?? ''}` : (TEASE[session] ?? ep.teaser)} />
+        </div>
+
+        {pack.previously.length > 0 && (
+          <section aria-label="Previously on the case" style={{ marginBottom: 10 }}>
+            <h2 style={{ margin: '0 0 6px', fontSize: 18, color: 'var(--lamp)' }}>⏪ Previously on the case…</h2>
+            <div className="recap">
+              {pack.previously.slice(-6).map((c, i) => (
+                <article key={c.clue_id} className="polaroid" style={{ '--i': i } as React.CSSProperties}>
+                  <span className="when">{c.session === session ? 'Earlier tonight' : storyTime(c.session)}</span>
+                  <b>📌 {c.title}</b>
+                </article>
+              ))}
+            </div>
+          </section>
+        )}
 
         <div className="stats">
           <div className="stat rise" style={{ '--i': 0 } as React.CSSProperties}><b>{Math.round(pack.minutes_estimate)}</b><span>minutes, about</span></div>
