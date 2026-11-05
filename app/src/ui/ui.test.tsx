@@ -61,7 +61,7 @@ describe('activity widgets', () => {
     await userEvent.click(bucket());
     expect(bucket().textContent).toContain('register');
 
-    // with another item picked, clicking the placed pill means "drop it in this box" — the pill is the box
+    // with another item picked, clicking the placed pill means "drop it in this box" - the pill is the box
     await userEvent.click(screen.getByRole('button', { name: 'rumour' }));
     await userEvent.click(screen.getByRole('button', { name: 'register' }));
     expect(bucket().textContent).toContain('rumour');

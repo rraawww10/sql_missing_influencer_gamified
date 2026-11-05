@@ -1,6 +1,6 @@
 // Plays one episode as a game screen: a HUD with the episode name and a stories-style progress bar on top,
 // ONE step at a time on the stage, and a floating dock with Back / Continue at the bottom (← → keys work too).
-// Finished steps can be opened again from the bar (or the steps sheet) or with Back — read-only, and SQL tasks become a practice run.
+// Finished steps can be opened again from the bar (or the steps sheet) or with Back - read-only, and SQL tasks become a practice run.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SessionRunner } from '../../engine/runner/sessionRunner';
 import type { Beat } from '../../content/types';
@@ -21,7 +21,9 @@ import { SoundToggle } from '../components/SoundToggle';
 import { KaalDock } from '../kaal/Kaal';
 import { kaal } from '../kaal/bus';
 import type { KaalEvent } from '../kaal/lines';
-import { sfx } from '../sound';
+import { setSoundStage, sfx } from '../sound';
+import { hush } from '../voice';
+import { VoiceToggle } from '../components/VoiceToggle';
 
 // One short line under the HUD: what the learner is doing right now (plain text, never an answer)
 const plain = (md: string) => md.replace(/```[\s\S]*?```/g, '').replace(/\|.*\|/g, '').replace(/[*_`#>]/g, '').replace(/\{\{[^}]+\}\}/g, '').replace(/\s+/g, ' ').trim();
@@ -30,7 +32,7 @@ export function objectiveOf(beat: Beat): string {
     case 'task': { const t = plain(beat.ask).split(/(?<=[.?!:])\s/)[0]; return t.length > 90 ? t.slice(0, 88) + '…' : t; }
     case 'activity': { const t = plain(beat.prompt); return t.length > 90 ? t.slice(0, 88) + '…' : t; }
     case 'check': return 'Answer Kaal’s quick question';
-    case 'clue': return 'Read the evidence your query found — then pin it';
+    case 'clue': return 'Read the evidence your query found - then pin it';
     case 'note': return `Learn the tool: ${beat.rm_ref.heading}`;
     case 'demo': return 'Run the demo and watch the clock';
     case 'hook': return 'Something is coming…';
@@ -102,11 +104,28 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
     const b = runner.pack.beats[view];
     if (!firstStep.current) sfx('whoosh');
     if (review) { if (firstStep.current) kaal('review', { silent: true }); }
-    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: 'Partner. New lead tonight — stay close.' } : {});
+    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: 'Partner! New lead tonight. Stay close - chalo!' } : {});
     else if (KAAL_ON[b.type]) kaal(KAAL_ON[b.type]!, { silent: true });
     else if (b.type === 'scene' && view % 4 === 0) kaal('scene', { silent: true });
     firstStep.current = false;
   }, [view, runner, review, session]);
+
+  // each chapter is a new "stage": the sound climbs, and a game-style banner announces it
+  const [banner, setBanner] = useState<number | null>(null);
+  const lastChapter = useRef(0);
+  useEffect(() => {
+    if (!runner) return;
+    const c = chapterOf(runner.pack.beats, view);
+    setSoundStage(c.n, c.of);
+    if (!review && lastChapter.current && c.n > lastChapter.current) {
+      sfx('chapter'); setBanner(c.n);
+      const t = setTimeout(() => setBanner(null), 2200);
+      lastChapter.current = c.n;
+      return () => clearTimeout(t);
+    }
+    if (!review) lastChapter.current = c.n;
+  }, [view, runner, review]);
+  useEffect(() => () => hush(), []);
 
   // stuck for 50 s on something to do → Kaal nudges (once per step)
   useEffect(() => {
@@ -137,7 +156,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
       if (was.type === 'clue') {
         const c = chapterOf(runner.pack.beats, runner.index - 1);
         setCheckpoint(c.n);
-        kaal('pinned', { line: `Chapter ${c.n} of ${c.of} closed — your progress is saved. Good place for a break, partner… or keep going?`, silent: true });
+        kaal('pinned', { line: `Chapter ${c.n} of ${c.of} closed - your progress is saved. Good place for a break, partner… or keep going?`, silent: true });
         setTimeout(() => setCheckpoint(null), 6000);
       }
       setViewAt(null); refresh();
@@ -192,7 +211,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
   const fullBleed = beat.type === 'scene' || beat.type === 'hook';
 
   return (
-    <div className="game">
+    <div className={`game beat-${beat.type} chapter-${chapterOf(beats, view).n}`}>
       <div className="vignette" aria-hidden="true" /><div className="headlight" aria-hidden="true" />
       <header className="hud">
         <button className="btn small ghost" onClick={onExit} aria-label={exitLabel}><span className="hide-phone">{exitLabel}</span><span className="only-phone" aria-hidden="true">←</span></button>
@@ -201,7 +220,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
           <h1>{title}{unit && !unit.finale && <small>{unitLabel(unit)}</small>}</h1>
         </div>
         <div className="tools">
-          <SoundToggle />
+          <SoundToggle /><VoiceToggle />
           <button className="hud-stat" onClick={() => setSheet('tables')} aria-label="Open the case database tables">🗄<span className="hide-phone"> Tables</span></button>
           <button className={`hud-stat pins ${bump ? 'bump' : ''}`} onClick={() => setSheet('evidence')} aria-label={`Evidence: ${runner.pinned.length} clues pinned`}>📌 {runner.pinned.length}</button>
           <ResetControl session={session} small popover label="↺ Reset" onDone={() => { setRunner(null); setViewAt(null); setAttempt((a) => a + 1); }} />
@@ -222,21 +241,24 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
       <main className="stage">
         {review && (
           <div className="review-banner strip" role="status">
-            <span>👀 Looking back at an earlier step — <b>{beatLabel(runner, beat, true)}</b>. Nothing here changes your progress.</span>
+            <span>👀 Looking back at an earlier step - <b>{beatLabel(runner, beat, true)}</b>. Nothing here changes your progress.</span>
             <button className="btn small primary" onClick={() => setViewAt(null)}>Back to current step ⏭</button>
           </div>
         )}
         {checkpoint && !review && (
-          <div className="checkpoint" role="status">💾 <b>Chapter {checkpoint} closed · progress saved.</b> <span className="hide-phone">Stop here any time — you’ll continue from this point.</span></div>
+          <div className="checkpoint" role="status">💾 <b>Chapter {checkpoint} closed · progress saved.</b> <span className="hide-phone">Stop here any time - you’ll continue from this point.</span></div>
+        )}
+        {banner && !review && (
+          <div className="chapter-banner" aria-hidden="true"><small>Chapter</small><b>{banner}</b><span>of {chapterOf(beats, view).of}</span></div>
         )}
         <div className="stage-scroll" ref={scroller}>
-          {fullBleed ? stage : <div className={`stage-content ${beat.type === 'task' ? 'wide' : beat.type === 'note' ? 'reading' : ''}`} style={beat.type === 'clue' ? { minHeight: '100%', display: 'grid' } : undefined}>{stage}</div>}
+          {fullBleed ? stage : <div key={view} className={`stage-content ${beat.type === 'task' ? 'wide' : beat.type === 'note' ? 'reading' : ''}`} style={beat.type === 'clue' ? { minHeight: '100%', display: 'grid' } : undefined}>{stage}</div>}
         </div>
 
         <div className={`dock${fullBleed ? ' floating' : ''}`}>
           <button className="btn" onClick={back} disabled={view === 0} aria-label="Back to the previous step">← Back</button>
           <div className={`status ${canGo && !review ? 'ok' : ''}`} aria-live="polite">
-            {review ? `Step ${view + 1} of ${beats.length} · review` : canGo ? (last ? (multiPart ? 'Last step — finish this part' : 'Last step — finish the episode') : 'Ready when you are') : TODO[beat.type] ?? ''}
+            {review ? `Step ${view + 1} of ${beats.length} · review` : canGo ? (last ? (multiPart ? 'Last step - finish this part' : 'Last step - finish the episode') : 'Ready when you are') : TODO[beat.type] ?? ''}
           </div>
           {review
             ? <button className="btn primary" onClick={next}>Next ›</button>

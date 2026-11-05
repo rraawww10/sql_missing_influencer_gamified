@@ -1,5 +1,5 @@
 // One episode as a standalone site (the deploy build): intro → play → done → evidence.
-// No case map and no links to other episodes — the page that embeds it decides what comes next.
+// No case map and no links to other episodes - the page that embeds it decides what comes next.
 //   #/          intro ("the case so far", start / continue / start over)
 //   #/play      playing        #/done   solved        #/evidence   evidence board
 // BriefingApp is the standalone briefing site (deploy/intro): the page before the first episode.

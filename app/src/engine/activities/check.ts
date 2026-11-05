@@ -1,4 +1,4 @@
-// Answer checking for non-SQL activities. Pure functions — the UI sends the learner's answer,
+// Answer checking for non-SQL activities. Pure functions - the UI sends the learner's answer,
 // the runner gets back which parts are right so it can highlight them.
 import type { ActivityBeat } from '../../content/types';
 

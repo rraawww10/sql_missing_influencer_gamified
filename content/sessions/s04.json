@@ -57,13 +57,13 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "session": 3,
       "clue_id": "S3-C1",
       "title": "Grey SUV at the service gate",
-      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
     }
   ],
   "cast": {
@@ -112,7 +112,7 @@
           "heading": "IN and BETWEEN Operators"
         }
       ],
-      "body": "`IN` checks if a value is **one of a list** of values — a short way to write many `OR`s:\n```sql\nSELECT * FROM table_name WHERE c1 IN (v1, v2, ...);\n```\n"
+      "body": "`IN` checks if a value is **one of a list** of values - a short way to write many `OR`s:\n```sql\nSELECT * FROM table_name WHERE c1 IN (v1, v2, ...);\n```\n"
     },
     {
       "id": "S4.4",
@@ -141,7 +141,7 @@
           "solution_ref": "solutions/s04.json#T4.1"
         }
       ],
-      "reply_on_pass": "Four rides. Dev never booked a cab today — interesting.",
+      "reply_on_pass": "Four rides. Dev never booked a cab today - interesting.",
       "traps": []
     },
     {
@@ -186,7 +186,7 @@
             "result_hash": "sha256:294498e16c3b790f14681c8f25aefcf47559c7dd701f1ab61ef692fa4566f293",
             "sql_regex": "BETWEEN\\s+'2026-12-12 18:30"
           },
-          "reply": "Empty — but that doesn't mean nobody booked! With `BETWEEN`, the **smaller value must come first**: 17:30, then 18:30.",
+          "reply": "Empty - but that doesn't mean nobody booked! With `BETWEEN`, the **smaller value must come first**: 17:30, then 18:30.",
           "rm_ref": {
             "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
             "heading": "Possible Mistakes"
@@ -237,7 +237,7 @@
       "type": "task",
       "task_id": "T4.3",
       "minutes": 2,
-      "ask": "Same hotel rides between 17:30 and 18:30 — show `ride_id`, `status` and `booked_at`, **newest first**.",
+      "ask": "Same hotel rides between 17:30 and 18:30 - show `ride_id`, `status` and `booked_at`, **newest first**.",
       "grading": {
         "ordered": true,
         "expect_rows": 3,
@@ -397,17 +397,17 @@
       "prompt": "Your row for ride R-2291: what happened to Tara's booking, and when?",
       "options": [
         {
-          "text": "CANCELLED_BY_RIDER — she cancelled it herself at 18:08:12, 13 minutes after booking",
+          "text": "CANCELLED_BY_RIDER - she cancelled it herself at 18:08:12, 13 minutes after booking",
           "correct": true
         },
         {
-          "text": "COMPLETED — driver Sunny Gill dropped her at the stadium"
+          "text": "COMPLETED - driver Sunny Gill dropped her at the stadium"
         },
         {
-          "text": "CANCELLED_BY_DRIVER — Sunny Gill never came"
+          "text": "CANCELLED_BY_DRIVER - Sunny Gill never came"
         }
       ],
-      "explain": "`status` = CANCELLED_BY_RIDER, `status_updated_at` = 18:08:12. Booked 17:55, cancelled by her at 18:08 — one minute before her key card hit the service lift (clue S2-C1, 18:09:40)."
+      "explain": "`status` = CANCELLED_BY_RIDER, `status_updated_at` = 18:08:12. Booked 17:55, cancelled by her at 18:08 - one minute before her key card hit the service lift (clue S2-C1, 18:09:40)."
     },
     {
       "id": "S4.15",
@@ -415,7 +415,7 @@
       "clue_id": "S4-C1",
       "requires_task": "T4.6",
       "title": "The cancelled cab",
-      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium - status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
     },
     {
       "id": "S4.16",
@@ -436,7 +436,7 @@
           "heading": "Possible Mistakes"
         }
       ],
-      "body": "`OFFSET n` skips the first **n** rows — perfect for pages. Page 2 of 5 rides: `LIMIT 5 OFFSET 5`.\nIn SQLite, `OFFSET` must come **after** `LIMIT`. The default offset is 0.\n"
+      "body": "`OFFSET n` skips the first **n** rows - perfect for pages. Page 2 of 5 rides: `LIMIT 5 OFFSET 5`.\nIn SQLite, `OFFSET` must come **after** `LIMIT`. The default offset is 0.\n"
     },
     {
       "id": "S4.18",
@@ -491,7 +491,7 @@
           }
         }
       ],
-      "reply_on_pass": "Page 2. Find R-2291 — then read the row right after it."
+      "reply_on_pass": "Page 2. Find R-2291 - then read the row right after it."
     },
     {
       "id": "S4.18b",
@@ -504,7 +504,7 @@
       "prompt": "On page 2, what did Sunny do right after Tara's ride was cancelled?",
       "options": [
         {
-          "text": "Ride R-2297 at 18:10 — he took Farhan Ali from the hotel to the railway station",
+          "text": "Ride R-2297 at 18:10 - he took Farhan Ali from the hotel to the railway station",
           "correct": true
         },
         {
@@ -520,7 +520,7 @@
       "id": "S4.19",
       "type": "scene",
       "speaker": "driver",
-      "body": "🎙️ Witness statement — Sunny's voice note, after Ira called him:\n\"Madam, I reached the hotel at 18:06. She came out, but a man in a black jacket said *'Come, I'll drop you, it's faster'*.\nShe cancelled my ride and got into a **grey SUV**. Then I took another passenger — the railway station one.\"\n"
+      "body": "🎙️ Witness statement - Sunny's voice note, after Ira called him:\n\"Madam, I reached the hotel at 18:06. She came out, but a man in a black jacket said *'Come, I'll drop you, it's faster'*.\nShe cancelled my ride and got into a **grey SUV**. Then I took another passenger - the railway station one.\"\n"
     },
     {
       "id": "S4.20",
@@ -528,7 +528,7 @@
       "clue_id": "S4-C2",
       "requires_task": "T4.7",
       "title": "A grey SUV, someone she knew",
-      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) - he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
     },
     {
       "id": "S4.21",

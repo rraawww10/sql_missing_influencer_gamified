@@ -1,4 +1,4 @@
-# Session 8 — "Clear the Innocent" (9:30 PM). Flow: docs/SESSION_PLAN.md › Session 8.
+# Session 8 - "Clear the Innocent" (9:30 PM). Flow: docs/SESSION_PLAN.md › Session 8.
 session: 8
 title: "Clear the Innocent"
 story_clock: "2026-12-12 21:30:00"
@@ -16,7 +16,7 @@ beats:
   - id: S8.1
     type: scene
     speaker: mentor
-    body: "Five suspects. Hashtags don't clear anyone — **data** does. New tables: `alibis` (each person's claim and whether it's verified) and `fan_dms`."
+    body: "Five suspects. Hashtags don't clear anyone - **data** does. New tables: `alibis` (each person's claim and whether it's verified) and `fan_dms`."
 
   - id: S8.2
     type: note
@@ -39,7 +39,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 3b692841-a6a3-4e2f-99ce-c4fadd78c82f, heading: "CASE Clause" } }
       - { tier: 2, skeleton: "SELECT device_owner, COUNT(*) AS pings, CASE WHEN COUNT(*) >= 10 THEN 'High' WHEN ____ THEN 'Medium' ELSE 'Low' END AS suspicion FROM tower_pings WHERE tower_id = 'RRO-17' AND ts >= '2026-12-12 18:00:00' GROUP BY device_owner;" }
-    reply_on_pass: "{{caretaker}} is 'High' too — but he **lives** at the farm. High pings alone don't make anyone guilty."
+    reply_on_pass: "{{caretaker}} is 'High' too - but he **lives** at the farm. High pings alone don't make anyone guilty."
 
   - id: S8.4
     type: note
@@ -66,9 +66,9 @@ beats:
       - { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION ALL" }
     body: |
       Set operators combine the results of two SELECTs:
-      - `INTERSECT` — rows in **both**
-      - `MINUS` — rows in the first but **not** the second (SQLite writes it as `EXCEPT`)
-      - `UNION` — rows in **either** (duplicates removed) · `UNION ALL` — same, but **keeps** duplicates
+      - `INTERSECT` - rows in **both**
+      - `MINUS` - rows in the first but **not** the second (SQLite writes it as `EXCEPT`)
+      - `UNION` - rows in **either** (duplicates removed) · `UNION ALL` - same, but **keeps** duplicates
 
   - id: S8.7
     type: note
@@ -81,8 +81,8 @@ beats:
     type: scene
     speaker: mentor
     body: |
-      Two lists. List one: everyone whose device hit **RRO-17** tonight — your CASE query showed three names: {{star.first}}, {{caretaker}} and {{manager.first}}.
-      List two: everyone who ever **paid {{farm}}**. Being near the farm is not a crime. Paying for the farm is not a crime. Being on **both** lists tonight — that needs an explanation.
+      Two lists. List one: everyone whose device hit **RRO-17** tonight - your CASE query showed three names: {{star.first}}, {{caretaker}} and {{manager.first}}.
+      List two: everyone who ever **paid {{farm}}**. Being near the farm is not a crime. Paying for the farm is not a crime. Being on **both** lists tonight - that needs an explanation.
 
   - id: S8.8
     type: task
@@ -106,7 +106,7 @@ beats:
   - id: S8.10
     type: task
     task_id: T8.4
-    ask: "Everyone seen around the hotel between 17:30 and 18:30: `person_name` from `gate_log` **or** `rider_name` from hotel pickups in `cab_rides` — no duplicates."
+    ask: "Everyone seen around the hotel between 17:30 and 18:30: `person_name` from `gate_log` **or** `rider_name` from hotel pickups in `cab_rides` - no duplicates."
     ref: "SELECT person_name FROM gate_log WHERE ts BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' UNION SELECT rider_name FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00';"
     hints:
       - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION" } }
@@ -121,7 +121,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 777e1aeb-92cd-4978-8bda-c0543963353b, heading: "UNION ALL" } }
       - { tier: 2, skeleton: "... UNION ____ SELECT rider_name FROM cab_rides ...;" }
-    reply_on_pass: "{{guest}} now appears **twice** — she walked out of the main gate *and* booked a cab. UNION ALL keeps both."
+    reply_on_pass: "{{guest}} now appears **twice** - she walked out of the main gate *and* booked a cab. UNION ALL keeps both."
 
   - id: S8.12
     type: task
@@ -139,7 +139,7 @@ beats:
         match: error
         error_regex: "same number of result columns"
         reply: "Both SELECTs need the **same number of columns**. The second one has only `person_name`."
-    reply_on_pass: "{{fan}} and {{driver}} drop out — their alibis are verified. Left: {{manager.first}}, {{rival.first}}, {{organiser.first}}."
+    reply_on_pass: "{{fan}} and {{driver}} drop out - their alibis are verified. Left: {{manager.first}}, {{rival.first}}, {{organiser.first}}."
 
   - id: S8.13
     type: task
@@ -157,7 +157,7 @@ beats:
     speaker: mentor
     body: |
       Every message from {{fan_handle}} came from **{{hometown}}**, far from the city. Her *"she's safe"* post was a hopeful prayer, not knowledge.
-      Being a big fan isn't a crime. Following someone home would be. She didn't — she's cleared.
+      Being a big fan isn't a crime. Following someone home would be. She didn't - she's cleared.
 
   - id: S8.15
     type: note
@@ -180,7 +180,7 @@ beats:
         sql: "SELECT name FROM suspects ORDER BY name EXCEPT SELECT person_name FROM alibis WHERE verified = 1;"
         match: error
         error_regex: "ORDER BY clause should come after"
-        reply: "In set operations, `ORDER BY` goes **once, at the end** — not inside the first SELECT."
+        reply: "In set operations, `ORDER BY` goes **once, at the end** - not inside the first SELECT."
 
   - id: S8.17
     type: note
@@ -233,7 +233,7 @@ units:
     opener:
       speaker: mentor
       body: |
-        Previously: five suspects. We labelled every row with `CASE` — near the outskirts tower or not, big payment or not.
-        Now we compare whole lists — tower pings, payments, rehearsal logs — to clear the innocent.
-  - unit_id: 54a9517e-4844-4f5a-b278-18e0c971615f   # RM #24 SQL Set Operations — same text as RM #25
+        Previously: five suspects. We labelled every row with `CASE` - near the outskirts tower or not, big payment or not.
+        Now we compare whole lists - tower pings, payments, rehearsal logs - to clear the innocent.
+  - unit_id: 54a9517e-4844-4f5a-b278-18e0c971615f   # RM #24 SQL Set Operations - same text as RM #25
     same_as: 777e1aeb-92cd-4978-8bda-c0543963353b

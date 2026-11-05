@@ -74,7 +74,7 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     }
   ],
   "cast": {
@@ -96,7 +96,7 @@
       "id": "U9.open",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Previously: the `suspects` table is clean and the `rumours` table is gone.\nNow each suspect gives an alibi — but there is no column for it. We change the table's **structure**, not its data.\n"
+      "body": "Previously: the `suspects` table is clean and the `rumours` table is gone.\nNow each suspect gives an alibi - but there is no column for it. We change the table's **structure**, not its data.\n"
     },
     {
       "id": "S2.25",
@@ -277,7 +277,7 @@
             "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
             "inspect": "SELECT COUNT(DISTINCT alibi) FROM suspects;"
           },
-          "reply": "Oops — now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more.",
+          "reply": "Oops - now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more.",
           "rm_ref": {
             "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
             "heading": "Update All Rows"
@@ -344,7 +344,7 @@
       "id": "S2.34",
       "type": "hook",
       "speaker": "system",
-      "body": "📧 Hotel security: \"Attaching the gate log — **300 entries** since noon.\"\nIra: \"That service lift opens near the service gate. Find who used it.\"\n"
+      "body": "📧 Hotel security: \"Attaching the gate log - **300 entries** since noon.\"\nIra: \"That service lift opens near the service gate. Find who used it.\"\n"
     }
   ],
   "unit": {

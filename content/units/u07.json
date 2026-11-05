@@ -71,7 +71,7 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     }
   ],
   "cast": {
@@ -234,7 +234,7 @@
         "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
         "heading": "DELETE VS DROP"
       },
-      "prompt": "DELETE vs DROP — match each command to what it does.",
+      "prompt": "DELETE vs DROP - match each command to what it does.",
       "pairs": [
         {
           "left": "DELETE FROM rumours WHERE …",

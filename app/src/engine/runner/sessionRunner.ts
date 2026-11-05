@@ -1,11 +1,11 @@
 // Session runner: plays one session pack, one attempt ("sitting") at a time; attempts resume any time.
-// UI-agnostic — the React screens (M4) call these methods and render `view()`.
+// UI-agnostic - the React screens (M4) call these methods and render `view()`.
 //
 // Beat completion rules
 //   scene / note / hook  done when the learner moves past it
 //   task                 done when the SQL passes
 //   activity             done when answered correctly, or revealed after MAX_ACTIVITY_TRIES wrong tries
-//   check                done when answered (right or wrong — the explanation is the lesson)
+//   check                done when answered (right or wrong - the explanation is the lesson)
 //   clue                 done when pinned (needs its `requires_task` passed)
 import { packScope, type ActivityBeat, type Beat, type ClueBeat, type DemoBeat, type SessionPack, type TaskBeat } from '../../content/types';
 import type { ContentLoader } from '../../content/loader';

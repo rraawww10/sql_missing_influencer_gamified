@@ -1,7 +1,8 @@
 // Kaal speaking on a page (episode intro, briefing, solved screen): the figure + a line that types itself out.
 import { useEffect, useState } from 'react';
-import { Kaal } from './Kaal';
+import { Kaal, useTalking } from './Kaal';
 import type { KaalMood } from './lines';
+import { speak } from '../voice';
 
 const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -17,9 +18,11 @@ export function TypeLine({ text, speed = 22 }: { text: string; speed?: number })
 }
 
 export function KaalCard({ line, mood = 'whisper', title = 'Inspector Kaal', size = 84 }: { line: string; mood?: KaalMood; title?: string; size?: number }) {
+  const talking = useTalking();
+  useEffect(() => { const t = setTimeout(() => speak(line, { mood }), 400); return () => clearTimeout(t); }, [line, mood]);
   return (
     <section className="kaal-card pop-in" aria-label={`${title} says`}>
-      <Kaal mood={mood} size={size} />
+      <Kaal mood={mood} size={size} talking={talking} />
       <div className="say"><b>{title}</b><TypeLine text={line} /></div>
     </section>
   );

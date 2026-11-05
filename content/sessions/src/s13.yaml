@@ -1,4 +1,4 @@
-# Session 13 — "Showtime" (12:00 AM), the finale. No reading material (course quiz topic):
+# Session 13 - "Showtime" (12:00 AM), the finale. No reading material (course quiz topic):
 # the learner proves the case with one query per claim, using everything from Sessions 1–12.
 session: 13
 title: "Showtime"
@@ -13,28 +13,28 @@ beats:
     type: scene
     speaker: star
     body: |
-      📹 Video call from the police jeep: "I saw the farm's board when we turned in. My phone was gone, but my watch could pay —
+      📹 Video call from the police jeep: "I saw the farm's board when we turned in. My phone was gone, but my watch could pay - 
       so I sent {{sister.first}} ₹1 and typed the name in strange capitals, so {{manager.first}} wouldn't notice."
 
   - id: S13.2
     type: scene
     speaker: mentor
-    body: "The court needs **proof**, not a story. Five claims — prove each one with a query. Then we close the case."
+    body: "The court needs **proof**, not a story. Five claims - prove each one with a query. Then we close the case."
 
   - id: S13.3
     type: task
     task_id: T13.c1
-    ask: "**Claim 1 — the SUV is {{manager.first}}'s.** Join `vehicles`, `company` and `people`: show `vehicles.vehicle_no` and `people.name` for `'{{suv}}'`."
+    ask: "**Claim 1 - the SUV is {{manager.first}}'s.** Join `vehicles`, `company` and `people`: show `vehicles.vehicle_no` and `people.name` for `'{{suv}}'`."
     ref: "SELECT vehicles.vehicle_no, people.name FROM vehicles INNER JOIN company ON vehicles.company_id = company.company_id INNER JOIN people ON company.owner_person_id = people.person_id WHERE vehicles.vehicle_no = '{{suv}}';"
     grading: { expect_rows: 1 }
     hints:
-      - { tier: 1, text: "Session 11: join the combined table again — vehicles → company → people." }
+      - { tier: 1, text: "Session 11: join the combined table again - vehicles → company → people." }
       - { tier: 2, skeleton: "SELECT vehicles.vehicle_no, people.name FROM vehicles INNER JOIN company ON vehicles.company_id = company.company_id INNER JOIN people ON ____ = people.person_id WHERE vehicles.vehicle_no = '{{suv}}';" }
 
   - id: S13.4
     type: task
     task_id: T13.c2
-    ask: "**Claim 2 — the SUV went to the outskirts and came back.** Show `direction` and `ts` from `toll_crossings` for `'{{suv}}'`, in time order."
+    ask: "**Claim 2 - the SUV went to the outskirts and came back.** Show `direction` and `ts` from `toll_crossings` for `'{{suv}}'`, in time order."
     ref: "SELECT direction, ts FROM toll_crossings WHERE vehicle_no = '{{suv}}' ORDER BY ts;"
     grading: { ordered: true, expect_rows: 2 }
     hints:
@@ -44,7 +44,7 @@ beats:
   - id: S13.5
     type: task
     task_id: T13.c3
-    ask: "**Claim 3 — {{star.first}} was held near RRO-17.** From 6 PM: `tower_id` and ping count for `'{{star}}'`, only towers with **more than 5** pings."
+    ask: "**Claim 3 - {{star.first}} was held near RRO-17.** From 6 PM: `tower_id` and ping count for `'{{star}}'`, only towers with **more than 5** pings."
     ref: "SELECT tower_id, COUNT(*) FROM tower_pings WHERE device_owner = '{{star}}' AND ts >= '2026-12-12 18:00:00' GROUP BY tower_id HAVING COUNT(*) > 5;"
     grading: { expect_rows: 1 }
     hints:
@@ -54,7 +54,7 @@ beats:
   - id: S13.6
     type: task
     task_id: T13.c4
-    ask: "**Claim 4 — {{manager.first}} booked the farm stay.** Join `booking`, `property` and `person`: show `booking.id`, `property.name`, `person.name`, `booking.check_in` for booking **88**."
+    ask: "**Claim 4 - {{manager.first}} booked the farm stay.** Join `booking`, `property` and `person`: show `booking.id`, `property.name`, `person.name`, `booking.check_in` for booking **88**."
     ref: "SELECT booking.id, property.name, person.name, booking.check_in FROM booking INNER JOIN property ON booking.property_id = property.id INNER JOIN person ON booking.booked_by = person.id WHERE booking.id = 88;"
     grading: { expect_rows: 1 }
     hints:
@@ -64,7 +64,7 @@ beats:
   - id: S13.7
     type: task
     task_id: T13.c5
-    ask: "**Claim 5 — he changed the contract after taking her.** Show `user_name`, `new_value`, `ts` of `'WRITE'` entries in `txn_log` on `'contract_C12.missed_show_clause'` from transactions that **committed** (`txn_id IN (SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT')`)."
+    ask: "**Claim 5 - he changed the contract after taking her.** Show `user_name`, `new_value`, `ts` of `'WRITE'` entries in `txn_log` on `'contract_C12.missed_show_clause'` from transactions that **committed** (`txn_id IN (SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT')`)."
     ref: "SELECT user_name, new_value, ts FROM txn_log WHERE entry_type = 'WRITE' AND data_item = 'contract_C12.missed_show_clause' AND txn_id IN (SELECT txn_id FROM txn_log WHERE entry_type = 'COMMIT');"
     grading: { expect_rows: 1 }
     hints:
@@ -74,7 +74,7 @@ beats:
   - id: S13.8
     type: task
     task_id: T13.1
-    ask: "**Close the case.** For every person with `role = 'suspect'`: `name` and `status` — **'Cleared'** if their name is in the verified alibis (`SELECT person_name FROM alibis WHERE verified = 1`), else **'Charged'**. Sort by `status`."
+    ask: "**Close the case.** For every person with `role = 'suspect'`: `name` and `status` - **'Cleared'** if their name is in the verified alibis (`SELECT person_name FROM alibis WHERE verified = 1`), else **'Charged'**. Sort by `status`."
     ref: "SELECT people.name, CASE WHEN people.name IN (SELECT person_name FROM alibis WHERE verified = 1) THEN 'Cleared' ELSE 'Charged' END AS status FROM people WHERE role = 'suspect' ORDER BY status;"
     grading: { expect_rows: 5 }
     hints:
@@ -87,7 +87,7 @@ beats:
     clue_id: S13-C1
     requires_task: T13.1
     title: "Case closed"
-    body: "Your five claim queries and the final CASE: **{{manager}}** is charged — his SUV (claim 1), its round trip through the toll (claim 2), her watch held at RRO-17 (claim 3), his farm booking for two (claim 4), his committed contract change at 18:20 (claim 5). {{rival.first}}, {{fan.first}}, {{driver.first}} and {{organiser.first}}: **Cleared** — by data, not rumours."
+    body: "Your five claim queries and the final CASE: **{{manager}}** is charged - his SUV (claim 1), its round trip through the toll (claim 2), her watch held at RRO-17 (claim 3), his farm booking for two (claim 4), his committed contract change at 18:20 (claim 5). {{rival.first}}, {{fan.first}}, {{driver.first}} and {{organiser.first}}: **Cleared** - by data, not rumours."
 
   - id: S13.10
     type: scene

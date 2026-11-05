@@ -1,4 +1,4 @@
-# Session 9 — "The Case Board" (10:00 PM). Flow: docs/SESSION_PLAN.md › Session 9.
+# Session 9 - "The Case Board" (10:00 PM). Flow: docs/SESSION_PLAN.md › Session 9.
 # Table-structure tasks compare column names (any case), order, base type, PRIMARY KEY and FOREIGN KEYs.
 session: 9
 title: "The Case Board"
@@ -24,7 +24,7 @@ beats:
   - id: S9.1
     type: scene
     speaker: mentor
-    body: "Photos, red strings, sticky notes… Our board is a mess. Let's turn it into an **ER model** — then into real tables."
+    body: "Photos, red strings, sticky notes… Our board is a mess. Let's turn it into an **ER model** - then into real tables."
 
   - id: S9.2
     type: note
@@ -91,7 +91,7 @@ beats:
     type: activity
     kind: match
     rm_ref: { unit_id: 3ba93bc1-cb50-48e1-983b-354b6519609d, heading: "ER Model of e-commerce application" }
-    prompt: "Same pattern, different story — match each case relationship to its e-commerce twin."
+    prompt: "Same pattern, different story - match each case relationship to its e-commerce twin."
     pairs:
       - { left: "Person – smartwatch", right: "Customer – cart (1:1)" }
       - { left: "Farm stay – bookings", right: "Customer – addresses (1:N)" }
@@ -203,11 +203,11 @@ beats:
     task_id: T9.5
     rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Inserting data into the respective tables" }
     ask: |
-      Put the caretaker's message into the tables — **parents first**:
+      Put the caretaker's message into the tables - **parents first**:
       - `person`: `(2, '{{manager}}', 'Artist manager')`
       - `property`: `(1, '{{farm}}', '{{outskirts}}', 'Rural District')`
       - `booking`: `(88, 1, 2, '2026-12-12 18:45:00')`
-      - `booking_guest`: `(1, 88, 2)` and `(2, 88, NULL)` — the lady's name wasn't given
+      - `booking_guest`: `(1, 88, 2)` and `(2, 88, NULL)` - the lady's name wasn't given
     setup: [*person, *property, *booking, *guest]
     ref: "INSERT INTO person (id, name, role) VALUES (2, '{{manager}}', 'Artist manager'); INSERT INTO property (id, name, area, district) VALUES (1, '{{farm}}', '{{outskirts}}', 'Rural District'); INSERT INTO booking (id, property_id, booked_by, check_in) VALUES (88, 1, 2, '2026-12-12 18:45:00'); INSERT INTO booking_guest (id, booking_id, person_id) VALUES (1, 88, 2), (2, 88, NULL);"
     grading:
@@ -237,20 +237,20 @@ beats:
   - id: S9.19
     type: task
     task_id: T9.6
-    ask: "**1:N** — all bookings of `'{{farm}}'`: everything from `property` joined with `booking` on `property.id = booking.property_id`."
+    ask: "**1:N** - all bookings of `'{{farm}}'`: everything from `property` joined with `booking` on `property.id = booking.property_id`."
     setup: [*person, *property, *booking, *guest, *data]
     ref: "SELECT * FROM property JOIN booking ON property.id = booking.property_id WHERE property.name = '{{farm}}';"
     grading: { expect_rows: 2 }
     hints:
       - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "1. One-to-Many Relationships" } }
       - { tier: 2, skeleton: "SELECT * FROM property JOIN booking ON property.id = ____ WHERE property.name = '{{farm}}';" }
-    reply_on_pass: "Two bookings at the farm. One is old (November). The other is **88**: `booked_by` 2, `check_in` **2026-12-12 18:45:00** — tonight."
+    reply_on_pass: "Two bookings at the farm. One is old (November). The other is **88**: `booked_by` 2, `check_in` **2026-12-12 18:45:00** - tonight."
 
   - id: S9.20
     type: task
     task_id: T9.7
     minutes: 2
-    ask: "**1:1** — each person with their smartwatch: `person.name`, `smartwatch.model`, `smartwatch.esim_number` (join on `person.id = smartwatch.person_id`)."
+    ask: "**1:1** - each person with their smartwatch: `person.name`, `smartwatch.model`, `smartwatch.esim_number` (join on `person.id = smartwatch.person_id`)."
     setup: [*person, *people]
     ref: "SELECT person.name, smartwatch.model, smartwatch.esim_number FROM person JOIN smartwatch ON person.id = smartwatch.person_id;"
     grading: { expect_rows: 3 }
@@ -261,7 +261,7 @@ beats:
   - id: S9.21
     type: task
     task_id: T9.8
-    ask: "**M:N** — the registered guests of booking **88**: `person.name` from `booking_guest` joined with `person` on `booking_guest.person_id = person.id`."
+    ask: "**M:N** - the registered guests of booking **88**: `person.name` from `booking_guest` joined with `person` on `booking_guest.person_id = person.id`."
     setup: [*person, *property, *booking, *guest, *data]
     ref: "SELECT person.name FROM booking_guest JOIN person ON booking_guest.person_id = person.id WHERE booking_guest.booking_id = 88;"
     grading: { expect_rows: 1 }
@@ -269,7 +269,7 @@ beats:
       - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "3. Many-to-Many Relationships" } }
       - { tier: 2, skeleton: "SELECT person.name FROM booking_guest JOIN person ON booking_guest.person_id = person.id WHERE booking_guest.booking_id = ____;" }
     on_pass: { clue: S9-C1 }
-    reply_on_pass: "Two guests booked — one name came back. {{mentor.first}}: \"Remember this.\""
+    reply_on_pass: "Two guests booked - one name came back. {{mentor.first}}: \"Remember this.\""
 
   - id: S9.21b
     type: check
@@ -277,17 +277,17 @@ beats:
     rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "3. Many-to-Many Relationships" }
     prompt: "You inserted **two** `booking_guest` rows for booking 88, but the join returned **one** name. Why?"
     options:
-      - { text: "The second guest's `person_id` is NULL — no name was registered, so there is no `person` row to match", correct: true }
+      - { text: "The second guest's `person_id` is NULL - no name was registered, so there is no `person` row to match", correct: true }
       - { text: "The join only ever returns one row" }
       - { text: "The second row was deleted by ON DELETE CASCADE" }
-    explain: "`(2, 88, NULL)`: a guest with no `person_id`. JOIN keeps only rows that match on both sides, so the unnamed guest disappears. Two people checked in at 18:45 — we know the name of only one."
+    explain: "`(2, 88, NULL)`: a guest with no `person_id`. JOIN keeps only rows that match on both sides, so the unnamed guest disappears. Two people checked in at 18:45 - we know the name of only one."
 
   - id: S9.22
     type: clue
     clue_id: S9-C1
     requires_task: T9.8
     title: "Booking B-88"
-    body: "Your tables: {{farm}}, booking **88** — `booked_by` **{{manager}}**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+    body: "Your tables: {{farm}}, booking **88** - `booked_by` **{{manager}}**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
 
   - id: S9.23
     type: task
@@ -302,7 +302,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 61aa7338-30ff-4a95-9522-9cf70e88d742, heading: "Foreign Key" } }
       - { tier: 2, skeleton: "DELETE FROM property WHERE ____ = 2;" }
-    reply_on_pass: "Booking 90 vanished with it. That's cascade — powerful, so never test it on real evidence!"
+    reply_on_pass: "Booking 90 vanished with it. That's cascade - powerful, so never test it on real evidence!"
 
   - id: S9.24
     type: check
@@ -313,7 +313,7 @@ beats:
       - { text: "a junction table", correct: true }
       - { text: "a single foreign key column" }
       - { text: "a primary key" }
-    explain: "M:N needs its own table holding a foreign key to each side — like `booking_guest` or `cart_product`."
+    explain: "M:N needs its own table holding a foreign key to each side - like `booking_guest` or `cart_product`."
 
   - id: S9.25
     type: hook
@@ -340,7 +340,7 @@ units:
       speaker: mentor
       body: |
         Previously: our case board is now **entity types** (people, vehicles, bookings) and **relationships** between them.
-        The course does the same for an online shop — same pattern, different story.
+        The course does the same for an online shop - same pattern, different story.
     closer:
       speaker: mentor
       body: |
@@ -351,7 +351,7 @@ units:
     opener:
       speaker: mentor
       body: |
-        Previously: entities, attributes, relationships — our board is tidy, and it matches the course's e-commerce model.
+        Previously: entities, attributes, relationships - our board is tidy, and it matches the course's e-commerce model.
         Now each piece becomes a **table**, a **column** or a **foreign key**.
     closer:
       speaker: mentor
@@ -364,6 +364,6 @@ units:
       speaker: mentor
       body: |
         Previously: the case board is mapped to tables with primary and foreign keys.
-        Now we **create** them in SQL with constraints — and load the farm stay bookings.
-  - unit_id: 21b08636-88d8-4a75-9a69-8b45d3be7318   # RM #27 ER Model to Relational Database — same text as RM #29
+        Now we **create** them in SQL with constraints - and load the farm stay bookings.
+  - unit_id: 21b08636-88d8-4a75-9a69-8b45d3be7318   # RM #27 ER Model to Relational Database - same text as RM #29
     same_as: 7f4e3b64-3404-4efc-9b8a-52f3f883de51

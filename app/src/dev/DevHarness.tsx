@@ -1,4 +1,4 @@
-// DEV ONLY — a bare page to drive the engine in a real browser (worker + wasm + IndexedDB).
+// DEV ONLY - a bare page to drive the engine in a real browser (worker + wasm + IndexedDB).
 // Not the game UI (that's M4). Lets the team click through sessions and try SQL.
 import { useEffect, useState } from 'react';
 import { ContentLoader } from '../content/loader';
@@ -71,7 +71,7 @@ export function DevHarness() {
       {runner && b && (
         <section style={{ border: '1px solid #ccc', borderRadius: 8, padding: 12 }}>
           <div style={{ color: '#666' }}>S{runner.pack.session} · beat {runner.index + 1}/{runner.pack.beats.length} · {b.id} · {b.type}
-            {'kind' in b ? ` (${b.kind})` : ''} · clues: {runner.pinned.join(', ') || '—'}</div>
+            {'kind' in b ? ` (${b.kind})` : ''} · clues: {runner.pinned.join(', ') || ' - '}</div>
           <pre style={{ whiteSpace: 'pre-wrap' }}>
             {'body' in b ? b.body : 'ask' in b ? b.ask : 'prompt' in b ? b.prompt : ''}
           </pre>

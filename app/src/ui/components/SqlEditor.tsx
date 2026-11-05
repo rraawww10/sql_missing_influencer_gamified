@@ -7,7 +7,7 @@ import { sql, SQLite } from '@codemirror/lang-sql';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags as t } from '@lezer/highlight';
 
-// green-phosphor police terminal palette (v4 noir) — readable on the dark console
+// green-phosphor police terminal palette (v4 noir) - readable on the dark console
 const noirHighlight = HighlightStyle.define([
   { tag: t.keyword, color: '#ffc861', fontWeight: '700' },
   { tag: [t.string, t.special(t.string)], color: '#ff9eb0' },
@@ -74,7 +74,7 @@ export function SqlEditor({ initial, schema, onChange, onRun, handle }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // the table list loads after the editor is built — reconfigure rather than remount, so typed SQL survives
+  // the table list loads after the editor is built - reconfigure rather than remount, so typed SQL survives
   useEffect(() => {
     view.current?.dispatch({
       effects: lang.current.reconfigure(sql({ dialect: SQLite, schema: latest.current, upperCaseKeywords: true })),

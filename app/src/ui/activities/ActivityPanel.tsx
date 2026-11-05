@@ -58,7 +58,7 @@ export function ActivityPanel({ runner, beat, review = false, onChanged }: Props
         {!done && last && !last.correct && (
           <div className="feedback nope" key={last.attempts}>
             {total > 1 ? <>{right} of {total} right. </> : <>Not quite. </>}
-            Try again — {MAX_ACTIVITY_TRIES - last.attempts} {MAX_ACTIVITY_TRIES - last.attempts === 1 ? 'try' : 'tries'} left before we show the answer.
+            Try again - {MAX_ACTIVITY_TRIES - last.attempts} {MAX_ACTIVITY_TRIES - last.attempts === 1 ? 'try' : 'tries'} left before we show the answer.
           </div>
         )}
       </div>

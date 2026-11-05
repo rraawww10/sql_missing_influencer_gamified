@@ -24,7 +24,7 @@ export function SortInto({ beat, locked, parts, reveal, onSubmit }: WidgetProps<
       <button key={text} className={cls} disabled={locked} aria-pressed={picked === text}
         onClick={(e) => {
           // a placed pill sits inside its bucket, which is itself the drop target. With an item picked the
-          // whole box — pills included — means "drop it here", so let the click through to the bucket.
+          // whole box - pills included - means "drop it here", so let the click through to the bucket.
           // With nothing picked the pill means "take this one back", and the bucket's handler (which writes
           // the same state from a stale closure) must not run after it.
           if (shown[text]) {

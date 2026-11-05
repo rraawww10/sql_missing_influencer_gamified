@@ -14,6 +14,7 @@ import { episodeOf, episodeTitle, unitLabel } from '../episodes';
 import { KaalCard } from '../kaal/KaalCard';
 import { TEASE } from '../kaal/lines';
 import { SoundToggle } from '../components/SoundToggle';
+import { VoiceToggle } from '../components/VoiceToggle';
 
 interface Props { session: number; onStart(): void; onBack(): void; onBriefing?(): void; standalone?: boolean }
 
@@ -53,7 +54,7 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">SQL: The Missing Influencer</span>
-          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" />
+          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" /><VoiceToggle className="btn small ghost" />
           <button className="btn small ghost" onClick={onBack}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
         </nav>
 
@@ -74,7 +75,7 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
 
         <div style={{ margin: '18px 0' }}>
           <KaalCard mood={first ? 'whisper' : 'think'} line={first
-            ? `SI Ira Menon assigned me to you — I'm Inspector Kaal. ${TEASE[1]} Stay close, partner.`
+            ? `${TEASE[1]} Stay close, partner.`   /* he introduces himself once, on the Briefing */
             : resumable ? `Welcome back, partner. ${TEASE[session] ?? ''}` : (TEASE[session] ?? ep.teaser)} />
         </div>
 
@@ -106,7 +107,7 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
             {(resumable || done) && <ResetControl session={session} onDone={() => { setNotice('Progress reset. You can start fresh.'); check(); reload(); }} />}
             {first && onBriefing && <button className="btn ghost" onClick={onBriefing}>📋 New here? Read the briefing</button>}
           </div>
-          <p className="muted small" style={{ marginTop: 10 }}>💾 Stop any time — your place is saved on this device.</p>
+          <p className="muted small" style={{ marginTop: 10 }}>💾 Stop any time - your place is saved on this device.</p>
         </section>
 
         {(first || standalone) && (

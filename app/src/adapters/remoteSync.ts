@@ -6,7 +6,7 @@
 //                        retried; the server ignores an event_id it already has, so a resend never double-counts.
 //   startHeartbeat       every 30 s of ACTIVE time (tab visible + the learner touched, typed or scrolled in the last 60 s)
 //                        queues a 'heartbeat' with the seconds played and the beat the learner was on. Heartbeats only go
-//                        to the server — they are not part of the local event log, so points and progress are unchanged.
+//                        to the server - they are not part of the local event log, so points and progress are unchanged.
 import type { ProgressEvent, ProgressStore } from '../ports/progress';
 
 export interface RemoteEvent extends Omit<ProgressEvent, 'verb'> { verb: ProgressEvent['verb'] | 'heartbeat' }

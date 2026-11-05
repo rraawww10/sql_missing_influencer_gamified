@@ -1,8 +1,8 @@
 // A SQL task on the stage, laid out like a small IDE: the brief on top, the console (editor → run → verdict → result)
 // on the left, and the case database (every table, its rows and schema) in a drawer on the right.
-// "Reset DB" puts the tables back to the task's starting state (every run starts from there anyway — the engine
-// grades on a fresh copy — so this clears the console and reloads the drawer). Hints open in a side sheet.
-// In review mode (a task already solved) the console is a free practice run — nothing is graded.
+// "Reset DB" puts the tables back to the task's starting state (every run starts from there anyway - the engine
+// grades on a fresh copy - so this clears the console and reloads the drawer). Hints open in a side sheet.
+// In review mode (a task already solved) the console is a free practice run - nothing is graded.
 import { useEffect, useRef, useState } from 'react';
 import type { TaskBeat } from '../../content/types';
 import type { QueryResult } from '../../engine/sql/engine';
@@ -72,7 +72,7 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
         const r = await engine.runScript(runner.pack.snapshot, [...(beat.setup ?? []), sql].join(';\n'));
         setPractice({ result: r.result as QueryResult | undefined, error: r.error });
       } else {
-        kaal('running', { silent: true });
+        kaal('running', { silent: true, mute: true }); sfx('run');
         const o = await runner.submitSql(sql);
         setOut(o);
         const after = runner.beatState(beat.id);
@@ -148,7 +148,7 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
           </div>
 
           <div className="out" aria-live="polite" ref={outBox}>
-            {resetNote && <div className="verdict reset"><span className="badge">↺</span><div><b>Database reset.</b> Every table is back to this task's starting state. Every run starts from here — a wrong UPDATE or DELETE never sticks.</div></div>}
+            {resetNote && <div className="verdict reset"><span className="badge">↺</span><div><b>Database reset.</b> Every table is back to this task's starting state. Every run starts from here - a wrong UPDATE or DELETE never sticks.</div></div>}
             {review && practice && (practice.error
               ? <div className="verdict error"><span className="badge">!</span><div>SQLite says: <code>{practice.error}</code><p className="small" style={{ margin: '4px 0 0' }}>{friendlyError(practice.error)}</p></div></div>
               : null)}
@@ -158,7 +158,7 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
               <div className="verdict pass" key={`p${st.attempts}`}><Confetti count={30} /><span className="match-found" aria-hidden="true">MATCH FOUND</span><span className="stampmark" aria-hidden="true">Verified</span><span className="badge">✓</span>
                 <div>
                   <b>✓ Correct.</b> {out?.replyOnPass && <Markdown source={out.replyOnPass} />}
-                  {out?.clueUnlocked && <p className="small" style={{ margin: '6px 0 0' }}>🔎 New evidence unlocked — it’s on the next step.</p>}
+                  {out?.clueUnlocked && <p className="small" style={{ margin: '6px 0 0' }}>🔎 New evidence unlocked - it’s on the next step.</p>}
                   {onContinue && <div className="row" style={{ marginTop: 10 }}><button className="btn primary small" onClick={onContinue}>Continue →</button></div>}
                 </div>
               </div>
@@ -177,7 +177,7 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
               </div>
             )}
             {out && out.notTaughtYet.length > 0 && (
-              <p className="muted small" style={{ margin: 0 }}>Nice — but <b>{out.notTaughtYet.map((f) => f.id).join(', ')}</b> comes later in the course. Try it with what we've learnt so far.</p>
+              <p className="muted small" style={{ margin: 0 }}>Nice - but <b>{out.notTaughtYet.map((f) => f.id).join(', ')}</b> comes later in the course. Try it with what we've learnt so far.</p>
             )}
             {result && <ResultTable result={result} caption={beat.grading.inspect ? 'Table after your query' : 'Result'} onExpand={() => setSheet('result')} />}
             {review && practice && !practice.error && !practice.result && <p className="muted small" style={{ margin: 0 }}>The query ran. It returned no table.</p>}
@@ -189,14 +189,14 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
 
       {sheet === 'tables' && <Sheet title="Case database" wide onClose={() => setSheet(null)}>{drawer(true)}</Sheet>}
       {sheet === 'result' && result && (
-        <Sheet title="Result — full view" wide onClose={() => setSheet(null)}>
+        <Sheet title="Result - full view" wide onClose={() => setSheet(null)}>
           <ResultTable result={result} caption={beat.grading.inspect ? 'Table after your query' : 'Result'} limit={500} />
         </Sheet>
       )}
 
       {hintsOpen && (
         <Sheet title="Kaal’s envelopes" onClose={() => { setHintsOpen(false); setConfirmAnswer(false); }}>
-          <div className="kaal-hint-head"><Kaal mood={st.hintTier >= 2 ? 'whisper' : 'think'} size={54} /><span>“Three envelopes, partner. Open them in order. Each one helps more — and costs a few points.”</span></div>
+          <div className="kaal-hint-head"><Kaal mood={st.hintTier >= 2 ? 'whisper' : 'think'} size={54} /><span>“Three envelopes, partner. Open them in order. Each one helps more - and costs a few points.”</span></div>
           <div className="envelopes">
             {([1, 2, 3] as const).map((tier) => {
               const opened = hints.find((h) => h.tier === tier) ?? (st.hintTier >= tier ? { tier } as HintContent : undefined);

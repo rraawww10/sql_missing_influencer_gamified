@@ -1,4 +1,4 @@
-# Session 10 — "Connect the Dots" (10:30 PM). Flow: docs/SESSION_PLAN.md › Session 10.
+# Session 10 - "Connect the Dots" (10:30 PM). Flow: docs/SESSION_PLAN.md › Session 10.
 session: 10
 title: "Connect the Dots"
 story_clock: "2026-12-12 22:30:00"
@@ -14,7 +14,7 @@ beats:
     speaker: analyst
     body: |
       New, tidy tables: `people`, `upi_accounts`, `company`, `rehearsal_attendance`, `event_schedule`, `insurance_claims`
-      (and `vehicles` now has a `company_id`). Each table holds one kind of thing — so we must **join** them.
+      (and `vehicles` now has a `company_id`). Each table holds one kind of thing - so we must **join** them.
 
   - id: S10.2
     type: note
@@ -33,7 +33,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "Natural JOIN" } }
       - { tier: 2, skeleton: "SELECT people.name, upi_accounts.upi_id FROM people ____ upi_accounts;" }
-    reply_on_pass: "Note `{{star.first|lower}}.watch@oknavyug` — the handle her watch paid from."
+    reply_on_pass: "Note `{{star.first|lower}}.watch@oknavyug` - the handle her watch paid from."
 
   - id: S10.4
     type: note
@@ -59,7 +59,7 @@ beats:
         sql: "SELECT people.name, rehearsal_attendance.check_in, rehearsal_attendance.check_out FROM people NATURAL JOIN rehearsal_attendance;"
         match: result
         reply: |
-          📱 *"{{rival.first}} skipped rehearsal!"* — no: both tables have `person_id` **and** `venue`, and `NATURAL JOIN` matched on **both**.
+          📱 *"{{rival.first}} skipped rehearsal!"* - no: both tables have `person_id` **and** `venue`, and `NATURAL JOIN` matched on **both**.
           Her usual venue is the studio, so she dropped out. Use `INNER JOIN … ON person_id` to say exactly what to match.
     reply_on_pass: "{{rival}} was on stage **16:00–21:30**, with 3,000 crew around. Cleared."
 
@@ -74,7 +74,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 4d96750f-6381-45d1-b3e5-a0cd05387956, heading: "INNER JOIN" } }
       - { tier: 2, skeleton: "SELECT insurance_claims.claim_id, insurance_claims.filed_at, insurance_claims.auto_generated FROM insurance_claims INNER JOIN event_schedule ON insurance_claims.filed_at ____ event_schedule.artist_checkin_deadline WHERE insurance_claims.event_id = event_schedule.event_id;" }
-    reply_on_pass: "Claim C-501 at 19:00:01 — `auto_generated = 1`. The insurance system files automatically when the artist misses check-in. {{organiser.first}} didn't even know. Cleared."
+    reply_on_pass: "Claim C-501 at 19:00:01 - `auto_generated = 1`. The insurance system files automatically when the artist misses check-in. {{organiser.first}} didn't even know. Cleared."
 
   - id: S10.7
     type: note
@@ -101,7 +101,7 @@ beats:
     type: scene
     speaker: mentor
     body: |
-      Back to the SUV. In Episode 3, `vehicles` said its owner is **{{talent_company}}** — a company, not a person.
+      Back to the SUV. In Episode 3, `vehicles` said its owner is **{{talent_company}}** - a company, not a person.
       Tonight {{analyst.first}} loaded `company`, and every company has an `owner_person_id`. Two joins and we have a name.
 
   - id: S10.9
@@ -134,7 +134,7 @@ beats:
     clue_id: S10-C1
     requires_task: T10.5b
     title: "The SUV is the manager's"
-    body: "Your two joins: grey SUV **{{suv}}** (service gate, 18:12 — S3-C1) → company **{{talent_company}}** → owner person 2 = **{{manager}}**. The car she left in is her manager's."
+    body: "Your two joins: grey SUV **{{suv}}** (service gate, 18:12 - S3-C1) → company **{{talent_company}}** → owner person 2 = **{{manager}}**. The car she left in is her manager's."
 
   - id: S10.12
     type: check
@@ -145,7 +145,7 @@ beats:
       - { text: "NULL", correct: true }
       - { text: "0" }
       - { text: "it is removed" }
-    explain: "LEFT JOIN keeps every left row; missing right values are NULL — that's how `IS NULL` finds rows with no match."
+    explain: "LEFT JOIN keeps every left row; missing right values are NULL - that's how `IS NULL` finds rows with no match."
 
   - id: S10.13
     type: hook

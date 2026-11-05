@@ -58,31 +58,31 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "session": 3,
       "clue_id": "S3-C1",
       "title": "Grey SUV at the service gate",
-      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
     },
     {
       "session": 4,
       "clue_id": "S4-C1",
       "title": "The cancelled cab",
-      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium - status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
     },
     {
       "session": 4,
       "clue_id": "S4-C2",
       "title": "A grey SUV, someone she knew",
-      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) - he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
     },
     {
       "session": 5,
       "clue_id": "S5-C1",
       "title": "A ₹1 message",
-      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay - and the capitals look deliberate. A message, not money."
     },
     {
       "session": 5,
@@ -94,25 +94,25 @@
       "session": 5,
       "clue_id": "S5-C2",
       "title": "₹45,000 to a farm stay",
-      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** - note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
     },
     {
       "session": 6,
       "clue_id": "S6-C1",
       "title": "The outskirts tower",
-      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** - **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
     },
     {
       "session": 6,
       "clue_id": "S6-C2",
       "title": "The manager was there too",
-      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** - the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
     },
     {
       "session": 7,
       "clue_id": "S7-C1",
       "title": "Green Acres",
-      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** - the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
     },
     {
       "session": 8,
@@ -124,25 +124,25 @@
       "session": 9,
       "clue_id": "S9-C1",
       "title": "Booking B-88",
-      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+      "body": "Your tables: Green Acres Farm Stays, booking **88** - `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
     },
     {
       "session": 10,
       "clue_id": "S10-C1",
       "title": "The SUV is the manager's",
-      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 — S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
+      "body": "Your two joins: grey SUV **26 BH 4471 EX** (service gate, 18:12 - S3-C1) → company **DA Talent Management Pvt Ltd** → owner person 2 = **Dev Arora**. The car she left in is her manager's."
     },
     {
       "session": 11,
       "clue_id": "S11-C1",
       "title": "Out to the outskirts and back",
-      "body": "Your three-table join: the SUV crossed **Ring Road Toll Plaza** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+      "body": "Your three-table join: the SUV crossed **Ring Road Toll Plaza** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts - the direction of tower RRO-17 (S6-C1)."
     },
     {
       "session": 11,
       "clue_id": "S11-C2",
       "title": "Same tower, same minute",
-      "body": "Your self join: Tara's watch and Dev's phone pinged **RRO-17** at the **same six minutes** — 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
+      "body": "Your self join: Tara's watch and Dev's phone pinged **RRO-17** at the **same six minutes** - 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
     }
   ],
   "cast": {
@@ -158,7 +158,7 @@
       "id": "U36.open",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Previously: the label sent its system data — `contracts`, `label_payments` and a change log `txn_log`. We saved **views** of the parts we need.\nNow we ask questions inside questions — **subqueries** — to find who edited the contract.\n"
+      "body": "Previously: the label sent its system data - `contracts`, `label_payments` and a change log `txn_log`. We saved **views** of the parts we need.\nNow we ask questions inside questions - **subqueries** - to find who edited the contract.\n"
     },
     {
       "id": "S12.8",
@@ -189,7 +189,7 @@
           "heading": "Use a Subquery"
         }
       ],
-      "body": "A **subquery** is a query inside another query, in brackets. It answers a question the outer query needs — like *what is the average?*"
+      "body": "A **subquery** is a query inside another query, in brackets. It answers a question the outer query needs - like *what is the average?*"
     },
     {
       "id": "S12.9",
@@ -234,14 +234,14 @@
           "match": {
             "error_regex": "row value misused"
           },
-          "reply": "A subquery used in a comparison must return **exactly one value** — one column, one row.",
+          "reply": "A subquery used in a comparison must return **exactly one value** - one column, one row.",
           "rm_ref": {
             "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
             "heading": "Mistake in WHERE Clause"
           }
         }
       ],
-      "reply_on_pass": "Nine payments above average — and one towers over the rest: **Skyline Records → Dev Arora, ₹2,00,000** (the *advance* from S5-C3). Every other payment here is a normal label fee."
+      "reply_on_pass": "Nine payments above average - and one towers over the rest: **Skyline Records → Dev Arora, ₹2,00,000** (the *advance* from S5-C3). Every other payment here is a normal label fee."
     },
     {
       "id": "S12.9b",
@@ -288,7 +288,7 @@
       "clue_id": "S12-C1",
       "requires_task": "T12.5b",
       "title": "A rival label's advance",
-      "body": "Your queries: Skyline Records paid Dev **₹2,00,000** (*advance*, 11 Dec) — the only label payment far above average. And Tara's contract row says *missed-show clause*: **Applicable**, *manager bonus*: **₹25,00,000**. If she misses the show, he is paid twice."
+      "body": "Your queries: Skyline Records paid Dev **₹2,00,000** (*advance*, 11 Dec) - the only label payment far above average. And Tara's contract row says *missed-show clause*: **Applicable**, *manager bonus*: **₹25,00,000**. If she misses the show, he is paid twice."
     },
     {
       "id": "S12.11",
@@ -396,7 +396,7 @@
         "unit_id": "85bae7a3-1e61-42d4-bbb0-08e9fc9fe646",
         "heading": "Question 1 – Order Value Tags"
       },
-      "ask": "Tag every payment: show `payment_id` and `tag` — **'Above Average'** if `amount` is above the average, else **'Below Average'**.",
+      "ask": "Tag every payment: show `payment_id` and `tag` - **'Above Average'** if `amount` is above the average, else **'Below Average'**.",
       "grading": {
         "expect_rows": 17,
         "expected_hash": "sha256:ba3796ff17fa2688132496abadb0dd81fae5f652a8c4826048548c52f65abafc"
@@ -477,7 +477,7 @@
           "heading": "Summary"
         }
       ],
-      "body": "A subquery in `FROM` acts like a temporary table — give it a name with `AS` and query it."
+      "body": "A subquery in `FROM` acts like a temporary table - give it a name with `AS` and query it."
     },
     {
       "id": "S12.16",
@@ -505,7 +505,7 @@
           "solution_ref": "solutions/s12.json#T12.8"
         }
       ],
-      "reply_on_pass": "Dev's average jumps to ₹58,000 a month — because of one ₹2 lakh payment in December.",
+      "reply_on_pass": "Dev's average jumps to ₹58,000 a month - because of one ₹2 lakh payment in December.",
       "grading": {
         "expected_hash": "sha256:7167343cc5347a44fa73f25ed4845177aded610cfcc71075d93a6044233dc84a"
       },

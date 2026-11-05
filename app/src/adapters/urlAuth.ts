@@ -1,7 +1,7 @@
 // UrlAuth: the embedding platform names the learner with ?user_id=… on the iframe URL (any opaque id).
 // Every unit site that gets the same id shares that learner's progress on this device; without the
 // parameter the inner provider (GuestAuth: one anonymous id per device) is used.
-// The id is never sent anywhere — it only keys local storage and is reported back inside progress events
+// The id is never sent anywhere - it only keys local storage and is reported back inside progress events
 // (user_id) so the platform can match them.
 import type { AuthProvider, GameUser } from '../ports/auth';
 

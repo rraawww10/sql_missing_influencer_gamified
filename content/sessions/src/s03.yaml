@@ -1,4 +1,4 @@
-# Session 3 — "Hotel Gate Log" (7:00 PM). Flow: docs/SESSION_PLAN.md › Session 3.
+# Session 3 - "Hotel Gate Log" (7:00 PM). Flow: docs/SESSION_PLAN.md › Session 3.
 # Build: node pipeline/build_sessions.mjs --only 3
 session: 3
 title: "Hotel Gate Log"
@@ -16,8 +16,8 @@ beats:
     type: scene
     speaker: mentor
     body: |
-      The gate log is here: `gate_log` has every entry and exit at the hotel's three gates —
-      **MAIN**, **SERVICE** and **STAFF** — since noon.
+      The gate log is here: `gate_log` has every entry and exit at the hotel's three gates - 
+      **MAIN**, **SERVICE** and **STAFF** - since noon.
       Each row has the gate, direction (IN/OUT), time, vehicle number, vehicle colour, and sometimes a name the guard wrote down.
 
   - id: S3.2
@@ -107,7 +107,7 @@ beats:
         rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" }
         sql: "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH';"
         match: result
-        reply: "No rows — without `%`, LIKE looks for the **exact** text '26 BH'. Add `%` after it to mean 'starts with'."
+        reply: "No rows - without `%`, LIKE looks for the **exact** text '26 BH'. Add `%` after it to mean 'starts with'."
 
   - id: S3.9
     type: task
@@ -139,7 +139,7 @@ beats:
         rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" }
         sql: "SELECT * FROM gate_log WHERE vehicle_no LIKE '26 BH 44% E%';"
         match: result
-        reply: "Too wide — `%` allowed **{{suv_near_miss}}** in too. We know exactly **one** letter is missing and the number is 4471. Use `_` for one character."
+        reply: "Too wide - `%` allowed **{{suv_near_miss}}** in too. We know exactly **one** letter is missing and the number is 4471. Use `_` for one character."
     reply_on_pass: "Two rows, same grey SUV: it **left** by the service gate at **18:12:05**… and came **back** at **19:52**."
 
   - id: S3.12
@@ -152,7 +152,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86, heading: "Common Patterns" } }
       - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE person_name LIKE '%____%';" }
-    reply_on_pass: "**{{manager}}** — {{star.first}}'s manager — was driving that SUV when it came back at 19:52. {{mentor.first}}: \"He told us he never left the lobby.\""
+    reply_on_pass: "**{{manager}}** - {{star.first}}'s manager - was driving that SUV when it came back at 19:52. {{mentor.first}}: \"He told us he never left the lobby.\""
 
   - id: S3.13
     type: note
@@ -189,7 +189,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "AND, OR, NOT" } }
       - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE gate = 'SERVICE' ____ gate = 'STAFF';" }
-    reply_on_pass: "22 rows — the same as `gate <> 'MAIN'`. Two different queries, one answer."
+    reply_on_pass: "22 rows - the same as `gate <> 'MAIN'`. Two different queries, one answer."
 
   - id: S3.16
     type: task
@@ -201,7 +201,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "AND, OR, NOT" } }
       - { tier: 2, skeleton: "SELECT * FROM gate_log WHERE ____ vehicle_no LIKE 'HTL%';" }
-    reply_on_pass: "180 rows. Notice: people **on foot** (no vehicle number) are not in this list either — an empty value is neither 'HTL…' nor 'not HTL…'."
+    reply_on_pass: "180 rows. Notice: people **on foot** (no vehicle number) are not in this list either - an empty value is neither 'HTL…' nor 'not HTL…'."
 
   - id: S3.17
     type: note
@@ -230,8 +230,8 @@ beats:
         sql: "SELECT * FROM gate_log WHERE vehicle_colour = 'Grey' AND gate = 'SERVICE' OR gate = 'STAFF';"
         match: result
         reply: |
-          📱 Comments explode: **#FanDidIt** — your result shows the white fan-club van at the staff gate!
-          {{mentor.first}}: "Careful. **AND runs before OR.** Your query means *(grey AND service) OR staff* — it brought in **every** staff-gate entry, grey or not. That van is white. Use parentheses."
+          📱 Comments explode: **#FanDidIt** - your result shows the white fan-club van at the staff gate!
+          {{mentor.first}}: "Careful. **AND runs before OR.** Your query means *(grey AND service) OR staff* - it brought in **every** staff-gate entry, grey or not. That van is white. Use parentheses."
     on_pass: { clue: S3-C1 }
     reply_on_pass: "4 rows. Read the `ts`, `direction` and `person_name` columns of the two SUV rows before you continue."
 
@@ -241,17 +241,17 @@ beats:
     rm_ref: { unit_id: efa7c57d-2825-4a62-b0d9-a0a4c9c769d4, heading: "Precedence" }
     prompt: "Your 4 rows: two are a laundry van in the afternoon. What do the other two rows say?"
     options:
-      - { text: "Grey SUV {{suv}} went OUT by the service gate at 18:12 and came back IN at 19:52 — with {{manager}} noted at the wheel", correct: true }
+      - { text: "Grey SUV {{suv}} went OUT by the service gate at 18:12 and came back IN at 19:52 - with {{manager}} noted at the wheel", correct: true }
       - { text: "The white fan-club van left by the staff gate at 17:40" }
       - { text: "The SUV only entered the hotel once, at 19:52" }
-    explain: "Row 160: SERVICE · OUT · 18:12:05 · {{suv}}. Row 197: SERVICE · IN · 19:52:10 · {{suv}} · person_name **{{manager}}**. The fan van only appears if you get the precedence wrong — it's white."
+    explain: "Row 160: SERVICE · OUT · 18:12:05 · {{suv}}. Row 197: SERVICE · IN · 19:52:10 · {{suv}} · person_name **{{manager}}**. The fan van only appears if you get the precedence wrong - it's white."
 
   - id: S3.19
     type: clue
     clue_id: S3-C1
     requires_task: T3.8
     title: "Grey SUV at the service gate"
-    body: "Your gate-log query: grey SUV **{{suv}}** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **{{manager}}**."
+    body: "Your gate-log query: grey SUV **{{suv}}** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **{{manager}}**."
 
   - id: S3.20
     type: task
@@ -263,7 +263,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 5a12e93b-c3a5-4204-b31e-de0051a406bd, heading: "Comparison Operators" } }
       - { tier: 2, skeleton: "SELECT * FROM vehicles WHERE vehicle_no = '____';" }
-    reply_on_pass: "Owner: **{{talent_company}}**. {{mentor.first}}: \"Never heard of it. Note it down — we'll find out who owns that company.\""
+    reply_on_pass: "Owner: **{{talent_company}}**. {{mentor.first}}: \"Never heard of it. Note it down - we'll find out who owns that company.\""
 
   - id: S3.21
     type: check
@@ -296,7 +296,7 @@ units:
     closer:
       speaker: mentor
       body: |
-        Entries at the wrong hours found. The guard remembers a grey SUV — but only part of the number plate.
+        Entries at the wrong hours found. The guard remembers a grey SUV - but only part of the number plate.
   - unit_id: e0bdc576-751c-434a-a2f0-ff4bb97d2f86   # RM #11 String Operations
     from: S3.5
     to: S3.12
@@ -304,7 +304,7 @@ units:
       speaker: mentor
       body: |
         Previously: the hotel gate log has 300 entries. We filtered them by time and found vehicles leaving around 6 PM.
-        Now the guard remembers a **grey SUV** — but only part of its number plate. We search by pattern.
+        Now the guard remembers a **grey SUV** - but only part of its number plate. We search by pattern.
     closer:
       speaker: mentor
       body: |
@@ -316,4 +316,4 @@ units:
       speaker: mentor
       body: |
         Previously: the guard's grey SUV is **{{suv}}**. We found it in the gate log by matching the plate pattern.
-        Now we combine several conditions in one query: colour, gate, time — all at once.
+        Now we combine several conditions in one query: colour, gate, time - all at once.

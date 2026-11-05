@@ -1,4 +1,4 @@
-// 🔊 / 🔇 — the student decides. Remembered on this device (sound.ts).
+// 🔊 / 🔇 - the student decides. Remembered on this device (sound.ts).
 import { useEffect, useState } from 'react';
 import { onSoundChange, setSound, soundOn } from '../sound';
 

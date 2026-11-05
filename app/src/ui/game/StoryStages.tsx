@@ -9,6 +9,7 @@ import { SceneArt } from '../art/SceneArt';
 import { Sheet } from '../components/Sheet';
 import { CourseNote } from '../components/CourseNote';
 import { Confetti } from '../components/Confetti';
+import { sfx } from '../sound';
 
 type SceneBeat = Extract<Beat, { type: 'scene' | 'hook' }>;
 
@@ -44,10 +45,12 @@ export function SceneStage({ runner, beat, index }: { runner: SessionRunner; bea
   const s = speakerOf(beat.speaker, runner.pack.cast);
   const [typing, setTyping] = useState(false);
   useEffect(() => {
+    if (s.key === 'system') sfx('notify');
     if (s.key === 'system' || s.key === 'narrator' || reducedMotion()) { setTyping(false); return; }
     setTyping(true);
+    const blips = [0, 160, 320, 480].map((ms) => setTimeout(() => sfx('typing'), ms));
     const t = setTimeout(() => setTyping(false), 650);
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); blips.forEach(clearTimeout); };
   }, [beat.id, s.key]);
   return (
     <div className="scene">
@@ -77,7 +80,7 @@ export function NoteStage({ beat }: { beat: Extract<Beat, { type: 'note' }> }) {
         <Markdown source={beat.body} />
         <footer className="lesson-foot">
           <button className="btn" onClick={() => setOpen(true)}>📚 Read the full course note</button>
-          <span className="muted small">The exact section of the course this note comes from — same words, more examples.</span>
+          <span className="muted small">The exact section of the course this note comes from - same words, more examples.</span>
         </footer>
       </article>
       {open && (

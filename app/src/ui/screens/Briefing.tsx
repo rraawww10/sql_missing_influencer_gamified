@@ -9,6 +9,7 @@ import { useServices } from '../services';
 import { storyTime } from '../speakers';
 import { KaalCard } from '../kaal/KaalCard';
 import { SoundToggle } from '../components/SoundToggle';
+import { VoiceToggle } from '../components/VoiceToggle';
 import { SceneArt } from '../art/SceneArt';
 import { EPISODES, EPISODE_COUNT } from '../episodes';
 import { isEmbedded, postToParent } from '../embed';
@@ -17,17 +18,17 @@ import { themeVars } from '../theme';
 interface Props { onStart?(): void; onBack?(): void; standalone?: boolean }
 
 const LOOP = [
-  { ico: '💬', title: 'Read the story', text: 'Chats, notifications and calls from the case — one step at a time.' },
+  { ico: '💬', title: 'Read the story', text: 'Chats, notifications and calls from the case - one step at a time.' },
   { ico: '📖', title: 'Learn a Case Note', text: 'One idea from the course, explained in the words of the case.' },
   { ico: '💻', title: 'Run SQL', text: 'Write a query on the real case database. Wrong query? You get a wrong lead, not a red X.' },
-  { ico: '📌', title: 'Pin the evidence', text: 'Every answer becomes a clue on your Evidence Board — with the query that proved it.' },
+  { ico: '📌', title: 'Pin the evidence', text: 'Every answer becomes a clue on your Evidence Board - with the query that proved it.' },
 ];
 
 const TOOLS = [
   { ico: '🧩', title: 'Activities', text: 'Sort, match, order and spot-the-cell puzzles between the SQL tasks.' },
   { ico: '❓', title: 'Quick checks', text: 'Ira asks one question. The explanation is the lesson, right or wrong.' },
   { ico: '💡', title: 'Hints, 3 levels', text: 'A Case Note, a fill-in-the-blanks skeleton, then the full answer. Hints cost a few points, never the task.' },
-  { ico: '⚠️', title: 'Traps', text: 'Common mistakes from the course are built in. A wrong query gives a wrong lead — fixing it is the lesson.' },
+  { ico: '⚠️', title: 'Traps', text: 'Common mistakes from the course are built in. A wrong query gives a wrong lead - fixing it is the lesson.' },
   { ico: '🔎', title: 'Evidence Board', text: 'A cork board of every clue you proved, across all episodes.' },
   { ico: '💾', title: 'Stop any time', text: 'Progress saves on this device. Come back later and continue from the same step.' },
 ];
@@ -73,7 +74,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">Police Data Cell · Case briefing</span>
-          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" />{onBack && <button className="btn small ghost" onClick={onBack}>← Case map</button>}</span>
+          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" /><VoiceToggle className="btn small ghost" />{onBack && <button className="btn small ghost" onClick={onBack}>← Case map</button>}</span>
         </nav>
 
         <section className="brief-hero" aria-label="The case">
@@ -101,7 +102,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
 
         <section className="section" aria-label="Your role">
           <h2>You are the new intern at the City Police Data Cell.</h2>
-          <p className="sub">Your mentor is <b>SI {mentor}</b>. There is no CCTV and no phone signal. There is data — and every clue tonight comes from a query you write.
+          <p className="sub">Your mentor is <b>SI {mentor}</b>. There is no CCTV and no phone signal. There is data - and every clue tonight comes from a query you write.
             {total > 0 && <> The whole case takes about <b>{Math.round(total / 60)} hours</b> of play, in episodes of 20–55 minutes. Stop any time.</>}</p>
           <div className="loop">
             {LOOP.map((s, i) => <div key={s.title} className="how rise" style={{ '--i': i } as React.CSSProperties}><div className="ico">{s.ico}</div><b>{s.title}</b><p>{s.text}</p></div>)}
@@ -110,12 +111,12 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
 
         <section className="section" aria-label="Your partner">
           <h2>Your partner tonight</h2>
-          <KaalCard size={110} mood="whisper" line={`SI ${mentor} sent me. Name's Kaal — Inspector Kaal. I'll be in the corner of your screen the whole night. Stuck? Ask me for an envelope. Right? I'll know. Wrong? I'll tell you why. Let's find ${star}.`} />
+          <KaalCard size={110} mood="whisper" line={`SI ${mentor} sent me. Name's Kaal - Inspector Kaal. I'll be in the corner of your screen the whole night. Stuck? Ask me for an envelope. Right? I'll know. Wrong? I'll tell you why. Let's find ${star}.`} />
         </section>
 
         <section className="section" aria-label="Tonight's timeline">
           <h2>Tonight, 6 PM → midnight</h2>
-          <p className="sub">Every episode is named after what happens in it. The clock is story time only — there is no real timer.</p>
+          <p className="sub">Every episode is named after what happens in it. The clock is story time only - there is no real timer.</p>
           <ol className="ep-list">
             {EPISODES.map((e, i) => (
               <li key={e.n} className={`ep-row rise ${i === 0 ? 'first' : ''}`} style={{ '--i': i } as React.CSSProperties}>
@@ -175,7 +176,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
           <h2>Ready, intern?</h2>
           <p>{standalone
             ? (embedded
-                ? (ready ? `Briefing done. Open the first episode, "${EPISODES[0].title}", from your course to begin.` : `Next in your course: the first episode, "${EPISODES[0].title}" — ${storyTime(1)}.`)
+                ? (ready ? `Briefing done. Open the first episode, "${EPISODES[0].title}", from your course to begin.` : `Next in your course: the first episode, "${EPISODES[0].title}" - ${storyTime(1)}.`)
                 : `The first episode, "${EPISODES[0].title}", starts at ${storyTime(1)}.`)
             : `The first episode, "${EPISODES[0].title}", starts at ${storyTime(1)}.`}</p>
           {standalone

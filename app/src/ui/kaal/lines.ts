@@ -1,5 +1,6 @@
-// What Inspector Kaal says. Kaal is the learner's partner on the case — a quiet, sharp detective SI Ira Menon
-// assigned to "look after the new intern". He never gives away an answer (the hints do that); he reacts, nudges and teases.
+// What Inspector Kaal says. Kaal is the learner's partner on the case - a quiet, sharp detective SI Ira Menon
+// assigned to "look after the new intern". He never gives away an answer (the hints do that); he reacts, cheers, nudges and teases - 
+// lively and warm, with a little Hinglish ("Shabash!", "Arre", "Chalo") because he's spoken aloud with an Indian voice (voice.ts).
 // Lines live here, in the UI layer, so the episode YAML (and the build's content rules) are untouched.
 // {name} = the mentor's first name, {who} = the speaker. Keep them short: one breath, simple English.
 
@@ -18,35 +19,36 @@ export const MOOD: Record<KaalEvent, KaalMood> = {
 
 export const LINES: Record<KaalEvent, string[]> = {
   intro: [
-    'Kaal. Ira asked me to keep an eye on you. Data never lies, partner — people do.',
-    'New intern, huh? Stick close. Tonight the database is our only witness.',
+    // no self-introduction here: Kaal introduces himself once, on the Briefing
+    'Chalo, partner! Rule number one: data never lies. People? Always.',
+    'Here we go, partner! Tonight the database is our only witness. Let’s make it talk!',
   ],
-  scene: ['Listen carefully. Somebody always says one word too many.', 'Note who said that. It may matter later.', 'Hmm. Keep that in mind.', 'Interesting…'],
-  hook: ['Something’s coming. I can feel it.', 'The night isn’t done with us yet.', 'Stay sharp. Next part gets interesting.'],
-  note: ['Read this one twice. It’s the tool you’ll need in a minute.', 'Every good detective knows their tools. This is one.', 'Learn this and the next query is easy.'],
-  task: ['Your turn, partner. Ask the database.', 'The answer is in those tables. Go get it.', 'Write the query. I’ll watch your back.', 'Check the tables first, then type.'],
+  scene: ['Ooh, listen to that. Somebody always says one word too many.', 'Note that down, partner. It may matter later!', 'Hmm hmm. Interesting… very interesting.', 'Did you catch that? I did.'],
+  hook: ['Uh-oh. Something big is coming. I can smell it!', 'The night isn’t done with us yet, partner!', 'Stay sharp! The next part gets spicy.'],
+  note: ['Read this one properly, okay? It’s the tool you need in a minute.', 'Every great detective knows their tools. Here’s a new one!', 'Learn this, and the next query becomes easy-peasy.'],
+  task: ['Your turn, partner! Ask the database.', 'The answer is hiding in those tables. Go and catch it!', 'Write the query. Don’t worry, I’ve got your back.', 'Peek at the tables first, then type. Chalo!'],
   running: ['Running it…', 'Let’s see what the data says…', 'Searching the records…'],
-  pass: ['That’s it. Nice work.', 'Clean query. The data talked.', 'Got it. Ira will be pleased.', 'See? The database doesn’t lie.'],
-  passFirst: ['First try! You’re a natural.', 'Sharp. First attempt. I’m impressed.', 'Not one wrong step. That’s detective work.'],
-  wrong: ['Close. Look at the result again — what’s missing?', 'Not quite. Compare it with what was asked.', 'Hmm. Count the rows. Does it match?', 'Every wrong turn tells you something. Try again.'],
-  error: ['The database didn’t understand that. Check spelling and commas.', 'A typo, probably. Read the error slowly.', 'Even I mistype. Fix it and run again.'],
-  trap: ['Heh. That’s the trap most people fall into. Read why.', 'Gotcha! Classic mistake. Now you’ll never make it again.', 'The case tried to fool you. Read the note.'],
-  hint1: ['Here — read the course note. Everything you need is in it.', 'A lead. Start here.'],
-  hint2: ['I’ve sketched the query. Fill in the blanks.', 'Half the query’s done. You finish it.'],
-  hint3: ['Here’s the full query. Read every line before you run it.', 'No shame in it. Understand it, then move on.'],
-  activity: ['Quick one. Trust your gut.', 'Sort this out for me, partner.', 'A small puzzle. Take your time.'],
-  activityRight: ['Exactly right.', 'Spot on.', 'You’re getting good at this.'],
-  activityWrong: ['Not quite. Look again.', 'One more try.', 'Hmm. Think it through.'],
-  check: ['Quick question, partner.', 'Let’s see if that stuck.'],
-  checkRight: ['Correct. Read why anyway.', 'Right on.'],
-  checkWrong: ['Not this time — the explanation shows why.', 'Read the explanation. That’s the lesson.'],
-  clue: ['Evidence. Look at it closely.', 'Your query found this. Not a rumour — a fact.', 'This changes things…'],
-  pinned: ['Pinned. The board is filling up.', 'Another piece of the puzzle.', 'We’re getting closer to her.'],
-  demo: ['Watch this. Speed matters in a hunt.'],
-  idle: ['Stuck? The 💡 envelopes are there for a reason.', 'Take your time. The tables drawer shows every column.', 'Still with me, partner?'],
-  solved: ['Case update filed. Good work tonight.', 'One more step closer to Tara.', 'That’s how it’s done, partner.'],
-  resume: ['Welcome back, partner. Right where we left it.', 'You came back. Good. The case is waiting.'],
-  review: ['Looking back is smart. Patterns hide in old evidence.'],
+  pass: ['Shabash! That’s it!', 'Clean query! The data started singing.', 'Got it! Ira will be so pleased.', 'See? The database never lies. Well done!', 'Ekdum perfect, partner!'],
+  passFirst: ['First try?! Wah, you’re a natural!', 'Bilkul sahi, in one shot! I’m impressed.', 'Not a single wrong step. That’s real detective work!'],
+  wrong: ['Close, close! Look at the result again - what’s missing?', 'Not quite, partner. Compare it with what was asked.', 'Hmm. Count the rows. Do they match?', 'Koi baat nahi! Every wrong turn teaches something. Try again.'],
+  error: ['Oops! The database didn’t understand that. Check the spelling and commas.', 'Probably a small typo. Read the error slowly.', 'Even I mistype, partner. Fix it and run again!'],
+  trap: ['Hehe! That’s the trap everybody falls into. Read why.', 'Gotcha! Classic mistake - now you’ll never make it again.', 'Arre, the case tried to fool you! Read the note.'],
+  hint1: ['Here, a clue for you: read the course note. Everything you need is in it.', 'A small lead. Start here!'],
+  hint2: ['I’ve sketched half the query. You fill in the blanks!', 'Half done already. You finish it, partner.'],
+  hint3: ['Here’s the full query. Read every line before you run it, okay?', 'No shame in it! Understand it, then we move on.'],
+  activity: ['Quick one! Trust your gut.', 'Sort this out for me, partner.', 'A little puzzle. Take your time.'],
+  activityRight: ['Exactly right!', 'Spot on, partner!', 'Arre wah, you’re getting good at this!'],
+  activityWrong: ['Not quite. Look again!', 'One more try, you’ve got this.', 'Hmm, think it through once more.'],
+  check: ['Quick question, partner!', 'Let’s see if that stuck.'],
+  checkRight: ['Correct! Read why anyway.', 'Right on the money!'],
+  checkWrong: ['Not this time - the explanation shows why.', 'Read the explanation. That’s the real lesson.'],
+  clue: ['Evidence! Look at it closely.', 'Your own query found this. Not a rumour - a fact!', 'Ooh, this changes things…'],
+  pinned: ['Pinned! The board is filling up nicely.', 'Another piece of the puzzle!', 'We’re getting closer to her, partner!'],
+  demo: ['Watch this! In a hunt, speed matters.'],
+  idle: ['Stuck? Open a hint envelope - that’s what they’re for!', 'Take your time. The tables drawer shows every column.', 'Hello? Still with me, partner?'],
+  solved: ['Case update filed! Fantastic work tonight.', 'One more step closer to Tara!', 'That, partner, is how it’s done!'],
+  resume: ['Welcome back, partner! Right where we left it.', 'You came back! Good. The case was waiting for you.'],
+  review: ['Looking back is smart. Patterns hide in old evidence!'],
 };
 
 let seed = Math.floor(Math.random() * 1000);
@@ -56,7 +58,7 @@ export function lineFor(e: KaalEvent): string {
   return list[seed % list.length];
 }
 
-// Episode-level teasers: Kaal's take on the episode, shown on the intro (no spoilers — only what the episode name promises)
+// Episode-level teasers: Kaal's take on the episode, shown on the intro (no spoilers - only what the episode name promises)
 export const TEASE: Record<number, string> = {
   1: 'A star vanishes six hours before her show. Her phone is off. Let’s see what the data remembers.',
   2: 'Before we chase anyone, we need a place to keep what we find. Let’s build our case file.',
@@ -67,7 +69,7 @@ export const TEASE: Record<number, string> = {
   7: 'Her watch counted every heartbeat. Was she calm? Or scared?',
   8: 'Five people. Five stories. Not all of them are true.',
   9: 'Ten tables and a wall of red string. Let’s draw it properly, so nothing slips through.',
-  10: 'A car, an owner, a company. One table can’t tell us — join them and the dots connect.',
+  10: 'A car, an owner, a company. One table can’t tell us - join them and the dots connect.',
   11: 'Highways have eyes. The toll booths saw a car tonight.',
   12: 'Somebody changed her contract tonight. Systems keep logs. Logs remember.',
   13: 'Midnight. 40,000 fans. Last chance, partner. Let’s bring her home.',

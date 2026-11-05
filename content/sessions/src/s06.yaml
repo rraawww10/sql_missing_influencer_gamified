@@ -1,4 +1,4 @@
-# Session 6 — "Phone Towers" (8:30 PM). Flow: docs/SESSION_PLAN.md › Session 6.
+# Session 6 - "Phone Towers" (8:30 PM). Flow: docs/SESSION_PLAN.md › Session 6.
 session: 6
 title: "Phone Towers"
 story_clock: "2026-12-12 20:30:00"
@@ -13,9 +13,9 @@ beats:
     type: scene
     speaker: mentor
     body: |
-      Her phone is off — but the telecom team confirmed her **smartwatch** has its own eSIM, and it never stopped talking to towers.
-      `tower_pings`: every time a phone or watch talks to a tower, a row is saved — owner, device, tower, area, time.
-      One watch, thousands of pings. Each tower covers a few km². We need the tower she **keeps** hitting since she left the hotel — that's where she is.
+      Her phone is off - but the telecom team confirmed her **smartwatch** has its own eSIM, and it never stopped talking to towers.
+      `tower_pings`: every time a phone or watch talks to a tower, a row is saved - owner, device, tower, area, time.
+      One watch, thousands of pings. Each tower covers a few km². We need the tower she **keeps** hitting since she left the hotel - that's where she is.
 
   - id: S6.2
     type: task
@@ -50,7 +50,7 @@ beats:
         rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "WHERE vs HAVING:" }
         sql: "SELECT tower_id, tower_area, COUNT(*) AS pings, MIN(ts), MAX(ts) FROM tower_pings WHERE device_owner = '{{star}}' GROUP BY tower_id, tower_area HAVING pings > 5;"
         match: result
-        reply: "📱 Fans post *\"She's still in the hotel!\"* — because your result shows the hotel tower. But those pings are from **before** she left. Filter rows first with `WHERE ts >= …`, then groups with `HAVING`."
+        reply: "📱 Fans post *\"She's still in the hotel!\"* - because your result shows the hotel tower. But those pings are from **before** she left. Filter rows first with `WHERE ts >= …`, then groups with `HAVING`."
     on_pass: { clue: S6-C1 }
     reply_on_pass: "One tower. Read all five columns."
 
@@ -60,17 +60,17 @@ beats:
     rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "HAVING" }
     prompt: "Your result has one row. What does it tell us?"
     options:
-      - { text: "Since 18:52 her watch has hit only tower RRO-17 ({{outskirts}}) — 47 pings, the last one at 23:28, which is right now", correct: true }
+      - { text: "Since 18:52 her watch has hit only tower RRO-17 ({{outskirts}}) - 47 pings, the last one at 23:28, which is right now", correct: true }
       - { text: "Her watch is switched off" }
       - { text: "She is still at the hotel" }
-    explain: "`tower_id` RRO-17, `tower_area` {{outskirts}}, 47 pings, first 18:52, last 23:28. The watch has not left that tower's area all evening — and it is still pinging."
+    explain: "`tower_id` RRO-17, `tower_area` {{outskirts}}, 47 pings, first 18:52, last 23:28. The watch has not left that tower's area all evening - and it is still pinging."
 
   - id: S6.5
     type: clue
     clue_id: S6-C1
     requires_task: T6.2
     title: "The outskirts tower"
-    body: "Your query on `tower_pings`: since **18:52** {{star.first}}'s watch has pinged only tower **RRO-17 · {{outskirts}}** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    body: "Your query on `tower_pings`: since **18:52** {{star.first}}'s watch has pinged only tower **RRO-17 · {{outskirts}}** - **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
 
   - id: S6.6
     type: note
@@ -102,17 +102,17 @@ beats:
     rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "WHERE vs HAVING:" }
     prompt: "{{manager.first}} said he was in the hotel lobby all evening. What do his two rows say?"
     options:
-      - { text: "Besides the hotel tower MGR-04, his phone hit RRO-17 six times between 18:52 and 19:22 — the same tower as {{star.first}}'s watch", correct: true }
-      - { text: "His phone stayed on MGR-04 the whole evening — his alibi holds" }
+      - { text: "Besides the hotel tower MGR-04, his phone hit RRO-17 six times between 18:52 and 19:22 - the same tower as {{star.first}}'s watch", correct: true }
+      - { text: "His phone stayed on MGR-04 the whole evening - his alibi holds" }
       - { text: "His phone was switched off after 6 PM" }
-    explain: "Row 2: RRO-17 · 6 pings · 18:52 → 19:22. Row 1: MGR-04 before 18:10 and again from 19:55. For half an hour his phone was where her watch is — and he told us he never left."
+    explain: "Row 2: RRO-17 · 6 pings · 18:52 → 19:22. Row 1: MGR-04 before 18:10 and again from 19:55. For half an hour his phone was where her watch is - and he told us he never left."
 
   - id: S6.8
     type: clue
     clue_id: S6-C2
     requires_task: T6.3
     title: "The manager was there too"
-    body: "Your query: {{manager.first}}'s phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as {{star.first}}'s watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+    body: "Your query: {{manager.first}}'s phone pinged **RRO-17** six times, **18:52 → 19:22** - the same tower, the same half hour as {{star.first}}'s watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
 
   - id: S6.9
     type: check

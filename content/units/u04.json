@@ -86,7 +86,7 @@
       "id": "U4.open",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Previously: we created an empty `suspects` table with four columns — name, role, phone, age.\nKabir has the five names and phone numbers. Put them in.\n"
+      "body": "Previously: we created an empty `suspects` table with four columns - name, role, phone, age.\nKabir has the five names and phone numbers. Put them in.\n"
     },
     {
       "id": "S2.8",
@@ -107,7 +107,7 @@
       "id": "S2.9",
       "type": "task",
       "task_id": "T2.3",
-      "ask": "Ira's notebook has the five suspects. Insert all five rows into `suspects` — copy them exactly, even if something looks wrong.\n\n| name | role | phone | age |\n|---|---|---|---|\n| Dev Arora | manager | 9876500002 | 38 |\n| Nysa Kapoor | rival singer | 9876500003 | 24 |\n| Ishita Das | fan page admin | 9876500004 | 19 |\n| Sunny Gill | cab driver | 9876500050 | 45 |\n| Kunal Bajaj | event organiser | 9876500006 | 41 |\n",
+      "ask": "Ira's notebook has the five suspects. Insert all five rows into `suspects` - copy them exactly, even if something looks wrong.\n\n| name | role | phone | age |\n|---|---|---|---|\n| Dev Arora | manager | 9876500002 | 38 |\n| Nysa Kapoor | rival singer | 9876500003 | 24 |\n| Ishita Das | fan page admin | 9876500004 | 19 |\n| Sunny Gill | cab driver | 9876500050 | 45 |\n| Kunal Bajaj | event organiser | 9876500006 | 41 |\n",
       "setup": [
         "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
       ],
@@ -173,7 +173,7 @@
             "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
             "inspect": "SELECT COUNT(*) > 0 FROM suspects WHERE typeof(age) = 'text';"
           },
-          "reply": "⚠️ No error — but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`.",
+          "reply": "⚠️ No error - but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`.",
           "rm_ref": {
             "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
             "heading": "Mistake 4"

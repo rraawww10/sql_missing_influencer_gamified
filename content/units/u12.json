@@ -53,7 +53,7 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     }
   ],
   "cast": {
@@ -75,7 +75,7 @@
       "id": "U12.open",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Previously: the guard's grey SUV is **26 BH 4471 EX**. We found it in the gate log by matching the plate pattern.\nNow we combine several conditions in one query: colour, gate, time — all at once.\n"
+      "body": "Previously: the guard's grey SUV is **26 BH 4471 EX**. We found it in the gate log by matching the plate pattern.\nNow we combine several conditions in one query: colour, gate, time - all at once.\n"
     },
     {
       "id": "S3.13",
@@ -148,7 +148,7 @@
           "solution_ref": "solutions/s03.json#T3.6"
         }
       ],
-      "reply_on_pass": "22 rows — the same as `gate <> 'MAIN'`. Two different queries, one answer.",
+      "reply_on_pass": "22 rows - the same as `gate <> 'MAIN'`. Two different queries, one answer.",
       "traps": []
     },
     {
@@ -178,7 +178,7 @@
           "solution_ref": "solutions/s03.json#T3.7"
         }
       ],
-      "reply_on_pass": "180 rows. Notice: people **on foot** (no vehicle number) are not in this list either — an empty value is neither 'HTL…' nor 'not HTL…'.",
+      "reply_on_pass": "180 rows. Notice: people **on foot** (no vehicle number) are not in this list either - an empty value is neither 'HTL…' nor 'not HTL…'.",
       "traps": []
     },
     {
@@ -228,7 +228,7 @@
           "match": {
             "result_hash": "sha256:b49ca9a5e81e2d2f99883e77a502e1e041d91a41ce68128fa6fa2471683b5026"
           },
-          "reply": "📱 Comments explode: **#FanDidIt** — your result shows the white fan-club van at the staff gate!\nIra: \"Careful. **AND runs before OR.** Your query means *(grey AND service) OR staff* — it brought in **every** staff-gate entry, grey or not. That van is white. Use parentheses.\"\n",
+          "reply": "📱 Comments explode: **#FanDidIt** - your result shows the white fan-club van at the staff gate!\nIra: \"Careful. **AND runs before OR.** Your query means *(grey AND service) OR staff* - it brought in **every** staff-gate entry, grey or not. That van is white. Use parentheses.\"\n",
           "rm_ref": {
             "unit_id": "efa7c57d-2825-4a62-b0d9-a0a4c9c769d4",
             "heading": "Precedence"
@@ -251,7 +251,7 @@
       "prompt": "Your 4 rows: two are a laundry van in the afternoon. What do the other two rows say?",
       "options": [
         {
-          "text": "Grey SUV 26 BH 4471 EX went OUT by the service gate at 18:12 and came back IN at 19:52 — with Dev Arora noted at the wheel",
+          "text": "Grey SUV 26 BH 4471 EX went OUT by the service gate at 18:12 and came back IN at 19:52 - with Dev Arora noted at the wheel",
           "correct": true
         },
         {
@@ -261,7 +261,7 @@
           "text": "The SUV only entered the hotel once, at 19:52"
         }
       ],
-      "explain": "Row 160: SERVICE · OUT · 18:12:05 · 26 BH 4471 EX. Row 197: SERVICE · IN · 19:52:10 · 26 BH 4471 EX · person_name **Dev Arora**. The fan van only appears if you get the precedence wrong — it's white."
+      "explain": "Row 160: SERVICE · OUT · 18:12:05 · 26 BH 4471 EX. Row 197: SERVICE · IN · 19:52:10 · 26 BH 4471 EX · person_name **Dev Arora**. The fan van only appears if you get the precedence wrong - it's white."
     },
     {
       "id": "S3.19",
@@ -269,7 +269,7 @@
       "clue_id": "S3-C1",
       "requires_task": "T3.8",
       "title": "Grey SUV at the service gate",
-      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
     },
     {
       "id": "S3.20",
@@ -298,7 +298,7 @@
           "solution_ref": "solutions/s03.json#T3.9"
         }
       ],
-      "reply_on_pass": "Owner: **DA Talent Management Pvt Ltd**. Ira: \"Never heard of it. Note it down — we'll find out who owns that company.\"",
+      "reply_on_pass": "Owner: **DA Talent Management Pvt Ltd**. Ira: \"Never heard of it. Note it down - we'll find out who owns that company.\"",
       "traps": []
     },
     {

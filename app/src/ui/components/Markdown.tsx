@@ -16,6 +16,7 @@ const TAGS: [RegExp, string][] = [
   [/<\/ImageInlineText>/g, '\n</div>\n'],
   [/```(\w+)\|[A-Z|]+/g, '```$1'],                // ```sql|UGLY → ```sql
   [/<img([^>]*?)\s*,\s*width/g, '<img$1 width'],  // a stray comma in one course <img>
+  [/[ \t]*\u2014[ \t]*/g, ' - '],                  // no em dashes anywhere on screen (incl. the verbatim course extract)
 ];
 
 export function toHtml(md: string): string {

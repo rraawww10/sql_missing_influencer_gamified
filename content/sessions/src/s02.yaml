@@ -1,4 +1,4 @@
-# Session 2 — "Build the Case File" (6:30 PM). Flow: docs/SESSION_PLAN.md › Session 2.
+# Session 2 - "Build the Case File" (6:30 PM). Flow: docs/SESSION_PLAN.md › Session 2.
 # Build: node pipeline/build_sessions.mjs --only 2
 session: 2
 title: "Build the Case File"
@@ -27,7 +27,7 @@ beats:
     type: scene
     speaker: mentor
     body: |
-      Five names keep coming up. Put them in a proper table — no notebook scribbles.
+      Five names keep coming up. Put them in a proper table - no notebook scribbles.
       We talk to databases in **SQL**. Let's start.
 
   - id: S2.2
@@ -140,7 +140,7 @@ beats:
     type: task
     task_id: T2.3
     ask: |
-      {{mentor.first}}'s notebook has the five suspects. Insert all five rows into `suspects` — copy them exactly, even if something looks wrong.
+      {{mentor.first}}'s notebook has the five suspects. Insert all five rows into `suspects` - copy them exactly, even if something looks wrong.
 
       | name | role | phone | age |
       |---|---|---|---|
@@ -181,7 +181,7 @@ beats:
         sql: "INSERT INTO suspects (name, role, phone, age) VALUES ('{{manager}}', 'manager', '9876500002', 'Thirty-eight'), ('{{rival}}', 'rival singer', '9876500003', 24), ('{{fan}}', 'fan page admin', '9876500004', 19), ('{{driver}}', 'cab driver', '9876500050', 45), ('{{organiser}}', 'event organiser', '9876500006', 41);"
         inspect: "SELECT COUNT(*) > 0 FROM suspects WHERE typeof(age) = 'text';"
         match: result
-        reply: "⚠️ No error — but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`."
+        reply: "⚠️ No error - but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`."
 
   - id: S2.10
     type: note
@@ -241,7 +241,7 @@ beats:
   - id: S2.14
     type: task
     task_id: T2.6
-    ask: "Find {{star.first}}'s row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"{{star}}\"**. Then read the last two columns — where and when was her key card used last?"
+    ask: "Find {{star.first}}'s row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"{{star}}\"**. Then read the last two columns - where and when was her key card used last?"
     ref: "SELECT * FROM hotel_guests WHERE name = \"{{star}}\";"
     hints:
       - { tier: 1, rm_ref: { unit_id: 260f447a-0940-4540-8e9a-4af867a9e6fb, heading: "Selecting Specific Rows" } }
@@ -261,14 +261,14 @@ beats:
         rows:
           - [17, "{{star}}", 704, "2026-12-11 14:00:00", "KEY_NOT_RETURNED", "2026-12-12 18:09:40", "Service Lift"]
     answer: { table: "Your result", row: 0, column: key_card_last_location }
-    feedback: "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries — and it opens next to the **service gate**."
+    feedback: "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries - and it opens next to the **service gate**."
 
   - id: S2.15
     type: clue
     clue_id: S2-C1
     requires_task: T2.6
     title: "The service lift"
-    body: "Your query on `hotel_guests`: {{star.first}}'s key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+    body: "Your query on `hotel_guests`: {{star.first}}'s key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
 
   - id: S2.16
     type: note
@@ -306,7 +306,7 @@ beats:
     type: check
     source: authored
     rm_ref: { unit_id: 226c4f89-e296-4bb8-bcea-604a91a9b6d1, heading: "SQLite is Case Insensitive!" }
-    prompt: "`SELECT * FROM suspects;` and `select * from suspects;` — what happens?"
+    prompt: "`SELECT * FROM suspects;` and `select * from suspects;` - what happens?"
     options:
       - { text: "Only the first one works" }
       - { text: "Both give the same output; writing keywords in UPPER CASE is the best practice", correct: true }
@@ -381,7 +381,7 @@ beats:
     minutes: 1
     kind: match
     rm_ref: { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "DELETE VS DROP" }
-    prompt: "DELETE vs DROP — match each command to what it does."
+    prompt: "DELETE vs DROP - match each command to what it does."
     pairs:
       - { left: "DELETE FROM rumours WHERE …", right: "Removes specific rows; the table stays" }
       - { left: "DROP TABLE rumours", right: "Removes the entire table from the database" }
@@ -467,7 +467,7 @@ beats:
         sql: "UPDATE suspects SET alibi = 'In hotel lobby all evening';"
         inspect: "SELECT COUNT(DISTINCT alibi) FROM suspects;"
         match: result
-        reply: "Oops — now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more."
+        reply: "Oops - now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more."
     reply_on_pass: "Noted. We'll check every claim later. Claims are not proof."
 
   - id: S2.30
@@ -497,7 +497,7 @@ beats:
     type: hook
     speaker: system
     body: |
-      📧 Hotel security: "Attaching the gate log — **300 entries** since noon."
+      📧 Hotel security: "Attaching the gate log - **300 entries** since noon."
       {{mentor.first}}: "That service lift opens near the service gate. Find who used it."
 
 exit:
@@ -519,7 +519,7 @@ units:
     opener:
       speaker: mentor
       body: |
-        Previously: we created an empty `suspects` table with four columns — name, role, phone, age.
+        Previously: we created an empty `suspects` table with four columns - name, role, phone, age.
         {{analyst.first}} has the five names and phone numbers. Put them in.
     closer:
       speaker: mentor
@@ -531,8 +531,8 @@ units:
     opener:
       speaker: mentor
       body: |
-        Previously: our `suspects` table has five rows — {{manager.first}}, {{rival.first}}, {{fan.first}}, {{driver.first}} and {{organiser.first}}.
-        Time to ask the table questions — and to read the hotel's key-card log.
+        Previously: our `suspects` table has five rows - {{manager.first}}, {{rival.first}}, {{fan.first}}, {{driver.first}} and {{organiser.first}}.
+        Time to ask the table questions - and to read the hotel's key-card log.
     closer:
       speaker: mentor
       body: |
@@ -568,6 +568,6 @@ units:
       speaker: mentor
       body: |
         Previously: the `suspects` table is clean and the `rumours` table is gone.
-        Now each suspect gives an alibi — but there is no column for it. We change the table's **structure**, not its data.
-  - unit_id: 5db3ad70-736e-49ee-8e01-9186191cab34   # RM #8 Alter Table — same text as RM #9
+        Now each suspect gives an alibi - but there is no column for it. We change the table's **structure**, not its data.
+  - unit_id: 5db3ad70-736e-49ee-8e01-9186191cab34   # RM #8 Alter Table - same text as RM #9
     same_as: d9b767b9-9365-4148-be92-121cc88a071d

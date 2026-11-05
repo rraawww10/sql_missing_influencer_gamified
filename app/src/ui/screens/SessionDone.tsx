@@ -99,7 +99,7 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
             <ResetControl session={session} label={multiPart ? '↺ Reset this part and play again' : '↺ Reset this episode and play again'} small onDone={onReset} />
           </div>
         </section>
-        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={session === EPISODE_COUNT ? 'We did it, partner. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, partner. File it — and don’t go far. The night isn’t over.'} /></div>
+        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={session === EPISODE_COUNT ? 'We did it, partner. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, partner. File it - and don’t go far. The night isn’t over.'} /></div>
         <FeedbackCard session={session} />
       </div>
     </div>

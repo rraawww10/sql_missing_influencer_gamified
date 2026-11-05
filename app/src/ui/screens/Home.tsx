@@ -1,4 +1,4 @@
-// Case map: the night's timeline (6 PM → 12 AM), one card per episode — named after what happens, never numbered.
+// Case map: the night's timeline (6 PM → 12 AM), one card per episode - named after what happens, never numbered.
 import { useEffect, useState } from 'react';
 import type { SessionIndexEntry } from '../../content/types';
 import { SESSION_COUNT } from '../../engine/progress/derive';

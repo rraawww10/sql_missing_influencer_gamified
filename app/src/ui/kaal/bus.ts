@@ -3,6 +3,8 @@
 import { useSyncExternalStore } from 'react';
 import { MOOD, lineFor, type KaalEvent, type KaalMood } from './lines';
 import { sfx, type Sfx } from '../sound';
+import { speak } from '../voice';
+import { gameFx } from '../gamefx';
 
 export interface KaalState { mood: KaalMood; line: string; event: KaalEvent | null; n: number }
 let state: KaalState = { mood: 'idle', line: '', event: null, n: 0 };
@@ -13,11 +15,13 @@ const SOUND: Partial<Record<KaalEvent, Sfx>> = {
   checkRight: 'pass', checkWrong: 'fail', pinned: 'clue', solved: 'solved', clue: 'reveal', hint1: 'paper', hint2: 'paper', hint3: 'paper',
 };
 
-export function kaal(event: KaalEvent, opts: { line?: string; silent?: boolean } = {}) {
+export function kaal(event: KaalEvent, opts: { line?: string; silent?: boolean; mute?: boolean } = {}) {
   state = { mood: MOOD[event], line: opts.line ?? lineFor(event), event, n: state.n + 1 };
   subs.forEach((s) => s());
   const s = SOUND[event];
   if (s && !opts.silent) sfx(s);
+  if (!opts.mute) speak(state.line, { mood: state.mood });
+  gameFx(event);
 }
 export function kaalQuiet() { state = { ...state, line: '', n: state.n + 1 }; subs.forEach((s) => s()); }
 

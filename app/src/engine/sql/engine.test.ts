@@ -28,7 +28,7 @@ describe('SqlJsEngine', async () => {
     expect(r.notTaughtYet.map((f) => f.id)).toContain('ORDER BY');
   });
 
-  it('grades every run on a fresh copy — learner changes never leak', async () => {
+  it('grades every run on a fresh copy - learner changes never leak', async () => {
     await engine.grade('s03', task('T3.1'), 'DELETE FROM gate_log;', 3);
     const r = await engine.grade('s03', task('T3.1'), "SELECT * FROM gate_log WHERE ts >= '2026-12-12 18:00:00';", 3);
     expect(r.verdict.status).toBe('pass');

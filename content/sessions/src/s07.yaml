@@ -1,4 +1,4 @@
-# Session 7 — "Smartwatch Secrets" (9:00 PM). Flow: docs/SESSION_PLAN.md › Session 7.
+# Session 7 - "Smartwatch Secrets" (9:00 PM). Flow: docs/SESSION_PLAN.md › Session 7.
 session: 7
 title: "Smartwatch Secrets"
 story_clock: "2026-12-12 21:00:00"
@@ -17,7 +17,7 @@ beats:
   - id: S7.1
     type: scene
     speaker: analyst
-    body: "{{star.first}}'s watch log: `watch_log` — one row every 5 minutes with `steps`, `distance_m`, `heart_rate` and her `resting_hr`."
+    body: "{{star.first}}'s watch log: `watch_log` - one row every 5 minutes with `steps`, `distance_m`, `heart_rate` and her `resting_hr`."
 
   - id: S7.2
     type: note
@@ -47,7 +47,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 47e1c94f-6264-46e7-9dc3-21425c3fba6d, heading: "Arithmetic Operators in SQL" } }
       - { tier: 2, skeleton: "SELECT ts, distance_m ____ 1000.0 AS distance_km FROM watch_log;" }
-    reply_on_pass: "Look at the evening rows — 11 km in 5 minutes while sitting still? Something's wrong with the evening export. Keep reading."
+    reply_on_pass: "Look at the evening rows - 11 km in 5 minutes while sitting still? Something's wrong with the evening export. Keep reading."
 
   - id: S7.5
     type: task
@@ -90,7 +90,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 47e1c94f-6264-46e7-9dc3-21425c3fba6d, heading: "Using Expressions in WHERE Clause" } }
       - { tier: 2, skeleton: "SELECT * FROM watch_log WHERE (heart_rate - resting_hr) ____ 40;" }
-    reply_on_pass: "Two spikes: **18:10** (112 bpm — when she realised the car wasn't going to the stadium) and **19:00** (109 bpm — just before her ₹1 message)."
+    reply_on_pass: "Two spikes: **18:10** (112 bpm - when she realised the car wasn't going to the stadium) and **19:00** (109 bpm - just before her ₹1 message)."
 
   - id: S7.10
     type: note
@@ -113,7 +113,7 @@ beats:
         sql: "UPDATE watch_log SET distance_m = distance_m / 100;"
         inspect: "SELECT COUNT(*) FROM watch_log WHERE ts < '2026-12-12 18:00:00' AND distance_m <> CAST(ROUND(steps * 0.7) AS INTEGER);"
         match: result
-        reply: "That fixed the evening — and broke the morning. Without `WHERE`, every row was divided. Only rows from 6 PM onwards were in centimetres."
+        reply: "That fixed the evening - and broke the morning. Without `WHERE`, every row was divided. Only rows from 6 PM onwards were in centimetres."
 
   - id: S7.12
     type: note
@@ -141,7 +141,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 0447ed54-9507-4895-bc17-c3a9fa8b76c8, heading: "How to use strftime()" } }
       - { tier: 2, skeleton: "SELECT strftime('%H', ts) AS hour, SUM(steps) AS steps FROM watch_log GROUP BY ____;" }
-    reply_on_pass: "After 19:00 — **zero steps**. She's sitting in one place."
+    reply_on_pass: "After 19:00 - **zero steps**. She's sitting in one place."
 
   - id: S7.15
     type: note
@@ -180,7 +180,7 @@ beats:
         rm_ref: { unit_id: 0447ed54-9507-4895-bc17-c3a9fa8b76c8, heading: "How to use strftime()" }
         sql: "SELECT * FROM watch_log WHERE strftime('%H', ts) >= 18;"
         match: result
-        reply: "Every row came back — even 6 AM! `strftime` gives **text** ('06'), and SQLite treats text as bigger than any number. `CAST` it to INTEGER first."
+        reply: "Every row came back - even 6 AM! `strftime` gives **text** ('06'), and SQLite treats text as bigger than any number. `CAST` it to INTEGER first."
 
   - id: S7.19
     type: note
@@ -194,31 +194,31 @@ beats:
   - id: S7.20
     type: task
     task_id: T7.10
-    ask: "How far did she walk after **18:45**? Show the total distance in km as `ROUND(…, 1)`, `CEIL(…)` and `FLOOR(…)` — in that order. (The cm fix is already applied.)"
+    ask: "How far did she walk after **18:45**? Show the total distance in km as `ROUND(…, 1)`, `CEIL(…)` and `FLOOR(…)` - in that order. (The cm fix is already applied.)"
     setup: [*fix]
     ref: "SELECT ROUND(SUM(distance_m) / 1000.0, 1) AS km, CEIL(SUM(distance_m) / 1000.0) AS km_ceil, FLOOR(SUM(distance_m) / 1000.0) AS km_floor FROM watch_log WHERE ts >= '2026-12-12 18:45:00';"
     grading: { expect_rows: 1 }
     hints:
       - { tier: 1, rm_ref: { unit_id: c5402661-b12c-404a-9a1c-744e12ad836a, heading: "ROUND Function" } }
       - { tier: 2, skeleton: "SELECT ROUND(SUM(distance_m) / 1000.0, ____), CEIL(SUM(distance_m) / 1000.0), FLOOR(SUM(distance_m) / 1000.0) FROM watch_log WHERE ts >= '2026-12-12 18:45:00';" }
-    reply_on_pass: "About **0.2 km** — she walked only 200 metres from where the car stopped."
+    reply_on_pass: "About **0.2 km** - she walked only 200 metres from where the car stopped."
 
   - id: S7.21
     type: note
     rm_ref: { unit_id: c5402661-b12c-404a-9a1c-744e12ad836a, heading: "String Functions" }
-    body: "`UPPER()` and `LOWER()` change text case — great for case-insensitive search: `UPPER(name) LIKE UPPER('%avengers%')`."
+    body: "`UPPER()` and `LOWER()` change text case - great for case-insensitive search: `UPPER(name) LIKE UPPER('%avengers%')`."
 
   - id: S7.22
     type: task
     task_id: T7.11
-    ask: "Decode the ₹1 note (S5-C1: `gReEn aCrEs`). The capitals hide a name — so ignore letter case. From `upi_payments`, show `from_name`, `to_name`, `amount`, `note`, `ts` where the note contains **green acres** in **any** letter case."
+    ask: "Decode the ₹1 note (S5-C1: `gReEn aCrEs`). The capitals hide a name - so ignore letter case. From `upi_payments`, show `from_name`, `to_name`, `amount`, `note`, `ts` where the note contains **green acres** in **any** letter case."
     ref: "SELECT from_name, to_name, amount, note, ts FROM upi_payments WHERE UPPER(note) LIKE UPPER('%green acres%');"
     grading: { expect_rows: 2 }
     hints:
       - { tier: 1, rm_ref: { unit_id: c5402661-b12c-404a-9a1c-744e12ad836a, heading: "String Functions" } }
       - { tier: 2, skeleton: "SELECT from_name, to_name, amount, note, ts FROM upi_payments WHERE ____(note) LIKE ____('%green acres%');" }
     on_pass: { clue: S7-C1 }
-    reply_on_pass: "Two rows — two different people wrote the same place."
+    reply_on_pass: "Two rows - two different people wrote the same place."
 
   - id: S7.22b
     type: check
@@ -226,9 +226,9 @@ beats:
     rm_ref: { unit_id: c5402661-b12c-404a-9a1c-744e12ad836a, heading: "String Functions" }
     prompt: "Your two rows: who wrote *green acres*, and when?"
     options:
-      - { text: "{{manager.first}} at 16:10 (₹45,000 to {{farm}}, '2 guests') — and {{star.first}}'s watch at 19:02 (₹1 to {{sister.first}}, 'gReEn aCrEs')", correct: true }
-      - { text: "Only {{star.first}} — the ₹45,000 row is a different place" }
-      - { text: "Only {{manager.first}} — the ₹1 note says something else" }
+      - { text: "{{manager.first}} at 16:10 (₹45,000 to {{farm}}, '2 guests') - and {{star.first}}'s watch at 19:02 (₹1 to {{sister.first}}, 'gReEn aCrEs')", correct: true }
+      - { text: "Only {{star.first}} - the ₹45,000 row is a different place" }
+      - { text: "Only {{manager.first}} - the ₹1 note says something else" }
     explain: "Case-insensitive search matched both notes: *Green Acres - 2 guests* (16:10:05) and *gReEn aCrEs* (19:02:30). Same place. She typed the name of the farm stay her manager paid for."
 
   - id: S7.23
@@ -236,7 +236,7 @@ beats:
     clue_id: S7-C1
     requires_task: T7.11
     title: "Green Acres"
-    body: "Your case-insensitive search: {{star.first}}'s capitals **`gReEn aCrEs`** (19:02) match **{{farm}}** — the farm stay {{manager.first}} paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+    body: "Your case-insensitive search: {{star.first}}'s capitals **`gReEn aCrEs`** (19:02) match **{{farm}}** - the farm stay {{manager.first}} paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
 
   - id: S7.24
     type: check
@@ -252,7 +252,7 @@ beats:
   - id: S7.25
     type: hook
     speaker: system
-    body: "📱 Trending: **#{{fan.first}}Knows** — the {{fan_handle}} admin posted *\"she's safe, trust me\"* at 8:55 PM. {{mentor.first}}: \"Let's clear people properly — with data, not hashtags.\""
+    body: "📱 Trending: **#{{fan.first}}Knows** - the {{fan_handle}} admin posted *\"she's safe, trust me\"* at 8:55 PM. {{mentor.first}}: \"Let's clear people properly - with data, not hashtags.\""
 
 exit:
   required_clues: [S7-C1]
@@ -274,18 +274,18 @@ units:
       speaker: mentor
       body: |
         Previously: {{star.first}}'s smartwatch logs steps and heart rate every 5 minutes. With expressions we saw her heart rate jump around 6 PM.
-        Now we need dates and times split into parts — SQL **functions** do that.
+        Now we need dates and times split into parts - SQL **functions** do that.
     closer:
       speaker: mentor
       body: |
-        Hours extracted. But they come out as text — we fix the type next.
+        Hours extracted. But they come out as text - we fix the type next.
   - unit_id: 7aea2483-8eea-4ded-a05a-19c2f1044e2b   # RM #21 Cast Functions
     from: S7.17
     to: S7.18
     opener:
       speaker: mentor
       body: |
-        Previously: `strftime` gives us the hour of each watch reading — but as text, like `'18'`.
+        Previously: `strftime` gives us the hour of each watch reading - but as text, like `'18'`.
         To compare it as a number we change its **type**.
     closer:
       speaker: mentor

@@ -59,6 +59,7 @@ export async function playBeats(f, pack, solutions, hooks = {}) {
       await runSql(f, solutions[b.task_id].ref);
       await f.getByText('✓ Correct.').waitFor({ timeout: 10000 });
     }
+    await hooks.afterBeat?.(b, i);
     const last = i === pack.beats.length - 1;
     await cont(f);
     if (last) return;

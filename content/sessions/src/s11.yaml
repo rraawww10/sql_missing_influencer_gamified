@@ -1,4 +1,4 @@
-# Session 11 — "The Toll Plaza" (11:00 PM). Flow: docs/SESSION_PLAN.md › Session 11.
+# Session 11 - "The Toll Plaza" (11:00 PM). Flow: docs/SESSION_PLAN.md › Session 11.
 session: 11
 title: "The Toll Plaza"
 story_clock: "2026-12-12 23:00:00"
@@ -62,17 +62,17 @@ beats:
     rm_ref: { unit_id: bb8d2b11-76b3-40f8-a7f5-601cdf25f540, heading: "Using joins with other clauses" }
     prompt: "Your two rows, in time order: what did {{manager.first}}'s SUV do?"
     options:
-      - { text: "OUTBOUND through {{toll}} at 18:41, INBOUND at 19:30 — out of the city and back in 49 minutes", correct: true }
+      - { text: "OUTBOUND through {{toll}} at 18:41, INBOUND at 19:30 - out of the city and back in 49 minutes", correct: true }
       - { text: "It crossed once, outbound, and never came back" }
       - { text: "Both crossings were inbound" }
-    explain: "18:41:20 OUTBOUND, 19:30:45 INBOUND. Out towards the outskirts (where RRO-17 is), back towards the city — and at the hotel gate at 19:52 (S3-C1)."
+    explain: "18:41:20 OUTBOUND, 19:30:45 INBOUND. Out towards the outskirts (where RRO-17 is), back towards the city - and at the hotel gate at 19:52 (S3-C1)."
 
   - id: S11.6
     type: clue
     clue_id: S11-C1
     requires_task: T11.2
     title: "Out to the outskirts and back"
-    body: "Your three-table join: the SUV crossed **{{toll}}** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts — the direction of tower RRO-17 (S6-C1)."
+    body: "Your three-table join: the SUV crossed **{{toll}}** **OUTBOUND at 18:41** and **INBOUND at 19:30**. With S3-C1 (out of the hotel 18:12, back 19:52), that is a round trip to the outskirts - the direction of tower RRO-17 (S6-C1)."
 
   - id: S11.7
     type: note
@@ -104,7 +104,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "RIGHT JOIN" } }
       - { tier: 2, skeleton: "SELECT booking_guest.booking_id, person.name FROM person ____ booking_guest ON person.id = booking_guest.person_id WHERE booking_guest.booking_id = 88;" }
-    reply_on_pass: "Two rows: {{manager.first}} — and **NULL**. The INNER JOIN in the case board hid her. The unregistered *\"+1 lady\"* is **{{star.first}}**."
+    reply_on_pass: "Two rows: {{manager.first}} - and **NULL**. The INNER JOIN in the case board hid her. The unregistered *\"+1 lady\"* is **{{star.first}}**."
 
   - id: S11.11
     type: note
@@ -158,13 +158,13 @@ beats:
     clue_id: S11-C2
     requires_task: T11.7
     title: "Same tower, same minute"
-    body: "Your self join: {{star.first}}'s watch and {{manager.first}}'s phone pinged **RRO-17** at the **same six minutes** — 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
+    body: "Your self join: {{star.first}}'s watch and {{manager.first}}'s phone pinged **RRO-17** at the **same six minutes** - 18:52, 18:58, 19:04, 19:10, 19:16, 19:22. They were together at the farm stay."
 
   - id: S11.18
     type: activity
     kind: match
     rm_ref: { unit_id: 0e811a2d-4b18-4d14-ab00-22687218ad8d, heading: "JOINS Summary" }
-    prompt: "JOINS summary — match each join you used tonight to what it keeps."
+    prompt: "JOINS summary - match each join you used tonight to what it keeps."
     pairs:
       - { left: "INNER JOIN", right: "Only rows that match on both sides" }
       - { left: "LEFT JOIN", right: "Every row of the left table" }
@@ -175,12 +175,12 @@ beats:
   - id: S11.19
     type: scene
     speaker: mentor
-    body: "📻 \"Ring Road unit — {{farm}}, booking B-88, the village road is shortest. Go quietly. Her heart rate is calm; she's safe in a room.\""
+    body: "📻 \"Ring Road unit - {{farm}}, booking B-88, the village road is shortest. Go quietly. Her heart rate is calm; she's safe in a room.\""
 
   - id: S11.20
     type: hook
     speaker: system
-    body: "📧 {{manager.first}}'s lawyer: *\"My client never left the hotel. And her contract says she **chose** to skip shows — check the label's system.\"*"
+    body: "📧 {{manager.first}}'s lawyer: *\"My client never left the hotel. And her contract says she **chose** to skip shows - check the label's system.\"*"
 
 exit:
   required_clues: [S11-C1, S11-C2]
@@ -202,4 +202,4 @@ units:
       speaker: mentor
       body: |
         Previously: joining `toll_crossings` with `vehicles` and `people` showed {{manager.first}}'s SUV crossing {{toll}} going out at 18:41 and back at 19:30.
-        Now we need joins that keep rows with **no** match — and a table joined with itself.
+        Now we need joins that keep rows with **no** match - and a table joined with itself.

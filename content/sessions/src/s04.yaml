@@ -1,4 +1,4 @@
-# Session 4 — "The Last Cab" (7:30 PM). Flow: docs/SESSION_PLAN.md › Session 4.
+# Session 4 - "The Last Cab" (7:30 PM). Flow: docs/SESSION_PLAN.md › Session 4.
 session: 4
 title: "The Last Cab"
 story_clock: "2026-12-12 19:30:00"
@@ -31,7 +31,7 @@ beats:
     see_also:
       - { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "IN and BETWEEN Operators" }
     body: |
-      `IN` checks if a value is **one of a list** of values — a short way to write many `OR`s:
+      `IN` checks if a value is **one of a list** of values - a short way to write many `OR`s:
       ```sql
       SELECT * FROM table_name WHERE c1 IN (v1, v2, ...);
       ```
@@ -49,7 +49,7 @@ beats:
     hints:
       - { tier: 1, rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "IN Operator" } }
       - { tier: 2, skeleton: "SELECT rider_name FROM cab_rides WHERE rider_phone ____ ('9876500001', '9876500002', ...);" }
-    reply_on_pass: "Four rides. {{manager.first}} never booked a cab today — interesting."
+    reply_on_pass: "Four rides. {{manager.first}} never booked a cab today - interesting."
 
   - id: S4.5
     type: note
@@ -76,7 +76,7 @@ beats:
         sql: "SELECT ride_id FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 18:30:00' AND '2026-12-12 17:30:00';"
         sql_regex: "BETWEEN\\s+'2026-12-12 18:30"
         match: result
-        reply: "Empty — but that doesn't mean nobody booked! With `BETWEEN`, the **smaller value must come first**: 17:30, then 18:30."
+        reply: "Empty - but that doesn't mean nobody booked! With `BETWEEN`, the **smaller value must come first**: 17:30, then 18:30."
       - id: missing_limit
         rm_ref: { unit_id: 936e638c-7179-460d-9a9f-95f9f423c344, heading: "Possible Mistakes" }
         sql: "SELECT ride_id FROM cab_rides WHERE booked_at BETWEEN AND '2026-12-12 18:30:00';"
@@ -105,7 +105,7 @@ beats:
     type: task
     task_id: T4.3
     minutes: 2
-    ask: "Same hotel rides between 17:30 and 18:30 — show `ride_id`, `status` and `booked_at`, **newest first**."
+    ask: "Same hotel rides between 17:30 and 18:30 - show `ride_id`, `status` and `booked_at`, **newest first**."
     ref: "SELECT ride_id, status, booked_at FROM cab_rides WHERE pickup = '{{hotel}}' AND booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00' ORDER BY booked_at DESC;"
     grading: { ordered: true, expect_rows: 3 }
     hints:
@@ -169,17 +169,17 @@ beats:
     rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "LIMIT" }
     prompt: "Your row for ride R-2291: what happened to {{star.first}}'s booking, and when?"
     options:
-      - { text: "CANCELLED_BY_RIDER — she cancelled it herself at 18:08:12, 13 minutes after booking", correct: true }
-      - { text: "COMPLETED — driver {{driver}} dropped her at the stadium" }
-      - { text: "CANCELLED_BY_DRIVER — {{driver}} never came" }
-    explain: "`status` = CANCELLED_BY_RIDER, `status_updated_at` = 18:08:12. Booked 17:55, cancelled by her at 18:08 — one minute before her key card hit the service lift (clue S2-C1, 18:09:40)."
+      - { text: "CANCELLED_BY_RIDER - she cancelled it herself at 18:08:12, 13 minutes after booking", correct: true }
+      - { text: "COMPLETED - driver {{driver}} dropped her at the stadium" }
+      - { text: "CANCELLED_BY_DRIVER - {{driver}} never came" }
+    explain: "`status` = CANCELLED_BY_RIDER, `status_updated_at` = 18:08:12. Booked 17:55, cancelled by her at 18:08 - one minute before her key card hit the service lift (clue S2-C1, 18:09:40)."
 
   - id: S4.15
     type: clue
     clue_id: S4-C1
     requires_task: T4.6
     title: "The cancelled cab"
-    body: "Your query on `cab_rides`: ride **R-2291**, driver **{{driver}}**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+    body: "Your query on `cab_rides`: ride **R-2291**, driver **{{driver}}**, booked at **17:55** to the stadium - status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
 
   - id: S4.16
     type: scene
@@ -192,7 +192,7 @@ beats:
     see_also:
       - { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "Possible Mistakes" }
     body: |
-      `OFFSET n` skips the first **n** rows — perfect for pages. Page 2 of 5 rides: `LIMIT 5 OFFSET 5`.
+      `OFFSET n` skips the first **n** rows - perfect for pages. Page 2 of 5 rides: `LIMIT 5 OFFSET 5`.
       In SQLite, `OFFSET` must come **after** `LIMIT`. The default offset is 0.
 
   - id: S4.18
@@ -219,7 +219,7 @@ beats:
         match: error
         error_regex: "syntax error"
         reply: "SQLite needs a `LIMIT` before `OFFSET`. Add `LIMIT 5`."
-    reply_on_pass: "Page 2. Find R-2291 — then read the row right after it."
+    reply_on_pass: "Page 2. Find R-2291 - then read the row right after it."
 
   - id: S4.18b
     type: check
@@ -227,7 +227,7 @@ beats:
     rm_ref: { unit_id: b80e530f-8971-445c-bb90-bffa26db1910, heading: "OFFSET" }
     prompt: "On page 2, what did {{driver.first}} do right after {{star.first}}'s ride was cancelled?"
     options:
-      - { text: "Ride R-2297 at 18:10 — he took {{passenger}} from the hotel to the railway station", correct: true }
+      - { text: "Ride R-2297 at 18:10 - he took {{passenger}} from the hotel to the railway station", correct: true }
       - { text: "He drove {{star.first}} to City Stadium" }
       - { text: "He had no more rides that evening" }
     explain: "R-2291 (17:55, {{star.first}}) is followed by **R-2297 at 18:10**: pickup {{hotel}}, drop Central Railway Station, rider {{passenger}}. Two minutes after her cancellation he was driving someone else. He could not have taken her."
@@ -236,16 +236,16 @@ beats:
     type: scene
     speaker: driver
     body: |
-      🎙️ Witness statement — {{driver.first}}'s voice note, after {{mentor.first}} called him:
+      🎙️ Witness statement - {{driver.first}}'s voice note, after {{mentor.first}} called him:
       "Madam, I reached the hotel at 18:06. She came out, but a man in a black jacket said *'Come, I'll drop you, it's faster'*.
-      She cancelled my ride and got into a **grey SUV**. Then I took another passenger — the railway station one."
+      She cancelled my ride and got into a **grey SUV**. Then I took another passenger - the railway station one."
 
   - id: S4.20
     type: clue
     clue_id: S4-C2
     requires_task: T4.7
     title: "A grey SUV, someone she knew"
-    body: "**Data** (your page-2 query): at 18:10 {{driver}} drove {{passenger}} to the railway station (R-2297) — he is cleared. **Witness** ({{driver.first}}'s statement): {{star.first}} cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+    body: "**Data** (your page-2 query): at 18:10 {{driver}} drove {{passenger}} to the railway station (R-2297) - he is cleared. **Witness** ({{driver.first}}'s statement): {{star.first}} cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
 
   - id: S4.21
     type: check
@@ -295,4 +295,4 @@ units:
       speaker: mentor
       body: |
         Previously: the rides are sorted by time. Driver {{driver.first}} was booked for {{star.first}}'s cancelled ride.
-        Now we need just the top rows — and the one ride that matters.
+        Now we need just the top rows - and the one ride that matters.

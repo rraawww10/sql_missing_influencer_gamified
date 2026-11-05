@@ -89,7 +89,7 @@
       "id": "U5.open",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Previously: our `suspects` table has five rows — Dev, Nysa, Ishita, Sunny and Kunal.\nTime to ask the table questions — and to read the hotel's key-card log.\n"
+      "body": "Previously: our `suspects` table has five rows - Dev, Nysa, Ishita, Sunny and Kunal.\nTime to ask the table questions - and to read the hotel's key-card log.\n"
     },
     {
       "id": "S2.10",
@@ -198,7 +198,7 @@
       "id": "S2.14",
       "type": "task",
       "task_id": "T2.6",
-      "ask": "Find Tara's row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"Tara Sen\"**. Then read the last two columns — where and when was her key card used last?",
+      "ask": "Find Tara's row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"Tara Sen\"**. Then read the last two columns - where and when was her key card used last?",
       "hints": [
         {
           "tier": 1,
@@ -265,7 +265,7 @@
         "row": 0,
         "column": "key_card_last_location"
       },
-      "feedback": "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries — and it opens next to the **service gate**."
+      "feedback": "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries - and it opens next to the **service gate**."
     },
     {
       "id": "S2.15",
@@ -273,7 +273,7 @@
       "clue_id": "S2-C1",
       "requires_task": "T2.6",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "id": "U5.close",

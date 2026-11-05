@@ -1,5 +1,5 @@
 // Progress like a stories bar: one segment per step of the episode. Finished steps can be opened again (read-only);
-// steps ahead show only what kind of step they are — never a clue's title. StepsList is the same thing as a list (in a sheet).
+// steps ahead show only what kind of step they are - never a clue's title. StepsList is the same thing as a list (in a sheet).
 import type { Beat } from '../../content/types';
 import type { SessionRunner } from '../../engine/runner/sessionRunner';
 import { speakerOf } from '../speakers';

@@ -49,7 +49,7 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     }
   ],
   "cast": {
@@ -71,7 +71,7 @@
       "id": "U11.open",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Previously: the hotel gate log has 300 entries. We filtered them by time and found vehicles leaving around 6 PM.\nNow the guard remembers a **grey SUV** — but only part of its number plate. We search by pattern.\n"
+      "body": "Previously: the hotel gate log has 300 entries. We filtered them by time and found vehicles leaving around 6 PM.\nNow the guard remembers a **grey SUV** - but only part of its number plate. We search by pattern.\n"
     },
     {
       "id": "S3.5",
@@ -136,7 +136,7 @@
           "match": {
             "result_hash": "sha256:294498e16c3b790f14681c8f25aefcf47559c7dd701f1ab61ef692fa4566f293"
           },
-          "reply": "No rows — without `%`, LIKE looks for the **exact** text '26 BH'. Add `%` after it to mean 'starts with'.",
+          "reply": "No rows - without `%`, LIKE looks for the **exact** text '26 BH'. Add `%` after it to mean 'starts with'.",
           "rm_ref": {
             "unit_id": "e0bdc576-751c-434a-a2f0-ff4bb97d2f86",
             "heading": "Common Patterns"
@@ -211,7 +211,7 @@
           "match": {
             "result_hash": "sha256:5b8ba48b7c8e05d20b0e9c6893bea94ed20637ba2f6a291654c3cdc7eb1dbfc9"
           },
-          "reply": "Too wide — `%` allowed **26 BH 4417 EY** in too. We know exactly **one** letter is missing and the number is 4471. Use `_` for one character.",
+          "reply": "Too wide - `%` allowed **26 BH 4417 EY** in too. We know exactly **one** letter is missing and the number is 4471. Use `_` for one character.",
           "rm_ref": {
             "unit_id": "e0bdc576-751c-434a-a2f0-ff4bb97d2f86",
             "heading": "Common Patterns"
@@ -247,7 +247,7 @@
           "solution_ref": "solutions/s03.json#T3.4"
         }
       ],
-      "reply_on_pass": "**Dev Arora** — Tara's manager — was driving that SUV when it came back at 19:52. Ira: \"He told us he never left the lobby.\"",
+      "reply_on_pass": "**Dev Arora** - Tara's manager - was driving that SUV when it came back at 19:52. Ira: \"He told us he never left the lobby.\"",
       "traps": []
     },
     {

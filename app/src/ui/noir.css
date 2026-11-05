@@ -1,5 +1,5 @@
 /* =====================================================================================
-   v4 "NEON NOIR" layer (2026-11) — loaded AFTER styles.css and overrides it.
+   v4 "NEON NOIR" layer (2026-11) - loaded AFTER styles.css and overrides it.
    A rainy Indian city at night: deep ink shadows, warm desk-lamp amber, evidence-red string,
    neon signs in the episode's accent colour, paper case files, a green-phosphor police terminal,
    rubber stamps for verdicts, and Inspector Kaal in the corner.
@@ -372,3 +372,173 @@ h1, h2, h3, h4 { font-family: var(--display); letter-spacing: .01em; text-transf
 .board-cork .evidence { position: relative; z-index: 1; }
 .board-cork .evi.briefed { background: #e9e4d8; }
 .board-cork .evi pre.sql { background: #1a1410; color: var(--lamp-2); }
+
+/* =====================================================================================
+   v5 "GAME JUICE" layer - per-episode particles, tap squash + sparks, screen flash/shake on verdicts,
+   "+1 ⭐" floaters, chapter banners, animated step transitions, livelier HUD.
+   Everything here is decoration: off (or reduced to a colour flash) with prefers-reduced-motion.
+   ===================================================================================== */
+@keyframes pRise { from { transform: translateY(20vh) scale(.6); opacity: 0; } 15% { opacity: .7; } 85% { opacity: .5; } to { transform: translateY(-110vh) scale(1.1); opacity: 0; } }
+@keyframes pFall { from { transform: translateY(-20vh); opacity: 0; } 10% { opacity: .45; } to { transform: translateY(110vh); opacity: 0; } }
+@keyframes pFloat { 0%, 100% { transform: translate(0, 0); opacity: .2; } 50% { transform: translate(24px, -30px); opacity: .6; } }
+@keyframes pPulse { 0%, 100% { transform: scale(.6); opacity: .1; } 50% { transform: scale(1.6); opacity: .6; } }
+@keyframes squash { 0% { transform: scale(1); } 35% { transform: scale(.93, .88); } 70% { transform: scale(1.04, 1.06); } 100% { transform: scale(1); } }
+@keyframes sparkFly { from { transform: translate(-50%, -50%) scale(1); opacity: 1; } to { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; } }
+@keyframes flashOk { 0% { opacity: 0; } 20% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes quake { 10%, 90% { transform: translate(-2px, 1px); } 20%, 80% { transform: translate(4px, -1px); } 30%, 50%, 70% { transform: translate(-7px, 2px); } 40%, 60% { transform: translate(7px, -2px); } }
+@keyframes zoomPunch { 0% { transform: scale(1); } 30% { transform: scale(1.012); } 100% { transform: scale(1); } }
+@keyframes xpUp { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.6); } 20% { opacity: 1; transform: translate(-50%, 0) scale(1.15); } 35% { transform: translate(-50%, -6px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -90px) scale(1); } }
+@keyframes bannerIn { 0% { opacity: 0; transform: translate(-50%, -50%) scale(2.2) rotate(-6deg); letter-spacing: .6em; filter: blur(6px); } 18% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(-2deg); letter-spacing: .08em; filter: none; } 80% { opacity: 1; transform: translate(-50%, -50%) scale(1.02) rotate(-2deg); } 100% { opacity: 0; transform: translate(-50%, -60%) scale(.9) rotate(-2deg); } }
+@keyframes bannerBar { from { transform: scaleX(0); } 20%, 80% { transform: scaleX(1); } to { transform: scaleX(0); } }
+@keyframes stepIn { from { opacity: 0; filter: blur(6px) brightness(1.6); } to { opacity: 1; filter: none; } }
+@keyframes shine { from { transform: translateX(-120%) skewX(-20deg); } to { transform: translateX(220%) skewX(-20deg); } }
+@keyframes segGlow { 0%, 100% { box-shadow: 0 0 0 0 var(--accent); } 50% { box-shadow: 0 0 10px 1px var(--accent); } }
+@keyframes hudDrop { from { transform: translateY(-100%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes dockUp { from { transform: translateY(120%); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes talkBob { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-2px) rotate(-1.5deg); } 75% { transform: translateY(-1px) rotate(1.5deg); } }
+
+/* ---- per-episode particles */
+.themed { position: relative; }
+.particles { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; color: var(--glow); opacity: .45; mix-blend-mode: screen; }
+body:has(.sheet, [role="dialog"]) .particles { opacity: 0; transition: opacity .3s; }
+.particles i { position: absolute; font-style: normal; text-shadow: 0 0 8px var(--glow); animation-iteration-count: infinite; animation-timing-function: linear; will-change: transform, opacity; }
+.p-rise i { animation-name: pRise; }
+.p-fall i { animation-name: pFall; color: color-mix(in srgb, var(--glow) 60%, #9ec5ff); text-shadow: none; opacity: .4; }
+.p-float i { animation-name: pFloat; animation-timing-function: ease-in-out; }
+.p-pulse i { animation-name: pPulse; animation-timing-function: ease-in-out; }
+
+/* ---- taps: squash + sparks + shine sweep on primary buttons */
+.squash { animation: squash .26s cubic-bezier(.3, 1.6, .5, 1) !important; }
+.tap-spark { position: fixed; z-index: 9999; width: 6px; height: 6px; border-radius: 50%; pointer-events: none; background: var(--accent, var(--lamp)); box-shadow: 0 0 8px var(--glow, var(--lamp)); animation: sparkFly .6s ease-out forwards; }
+.btn { transition: transform .15s cubic-bezier(.3, 1.6, .5, 1), box-shadow .2s, filter .2s; }
+.btn:not(:disabled):hover { transform: translateY(-2px); filter: brightness(1.08); box-shadow: 0 6px 18px -6px var(--accent, var(--lamp)); }
+.btn.primary { position: relative; overflow: hidden; }
+.btn.primary:not(:disabled)::after { content: ''; position: absolute; inset: 0 auto 0 0; width: 40%; background: linear-gradient(90deg, transparent, rgb(255 255 255 / 35%), transparent); animation: shine 3.2s ease-in-out infinite; pointer-events: none; }
+.choice, .pill, .envelope, .hud-stat { transition: transform .15s cubic-bezier(.3, 1.6, .5, 1), box-shadow .2s; }
+.choice:not(:disabled):hover, .envelope:hover, .hud-stat:hover { transform: translateY(-2px) scale(1.02); }
+
+/* ---- screen-wide verdict fx (gamefx.ts puts these on <body>) */
+body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9990; opacity: 0; }
+body.fx-pass::after { background: radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--verified) 30%, transparent), transparent 65%); animation: flashOk .8s ease-out; }
+body.fx-fail::after { background: radial-gradient(circle, transparent 45%, color-mix(in srgb, var(--evidence) 45%, transparent)); animation: flashOk .7s ease-out; }
+body.fx-trap::after { background: radial-gradient(circle, transparent 40%, color-mix(in srgb, #ff9f1a 45%, transparent)); animation: flashOk .9s ease-out; }
+body.fx-pin::after, body.fx-clue::after { background: #fff; animation: flashOk .35s ease-out; }
+body.fx-solved::after { background: radial-gradient(circle, color-mix(in srgb, var(--lamp) 40%, transparent), transparent 70%); animation: flashOk 1.2s ease-out; }
+body.fx-fail .stage-scroll, body.fx-trap .stage-scroll { animation: quake .45s both; }
+body.fx-pass .stage-scroll, body.fx-pin .stage-scroll { animation: zoomPunch .4s ease-out; }
+body.fx-combo .hud h1 { animation: neonPulse .5s 3; }
+
+.xp-float { position: fixed; left: 50%; top: 42%; z-index: 9995; pointer-events: none; font-family: var(--display); font-weight: 700; font-size: clamp(22px, 4vw, 36px); letter-spacing: .04em; color: var(--lamp-2); text-shadow: 0 0 12px var(--lamp), 0 3px 0 #000; white-space: nowrap; animation: xpUp 1.4s cubic-bezier(.2, .9, .3, 1) forwards; }
+
+/* ---- chapter banner: a game "STAGE 2" card */
+.chapter-banner { position: fixed; left: 50%; top: 45%; z-index: 9980; pointer-events: none; display: grid; justify-items: center; padding: 18px 48px; animation: bannerIn 2.2s cubic-bezier(.2, .9, .3, 1) forwards; font-family: var(--display); text-transform: uppercase; color: var(--text); }
+.chapter-banner::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 80%, #000) 15%, color-mix(in srgb, var(--accent) 80%, #000) 85%, transparent); transform-origin: center; animation: bannerBar 2.2s ease-in-out forwards; box-shadow: 0 0 40px var(--accent); }
+.chapter-banner small { font-size: 14px; letter-spacing: .4em; opacity: .85; }
+.chapter-banner b { font-size: clamp(48px, 10vw, 84px); line-height: 1; text-shadow: 0 0 20px var(--glow), 0 4px 0 #000; }
+.chapter-banner span { font-size: 13px; letter-spacing: .3em; opacity: .75; }
+
+/* ---- step transitions + HUD / dock entrances */
+.stage-content, .scene-inner { animation: stepIn .4s ease-out both; }
+.game .hud { animation: hudDrop .5s cubic-bezier(.2, .9, .3, 1) both; }
+.storybar .seg.current { animation: segGlow 1.6s ease-in-out infinite; }
+.storybar .seg.done { transition: background .4s, transform .2s; }
+.storybar .seg:not(:disabled):hover { transform: scaleY(1.8); }
+.dock .status.ok { animation: pulse 1.6s ease-in-out infinite; }
+
+/* ---- Kaal bobs while he talks; mic toggle */
+.voice-toggle.off { opacity: .6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .particles, .tap-spark, .xp-float { display: none; }
+  .squash, .stage-content, .scene-inner, .game .hud, .game .dock, .storybar .seg.current, .chapter-banner::before,
+  body.fx-fail .stage-scroll, body.fx-trap .stage-scroll, body.fx-pass .stage-scroll, body.fx-pin .stage-scroll { animation: none !important; }
+  .btn.primary::after { display: none; }
+  .chapter-banner { animation-duration: .01s; animation-delay: 0s; }
+}
+
+/* =====================================================================================
+   v6 "VIVID" layer (2026-11-05) - feedback: "too dark". Same structure, much brighter:
+   rich violet/indigo base instead of near-black, saturated episode skies, candy-bright buttons,
+   lighter vignette, and a lively, colourful Inspector Kaal (face, moustache, talking mouth).
+   ===================================================================================== */
+:root {
+  --bg: #241458; --bg-2: #2d1a6e; --panel: #34217d; --panel-2: #402a96; --panel-3: #4f37b0;
+  --glass: rgb(52 33 125 / 82%); --line: rgb(255 255 255 / 14%); --line-2: rgb(255 255 255 / 28%);
+  --text: #ffffff; --muted: #e2d9ff; --dim: #b5a8e8;
+  --lamp: #ffc23d; --lamp-2: #ffe08a; --neon-2: #2ee6d6; --evidence: #ff3d5a; --verified: #22e07a;
+  --code-bg: #120a2e;
+}
+.game, .page { background:
+  radial-gradient(110% 70% at 85% -10%, color-mix(in srgb, var(--accent) 55%, transparent), transparent 60%),
+  radial-gradient(90% 60% at -10% 110%, color-mix(in srgb, var(--neon-2) 35%, transparent), transparent 60%),
+  radial-gradient(70% 60% at 50% 40%, color-mix(in srgb, var(--sky1) 28%, #3a1f8a), var(--bg)); }
+.game::before, .page::before { opacity: .2; }
+.vignette { background: radial-gradient(ellipse at center, transparent 65%, rgb(20 8 50 / 35%) 100%); }
+.hud { background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 22%, #2a1868) 0%, rgb(42 24 104 / 92%) 100%); border-bottom: 2px solid color-mix(in srgb, var(--accent) 60%, transparent); }
+.btn { background: linear-gradient(#5a43c4, #432fa3); box-shadow: 0 3px 0 #22135e, inset 0 1px 0 rgb(255 255 255 / 22%); }
+.btn:hover:not(:disabled) { box-shadow: 0 4px 0 #22135e, 0 0 0 2px var(--lamp), 0 8px 24px rgb(255 194 61 / 30%); }
+.btn.primary { background: linear-gradient(color-mix(in srgb, var(--accent) 75%, #fff), var(--accent)); }
+.btn.ghost { background: transparent; box-shadow: none; }
+.btn.ghost:hover:not(:disabled) { background: rgb(255 255 255 / 12%); }
+.btn:disabled { filter: grayscale(.4) brightness(.85); }
+.hud-stat { background: rgb(255 255 255 / 12%); border-color: rgb(255 255 255 / 22%); }
+.dock { background: rgb(52 33 125 / 88%); border-color: rgb(255 255 255 / 22%); box-shadow: 0 12px 30px rgb(20 8 60 / 45%); }
+.storybar .seg { background: rgb(255 255 255 / 22%); }
+.storybar .seg.done { background: var(--lamp); }
+.storybar .seg.current { background: var(--accent); }
+.particles { opacity: .6; }
+
+/* ---- Kaal, lively: colourful body, moving mouth, eyebrows, idle antics */
+.kaal .kaal-eye { filter: none; transform-box: fill-box; transform-origin: center; animation: blinkEye 4.2s infinite, lookAround 7s ease-in-out infinite; }
+.kaal .kaal-happy-eyes { filter: none; }
+.kaal .kaal-mouth { opacity: 1 !important; transform-box: fill-box; transform-origin: center; transition: transform .2s; }
+.kaal .kaal-brows { transform-box: fill-box; transform-origin: center; transition: transform .3s var(--spring); }
+.kaal .kaal-stache { transform-box: fill-box; transform-origin: center; }
+.kaal .kaal-scarf-tail { transform-box: fill-box; transform-origin: top center; animation: scarfFlap 2.4s ease-in-out infinite; }
+.kaal .kaal-glass { transform-box: view-box; transform-origin: 88px 116px; animation: glassWiggle 5s ease-in-out infinite; }
+.kaal-talking .kaal-mouth { animation: talkMouth .22s ease-in-out infinite alternate; }
+.kaal-talking .kaal-stache { animation: stacheTalk .22s ease-in-out infinite alternate; }
+.kaal-talking .kaal-head { animation: nodTalk .9s ease-in-out infinite; }
+.kaal-happy .kaal-mouth, .kaal-cheer .kaal-mouth { transform: scale(1.5, 1.8); }
+.kaal-happy .kaal-brows, .kaal-cheer .kaal-brows { transform: translateY(-2.5px); }
+.kaal-oops .kaal-brows { transform: translateY(-1px) rotate(4deg); }
+.kaal-think .kaal-brows, .kaal-smirk .kaal-brows { transform: translateY(1px) rotate(-5deg); }
+.kaal-smirk .kaal-mouth { transform: translateX(3px) scale(1.2, .8); }
+.kaal-oops .kaal-mouth { transform: scale(1, 2.2); }
+.kaal-cheer .kaal-body { animation: hop .6s ease 3; }
+.kaal-btn { filter: drop-shadow(0 8px 14px rgb(20 8 60 / 50%)) drop-shadow(0 0 16px rgb(255 194 61 / 35%)); }
+.kaal-bubble { background: #fffaf0; border: 2px solid var(--lamp); box-shadow: 0 8px 22px rgb(20 8 60 / 40%), 0 0 0 4px rgb(255 194 61 / 25%); font-size: 15.5px; }
+.kaal-bubble b { color: #c2255c; }
+@keyframes talkMouth { from { transform: scale(1, .5); } to { transform: scale(1.25, 2.6); } }
+@keyframes stacheTalk { from { transform: translateY(0); } to { transform: translateY(-.8px) scaleX(1.05); } }
+@keyframes nodTalk { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-3deg) translateY(-.5px); } 70% { transform: rotate(2.5deg); } }
+@keyframes lookAround { 0%, 30%, 100% { translate: 0 0; } 40%, 52% { translate: -1.3px 0; } 62%, 74% { translate: 1.3px -.4px; } }
+@keyframes scarfFlap { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(8deg); } }
+@keyframes glassWiggle { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-12deg); } 86% { transform: rotate(8deg); } 92% { transform: rotate(-4deg); } }
+@media (prefers-reduced-motion: reduce) { .kaal-talking .kaal-mouth { animation: none !important; } }
+.kaal-card { background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 30%, #3b2596), #2f1f7a) !important; border-color: color-mix(in srgb, var(--accent) 55%, transparent) !important; }
+.kaal-card .say { color: #fff; }
+.speech, .dialogue .speech { background: rgb(40 24 100 / 88%); }
+
+/* ---- readability fixes (2026-11-05): code inside a dark code block must never inherit a "paper" ink colour */
+.md pre code, .lesson-card .md pre code, .brief-card .md pre code, .evi .md pre code { color: inherit !important; background: none !important; padding: 0 !important; }
+.lesson-card .md pre, .brief-card .md pre, .evi .md pre { color: #ffe9b0; }
+/* the CASE NOTE sticker sits above the text, not on top of the first line */
+.lesson-card { padding-top: 40px !important; }
+/* red ink on paper: the vivid --evidence red is too light on cream, so paper surfaces use a deep red */
+.objective b, .evi .stamp, .newspaper .solved-stamp { color: #b3102a; border-color: #b3102a; }
+.newspaper .btn.danger, .paper .btn.danger, .evi .btn.danger { color: #b3102a; border-color: rgb(179 16 42 / 45%); }
+/* the CASE NOTE sticker: `inset: auto` in the rule above cancelled its top/left, so it landed on the first line of text */
+.lesson-card::before { inset: auto; top: -14px; left: 22px; }
+.lesson-card { padding-top: 34px !important; }
+/* the row count on the selected table tab: full-strength text on the accent colour */
+button.on > small, .tables-tabs button.on small { color: var(--on-accent) !important; opacity: 1; }
+.btn.primary { background: linear-gradient(var(--accent), color-mix(in srgb, var(--accent) 82%, #000)); }
+:root { --danger: #ffa3b1; }
+.checkpoint b { color: #9dffc8; }
+.checkpoint { background: rgb(20 60 45 / 92%) !important; }
+.ep-row .t, .stop-body .time { color: #ffd2b8; }
+.stage-label { color: #ffd76a; }
+.reveal .new, .kaal-card .say b { color: #ffd76a; }
+/* primary buttons keep their colour on hover (styles.css `.btn:hover` used to repaint them panel-purple → dark text on purple) */
+.btn.primary:hover:not(:disabled) { background: linear-gradient(var(--accent), color-mix(in srgb, var(--accent) 82%, #000)); }

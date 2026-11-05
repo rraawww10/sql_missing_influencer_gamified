@@ -1,4 +1,4 @@
-// "How was this episode?" — one short card on the solved screen. Skippable, asked once per episode per student.
+// "How was this episode?" - one short card on the solved screen. Skippable, asked once per episode per student.
 import { useEffect, useState } from 'react';
 import { useServices } from '../services';
 import { feedbackGiven, sendFeedback, type Feedback } from '../feedback';

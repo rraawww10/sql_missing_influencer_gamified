@@ -45,7 +45,7 @@ async function playThrough(r: SessionRunner, { useHints = false } = {}) {
   }
 }
 
-describe('SessionRunner — full sessions', () => {
+describe('SessionRunner - full sessions', () => {
   it('plays every built session to completion, in order', async () => {
     for (const n of builtSessions()) {
       const r = await SessionRunner.open(await loader.pack(n), user, deps());
@@ -90,7 +90,7 @@ describe('SessionRunner — full sessions', () => {
   });
 });
 
-describe('SessionRunner — rules', () => {
+describe('SessionRunner - rules', () => {
   async function openAt(session: number, beatId: string) {
     const r = await SessionRunner.open(await loader.pack(session), user, deps());
     const sol = await loader.solutionsFor(session);
@@ -151,7 +151,7 @@ describe('SessionRunner — rules', () => {
   });
 });
 
-describe('SessionRunner — continue any time', () => {
+describe('SessionRunner - continue any time', () => {
   it('resumes an unfinished session even days later, at the same step', async () => {
     const d = deps();
     const r1 = await SessionRunner.open(await loader.pack(3), user, d);

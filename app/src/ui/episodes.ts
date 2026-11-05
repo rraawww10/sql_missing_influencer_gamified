@@ -1,4 +1,4 @@
-// Episode names and teasers: the learner never sees "S01" / "Session 1" — every stage is named after what happens in it.
+// Episode names and teasers: the learner never sees "S01" / "Session 1" - every stage is named after what happens in it.
 // Titles mirror the packs (content/sessions/sNN.json `title`); teasers and skills are written here (no spoilers).
 import { storyTime } from './speakers';
 
@@ -33,7 +33,7 @@ export const episodeOf = (n: number): EpisodeMeta => EPISODES[n - 1] ?? EPISODES
 // Title shown to the learner (the pack's title when loaded, else the planned one)
 export const episodeTitle = (n: number, packTitle?: string): string => packTitle ?? episodeOf(n).title;
 
-// "🕕 6:00 PM" — the story clock is the only sequence marker the learner sees
+// "🕕 6:00 PM" - the story clock is the only sequence marker the learner sees
 export const episodeClock = (n: number): string => `🕕 ${storyTime(n)}`;
 
 // Short label for a unit (one reading material) inside its episode: "String Operations · part 2 of 3"

@@ -53,25 +53,25 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "session": 3,
       "clue_id": "S3-C1",
       "title": "Grey SUV at the service gate",
-      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
     },
     {
       "session": 4,
       "clue_id": "S4-C1",
       "title": "The cancelled cab",
-      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium - status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
     },
     {
       "session": 4,
       "clue_id": "S4-C2",
       "title": "A grey SUV, someone she knew",
-      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) - he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
     }
   ],
   "cast": {
@@ -93,7 +93,7 @@
       "id": "S5.1",
       "type": "scene",
       "speaker": "analyst",
-      "body": "The bank sent UPI payments for the last three days: `upi_payments` — who paid whom, how much, an optional note, and when."
+      "body": "The bank sent UPI payments for the last three days: `upi_payments` - who paid whom, how much, an optional note, and when."
     },
     {
       "id": "S5.2",
@@ -114,7 +114,7 @@
       "id": "S5.3",
       "type": "task",
       "task_id": "T5.1",
-      "ask": "Dev Arora's payments **today** (from `'2026-12-12 00:00:00'`): show `SUM`, `COUNT`, `MAX`, `MIN` and `AVG` of `amount` — in that order.",
+      "ask": "Dev Arora's payments **today** (from `'2026-12-12 00:00:00'`): show `SUM`, `COUNT`, `MAX`, `MIN` and `AVG` of `amount` - in that order.",
       "grading": {
         "expect_rows": 1,
         "expected_hash": "sha256:bc4a8d4c4524a2a2e5152269b35448fc8ef00c87ede60d18ecec6ff4ef716aa6"
@@ -136,7 +136,7 @@
           "solution_ref": "solutions/s05.json#T5.1"
         }
       ],
-      "reply_on_pass": "₹54,450 in six payments — and one of them is **₹45,000**.",
+      "reply_on_pass": "₹54,450 in six payments - and one of them is **₹45,000**.",
       "traps": []
     },
     {
@@ -239,7 +239,7 @@
           "solution_ref": "solutions/s05.json#T5.sum_text"
         }
       ],
-      "reply_on_pass": "**0.0** — not zero money. You added up words, and SQLite treats text as 0.",
+      "reply_on_pass": "**0.0** - not zero money. You added up words, and SQLite treats text as 0.",
       "grading": {
         "expected_hash": "sha256:3d3d2702c4edad7fdb385ee11b27f6779574c8153cd2e449a685804d4ac53b94"
       },
@@ -286,7 +286,7 @@
       "id": "S5.9b",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Now Mahi's call. She said: *\"a strange ₹1 from Tara's smartwatch at 7 PM.\"*\nA payment of ₹1 is not money — it's a **message**. The bank's table keeps the sender, the amount, the note and the time. Find that payment and read its note.\n"
+      "body": "Now Mahi's call. She said: *\"a strange ₹1 from Tara's smartwatch at 7 PM.\"*\nA payment of ₹1 is not money - it's a **message**. The bank's table keeps the sender, the amount, the note and the time. Find that payment and read its note.\n"
     },
     {
       "id": "S5.10",
@@ -329,7 +329,7 @@
         "unit_id": "87f66cf3-b88a-44e8-9ce8-c6a7595d0b17",
         "heading": "Aggregations"
       },
-      "prompt": "This is the row your query returned. Tap the **note** — the only thing Tara could type.",
+      "prompt": "This is the row your query returned. Tap the **note** - the only thing Tara could type.",
       "tables": [
         {
           "caption": "Your result",
@@ -354,7 +354,7 @@
         "row": 0,
         "column": "note"
       },
-      "feedback": "`gReEn aCrEs` — capital letters in odd places. Nobody types like that by accident. Sent from her **watch**, not her phone. Keep it; we decode it later."
+      "feedback": "`gReEn aCrEs` - capital letters in odd places. Nobody types like that by accident. Sent from her **watch**, not her phone. Keep it; we decode it later."
     },
     {
       "id": "S5.11",
@@ -362,7 +362,7 @@
       "clue_id": "S5-C1",
       "requires_task": "T5.3",
       "title": "A ₹1 message",
-      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay - and the capitals look deliberate. A message, not money."
     },
     {
       "id": "S5.12",
@@ -419,7 +419,7 @@
       "id": "S5.15",
       "type": "task",
       "task_id": "T5.5",
-      "ask": "Who paid whom the **most** over the three days? For **each pair** `from_name`, `to_name`, show the `SUM(amount)` as `total` — biggest total first, **top 5** only.",
+      "ask": "Who paid whom the **most** over the three days? For **each pair** `from_name`, `to_name`, show the `SUM(amount)` as `total` - biggest total first, **top 5** only.",
       "grading": {
         "ordered": true,
         "expect_rows": 5,
@@ -563,7 +563,7 @@
       "clue_id": "S5-C2",
       "requires_task": "T5.6b",
       "title": "₹45,000 to a farm stay",
-      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** - note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
     },
     {
       "id": "S5.20",
@@ -583,7 +583,7 @@
           "text": "Rows with duplicate notes"
         },
         {
-          "text": "Nothing — it counts every row"
+          "text": "Nothing - it counts every row"
         }
       ],
       "explain": "`COUNT(column)` counts only non-NULL values. `COUNT(*)` counts every row."
@@ -592,7 +592,7 @@
       "id": "S5.21",
       "type": "hook",
       "speaker": "analyst",
-      "body": "Telecom team: \"Tara's phone is off — but her **smartwatch** has an eSIM. We have its tower pings.\""
+      "body": "Telecom team: \"Tara's phone is off - but her **smartwatch** has an eSIM. We have its tower pings.\""
     }
   ]
 }

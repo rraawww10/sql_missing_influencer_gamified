@@ -48,13 +48,13 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "session": 3,
       "clue_id": "S3-C1",
       "title": "Grey SUV at the service gate",
-      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
     }
   ],
   "cast": {
@@ -104,7 +104,7 @@
       "type": "task",
       "task_id": "T4.3",
       "minutes": 2,
-      "ask": "Same hotel rides between 17:30 and 18:30 — show `ride_id`, `status` and `booked_at`, **newest first**.",
+      "ask": "Same hotel rides between 17:30 and 18:30 - show `ride_id`, `status` and `booked_at`, **newest first**.",
       "grading": {
         "ordered": true,
         "expect_rows": 3,

@@ -1,4 +1,4 @@
-# Session 1 — "She's Gone" (6:00 PM). Flow: docs/SESSION_PLAN.md › Session 1.
+# Session 1 - "She's Gone" (6:00 PM). Flow: docs/SESSION_PLAN.md › Session 1.
 # Build: node pipeline/build_sessions.mjs --only 1
 session: 1
 title: "She's Gone"
@@ -24,7 +24,7 @@ beats:
     speaker: mentor
     body: |
       Welcome to the City Police Data Cell, intern. I am SI {{mentor}}.
-      We have no CCTV yet and no phone signal. But this city writes everything down —
+      We have no CCTV yet and no phone signal. But this city writes everything down - 
       hotel entries, cab bookings, UPI payments, phone towers.
       All of that is **data**. Tonight, data is our only witness.
 
@@ -49,7 +49,7 @@ beats:
       - { text: "A UPI payment receipt", bucket: "Data" }
       - { text: "Something a man on the street said and nobody wrote down", bucket: "Not data" }
       - { text: "The cab app's booking history", bucket: "Data" }
-    feedback: "Data is information that is **stored**. A rumour nobody saved is not data — and we can't query it."
+    feedback: "Data is information that is **stored**. A rumour nobody saved is not data - and we can't query it."
 
   - id: S1.5
     type: note
@@ -139,7 +139,7 @@ beats:
       - { text: "SQLite", correct: true }
       - { text: "Redis" }
       - { text: "Cassandra" }
-    explain: "SQLite is a relational DBMS — it stores data in tables. MongoDB, Redis and Cassandra are non-relational."
+    explain: "SQLite is a relational DBMS - it stores data in tables. MongoDB, Redis and Cassandra are non-relational."
 
   - id: S1.13
     type: note
@@ -152,7 +152,7 @@ beats:
     type: activity
     kind: pick_cell
     rm_ref: { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Relational Database" }
-    prompt: "Two printouts of the **same table** — one from 5 PM, one from 6 PM. Find {{star.first}}'s row and tap the cell that changed."
+    prompt: "Two printouts of the **same table** - one from 5 PM, one from 6 PM. Find {{star.first}}'s row and tap the cell that changed."
     tables:
       - caption: "hotel_guests at 5:00 PM"
         columns: [guest_id, name, room_no, status]
@@ -167,7 +167,7 @@ beats:
           - [18, "{{manager}}", 705, "IN_ROOM"]
           - [31, "Anita Desai", 512, "IN_ROOM"]
     answer: { table: "hotel_guests at 6:00 PM", row: 0, column: status }
-    feedback: "Same columns, same rows — one value changed. Between 5 and 6 PM, {{star.first}} left Room 704."
+    feedback: "Same columns, same rows - one value changed. Between 5 and 6 PM, {{star.first}} left Room 704."
 
   - id: S1.24
     type: clue
@@ -195,7 +195,7 @@ beats:
   - id: S1.27
     type: hook
     speaker: analyst
-    body: "I've given you access to the case database. First job: build our suspect list — in SQL."
+    body: "I've given you access to the case database. First job: build our suspect list - in SQL."
 
 exit:
   required_clues: [S1-C1]
@@ -206,5 +206,5 @@ units:
   - unit_id: a7ecece7-3f40-4856-92aa-192911076595   # RM #2 Introduction to Databases
     from: S1.1
     to: S1.27
-  - unit_id: 134188ca-3b59-40c3-9f5c-73b88cabb648   # RM #1 Introduction to Databases — same text as RM #2
+  - unit_id: 134188ca-3b59-40c3-9f5c-73b88cabb648   # RM #1 Introduction to Databases - same text as RM #2
     same_as: a7ecece7-3f40-4856-92aa-192911076595

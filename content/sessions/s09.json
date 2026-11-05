@@ -73,31 +73,31 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "session": 3,
       "clue_id": "S3-C1",
       "title": "Grey SUV at the service gate",
-      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
     },
     {
       "session": 4,
       "clue_id": "S4-C1",
       "title": "The cancelled cab",
-      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium - status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
     },
     {
       "session": 4,
       "clue_id": "S4-C2",
       "title": "A grey SUV, someone she knew",
-      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) - he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
     },
     {
       "session": 5,
       "clue_id": "S5-C1",
       "title": "A ₹1 message",
-      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay - and the capitals look deliberate. A message, not money."
     },
     {
       "session": 5,
@@ -109,25 +109,25 @@
       "session": 5,
       "clue_id": "S5-C2",
       "title": "₹45,000 to a farm stay",
-      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** - note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
     },
     {
       "session": 6,
       "clue_id": "S6-C1",
       "title": "The outskirts tower",
-      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** - **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
     },
     {
       "session": 6,
       "clue_id": "S6-C2",
       "title": "The manager was there too",
-      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** - the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
     },
     {
       "session": 7,
       "clue_id": "S7-C1",
       "title": "Green Acres",
-      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** - the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
     },
     {
       "session": 8,
@@ -155,7 +155,7 @@
       "id": "S9.1",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Photos, red strings, sticky notes… Our board is a mess. Let's turn it into an **ER model** — then into real tables."
+      "body": "Photos, red strings, sticky notes… Our board is a mess. Let's turn it into an **ER model** - then into real tables."
     },
     {
       "id": "S9.2",
@@ -322,7 +322,7 @@
         "unit_id": "3ba93bc1-cb50-48e1-983b-354b6519609d",
         "heading": "ER Model of e-commerce application"
       },
-      "prompt": "Same pattern, different story — match each case relationship to its e-commerce twin.",
+      "prompt": "Same pattern, different story - match each case relationship to its e-commerce twin.",
       "pairs": [
         {
           "left": "Person – smartwatch",
@@ -567,7 +567,7 @@
         "unit_id": "61aa7338-30ff-4a95-9522-9cf70e88d742",
         "heading": "Inserting data into the respective tables"
       },
-      "ask": "Put the caretaker's message into the tables — **parents first**:\n- `person`: `(2, 'Dev Arora', 'Artist manager')`\n- `property`: `(1, 'Green Acres Farm Stays', 'Ring Road outskirts', 'Rural District')`\n- `booking`: `(88, 1, 2, '2026-12-12 18:45:00')`\n- `booking_guest`: `(1, 88, 2)` and `(2, 88, NULL)` — the lady's name wasn't given\n",
+      "ask": "Put the caretaker's message into the tables - **parents first**:\n- `person`: `(2, 'Dev Arora', 'Artist manager')`\n- `property`: `(1, 'Green Acres Farm Stays', 'Ring Road outskirts', 'Rural District')`\n- `booking`: `(88, 1, 2, '2026-12-12 18:45:00')`\n- `booking_guest`: `(1, 88, 2)` and `(2, 88, NULL)` - the lady's name wasn't given\n",
       "setup": [
         "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
         "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
@@ -644,7 +644,7 @@
       "id": "S9.19",
       "type": "task",
       "task_id": "T9.6",
-      "ask": "**1:N** — all bookings of `'Green Acres Farm Stays'`: everything from `property` joined with `booking` on `property.id = booking.property_id`.",
+      "ask": "**1:N** - all bookings of `'Green Acres Farm Stays'`: everything from `property` joined with `booking` on `property.id = booking.property_id`.",
       "setup": [
         "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
         "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
@@ -673,7 +673,7 @@
           "solution_ref": "solutions/s09.json#T9.6"
         }
       ],
-      "reply_on_pass": "Two bookings at the farm. One is old (November). The other is **88**: `booked_by` 2, `check_in` **2026-12-12 18:45:00** — tonight.",
+      "reply_on_pass": "Two bookings at the farm. One is old (November). The other is **88**: `booked_by` 2, `check_in` **2026-12-12 18:45:00** - tonight.",
       "traps": []
     },
     {
@@ -681,7 +681,7 @@
       "type": "task",
       "task_id": "T9.7",
       "minutes": 2,
-      "ask": "**1:1** — each person with their smartwatch: `person.name`, `smartwatch.model`, `smartwatch.esim_number` (join on `person.id = smartwatch.person_id`).",
+      "ask": "**1:1** - each person with their smartwatch: `person.name`, `smartwatch.model`, `smartwatch.esim_number` (join on `person.id = smartwatch.person_id`).",
       "setup": [
         "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
         "INSERT INTO person VALUES (1, 'Tara Sen', 'Singer'), (2, 'Dev Arora', 'Artist manager'), (3, 'Nysa Kapoor', 'Singer'), (6, 'Kunal Bajaj', 'Event organiser'), (7, 'Mahi Sen', 'Student'), (9, 'Anita Fernandes', 'Hotel guest');"
@@ -713,7 +713,7 @@
       "id": "S9.21",
       "type": "task",
       "task_id": "T9.8",
-      "ask": "**M:N** — the registered guests of booking **88**: `person.name` from `booking_guest` joined with `person` on `booking_guest.person_id = person.id`.",
+      "ask": "**M:N** - the registered guests of booking **88**: `person.name` from `booking_guest` joined with `person` on `booking_guest.person_id = person.id`.",
       "setup": [
         "CREATE TABLE person (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), role VARCHAR(100));",
         "CREATE TABLE property (id INTEGER NOT NULL PRIMARY KEY, name VARCHAR(250), area VARCHAR(250), district VARCHAR(100));",
@@ -745,7 +745,7 @@
       "on_pass": {
         "clue": "S9-C1"
       },
-      "reply_on_pass": "Two guests booked — one name came back. Ira: \"Remember this.\"",
+      "reply_on_pass": "Two guests booked - one name came back. Ira: \"Remember this.\"",
       "traps": []
     },
     {
@@ -759,7 +759,7 @@
       "prompt": "You inserted **two** `booking_guest` rows for booking 88, but the join returned **one** name. Why?",
       "options": [
         {
-          "text": "The second guest's `person_id` is NULL — no name was registered, so there is no `person` row to match",
+          "text": "The second guest's `person_id` is NULL - no name was registered, so there is no `person` row to match",
           "correct": true
         },
         {
@@ -769,7 +769,7 @@
           "text": "The second row was deleted by ON DELETE CASCADE"
         }
       ],
-      "explain": "`(2, 88, NULL)`: a guest with no `person_id`. JOIN keeps only rows that match on both sides, so the unnamed guest disappears. Two people checked in at 18:45 — we know the name of only one."
+      "explain": "`(2, 88, NULL)`: a guest with no `person_id`. JOIN keeps only rows that match on both sides, so the unnamed guest disappears. Two people checked in at 18:45 - we know the name of only one."
     },
     {
       "id": "S9.22",
@@ -777,7 +777,7 @@
       "clue_id": "S9-C1",
       "requires_task": "T9.8",
       "title": "Booking B-88",
-      "body": "Your tables: Green Acres Farm Stays, booking **88** — `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
+      "body": "Your tables: Green Acres Farm Stays, booking **88** - `booked_by` **Dev Arora**, `check_in` **18:45** tonight, **2** guests in `booking_guest`: him, and one guest with **no name** (NULL). The ₹45,000 note said *2 guests* (S5-C2). Who is the second guest?"
     },
     {
       "id": "S9.23",
@@ -817,7 +817,7 @@
           "solution_ref": "solutions/s09.json#T9.9"
         }
       ],
-      "reply_on_pass": "Booking 90 vanished with it. That's cascade — powerful, so never test it on real evidence!",
+      "reply_on_pass": "Booking 90 vanished with it. That's cascade - powerful, so never test it on real evidence!",
       "traps": []
     },
     {
@@ -841,7 +841,7 @@
           "text": "a primary key"
         }
       ],
-      "explain": "M:N needs its own table holding a foreign key to each side — like `booking_guest` or `cart_product`."
+      "explain": "M:N needs its own table holding a foreign key to each side - like `booking_guest` or `cart_product`."
     },
     {
       "id": "S9.25",

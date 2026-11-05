@@ -99,7 +99,7 @@
       "id": "S2.1",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Five names keep coming up. Put them in a proper table — no notebook scribbles.\nWe talk to databases in **SQL**. Let's start.\n"
+      "body": "Five names keep coming up. Put them in a proper table - no notebook scribbles.\nWe talk to databases in **SQL**. Let's start.\n"
     },
     {
       "id": "S2.2",
@@ -245,7 +245,7 @@
       "id": "S2.9",
       "type": "task",
       "task_id": "T2.3",
-      "ask": "Ira's notebook has the five suspects. Insert all five rows into `suspects` — copy them exactly, even if something looks wrong.\n\n| name | role | phone | age |\n|---|---|---|---|\n| Dev Arora | manager | 9876500002 | 38 |\n| Nysa Kapoor | rival singer | 9876500003 | 24 |\n| Ishita Das | fan page admin | 9876500004 | 19 |\n| Sunny Gill | cab driver | 9876500050 | 45 |\n| Kunal Bajaj | event organiser | 9876500006 | 41 |\n",
+      "ask": "Ira's notebook has the five suspects. Insert all five rows into `suspects` - copy them exactly, even if something looks wrong.\n\n| name | role | phone | age |\n|---|---|---|---|\n| Dev Arora | manager | 9876500002 | 38 |\n| Nysa Kapoor | rival singer | 9876500003 | 24 |\n| Ishita Das | fan page admin | 9876500004 | 19 |\n| Sunny Gill | cab driver | 9876500050 | 45 |\n| Kunal Bajaj | event organiser | 9876500006 | 41 |\n",
       "setup": [
         "CREATE TABLE suspects (name VARCHAR(200), role VARCHAR(100), phone VARCHAR(15), age INT);"
       ],
@@ -311,7 +311,7 @@
             "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
             "inspect": "SELECT COUNT(*) > 0 FROM suspects WHERE typeof(age) = 'text';"
           },
-          "reply": "⚠️ No error — but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`.",
+          "reply": "⚠️ No error - but look: an age is **text**, in an INT column. SQLite doesn't complain when data types don't match. That's why **you** must check them. Use numbers for `age`.",
           "rm_ref": {
             "unit_id": "2f13bf2f-3532-4e12-9496-0715646dbbd0",
             "heading": "Mistake 4"
@@ -426,7 +426,7 @@
       "id": "S2.14",
       "type": "task",
       "task_id": "T2.6",
-      "ask": "Find Tara's row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"Tara Sen\"**. Then read the last two columns — where and when was her key card used last?",
+      "ask": "Find Tara's row: from `hotel_guests`, get **all the columns** of the guest whose name is **\"Tara Sen\"**. Then read the last two columns - where and when was her key card used last?",
       "hints": [
         {
           "tier": 1,
@@ -493,7 +493,7 @@
         "row": 0,
         "column": "key_card_last_location"
       },
-      "feedback": "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries — and it opens next to the **service gate**."
+      "feedback": "**Service Lift**, at **18:09:40**. Guests use the lobby lifts. The service lift is for staff and deliveries - and it opens next to the **service gate**."
     },
     {
       "id": "S2.15",
@@ -501,7 +501,7 @@
       "clue_id": "S2-C1",
       "requires_task": "T2.6",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "id": "S2.16",
@@ -575,7 +575,7 @@
         "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
         "heading": "SQLite is Case Insensitive!"
       },
-      "prompt": "`SELECT * FROM suspects;` and `select * from suspects;` — what happens?",
+      "prompt": "`SELECT * FROM suspects;` and `select * from suspects;` - what happens?",
       "options": [
         {
           "text": "Only the first one works"
@@ -729,7 +729,7 @@
         "unit_id": "00dceceb-b806-4a3d-be86-9d35d4e8b82b",
         "heading": "DELETE VS DROP"
       },
-      "prompt": "DELETE vs DROP — match each command to what it does.",
+      "prompt": "DELETE vs DROP - match each command to what it does.",
       "pairs": [
         {
           "left": "DELETE FROM rumours WHERE …",
@@ -920,7 +920,7 @@
             "result_hash": "sha256:ccd740c05ce5bc7864b2a77fb60cd86384fcc8da309823b82f4b682a1b7becd2",
             "inspect": "SELECT COUNT(DISTINCT alibi) FROM suspects;"
           },
-          "reply": "Oops — now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more.",
+          "reply": "Oops - now all five 'were in the hotel lobby'. You forgot `WHERE` again. Reset and try once more.",
           "rm_ref": {
             "unit_id": "226c4f89-e296-4bb8-bcea-604a91a9b6d1",
             "heading": "Update All Rows"
@@ -987,7 +987,7 @@
       "id": "S2.34",
       "type": "hook",
       "speaker": "system",
-      "body": "📧 Hotel security: \"Attaching the gate log — **300 entries** since noon.\"\nIra: \"That service lift opens near the service gate. Find who used it.\"\n"
+      "body": "📧 Hotel security: \"Attaching the gate log - **300 entries** since noon.\"\nIra: \"That service lift opens near the service gate. Find who used it.\"\n"
     }
   ]
 }

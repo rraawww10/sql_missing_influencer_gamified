@@ -19,7 +19,7 @@ export class ContentLoader {
   private notes: CaseNotes | null = null;
 
   // base follows Vite's `base`: '/content' in dev, './content' in a standalone session build (works in any folder)
-  // unit: a standalone UNIT site (one reading material): pack() then returns that unit's pack — a slice of its session
+  // unit: a standalone UNIT site (one reading material): pack() then returns that unit's pack - a slice of its session
   constructor(private readonly fetcher: Fetcher = (p) => fetch(p), private readonly base = `${import.meta.env.BASE_URL}content`,
               readonly unit: number | null = null) {}
 

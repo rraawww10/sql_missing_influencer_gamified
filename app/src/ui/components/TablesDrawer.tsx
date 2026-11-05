@@ -1,5 +1,5 @@
 // The case database, always in reach: one tab per table, the rows (first 100) or the schema (columns, types, keys).
-// Shows the tables as they exist for the current task — snapshot + task setup + the learner's last passing query —
+// Shows the tables as they exist for the current task - snapshot + task setup + the learner's last passing query - 
 // so a table the learner just created is there too. Column names can be tapped into the editor.
 import { useEffect, useState } from 'react';
 import type { TablePreview } from '../../engine/sql/engine';
@@ -74,7 +74,7 @@ export function TablesDrawer({ snapshot, setup, learnerSql, refreshKey = 0, onIn
             {preview.schema.map((c) => (
               <tr key={c.name}>
                 <td><code>{c.name}</code></td>
-                <td className="muted">{c.type || '—'}{c.notnull && !c.pk ? ' · not null' : ''}</td>
+                <td className="muted">{c.type || ' - '}{c.notnull && !c.pk ? ' · not null' : ''}</td>
                 <td>{c.pk ? <span className="chip accent">PK</span> : ''}</td>
               </tr>
             ))}

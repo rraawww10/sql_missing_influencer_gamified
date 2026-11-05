@@ -56,31 +56,31 @@
       "session": 2,
       "clue_id": "S2-C1",
       "title": "The service lift",
-      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** — a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
+      "body": "Your query on `hotel_guests`: Tara's key card was last tapped at **18:09:40** at the **Service Lift** - a staff lift that opens near the service gate. A star doesn't use the service lift by chance. Who was she with, and what left by that gate?"
     },
     {
       "session": 3,
       "clue_id": "S3-C1",
       "title": "Grey SUV at the service gate",
-      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** — 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
+      "body": "Your gate-log query: grey SUV **26 BH 4471 EX** went **OUT** by the **service gate** at **18:12:05** - 3 minutes after her key card was tapped at the service lift (clue S2-C1). The same SUV came back **IN** at **19:52:10**, and the guard wrote the driver's name: **Dev Arora**."
     },
     {
       "session": 4,
       "clue_id": "S4-C1",
       "title": "The cancelled cab",
-      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium — status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
+      "body": "Your query on `cab_rides`: ride **R-2291**, driver **Sunny Gill**, booked at **17:55** to the stadium - status **CANCELLED_BY_RIDER** at **18:08:12**. She cancelled her own cab one minute before her card was tapped at the service lift (S2-C1). Why?"
     },
     {
       "session": 4,
       "clue_id": "S4-C2",
       "title": "A grey SUV, someone she knew",
-      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) — he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
+      "body": "**Data** (your page-2 query): at 18:10 Sunny Gill drove Farhan Ali to the railway station (R-2297) - he is cleared. **Witness** (Sunny's statement): Tara cancelled the cab herself and got into a **grey SUV** with a man she knew. A grey SUV left by the service gate at 18:12 (S3-C1)."
     },
     {
       "session": 5,
       "clue_id": "S5-C1",
       "title": "A ₹1 message",
-      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay — and the capitals look deliberate. A message, not money."
+      "body": "Your query on `upi_payments`: at **19:02:30**, *Tara Sen (Watch)* sent **₹1** to Mahi with the note **`gReEn aCrEs`**. Her phone is off, but her watch can pay - and the capitals look deliberate. A message, not money."
     },
     {
       "session": 5,
@@ -92,19 +92,19 @@
       "session": 5,
       "clue_id": "S5-C2",
       "title": "₹45,000 to a farm stay",
-      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** — note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
+      "body": "Your query: Dev Arora paid **₹45,000** to **Green Acres Farm Stays** today at **16:10:05** - note *Green Acres - 2 guests*. Two hours before she vanished, her manager booked a farm stay for **two** on concert day."
     },
     {
       "session": 6,
       "clue_id": "S6-C1",
       "title": "The outskirts tower",
-      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** — **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+      "body": "Your query on `tower_pings`: since **18:52** Tara's watch has pinged only tower **RRO-17 · Ring Road outskirts** - **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
     },
     {
       "session": 6,
       "clue_id": "S6-C2",
       "title": "The manager was there too",
-      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** — the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
+      "body": "Your query: Dev's phone pinged **RRO-17** six times, **18:52 → 19:22** - the same tower, the same half hour as Tara's watch (S6-C1). His alibi, which you typed in Episode 2, says *in hotel lobby all evening*. The data says otherwise."
     }
   ],
   "cast": {
@@ -155,7 +155,7 @@
       "id": "S7.20",
       "type": "task",
       "task_id": "T7.10",
-      "ask": "How far did she walk after **18:45**? Show the total distance in km as `ROUND(…, 1)`, `CEIL(…)` and `FLOOR(…)` — in that order. (The cm fix is already applied.)",
+      "ask": "How far did she walk after **18:45**? Show the total distance in km as `ROUND(…, 1)`, `CEIL(…)` and `FLOOR(…)` - in that order. (The cm fix is already applied.)",
       "setup": [
         "UPDATE watch_log SET distance_m = distance_m / 100 WHERE ts >= '2026-12-12 18:00:00';"
       ],
@@ -180,7 +180,7 @@
           "solution_ref": "solutions/s07.json#T7.10"
         }
       ],
-      "reply_on_pass": "About **0.2 km** — she walked only 200 metres from where the car stopped.",
+      "reply_on_pass": "About **0.2 km** - she walked only 200 metres from where the car stopped.",
       "traps": []
     },
     {
@@ -190,13 +190,13 @@
         "unit_id": "c5402661-b12c-404a-9a1c-744e12ad836a",
         "heading": "String Functions"
       },
-      "body": "`UPPER()` and `LOWER()` change text case — great for case-insensitive search: `UPPER(name) LIKE UPPER('%avengers%')`."
+      "body": "`UPPER()` and `LOWER()` change text case - great for case-insensitive search: `UPPER(name) LIKE UPPER('%avengers%')`."
     },
     {
       "id": "S7.22",
       "type": "task",
       "task_id": "T7.11",
-      "ask": "Decode the ₹1 note (S5-C1: `gReEn aCrEs`). The capitals hide a name — so ignore letter case. From `upi_payments`, show `from_name`, `to_name`, `amount`, `note`, `ts` where the note contains **green acres** in **any** letter case.",
+      "ask": "Decode the ₹1 note (S5-C1: `gReEn aCrEs`). The capitals hide a name - so ignore letter case. From `upi_payments`, show `from_name`, `to_name`, `amount`, `note`, `ts` where the note contains **green acres** in **any** letter case.",
       "grading": {
         "expect_rows": 2,
         "expected_hash": "sha256:831fea5cf5c09b3601307d811636884e75dbe9566f871334e33a6855051e4603"
@@ -221,7 +221,7 @@
       "on_pass": {
         "clue": "S7-C1"
       },
-      "reply_on_pass": "Two rows — two different people wrote the same place.",
+      "reply_on_pass": "Two rows - two different people wrote the same place.",
       "traps": []
     },
     {
@@ -235,14 +235,14 @@
       "prompt": "Your two rows: who wrote *green acres*, and when?",
       "options": [
         {
-          "text": "Dev at 16:10 (₹45,000 to Green Acres Farm Stays, '2 guests') — and Tara's watch at 19:02 (₹1 to Mahi, 'gReEn aCrEs')",
+          "text": "Dev at 16:10 (₹45,000 to Green Acres Farm Stays, '2 guests') - and Tara's watch at 19:02 (₹1 to Mahi, 'gReEn aCrEs')",
           "correct": true
         },
         {
-          "text": "Only Tara — the ₹45,000 row is a different place"
+          "text": "Only Tara - the ₹45,000 row is a different place"
         },
         {
-          "text": "Only Dev — the ₹1 note says something else"
+          "text": "Only Dev - the ₹1 note says something else"
         }
       ],
       "explain": "Case-insensitive search matched both notes: *Green Acres - 2 guests* (16:10:05) and *gReEn aCrEs* (19:02:30). Same place. She typed the name of the farm stay her manager paid for."
@@ -253,7 +253,7 @@
       "clue_id": "S7-C1",
       "requires_task": "T7.11",
       "title": "Green Acres",
-      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** — the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
+      "body": "Your case-insensitive search: Tara's capitals **`gReEn aCrEs`** (19:02) match **Green Acres Farm Stays** - the farm stay Dev paid ₹45,000 for at **16:10**, *2 guests* (S5-C2). She is telling us where she is."
     },
     {
       "id": "S7.24",
@@ -282,7 +282,7 @@
       "id": "S7.25",
       "type": "hook",
       "speaker": "system",
-      "body": "📱 Trending: **#IshitaKnows** — the @tara_squad admin posted *\"she's safe, trust me\"* at 8:55 PM. Ira: \"Let's clear people properly — with data, not hashtags.\""
+      "body": "📱 Trending: **#IshitaKnows** - the @tara_squad admin posted *\"she's safe, trust me\"* at 8:55 PM. Ira: \"Let's clear people properly - with data, not hashtags.\""
     }
   ],
   "unit": {

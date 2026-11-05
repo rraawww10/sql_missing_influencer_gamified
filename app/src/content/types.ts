@@ -125,7 +125,7 @@ export type UnitIndexEntry = z.infer<typeof UnitIndex>[number];
 export const CaseNotes = z.record(z.object({ rm: z.number(), title: z.string(), markdown: z.string() }));
 export type CaseNotes = z.infer<typeof CaseNotes>;
 
-// content/story/cast.json — the single source of every character and place (the briefing page shows the cast).
+// content/story/cast.json - the single source of every character and place (the briefing page shows the cast).
 // Text fields may contain {{key}} / {{key.first}} placeholders; `resolveCastText` fills them in.
 export const CastFile = z.object({
   premise: z.string().optional(),

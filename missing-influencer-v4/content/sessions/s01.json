@@ -60,7 +60,7 @@
       "id": "S1.2",
       "type": "scene",
       "speaker": "mentor",
-      "body": "Welcome to the City Police Data Cell, intern. I am SI Ira Menon.\nWe have no CCTV yet and no phone signal. But this city writes everything down —\nhotel entries, cab bookings, UPI payments, phone towers.\nAll of that is **data**. Tonight, data is our only witness.\n"
+      "body": "Welcome to the City Police Data Cell, intern. I am SI Ira Menon.\nWe have no CCTV yet and no phone signal. But this city writes everything down - \nhotel entries, cab bookings, UPI payments, phone towers.\nAll of that is **data**. Tonight, data is our only witness.\n"
     },
     {
       "id": "S1.3",
@@ -106,7 +106,7 @@
           "bucket": "Data"
         }
       ],
-      "feedback": "Data is information that is **stored**. A rumour nobody saved is not data — and we can't query it."
+      "feedback": "Data is information that is **stored**. A rumour nobody saved is not data - and we can't query it."
     },
     {
       "id": "S1.5",
@@ -260,7 +260,7 @@
           "text": "Cassandra"
         }
       ],
-      "explain": "SQLite is a relational DBMS — it stores data in tables. MongoDB, Redis and Cassandra are non-relational."
+      "explain": "SQLite is a relational DBMS - it stores data in tables. MongoDB, Redis and Cassandra are non-relational."
     },
     {
       "id": "S1.13",
@@ -279,7 +279,7 @@
         "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
         "heading": "Relational Database"
       },
-      "prompt": "Two printouts of the **same table** — one from 5 PM, one from 6 PM. Find Tara's row and tap the cell that changed.",
+      "prompt": "Two printouts of the **same table** - one from 5 PM, one from 6 PM. Find Tara's row and tap the cell that changed.",
       "tables": [
         {
           "caption": "hotel_guests at 5:00 PM",
@@ -345,7 +345,7 @@
         "row": 0,
         "column": "status"
       },
-      "feedback": "Same columns, same rows — one value changed. Between 5 and 6 PM, Tara left Room 704."
+      "feedback": "Same columns, same rows - one value changed. Between 5 and 6 PM, Tara left Room 704."
     },
     {
       "id": "S1.24",
@@ -391,7 +391,7 @@
       "id": "S1.27",
       "type": "hook",
       "speaker": "analyst",
-      "body": "I've given you access to the case database. First job: build our suspect list — in SQL."
+      "body": "I've given you access to the case database. First job: build our suspect list - in SQL."
     }
   ]
 }

@@ -1,4 +1,4 @@
-// Pulls one section out of a reading material's markdown, by heading — used for Case Notes
+// Pulls one section out of a reading material's markdown, by heading - used for Case Notes
 // and hint tier 1. The reading material itself is never modified.
 const norm = (h: string) => h.toLowerCase().replace(/[*_`!:]/g, '').replace(/\s+/g, ' ').trim();
 const HEADING = /^(#{1,6})\s*(.+?)\s*#*\s*$/;
