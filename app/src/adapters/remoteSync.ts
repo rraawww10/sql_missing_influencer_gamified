@@ -84,9 +84,11 @@ export function startHeartbeat(store: RemoteProgressStore, userId: string, sessi
   const emit = () => {
     if (active < 1) return;
     const at = store.lastBeat?.session === session || !session ? store.lastBeat : null;
+    // a page that hosts every episode (the case map build, session 0) charges the time to the episode being played
+    const s = session || at?.session || 0;
     store.outbox.push({
       event_id: deps.uuid(), user_id: userId, sitting_id: at?.sitting_id ?? 'none', verb: 'heartbeat',
-      object: { type: 'session', id: `S${session}`, session, ...(at?.beat ? { beat: at.beat } : {}) },
+      object: { type: 'session', id: `S${s}`, session: s, ...(at?.beat ? { beat: at.beat } : {}) },
       course_ref: { topic_id: at?.topic_id ?? '' }, result: { seconds: Math.round(active) },
       client_ts: new Date(deps.now()).toISOString(),
     });

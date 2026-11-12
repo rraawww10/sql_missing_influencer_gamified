@@ -12,7 +12,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
-import { playBeats } from './smoke-lib.mjs';
+import { playBeats, seedIdentity } from './smoke-lib.mjs';
 
 const APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = path.join(APP, 'public/content');
@@ -108,6 +108,7 @@ const check = async (page, where) => {
 try {
   for (const vp of VIEWPORTS) {
     const page = await browser.newPage({ viewport: { width: vp.width, height: vp.height } });
+    await seedIdentity(page);
     page.on('pageerror', (e) => failures.push(`${vp.name}: page error ${e.message}`));
     console.log(`\n▶ ${vp.name} — ${vp.width}×${vp.height}`);
 

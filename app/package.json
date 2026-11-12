@@ -13,7 +13,10 @@
     "build:deploy": "node scripts/build-deploy.mjs",
     "build:s3": "node scripts/build-s3.mjs",
     "build:s3:units": "node scripts/build-s3.mjs --units",
-    "smoke:deploy": "node scripts/smoke-deploy.mjs"
+    "smoke:deploy": "node scripts/smoke-deploy.mjs",
+    "e2e:analytics": "node scripts/e2e-analytics.mjs",
+    "local-test": "node scripts/local-test.mjs",
+    "make:test-students": "MAKE_TEST_STUDENTS=1 vitest run src/test/makeTestStudents.test.ts"
   },
   "dependencies": {
     "@codemirror/lang-sql": "6.10.0",

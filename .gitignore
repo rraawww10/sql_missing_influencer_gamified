@@ -3,6 +3,9 @@ node_modules/
 __pycache__/
 # build outputs (rebuild with the commands in README.md)
 app/dist/
+app/dist-e2e/
+app/dist-test/
+test-upload/
 app/public/content/
 deploy/
 *.zip

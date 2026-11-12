@@ -1,4 +1,5 @@
 // Episode solved: confetti, a medal, points that count up, new clues, and where to go next.
+import { WhoChip } from '../identity/WhoChip';
 import { useEffect, useState } from 'react';
 import { useProgress } from '../useProgress';
 import { useServices } from '../services';
@@ -64,7 +65,7 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">SQL: The Missing Influencer</span>
-          <button className="btn small ghost" onClick={onMap}>{standalone ? '📌 Evidence Board' : '← Case map'}</button>
+          <span className="row" style={{ gap: 6 }}><WhoChip /><button className="btn small ghost" onClick={onMap}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
         </nav>
         <section className="poster art-only"><SceneArt session={session} /></section>
         <section className="newspaper result-hero">
@@ -99,7 +100,7 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
             <ResetControl session={session} label={multiPart ? '↺ Reset this part and play again' : '↺ Reset this episode and play again'} small onDone={onReset} />
           </div>
         </section>
-        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={session === EPISODE_COUNT ? 'We did it, partner. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, partner. File it - and don’t go far. The night isn’t over.'} /></div>
+        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={session === EPISODE_COUNT ? 'We did it, {you}. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, {you}. File it - and don’t go far. The night isn’t over.'} /></div>
         <FeedbackCard session={session} />
       </div>
     </div>

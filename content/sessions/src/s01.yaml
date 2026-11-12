@@ -23,7 +23,7 @@ beats:
     type: scene
     speaker: mentor
     body: |
-      Welcome to the City Police Data Cell, intern. I am SI {{mentor}}.
+      Welcome to the City Police Data Cell, [[name]]. I am SI {{mentor}}.
       We have no CCTV yet and no phone signal. But this city writes everything down - 
       hotel entries, cab bookings, UPI payments, phone towers.
       All of that is **data**. Tonight, data is our only witness.

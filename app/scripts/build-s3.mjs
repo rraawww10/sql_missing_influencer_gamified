@@ -133,3 +133,6 @@ pre{background:#fff;border:1px solid #d9dde6;border-radius:8px;padding:8px;max-h
 `);
 
 console.log(`${path.relative(ROOT, OUT)}/  assets ${kb(bytes(path.join(OUT, 'assets')))} · content ${kb(bytes(C))} · briefing + ${sessions.length} episodes${units.length ? ` + ${units.length} units` : ''} · total ${kb(bytes(OUT))}`);
+// The game only talks to the database when the build names the analytics server. Say so loudly when it doesn't.
+if (process.env.VITE_ANALYTICS_URL) console.log(`analytics: ON → ${process.env.VITE_ANALYTICS_URL} (student data, progress, time and feedback are stored there)`);
+else console.warn('\n⚠  analytics: OFF - VITE_ANALYTICS_URL is not set, so this build stores nothing in the database (progress stays on each device,\n   no dashboard data, no "welcome back" on another computer). For the real upload: VITE_ANALYTICS_URL=https://<server> npm run build:s3\n');

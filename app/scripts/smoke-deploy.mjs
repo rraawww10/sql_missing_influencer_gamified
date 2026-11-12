@@ -13,7 +13,7 @@ import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
-import { playBeats, runSql } from './smoke-lib.mjs';
+import { playBeats, runSql, seedIdentity } from './smoke-lib.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const DEPLOY = path.resolve(ROOT, process.env.DEPLOY_DIR ?? 'deploy');
@@ -49,6 +49,7 @@ try {
   // the briefing site opened directly, with no LMS iframe around it: its button has to go somewhere
   if (mode !== 'u' && fs.existsSync(path.join(DEPLOY, 'intro/index.html'))) {
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await seedIdentity(context, { id: 'STU-42', name: 'Smoke Tester' });
     const page = await context.newPage();
     await page.goto('http://localhost:4190/lms/games/intro/index.html');
     await page.getByRole('link', { name: /Start the first episode/ }).first().click();
@@ -62,6 +63,7 @@ try {
     const pack = readJson(s.id, `sessions/${s.id}.json`);
     const sol = readJson(s.id, `solutions/${s.id}.json`);
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });   // fresh storage = standalone
+    await seedIdentity(context, { id: 'STU-42', name: 'Smoke Tester' });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
@@ -115,6 +117,7 @@ try {
   // ---------------------------------------------------------------- units: one learner, one device, every unit in order
   if (units.length) {
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await seedIdentity(context, { id: 'STU-42', name: 'Smoke Tester' });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
@@ -168,7 +171,7 @@ try {
       if (!done || done.unit !== u.n || done.session !== u.session || typeof done.points !== 'number' || done.session_completed !== sessionDone)
         throw new Error(`${u.id}: bad completed message ${JSON.stringify(done)}`);
       const prog = msgs.filter((m) => m.type === 'progress');
-      if (!prog.length || prog.some((m) => m.event.object.unit !== u.n || m.event.user_id !== 'lms:stu-42')) throw new Error(`${u.id}: progress events missing unit/user`);
+      if (!prog.length || prog.some((m) => m.event.object.unit !== u.n || m.event.user_id !== 'lms:STU-42')) throw new Error(`${u.id}: progress events missing unit/user`);
       if (errors.length) throw new Error(`${u.id}: page errors: ${errors.join(' | ')}`);
       console.log(`  ✓ ${u.id} ${u.title} (S${u.session} ${pack.unit.part}/${pack.unit.parts}): solved (${done.points} pts) · evidence ${earned} earned + ${briefed} briefed${sessionDone ? ' · session complete' : ''}`);
     } catch (e) {
@@ -179,6 +182,7 @@ try {
     if (units.length > 1) {
       const saved = await page.evaluate(() => window.tmiSaved);
       const ctx2 = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+    await seedIdentity(ctx2, { id: 'STU-42', name: 'Smoke Tester' });
       const page2 = await ctx2.newPage();
       await page2.goto('http://localhost:4190/lms/games/embed-demo.html');
       await page2.evaluate((ev) => { window.tmiSaved = ev; }, saved);

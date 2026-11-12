@@ -65,3 +65,21 @@ export async function playBeats(f, pack, solutions, hooks = {}) {
     if (last) return;
   }
 }
+
+// The start screen (name + NxtWave ID) comes before everything. Browser checks that aren't about it seed an identity
+// before any page script runs (works for iframes too when called on a context); smoke.mjs fills the real form once.
+export const TEST_STUDENT = { id: 'SMOKE-001', name: 'Smoke Tester' };
+export async function seedIdentity(target, who = TEST_STUDENT) {
+  await target.addInitScript((w) => {
+    try { if (!localStorage.getItem('tmi.identity.v1')) localStorage.setItem('tmi.identity.v1', JSON.stringify({ ...w, at: new Date().toISOString() })); } catch { /* opaque origin */ }
+  }, who);
+}
+export async function signIn(f, who = TEST_STUDENT) {
+  await f.getByRole('heading', { name: /Who's on the case tonight/ }).waitFor();
+  await f.getByRole('button', { name: /Open the case file/ }).click();                       // empty form: both errors shown
+  await f.getByText(/Please type your name/).waitFor();
+  await f.getByText(/Please type your NxtWave ID/).waitFor();
+  await f.getByLabel('Your name').fill(who.name);
+  await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
+  await f.getByRole('button', { name: /Open the case file/ }).click();
+}

@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import './ui/styles.css';
 import './ui/noir.css';
@@ -15,6 +15,9 @@ import { SittingStore } from './engine/runner/sitting';
 import type { RunnerState } from './engine/runner/sessionRunner';
 import { EmbedProgressStore, listenForRestore } from './ui/embed';
 import { Outbox, RemoteProgressStore, startHeartbeat } from './adapters/remoteSync';
+import { IdentityAuth, loadIdentity } from './adapters/identity';
+import { Mailbox, SyncedSittingKV, restoreFromServer, setMailbox } from './adapters/serverSync';
+import { IdentityGate, type GateDeps } from './ui/identity/IdentityGate';
 import { installButtonFx } from './ui/fx';
 
 installButtonFx();
@@ -33,20 +36,58 @@ const CONTENT_BASE = meta('tmi-content') ?? undefined;
 
 // Analytics (admin dashboard, ../analytics): on only when the build names the server, e.g. VITE_ANALYTICS_URL=https://… npm run build:s3
 const ANALYTICS_URL = (import.meta.env.VITE_ANALYTICS_URL as string | undefined)?.replace(/\/+$/, '');
-const remote = ANALYTICS_URL ? new RemoteProgressStore(new LocalProgressStore(), new Outbox(ANALYTICS_URL, localStorage)) : null;
-const store = new EmbedProgressStore(remote ?? new LocalProgressStore());
-const auth = new UrlAuth(new GuestAuth());   // ?user_id=… from the embedding platform, else a guest id on this device
+// The student types their name + NxtWave ID on the start screen (ui/identity/IdentityGate.tsx); that ID is the user id
+// for everything below. With an analytics server, every event, heartbeat, feedback, chapter check-in and unfinished
+// sitting goes to it (one database, the admin dashboard reads the same one), and a returning student's history comes back.
+const local = new LocalProgressStore();
+const mailboxOut = ANALYTICS_URL ? new Mailbox(ANALYTICS_URL, localStorage) : null;
+setMailbox(mailboxOut);
+const remote = ANALYTICS_URL ? new RemoteProgressStore(local, new Outbox(ANALYTICS_URL, localStorage)) : null;
+const store = new EmbedProgressStore(remote ?? local);
+const auth = new IdentityAuth(new UrlAuth(new GuestAuth()));   // the start screen's identity; before it (dev harness only) the old fallbacks
 const services: Services = {
   loader: new ContentLoader(undefined, CONTENT_BASE, UNIT || null),
   engine: new WorkerEngine(),
   store,
   auth,
-  sittings: new SittingStore<RunnerState>(localStorage),
+  sittings: new SittingStore<RunnerState>(mailboxOut ? new SyncedSittingKV(localStorage, mailboxOut) : localStorage),
 };
-auth.currentUser().then((u) => {
-  listenForRestore(store, u.id);
-  if (remote) { startHeartbeat(remote, u.id, INTRO ? 0 : SESSION); void remote.outbox.flush(); }
-});
+
+const gate: GateDeps = {
+  urlId: query.get('user_id')?.trim() || null,
+  async identify(i) {
+    if (!ANALYTICS_URL) return null;
+    try {
+      const res = await fetch(`${ANALYTICS_URL}/api/identify`, { method: 'POST', headers: { 'content-type': 'text/plain' }, body: JSON.stringify({ student_id: i.id, name: i.name }) });
+      if (res.ok) return await res.json() as { returning: boolean };
+    } catch { /* offline */ }
+    mailboxOut!.push('/api/identify', { student_id: i.id, name: i.name }, `identify:${i.id}`);   // retried later
+    return null;
+  },
+  async restore(id) {
+    if (!ANALYTICS_URL) return null;
+    return restoreFromServer(ANALYTICS_URL, id, local, localStorage, { timeoutMs: 6000 });
+  },
+};
+// once the student is known: accept a host 'restore', start heartbeats, send anything still queued
+let wired = false;
+function onIdentified() {
+  if (wired || !loadIdentity()) return;
+  wired = true;
+  auth.currentUser().then((u) => {
+    listenForRestore(store, u.id);
+    if (remote) { startHeartbeat(remote, u.id, INTRO ? 0 : SESSION); void remote.outbox.flush(); }
+    if (mailboxOut) {
+      void mailboxOut.flush();
+      setInterval(() => { if (mailboxOut.size()) void mailboxOut.flush(); }, 60_000);
+      addEventListener('pagehide', () => { void mailboxOut.flush({ keepalive: true }); });
+    }
+  });
+}
+function Identified({ children }: { children: ReactNode }) {
+  useEffect(onIdentified, []);
+  return <>{children}</>;
+}
 
 // A unit site: load the unit pack first (it says which session it belongs to), then play it like a session
 function UnitApp({ unit }: { unit: number }) {
@@ -60,6 +101,8 @@ function UnitApp({ unit }: { unit: number }) {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode><ServicesProvider value={services}>
-    {INTRO ? <BriefingApp /> : UNIT ? <UnitApp unit={UNIT} /> : SESSION ? <SessionApp session={SESSION} /> : <App />}
+    <IdentityGate deps={gate}><Identified>
+      {INTRO ? <BriefingApp /> : UNIT ? <UnitApp unit={UNIT} /> : SESSION ? <SessionApp session={SESSION} /> : <App />}
+    </Identified></IdentityGate>
   </ServicesProvider></StrictMode>,
 );

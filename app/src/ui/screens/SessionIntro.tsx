@@ -1,5 +1,6 @@
 // Before an episode: a poster, the story clock, what's inside (minutes, tasks, clues), how it works,
 // "the case so far" (clues from earlier episodes), and start / continue / reset.
+import { WhoChip } from '../identity/WhoChip';
 import { useEffect, useState } from 'react';
 import type { SessionPack } from '../../content/types';
 import { useServices } from '../services';
@@ -54,7 +55,7 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">SQL: The Missing Influencer</span>
-          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" /><VoiceToggle className="btn small ghost" />
+          <span className="row" style={{ gap: 6 }}><WhoChip /><SoundToggle className="btn small ghost" /><VoiceToggle className="btn small ghost" />
           <button className="btn small ghost" onClick={onBack}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
         </nav>
 
@@ -75,8 +76,8 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
 
         <div style={{ margin: '18px 0' }}>
           <KaalCard mood={first ? 'whisper' : 'think'} line={first
-            ? `${TEASE[1]} Stay close, partner.`   /* he introduces himself once, on the Briefing */
-            : resumable ? `Welcome back, partner. ${TEASE[session] ?? ''}` : (TEASE[session] ?? ep.teaser)} />
+            ? `${TEASE[1]} Stay close, {you}.`   /* he introduces himself once, on the Briefing */
+            : resumable ? `Welcome back, {you}. ${TEASE[session] ?? ''}` : (TEASE[session] ?? ep.teaser)} />
         </div>
 
         {pack.previously.length > 0 && (

@@ -7,7 +7,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
-import { playBeats, runSql } from './smoke-lib.mjs';
+import { playBeats, runSql, signIn, TEST_STUDENT } from './smoke-lib.mjs';
 
 const APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = path.join(APP, 'public/content');
@@ -102,6 +102,10 @@ async function playSession(n, { trap, leaveAt } = {}) {
 let failed = false;
 try {
   await page.goto(`${BASE}/`);
+  await signIn(page);                                                     // the start screen: name + NxtWave ID
+  await page.locator('.who-chip b').getByText(TEST_STUDENT.name.split(' ')[0], { exact: true }).first().waitFor();
+  if (await page.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) !== TEST_STUDENT.id) throw new Error('NxtWave ID not stored upper-case');
+  console.log('  👤 start screen: name + NxtWave ID asked, validated, remembered');
   await page.getByText(pack(1).headline).waitFor();
   await page.getByRole('button', { name: 'Play' }).first().waitFor();   // progress loads from IndexedDB
   if (await page.getByRole('button', { name: 'Play' }).count() !== 1) throw new Error('a new guest should see exactly one playable episode');

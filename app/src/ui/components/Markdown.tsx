@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
+import { personalize } from '../../adapters/identity';
 
 const TAGS: [RegExp, string][] = [
   [/<\/?Section>/g, ''],
@@ -20,7 +21,7 @@ const TAGS: [RegExp, string][] = [
 ];
 
 export function toHtml(md: string): string {
-  let src = md.replace(/\r\n/g, '\n');
+  let src = personalize(md.replace(/\r\n/g, '\n'));   // [[name]] → the student's first name
   for (const [re, to] of TAGS) src = src.replace(re, to);
   const html = marked.parse(src, { async: false, gfm: true, breaks: false }) as string;
   return DOMPurify.sanitize(html, { ADD_ATTR: ['loading'] });

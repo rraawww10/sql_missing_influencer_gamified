@@ -2,7 +2,11 @@
 // Zero dependencies: Node 22+ (node:http + the built-in node:sqlite). One SQLite file holds everything.
 //
 //   POST /api/events                 the game sends batches of events here (public, CORS open, idempotent by event_id)
+//   POST /api/identify               the start screen: { student_id (NxtWave ID), name } → registers / welcomes back
+//   GET  /api/history/:id            a returning student's saved progress (events, feedback given, unfinished sittings)
+//   POST /api/sitting                the unfinished attempt at an episode, mirrored so it continues on another device
 //   POST /api/feedback               end-of-episode feedback card (public, one row per student per episode)
+//   POST /api/checkpoint             quick check-in after each chapter (public, one row per student per chapter)
 //   GET  /api/admin/feedback(.csv)   feedback dashboard / export
 //   GET  /api/admin/live             students active in the last 5 minutes
 //   POST /api/login | /api/logout    admin session cookie (password = ADMIN_PASSWORD)
@@ -21,7 +25,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
-import { openDb, loadCatalogue, Analytics, ingest, ingestFeedback, parseRoster } from './lib.mjs';
+import { openDb, loadCatalogue, Analytics, ingest, ingestFeedback, ingestCheckpoint, identify, history, saveSitting, parseRoster } from './lib.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 8787);
@@ -73,7 +77,7 @@ function cached(key, fn) {
 }
 
 // ---------------------------------------------------------------- http helpers
-const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'POST, OPTIONS', 'access-control-allow-headers': 'content-type' };
+const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET, POST, OPTIONS', 'access-control-allow-headers': 'content-type' };
 const SECURITY = { 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer' };
 function send(res, status, body, headers = {}) {
   const isStr = typeof body === 'string';
@@ -111,6 +115,25 @@ const server = http.createServer(async (req, res) => {
       try { body = JSON.parse(await readBody(req, 20_000)); } catch { return send(res, 400, 'bad body', CORS); }
       const r = ingestFeedback(db, body);
       return send(res, r.error ? 400 : 200, r, CORS);
+    }
+
+    // small public JSON posts from the game: same shape for each (body ≤ limit, CORS open)
+    const PUBLIC_POSTS = { '/api/identify': [identify, 10_000], '/api/checkpoint': [ingestCheckpoint, 20_000], '/api/sitting': [saveSitting, 450_000] };
+    if (PUBLIC_POSTS[p]) {
+      if (req.method === 'OPTIONS') return send(res, 204, '', CORS);
+      if (req.method !== 'POST') return send(res, 405, 'POST only', CORS);
+      const [fn, limit] = PUBLIC_POSTS[p];
+      let body;
+      try { body = JSON.parse(await readBody(req, limit)); } catch { return send(res, 400, 'bad body', CORS); }
+      const r = fn(db, body);
+      return send(res, r.error ? 400 : 200, r, CORS);
+    }
+    let hm;
+    if ((hm = /^\/api\/history\/([^/]+)$/.exec(p))) {
+      if (req.method === 'OPTIONS') return send(res, 204, '', CORS);
+      if (req.method !== 'GET') return send(res, 405, 'GET only', CORS);
+      const r = history(db, decodeURIComponent(hm[1]));
+      return send(res, r.error ? 400 : 200, r, { ...CORS, 'cache-control': 'no-store' });
     }
 
     if (p === '/api/login' && req.method === 'POST') {

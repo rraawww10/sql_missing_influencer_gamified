@@ -1,6 +1,7 @@
 // Plays one episode as a game screen: a HUD with the episode name and a stories-style progress bar on top,
 // ONE step at a time on the stage, and a floating dock with Back / Continue at the bottom (← → keys work too).
 // Finished steps can be opened again from the bar (or the steps sheet) or with Back - read-only, and SQL tasks become a practice run.
+import { ChapterPulse } from '../components/ChapterPulse';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SessionRunner } from '../../engine/runner/sessionRunner';
 import type { Beat } from '../../content/types';
@@ -82,6 +83,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
   const [sheet, setSheet] = useState<'steps' | 'evidence' | 'tables' | null>(null);
   const [bump, setBump] = useState(false);
   const [checkpoint, setCheckpoint] = useState<number | null>(null);
+  const [pulse, setPulse] = useState<{ n: number; of: number; index: number } | null>(null);   // chapter check-in (feedback)
   const pinsBefore = useRef(0);
   const scroller = useRef<HTMLDivElement>(null);
   const refresh = useCallback(() => setTick((t) => t + 1), []);
@@ -104,7 +106,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
     const b = runner.pack.beats[view];
     if (!firstStep.current) sfx('whoosh');
     if (review) { if (firstStep.current) kaal('review', { silent: true }); }
-    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: 'Partner! New lead tonight. Stay close - chalo!' } : {});
+    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: '{you}! New lead tonight. Stay close - chalo!' } : {});
     else if (KAAL_ON[b.type]) kaal(KAAL_ON[b.type]!, { silent: true });
     else if (b.type === 'scene' && view % 4 === 0) kaal('scene', { silent: true });
     firstStep.current = false;
@@ -156,7 +158,8 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
       if (was.type === 'clue') {
         const c = chapterOf(runner.pack.beats, runner.index - 1);
         setCheckpoint(c.n);
-        kaal('pinned', { line: `Chapter ${c.n} of ${c.of} closed - your progress is saved. Good place for a break, partner… or keep going?`, silent: true });
+        setPulse({ n: c.n, of: c.of, index: runner.index });
+        kaal('pinned', { line: `Chapter ${c.n} of ${c.of} closed - your progress is saved. Good place for a break, {you}… or keep going?`, silent: true });
         setTimeout(() => setCheckpoint(null), 6000);
       }
       setViewAt(null); refresh();
@@ -248,6 +251,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
         {checkpoint && !review && (
           <div className="checkpoint" role="status">💾 <b>Chapter {checkpoint} closed · progress saved.</b> <span className="hide-phone">Stop here any time - you’ll continue from this point.</span></div>
         )}
+        {pulse && !review && runner.index <= pulse.index + 1 && <ChapterPulse key={`${session}-${pulse.n}`} session={session} chapter={pulse.n} of={pulse.of} />}
         {banner && !review && (
           <div className="chapter-banner" aria-hidden="true"><small>Chapter</small><b>{banner}</b><span>of {chapterOf(beats, view).of}</span></div>
         )}

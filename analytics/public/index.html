@@ -149,11 +149,11 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
   <section id="tab-overview"></section>
   <section id="tab-students" hidden>
     <div class="toolbar">
-      <input type="search" id="q" placeholder="Search name or student ID">
+      <input type="search" id="q" placeholder="Search name or NxtWave ID">
       <select id="statusFilter" aria-label="Status">
         <option value="">Everyone</option><option value="active">Active in last 7 days</option>
         <option value="inactive">Inactive 7+ days</option><option value="finished">Finished all 13</option>
-        <option value="notstarted">On roster, not started</option>
+        <option value="notstarted">Registered / on roster, not started</option>
       </select>
       <span class="muted" id="count"></span>
     </div>
@@ -173,7 +173,7 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
     <div class="grid two" style="margin-top:0">
       <div class="card">
         <h2>Upload the student list</h2>
-        <p class="sub">A CSV with a header row: <b>student_id</b>, <b>name</b>, <b>batch</b>. The student_id must be the same id the platform passes to the game (<code>?user_id=</code>). Uploading again updates names and batches.</p>
+        <p class="sub">A CSV with a header row: <b>student_id</b>, <b>name</b>, <b>batch</b>. The student_id is the student's <b>NxtWave ID</b> - the same ID students type on the game's start screen. Names typed by students show automatically; a roster name, when uploaded, takes precedence. Uploading again updates names and batches.</p>
         <input type="file" id="csvFile" accept=".csv,text/csv">
         <p class="sub" style="margin-top:12px">…or paste it:</p>
         <textarea id="csvText" rows="7" style="width:100%" placeholder="student_id,name,batch&#10;STU1001,Aarav Sharma,Beta-A"></textarea>
@@ -185,7 +185,7 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
       </div>
       <div class="card">
         <h2>On the roster but not started</h2>
-        <p class="sub">These students have never opened the game.</p>
+        <p class="sub">On the roster, or entered their NxtWave ID on the start screen, but have not played a step yet.</p>
         <div id="notStarted"></div>
       </div>
     </div>
@@ -329,7 +329,7 @@ function renderStudents() {
   if (f === 'notstarted') {
     const rows = state.notStarted.filter((r) => !q || `${r.name} ${r.student_id}`.toLowerCase().includes(q));
     $('#count').textContent = `${rows.length} students`;
-    table.innerHTML = `<thead><tr><th class="nosort">Student</th><th class="nosort">Student ID</th><th class="nosort">Batch</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${esc(r.name ?? '—')}</td><td>${esc(r.student_id)}</td><td>${esc(r.batch ?? '—')}</td></tr>`).join('') || '<tr><td colspan="3" class="empty">Nobody — everyone on the roster has started.</td></tr>'}</tbody>`;
+    table.innerHTML = `<thead><tr><th class="nosort">Student</th><th class="nosort">NxtWave ID</th><th class="nosort">Batch</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${esc(r.name ?? '—')}</td><td>${esc(r.student_id)}</td><td>${esc(r.batch ?? '—')}</td></tr>`).join('') || '<tr><td colspan="3" class="empty">Nobody — everyone on the roster has started.</td></tr>'}</tbody>`;
     return;
   }
   let rows = state.students.filter((r) => !q || `${r.name ?? ''} ${r.student_id}`.toLowerCase().includes(q));
@@ -361,7 +361,9 @@ $('#statusFilter').onchange = renderStudents;
 async function openStudent(id) {
   const d = await api(`/api/admin/students/${encodeURIComponent(id)}`);
   $('#dTitle').textContent = d.name ?? d.student_id;
-  $('#dSub').textContent = [d.name ? d.student_id : null, d.batch, `first played ${when(d.first_seen)}`, `last active ${ago(d.last_seen)}`].filter(Boolean).join(' · ');
+  $('#dSub').textContent = [`NxtWave ID ${d.student_id}`, d.batch, d.registered_at ? `registered ${when(d.registered_at)}` : null, d.logins ? `entered their ID ${d.logins}×` : null,
+    `first played ${when(d.first_seen)}`, `last active ${ago(d.last_seen)}`].filter(Boolean).join(' · ');
+  const PULSE = { 1: '😕 Lost', 2: '😐 Okay', 3: '🙂 Good', 4: '🤩 Great' };
   const kpi = (v, l) => `<div class="card kpi"><div class="v" style="font-size:22px">${v}</div><div class="l">${l}</div></div>`;
   const maxDay = Math.max(1, ...d.daily.map((x) => x.minutes));
   const RVERB = { session_started: 'Started episode', session_resumed: 'Came back to episode', session_completed: 'Solved episode', session_reset: 'Reset episode',
@@ -377,13 +379,23 @@ async function openStudent(id) {
       const maxB = Math.max(1, ...e.beats.map((b) => b.seconds));
       const chip = e.status === 'completed' ? '<span class="chip good">Solved</span>' : e.status === 'in progress' ? '<span class="chip acc">In progress</span>' : '<span class="chip mute">Not started</span>';
       return `<details class="ep"${e.status === 'in progress' ? ' open' : ''}><summary><b>${e.n}. ${esc(e.title)}</b>${pbar(e.progress_pct)}<span class="num">${dur(e.seconds)}</span><span class="num">${e.attempts} SQL runs</span>${chip}</summary>
-        ${e.beats.length ? `<div class="inner"><table><thead><tr><th class="nosort">#</th><th class="nosort">Beat</th><th class="nosort">Time on it</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="nosort">Done</th></tr></thead><tbody>
-          ${e.beats.map((b, i) => `<tr class="${b.hints >= 2 || b.attempts >= 6 ? 'hot' : ''}"><td class="faint">${i + 1}</td><td class="wrap">${typeChip(b.type)} ${esc(b.label)}</td>
+        ${e.chapters?.length ? `<div class="inner"><b style="font-size:13px">Time per chapter (stage)</b><table><thead><tr><th class="nosort">Chapter</th><th class="nosort">Time</th><th class="r nosort">Steps done</th></tr></thead><tbody>
+          ${e.chapters.map((c) => `<tr><td>Chapter ${c.chapter}</td><td><div class="pbar"><div class="track"><b class="on" style="width:${(c.seconds / Math.max(1, ...e.chapters.map((x) => x.seconds))) * 100}%"></b></div><span class="num">${dur(c.seconds)}</span></div></td><td class="r">${c.beats_done}/${c.beats}</td></tr>`).join('')}
+          </tbody></table></div>` : ''}
+        ${e.beats.length ? `<div class="inner"><table><thead><tr><th class="nosort">#</th><th class="nosort">Ch.</th><th class="nosort">Beat</th><th class="nosort">Time on it</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="nosort">Done</th></tr></thead><tbody>
+          ${e.beats.map((b, i) => `<tr class="${b.hints >= 2 || b.attempts >= 6 ? 'hot' : ''}"><td class="faint">${i + 1}</td><td class="faint">${b.chapter ?? ''}</td><td class="wrap">${typeChip(b.type)} ${esc(b.label)}</td>
             <td><div class="pbar"><div class="track"><b class="on" style="width:${(b.seconds / maxB) * 100}%"></b></div><span class="num">${dur(b.seconds)}</span></div></td>
             <td class="r">${b.attempts || ''}</td><td class="r">${b.hints || ''}</td><td class="r">${b.traps || ''}</td><td>${b.done ? '✓' : '<span class="faint">—</span>'}</td></tr>`).join('')}
           </tbody></table><div class="faint" style="margin-top:6px">${e.started_at ? `Started ${when(e.started_at)}` : ''}${e.completed_at ? ` · solved ${when(e.completed_at)}` : ''}${e.points != null ? ` · ${e.points} points` : ''}${e.resets ? ` · reset ${e.resets}×` : ''}. Highlighted rows: many SQL runs or hints.</div></div>` : ''}
       </details>`;
     }).join('')}
+    <div class="card" style="margin-top:12px"><h2>Feedback from this student</h2>
+      ${d.feedback.length || d.checkpoints.length ? `<div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">When</th><th class="nosort">Where</th><th class="nosort">Rating</th><th class="nosort">Details</th><th class="nosort">Suggestion / comment</th></tr></thead><tbody>
+        ${[...d.feedback.map((f) => ({ at: f.client_ts, where: `Ep ${f.session} (end)`, rating: STARS(f.rating), det: [f.mood, f.difficulty && `SQL ${f.difficulty}`, f.liked.length && `liked: ${f.liked.join(', ')}`].filter(Boolean).join(' · '), c: f.comment })),
+           ...d.checkpoints.map((c) => ({ at: c.client_ts, where: `Ep ${c.session} · chapter ${c.chapter}`, rating: esc(PULSE[c.rating] ?? c.rating), det: '', c: c.comment }))]
+          .sort((a, b) => (a.at < b.at ? 1 : -1))
+          .map((r) => `<tr><td class="faint">${when(r.at)}</td><td>${esc(r.where)}</td><td>${r.rating}</td><td class="wrap faint">${esc(r.det)}</td><td class="wrap">${esc(r.c ?? '')}</td></tr>`).join('')}
+        </tbody></table></div>` : '<div class="muted">No feedback from this student yet.</div>'}</div>
     <div class="card" style="margin-top:12px"><h2>Recent activity</h2><p class="sub">Latest 40 actions, newest first (time checks not shown)</p>
       <div class="tablewrap" style="border:0"><table><tbody>${d.recent.map((r) => `<tr><td class="faint">${when(r.at)}</td><td>${r.session ? `Ep ${r.session}` : 'Briefing'}</td>
         <td>${esc(RVERB[r.verb] ?? r.verb)} ${r.verb === 'task_attempted' ? `<span class="chip ${r.detail?.status === 'pass' ? 'good' : r.detail?.status === 'trap' ? 'warn' : 'bad'}">${esc(r.detail?.status)}</span>` : ''}${r.detail?.tier ? ` tier ${esc(r.detail.tier)}` : ''}${r.detail?.points != null ? ` · ${esc(r.detail.points)} pts` : ''}</td>
@@ -412,7 +424,7 @@ $('#epPick').onchange = () => { state.ep = Number($('#epPick').value); loadEpiso
 // ---------------------------------------------------------------- roster
 function renderNotStarted() {
   const r = state.notStarted;
-  $('#notStarted').innerHTML = r.length ? `<div class="tablewrap" style="max-height:420px"><table><thead><tr><th class="nosort">Name</th><th class="nosort">Student ID</th><th class="nosort">Batch</th></tr></thead><tbody>${r.map((x) => `<tr><td>${esc(x.name ?? '—')}</td><td>${esc(x.student_id)}</td><td>${esc(x.batch ?? '—')}</td></tr>`).join('')}</tbody></table></div>`
+  $('#notStarted').innerHTML = r.length ? `<div class="tablewrap" style="max-height:420px"><table><thead><tr><th class="nosort">Name</th><th class="nosort">NxtWave ID</th><th class="nosort">Batch</th></tr></thead><tbody>${r.map((x) => `<tr><td>${esc(x.name ?? '—')}</td><td>${esc(x.student_id)}</td><td>${esc(x.batch ?? '—')}</td></tr>`).join('')}</tbody></table></div>`
     : `<div class="muted">${state.overview?.totals.roster ? 'Everyone on the roster has started.' : 'No roster uploaded yet.'}</div>`;
 }
 $('#csvFile').onchange = async () => { const f = $('#csvFile').files[0]; if (f) $('#csvText').value = await f.text(); };
@@ -467,6 +479,15 @@ function renderFeedback() {
       <div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">Episode</th><th class="r nosort">Responses</th><th class="nosort">Avg rating</th><th class="r nosort">Too easy</th><th class="r nosort">Just right</th><th class="r nosort">Too hard</th><th class="r nosort">Confusing / boring</th></tr></thead><tbody>
       ${d.episodes.map((e) => `<tr class="${e.responses && (e.avg_rating < 3.5 || e.hard / e.responses >= 1 / 3) ? 'hot' : ''}"><td>${e.n}. ${esc(e.title)}</td><td class="r">${e.responses}</td><td>${e.avg_rating == null ? '—' : `${STARS(Math.round(e.avg_rating))} ${e.avg_rating}`}</td><td class="r">${e.easy}</td><td class="r">${e.right}</td><td class="r">${e.hard}</td><td class="r">${e.confusing}</td></tr>`).join('')}
       </tbody></table></div></div>
+    <div class="card" style="margin-top:12px"><h2>Chapter check-ins</h2><p class="sub">The quick question after every chapter: 😕 Lost (1) · 😐 Okay (2) · 🙂 Good (3) · 🤩 Great (4). ${fmtNum(d.checkpoints.responses)} answers. Rows in red: average under 2.5 or a quarter felt lost.</p>
+      ${d.checkpoints.chapters.length ? `<div class="tablewrap" style="border:0;max-height:360px"><table><thead><tr><th class="nosort">Episode</th><th class="r nosort">Chapter</th><th class="r nosort">Answers</th><th class="r nosort">Average</th><th class="r nosort">Felt lost</th></tr></thead><tbody>
+        ${d.checkpoints.chapters.map((c) => `<tr class="${c.avg < 2.5 || c.lost / c.responses >= 0.25 ? 'hot' : ''}"><td>${c.session}. ${esc(c.title ?? '')}</td><td class="r">${c.chapter}</td><td class="r">${c.responses}</td><td class="r">${c.avg}</td><td class="r">${c.lost}</td></tr>`).join('')}
+        </tbody></table></div>` : '<p class="faint">No chapter check-ins yet.</p>'}
+      ${(() => { const sug = d.checkpoints.list.filter((r) => r.comment && (!q || `${r.name ?? ''} ${r.student_id} ${r.comment}`.toLowerCase().includes(q)));
+        return sug.length ? `<h2 style="margin-top:14px">Suggestions from check-ins</h2><div class="tablewrap" style="border:0;max-height:420px"><table><thead><tr><th class="nosort">When</th><th class="nosort">Student</th><th class="nosort">Where</th><th class="nosort">Felt</th><th class="nosort">Suggestion</th></tr></thead><tbody>
+          ${sug.slice(0, 500).map((r) => `<tr class="click" data-id="${esc(r.student_id)}"><td class="faint">${when(r.at)}</td><td>${esc(r.name ?? r.student_id)}<div class="faint">${esc(r.student_id)}</div></td><td>Ep ${r.session} · ch ${r.chapter}</td><td>${['', '😕', '😐', '🙂', '🤩'][r.rating] ?? ''}</td><td class="wrap">${esc(r.comment)}</td></tr>`).join('')}
+          </tbody></table></div>` : ''; })()}
+    </div>
     <div class="card" style="margin-top:12px"><h2>Responses</h2>
       <div class="tablewrap" style="border:0;max-height:620px"><table><thead><tr><th class="nosort">When</th><th class="nosort">Student</th><th class="nosort">Episode</th><th class="nosort">Rating</th><th class="nosort">Felt</th><th class="nosort">SQL was</th><th class="nosort">Liked</th><th class="nosort">Comment</th></tr></thead><tbody>
       ${rows.slice(0, 500).map((r) => `<tr class="click" data-id="${esc(r.student_id)}"><td class="faint">${when(r.at)}</td><td>${esc(r.name ?? r.student_id)}</td><td>${r.session}</td><td>${STARS(r.rating)}</td><td>${MOOD_E[r.mood] ?? ''} ${esc(r.mood ?? '')}</td><td>${esc(r.difficulty ?? '')}</td><td class="wrap faint">${esc(r.liked.join(', '))}</td><td class="wrap">${esc(r.comment ?? '')}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">No feedback yet.</td></tr>'}

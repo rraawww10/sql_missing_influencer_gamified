@@ -14,6 +14,10 @@ import { SceneArt } from '../art/SceneArt';
 import { EPISODES, EPISODE_COUNT } from '../episodes';
 import { isEmbedded, postToParent } from '../embed';
 import { themeVars } from '../theme';
+import { currentIdentity, personalize } from '../../adapters/identity';
+import { WhoChip } from '../identity/WhoChip';
+
+const initials = (n?: string) => (n ?? '').split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join('');
 
 interface Props { onStart?(): void; onBack?(): void; standalone?: boolean }
 
@@ -74,7 +78,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">Police Data Cell · Case briefing</span>
-          <span className="row" style={{ gap: 6 }}><SoundToggle className="btn small ghost" /><VoiceToggle className="btn small ghost" />{onBack && <button className="btn small ghost" onClick={onBack}>← Case map</button>}</span>
+          <span className="row" style={{ gap: 6 }}><WhoChip /><SoundToggle className="btn small ghost" /><VoiceToggle className="btn small ghost" />{onBack && <button className="btn small ghost" onClick={onBack}>← Case map</button>}</span>
         </nav>
 
         <section className="brief-hero" aria-label="The case">
@@ -82,7 +86,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
           <div className="shade" aria-hidden="true" />
           <div className="phone-stack" aria-hidden="true">
             <div className="notification" style={{ '--i': 0 } as React.CSSProperties}><div className="app"><i>🔔</i> Breaking · 6:00 PM</div>Singer <b>{star}</b> is missing. Her stadium show starts at midnight.</div>
-            <div className="notification" style={{ '--i': 1 } as React.CSSProperties}><div className="app"><i>👮</i> {mentor} · Data Cell</div>Welcome, intern. No CCTV, phone switched off. But this city writes everything down.</div>
+            <div className="notification" style={{ '--i': 1 } as React.CSSProperties}><div className="app"><i>👮</i> {mentor} · Data Cell</div>Welcome, {personalize('{you}', 'intern')}. No CCTV, phone switched off. But this city writes everything down.</div>
             <div className="notification" style={{ '--i': 2 } as React.CSSProperties}><div className="app"><i>🗄️</i> Case database</div>Hotel register · cab rides · UPI · phone towers · toll plaza. Your only witness.</div>
           </div>
           <div className="hero-body">
@@ -101,7 +105,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
         </div>
 
         <section className="section" aria-label="Your role">
-          <h2>You are the new intern at the City Police Data Cell.</h2>
+          <h2>{personalize('{you}', 'You')}, you are the new intern at the City Police Data Cell.</h2>
           <p className="sub">Your mentor is <b>SI {mentor}</b>. There is no CCTV and no phone signal. There is data - and every clue tonight comes from a query you write.
             {total > 0 && <> The whole case takes about <b>{Math.round(total / 60)} hours</b> of play, in episodes of 20–55 minutes. Stop any time.</>}</p>
           <div className="loop">
@@ -141,7 +145,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
             <h2>The people in the case</h2>
             <p className="sub">Some are helpers. Some are suspects. The data decides who is which.</p>
             <div className="cast">
-              <div className="person you rise"><div className="portrait" aria-hidden="true">YOU</div><b>You</b><span>Intern, Data Cell. You write every query.</span></div>
+              <div className="person you rise"><div className="portrait" aria-hidden="true">{initials(currentIdentity()?.name) || 'YOU'}</div><b>{currentIdentity()?.name ?? 'You'}</b><span>That's you! Intern, Data Cell. You write every query.</span></div>
               {people.map((p, i) => (
                 <div key={p.key} className="person rise" style={{ '--i': i + 1 } as React.CSSProperties}>
                   <div className="portrait" style={{ background: p.color }} aria-hidden="true">{p.initials}</div>
@@ -173,7 +177,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
         </section>
 
         <section className="ready" aria-label="Ready">
-          <h2>Ready, intern?</h2>
+          <h2>Ready, {personalize('{you}', 'intern')}?</h2>
           <p>{standalone
             ? (embedded
                 ? (ready ? `Briefing done. Open the first episode, "${EPISODES[0].title}", from your course to begin.` : `Next in your course: the first episode, "${EPISODES[0].title}" - ${storyTime(1)}.`)

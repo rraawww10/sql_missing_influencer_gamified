@@ -3,6 +3,7 @@
 // "Reset DB" puts the tables back to the task's starting state (every run starts from there anyway - the engine
 // grades on a fresh copy - so this clears the console and reloads the drawer). Hints open in a side sheet.
 // In review mode (a task already solved) the console is a free practice run - nothing is graded.
+import { personalize } from '../../adapters/identity';
 import { useEffect, useRef, useState } from 'react';
 import type { TaskBeat } from '../../content/types';
 import type { QueryResult } from '../../engine/sql/engine';
@@ -196,7 +197,7 @@ export function TaskPanel({ runner, beat, review = false, onChanged, onContinue 
 
       {hintsOpen && (
         <Sheet title="Kaal’s envelopes" onClose={() => { setHintsOpen(false); setConfirmAnswer(false); }}>
-          <div className="kaal-hint-head"><Kaal mood={st.hintTier >= 2 ? 'whisper' : 'think'} size={54} /><span>“Three envelopes, partner. Open them in order. Each one helps more - and costs a few points.”</span></div>
+          <div className="kaal-hint-head"><Kaal mood={st.hintTier >= 2 ? 'whisper' : 'think'} size={54} /><span>{personalize('“Three envelopes, {you}. Open them in order. Each one helps more - and costs a few points.”')}</span></div>
           <div className="envelopes">
             {([1, 2, 3] as const).map((tier) => {
               const opened = hints.find((h) => h.tier === tier) ?? (st.hintTier >= tier ? { tier } as HintContent : undefined);

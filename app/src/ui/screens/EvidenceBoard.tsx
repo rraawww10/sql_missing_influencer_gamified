@@ -36,7 +36,7 @@ export function EvidenceBoard({ onBack, session }: { onBack(): void; session?: n
         </p>
         <div style={{ margin: '14px 0 18px' }}>
           <KaalCard mood={cards.length ? 'think' : 'point'} line={cards.length
-            ? `${cards.length} piece${cards.length === 1 ? '' : 's'} of evidence, partner. Read them in order - the red string shows how the night unfolds.`
+            ? `${cards.length} piece${cards.length === 1 ? '' : 's'} of evidence, {you}. Read them in order - the red string shows how the night unfolds.`
             : 'An empty board. Solve a task, pin what you prove, and it starts to fill.'} />
         </div>
         <div className="wall board-cork">

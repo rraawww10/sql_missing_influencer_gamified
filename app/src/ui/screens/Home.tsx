@@ -1,4 +1,5 @@
 // Case map: the night's timeline (6 PM → 12 AM), one card per episode - named after what happens, never numbered.
+import { WhoChip } from '../identity/WhoChip';
 import { useEffect, useState } from 'react';
 import type { SessionIndexEntry } from '../../content/types';
 import { SESSION_COUNT } from '../../engine/progress/derive';
@@ -20,7 +21,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
   return (
     <div className="page themed" style={themeVars(13) as React.CSSProperties}>
       <div className="page-inner">
-        <nav className="topnav"><span className="brand">Police Data Cell · Case file</span>{progress && <span className="chip accent">🎖 {progress.rank}</span>}</nav>
+        <nav className="topnav"><span className="brand">Police Data Cell · Case file</span><WhoChip />{progress && <span className="chip accent">🎖 {progress.rank}</span>}</nav>
         <section className="poster">
           <SceneArt session={13} />
           <div className="poster-body map-hero">

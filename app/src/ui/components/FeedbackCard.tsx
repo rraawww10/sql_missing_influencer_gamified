@@ -4,6 +4,7 @@ import { useServices } from '../services';
 import { feedbackGiven, sendFeedback, type Feedback } from '../feedback';
 import { soundOn, sfx } from '../sound';
 import { Kaal } from '../kaal/Kaal';
+import { personalize } from '../../adapters/identity';
 
 const MOODS = [['🤩', 'Loved it'], ['😀', 'Fun'], ['😐', 'Okay'], ['😕', 'Confusing'], ['😴', 'Boring']] as const;
 const LIKED = ['The story', 'Inspector Kaal', 'SQL tasks', 'Case Notes', 'Puzzles', 'Sounds', 'The look'];
@@ -21,7 +22,7 @@ export function FeedbackCard({ session }: { session: number }) {
   if (!user || state === 'hidden') return null;
   if (state === 'sent') return (
     <section className="feedback-card pop-in" style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
-      <Kaal mood="happy" size={50} /><div><h3>Noted, partner. Thank you!</h3><p className="muted small" style={{ margin: 0 }}>Your feedback goes straight to the team that builds this case.</p></div>
+      <Kaal mood="happy" size={50} /><div><h3>{personalize('Noted, {you}. Thank you!')}</h3><p className="muted small" style={{ margin: 0 }}>Your feedback goes straight to the team that builds this case.</p></div>
     </section>
   );
   const submit = async () => {
@@ -42,7 +43,7 @@ export function FeedbackCard({ session }: { session: number }) {
       <div className="opts">{(['easy', 'right', 'hard'] as const).map((d) => <button key={d} className={difficulty === d ? 'on' : ''} aria-pressed={difficulty === d} onClick={() => setDifficulty(d)}>{d === 'easy' ? '🟢 Too easy' : d === 'right' ? '🟡 Just right' : '🔴 Too hard'}</button>)}</div>
       <span className="lbl">What did you like? (pick any)</span>
       <div className="opts">{LIKED.map((x) => <button key={x} className={liked.includes(x) ? 'on' : ''} aria-pressed={liked.includes(x)} onClick={() => toggle(x)}>{x}</button>)}</div>
-      <span className="lbl">Anything else? (optional)</span>
+      <span className="lbl">Your suggestions for us (optional)</span>
       <textarea value={comment} onChange={(e) => setComment(e.target.value)} maxLength={1000} placeholder="What confused you, what you loved, what to change…" />
       <div className="row" style={{ marginTop: 12 }}>
         <button className="btn primary" disabled={!rating} onClick={submit}>Send feedback</button>

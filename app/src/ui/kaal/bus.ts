@@ -5,6 +5,7 @@ import { MOOD, lineFor, type KaalEvent, type KaalMood } from './lines';
 import { sfx, type Sfx } from '../sound';
 import { speak } from '../voice';
 import { gameFx } from '../gamefx';
+import { personalize } from '../../adapters/identity';
 
 export interface KaalState { mood: KaalMood; line: string; event: KaalEvent | null; n: number }
 let state: KaalState = { mood: 'idle', line: '', event: null, n: 0 };
@@ -16,7 +17,7 @@ const SOUND: Partial<Record<KaalEvent, Sfx>> = {
 };
 
 export function kaal(event: KaalEvent, opts: { line?: string; silent?: boolean; mute?: boolean } = {}) {
-  state = { mood: MOOD[event], line: opts.line ?? lineFor(event), event, n: state.n + 1 };
+  state = { mood: MOOD[event], line: personalize(opts.line ?? lineFor(event)), event, n: state.n + 1 };
   subs.forEach((s) => s());
   const s = SOUND[event];
   if (s && !opts.silent) sfx(s);

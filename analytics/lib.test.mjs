@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { openDb, loadCatalogue, ingest, ingestFeedback, parseRoster, Analytics } from './lib.mjs';
+import { openDb, loadCatalogue, ingest, ingestFeedback, ingestCheckpoint, identify, history, saveSitting, parseRoster, Analytics } from './lib.mjs';
 
 const cat = loadCatalogue(path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'content', 'sessions'));
 const ep1 = cat.get(1);
@@ -124,4 +124,72 @@ test('live: students with an event in the last 5 minutes', () => {
   const l = a.live();
   assert.equal(l.count, 1);
   assert.equal(l.students[0].session, 3);
+});
+
+test('identify: NxtWave ID is the key (case-insensitive), name is stored, returning is detected', () => {
+  const { db, a } = setup();
+  assert.ok(identify(db, { student_id: 'x', name: 'Priya' }).error);            // too short
+  assert.ok(identify(db, { student_id: 'NW1001', name: '<b>' }).error);         // not a name
+  const first = identify(db, { student_id: ' nw1001 ', name: '  Priya   Sharma ' });
+  assert.deepEqual({ ...first }, { ok: true, student_id: 'NW1001', name: 'Priya Sharma', returning: false, previous_name: null });
+  assert.equal(identify(db, { student_id: 'NW1001', name: 'Priya Sharma' }).returning, true);
+  // registered but not played yet → listed as not started, with the typed name
+  assert.deepEqual(a.notStarted().map((r) => [r.student_id, r.name]), [['NW1001', 'Priya Sharma']]);
+  // events sent with a lower-case id land under the same student
+  ingest(db, [ev('lms:nw1001', 'beat_viewed', 1, { beat: ep1.beats[0].id })]);
+  const s = a.students();
+  assert.equal(s.length, 1);
+  assert.equal(s[0].student_id, 'NW1001');
+  assert.equal(s[0].name, 'Priya Sharma');
+  assert.equal(s[0].logins, 2);
+  // a roster name wins over the typed one
+  a.saveRoster([{ student_id: 'NW1001', name: 'Priya S.', batch: 'B1' }]);
+  assert.equal(a.students()[0].name, 'Priya S.');
+});
+
+test('history returns the exact events (no heartbeats), feedback given and sittings - for a returning student', () => {
+  const { db } = setup();
+  identify(db, { student_id: 'NW2002', name: 'Ravi' });
+  const e1 = { ...ev('lms:NW2002', 'task_passed', 3, { beat: 'S3.5', unit: 7 }, { attempts: 1, sql: 'SELECT 1' }), course_ref: { topic_id: 'T3', unit_id: 'U' } };
+  ingest(db, [e1, ev('lms:NW2002', 'heartbeat', 3, {}, { seconds: 30 }), ev('lms:OTHER1', 'beat_viewed', 3, { beat: 'S3.1' })]);
+  ingestFeedback(db, { user_id: 'lms:NW2002', session: 3, rating: 4, client_ts: new Date().toISOString() });
+  ingestCheckpoint(db, { user_id: 'lms:NW2002', session: 3, chapter: 2, rating: 1, comment: 'lost at LIKE', client_ts: new Date().toISOString() });
+  assert.deepEqual(saveSitting(db, { op: 'save', user_id: 'lms:NW2002', scope: 's3', saved_at: 100, value: '{"savedAt":100,"state":{}}' }), { ok: true });
+  saveSitting(db, { op: 'save', user_id: 'lms:NW2002', scope: 's3', saved_at: 50, value: '{"savedAt":50,"state":{"old":1}}' });   // older: ignored
+  assert.ok(saveSitting(db, { op: 'save', user_id: 'lms:NW2002', scope: 's99', saved_at: 1, value: '{}' }).error);
+  const h = history(db, 'nw2002');
+  assert.equal(h.name, 'Ravi');
+  assert.equal(h.events.length, 1);
+  assert.deepEqual(h.events[0], e1);                 // course_ref, unit, result all preserved
+  assert.deepEqual(h.feedback, [3]);
+  assert.deepEqual(h.checkpoints, [{ session: 3, chapter: 2 }]);
+  assert.deepEqual(h.sittings.map((s) => [s.scope, s.saved_at]), [['s3', 100]]);
+  saveSitting(db, { op: 'clear', user_id: 'lms:NW2002', scope: 's3', saved_at: 200 });
+  assert.equal(history(db, 'NW2002').sittings.length, 0);
+  assert.ok(history(db, '../x').error);
+});
+
+test('student page: chapters with time, feedback and check-ins; feedback tab shows check-ins', () => {
+  const { db, a } = setup();
+  identify(db, { student_id: 'NW3003', name: 'Asha' });
+  const ch2 = ep1.beats.find((b) => b.chapter === 2);
+  const lastCh1 = [...ep1.beats].reverse().find((b) => b.chapter === 1);
+  ingest(db, [
+    ev('lms:NW3003', 'session_started', 1, { type: 'session', id: 'S1' }),
+    ev('lms:NW3003', 'heartbeat', 1, {}, { seconds: 30 }),                          // chapter 1 (first beat)
+    ev('lms:NW3003', 'heartbeat', 1, { beat: lastCh1.id }, { seconds: 20 }),        // working on the first beat of chapter 2
+  ]);
+  ingestCheckpoint(db, { user_id: 'lms:NW3003', session: 1, chapter: 1, rating: 4, comment: 'fun', client_ts: new Date().toISOString() });
+  assert.ok(ingestCheckpoint(db, { user_id: 'lms:NW3003', session: 1, chapter: 1, rating: 5 }).error);
+  const s = a.student('NW3003');
+  const e = s.episodes[0];
+  assert.ok(ch2, 'episode 1 has a second chapter');
+  assert.equal(e.chapters[0].seconds, 30);
+  assert.equal(e.chapters[1].seconds, 20);
+  assert.equal(s.checkpoints.length, 1);
+  assert.equal(s.registered_at != null, true);
+  const fb = a.feedback({});
+  assert.equal(fb.checkpoints.responses, 1);
+  assert.deepEqual({ ...fb.checkpoints.chapters[0] }, { session: 1, title: ep1.title, chapter: 1, responses: 1, lost: 0, avg: 4 });
+  assert.match(a.feedbackCsv({}), /chapter 1: great/);
 });

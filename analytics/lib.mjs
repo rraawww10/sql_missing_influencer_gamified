@@ -62,15 +62,107 @@ export function openDb(file) {
     );
     CREATE TABLE IF NOT EXISTS students (
       student_id TEXT PRIMARY KEY,
-      name       TEXT,
+      name       TEXT,                    -- from the roster CSV (wins on the dashboard when set)
       batch      TEXT
     );
+    -- quick check-in after every chapter (between full episode feedback cards): one row per student per chapter
+    CREATE TABLE IF NOT EXISTS checkpoint_feedback (
+      student_id  TEXT NOT NULL,
+      is_guest    INTEGER NOT NULL,
+      session     INTEGER NOT NULL,
+      chapter     INTEGER NOT NULL,
+      rating      INTEGER NOT NULL,       -- 1-4: 😕 lost · 😐 okay · 🙂 good · 🤩 great
+      comment     TEXT,                   -- optional suggestion
+      client_ts   TEXT NOT NULL,
+      received_at TEXT NOT NULL,
+      PRIMARY KEY (student_id, session, chapter)
+    );
+    -- the unfinished attempt at an episode, so a student can continue mid-episode on another device
+    CREATE TABLE IF NOT EXISTS sittings (
+      student_id TEXT NOT NULL,
+      scope      TEXT NOT NULL,           -- 's3' (episode 3) or 's3.u11' (a unit)
+      state      TEXT NOT NULL,           -- JSON { savedAt, state } exactly as the game keeps it
+      saved_at   INTEGER NOT NULL,        -- ms, from the game
+      PRIMARY KEY (student_id, scope)
+    );
   `);
+  // migrations for databases created before student identification (columns can't be added with IF NOT EXISTS)
+  const cols = (t) => new Set(db.prepare(`PRAGMA table_info(${t})`).all().map((c) => c.name));
+  const st = cols('students');
+  if (!st.has('entered_name')) db.exec('ALTER TABLE students ADD COLUMN entered_name TEXT');      // typed by the student at the start
+  if (!st.has('registered_at')) db.exec('ALTER TABLE students ADD COLUMN registered_at TEXT');    // first time they entered their id
+  if (!st.has('last_login_at')) db.exec('ALTER TABLE students ADD COLUMN last_login_at TEXT');    // last time they entered it
+  if (!st.has('logins')) db.exec('ALTER TABLE students ADD COLUMN logins INTEGER NOT NULL DEFAULT 0');
+  if (!cols('events').has('raw')) db.exec('ALTER TABLE events ADD COLUMN raw TEXT');              // the event as sent, to restore it on another device
   return db;
 }
 
+// ---------------------------------------------------------------- student identity (no login: NxtWave ID + name)
+// The id is case-insensitive (stored upper-case); letters, digits and . _ @ - only.
+export function normalizeId(v) {
+  const id = typeof v === 'string' ? v.trim().toUpperCase() : '';
+  return /^[A-Z0-9][A-Z0-9._@-]{2,63}$/.test(id) ? id : null;
+}
+export function normalizeName(v) {
+  const n = typeof v === 'string' ? v.normalize('NFC').replace(/\s+/g, ' ').trim() : '';
+  return n.length >= 2 && n.length <= 60 && /^[\p{L}\p{M}][\p{L}\p{M} .'-]*$/u.test(n) ? n : null;
+}
+export function identify(db, body) {
+  const id = normalizeId(body?.student_id), name = normalizeName(body?.name);
+  if (!id) return { error: 'bad id' };
+  if (!name) return { error: 'bad name' };
+  const now = new Date().toISOString();
+  const before = db.prepare('SELECT entered_name, registered_at FROM students WHERE student_id = ?').get(id);
+  const played = !!db.prepare('SELECT 1 FROM events WHERE student_id = ? LIMIT 1').get(id);
+  db.prepare(`INSERT INTO students (student_id, entered_name, registered_at, last_login_at, logins) VALUES (?,?,?,?,1)
+    ON CONFLICT(student_id) DO UPDATE SET entered_name = excluded.entered_name, last_login_at = excluded.last_login_at,
+      registered_at = COALESCE(students.registered_at, excluded.registered_at), logins = students.logins + 1`).run(id, name, now, now);
+  return { ok: true, student_id: id, name, returning: played || !!before?.registered_at, previous_name: before?.entered_name ?? null };
+}
+
+// Everything the game needs to rebuild a student's progress on a new device: the event log (heartbeats excluded),
+// which episodes already got feedback, and unfinished sittings.
+export function history(db, rawId) {
+  const id = normalizeId(rawId);
+  if (!id) return { error: 'bad id' };
+  const st = db.prepare('SELECT entered_name, name FROM students WHERE student_id = ?').get(id);
+  const rows = db.prepare(`SELECT event_id, sitting_id, verb, session, beat, object_type, object_id, result, client_ts, raw
+    FROM events WHERE student_id = ? AND is_guest = 0 AND verb <> 'heartbeat' ORDER BY client_ts LIMIT 50000`).all(id);
+  const events = rows.map((r) => {
+    if (r.raw) { try { const e = JSON.parse(r.raw); e.user_id = `lms:${id}`; return e; } catch { /* fall through */ } }
+    return { event_id: r.event_id, user_id: `lms:${id}`, sitting_id: r.sitting_id ?? 'restored', verb: r.verb,
+      object: { type: r.object_type || 'beat', id: r.object_id ?? '', session: r.session, ...(r.beat ? { beat: r.beat } : {}) },
+      course_ref: { topic_id: '' }, ...(r.result ? { result: JSON.parse(r.result) } : {}), client_ts: r.client_ts };
+  });
+  return {
+    student_id: id, name: st?.entered_name ?? st?.name ?? null, events,
+    feedback: db.prepare('SELECT session FROM feedback WHERE student_id = ? AND is_guest = 0').all(id).map((r) => r.session),
+    checkpoints: db.prepare('SELECT session, chapter FROM checkpoint_feedback WHERE student_id = ? AND is_guest = 0').all(id).map((r) => ({ session: r.session, chapter: r.chapter })),
+    sittings: db.prepare('SELECT scope, state, saved_at FROM sittings WHERE student_id = ?').all(id).map((r) => ({ scope: r.scope, saved_at: r.saved_at, value: r.state })),
+  };
+}
+
+// The game mirrors its unfinished sitting here (debounced). op 'save' keeps the newest copy; op 'clear' removes it.
+const SCOPE_RE = /^s(1[0-3]|[1-9])(\.u\d{1,2})?$/;
+export function saveSitting(db, b) {
+  const id = normalizeId(typeof b?.user_id === 'string' && b.user_id.startsWith('lms:') ? b.user_id.slice(4) : null);
+  if (!id || typeof b.scope !== 'string' || !SCOPE_RE.test(b.scope)) return { error: 'bad sitting' };
+  if (b.op === 'clear') {
+    const at = Number(b.saved_at) || Date.now();
+    db.prepare('DELETE FROM sittings WHERE student_id = ? AND scope = ? AND saved_at <= ?').run(id, b.scope, at);
+    return { ok: true };
+  }
+  const savedAt = Number(b.saved_at);
+  if (b.op !== 'save' || typeof b.value !== 'string' || b.value.length > 400_000 || !Number.isFinite(savedAt)) return { error: 'bad sitting' };
+  try { JSON.parse(b.value); } catch { return { error: 'bad sitting' }; }
+  db.prepare(`INSERT INTO sittings (student_id, scope, state, saved_at) VALUES (?,?,?,?)
+    ON CONFLICT(student_id, scope) DO UPDATE SET state = excluded.state, saved_at = excluded.saved_at WHERE excluded.saved_at >= sittings.saved_at`)
+    .run(id, b.scope, b.value, savedAt);
+  return { ok: true };
+}
+
 // ---------------------------------------------------------------- the beat catalogue (from the generated session packs)
-const clean = (s) => String(s ?? '').replace(/\{\{[^}]*\}\}/g, '…').replace(/[*`#>|]/g, '').replace(/\s+/g, ' ').trim();
+const clean = (s) => String(s ?? '').replace(/\{\{[^}]*\}\}/g, '…').replace(/\[\[name\]\]/g, '(student)').replace(/[*`#>|]/g, '').replace(/\s+/g, ' ').trim();
 function beatLabel(b) {
   if (b.type === 'note' && b.rm_ref?.heading) return `Case Note: ${clean(b.rm_ref.heading)}`;
   for (const k of ['title', 'ask', 'prompt', 'question', 'body', 'text']) {
@@ -86,10 +178,14 @@ export function loadCatalogue(dir) {
     const file = path.join(dir, `s${String(n).padStart(2, '0')}.json`);
     if (!fs.existsSync(file)) continue;
     const pack = JSON.parse(fs.readFileSync(file, 'utf8'));
-    sessions.push({
-      n, title: pack.title, minutes: pack.est_minutes ?? pack.minutes_estimate ?? null,
-      beats: pack.beats.map((b, i) => ({ id: b.id, index: i, type: b.type, task_id: b.task_id ?? null, label: beatLabel(b) })),
+    // chapters: same cut as the game (app/src/ui/screens/Player.tsx chapterOf) - a chapter ends at every clue
+    let ch = 1;
+    const beats = pack.beats.map((b, i) => {
+      const x = { id: b.id, index: i, type: b.type, task_id: b.task_id ?? null, label: beatLabel(b), chapter: ch };
+      if (b.type === 'clue' && i < pack.beats.length - 1) ch++;
+      return x;
     });
+    sessions.push({ n, title: pack.title, minutes: pack.est_minutes ?? pack.minutes_estimate ?? null, beats, chapters: ch });
   }
   const byN = new Map(sessions.map((s) => [s.n, s]));
   return {
@@ -113,8 +209,8 @@ const str = (v, max) => typeof v === 'string' && v.length > 0 && v.length <= max
 export function ingest(db, events) {
   if (!Array.isArray(events) || events.length > 500) return { error: 'events must be an array of at most 500' };
   const ins = db.prepare(`INSERT OR IGNORE INTO events
-    (event_id, student_id, is_guest, sitting_id, verb, session, beat, object_type, object_id, seconds, result, client_ts, received_at)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`);
+    (event_id, student_id, is_guest, sitting_id, verb, session, beat, object_type, object_id, seconds, result, client_ts, received_at, raw)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`);
   const now = new Date().toISOString();
   let added = 0, rejected = 0;
   db.exec('BEGIN');
@@ -125,13 +221,17 @@ export function ingest(db, events) {
       if (!e || !str(e.event_id, 100) || !str(e.user_id, 220) || !VERBS.has(e.verb) || !o || !Number.isInteger(session)
           || session < 0 || session > SESSION_COUNT || !str(e.client_ts, 40) || Number.isNaN(Date.parse(e.client_ts))) { rejected++; continue; }
       const lms = e.user_id.startsWith('lms:');
+      // identified students: the NxtWave ID is case-insensitive, stored upper-case
+      const sid = lms ? (normalizeId(e.user_id.slice(4)) ?? e.user_id.slice(4)) : e.user_id;
       const beat = typeof o.beat === 'string' ? o.beat.slice(0, 40) : e.verb === 'beat_viewed' && typeof o.id === 'string' ? o.id.slice(0, 40) : null;
       const seconds = e.verb === 'heartbeat' ? Math.max(0, Math.min(MAX_HEARTBEAT_SECONDS, Math.round(Number(e.result?.seconds) || 0))) : null;
       const result = e.result && typeof e.result === 'object' ? JSON.stringify(e.result).slice(0, 8000) : null;
       // a client clock far in the future would break "last seen": cap it at the receive time
       const ts = new Date(Math.min(Date.parse(e.client_ts), Date.now() + 5 * 60_000)).toISOString();
-      const r = ins.run(e.event_id, lms ? e.user_id.slice(4) : e.user_id, lms ? 0 : 1, typeof e.sitting_id === 'string' ? e.sitting_id.slice(0, 100) : null,
-        e.verb, session, beat, String(o.type ?? '').slice(0, 20), String(o.id ?? '').slice(0, 60), seconds, result, ts, now);
+      const raw = e.verb === 'heartbeat' ? null : JSON.stringify(e).slice(0, 16000);
+      const r = ins.run(e.event_id, sid, lms ? 0 : 1, typeof e.sitting_id === 'string' ? e.sitting_id.slice(0, 100) : null,
+        e.verb, session, beat, String(o.type ?? '').slice(0, 20), String(o.id ?? '').slice(0, 60), seconds, result, ts, now,
+        raw && raw.length < 16000 ? raw : null);
       added += Number(r.changes);
     }
     db.exec('COMMIT');
@@ -154,10 +254,24 @@ export function ingestFeedback(db, f) {
   const ts = Number.isNaN(Date.parse(f.client_ts)) ? new Date().toISOString() : new Date(Math.min(Date.parse(f.client_ts), Date.now())).toISOString();
   db.prepare(`INSERT OR REPLACE INTO feedback (student_id, is_guest, session, rating, mood, difficulty, liked, comment, sound_on, client_ts, received_at)
               VALUES (?,?,?,?,?,?,?,?,?,?,?)`).run(
-    lms ? f.user_id.slice(4) : f.user_id, lms ? 0 : 1, session, rating,
+    lms ? (normalizeId(f.user_id.slice(4)) ?? f.user_id.slice(4)) : f.user_id, lms ? 0 : 1, session, rating,
     MOODS.has(f.mood) ? f.mood : null, DIFFICULTY.has(f.difficulty) ? f.difficulty : null, JSON.stringify(liked),
     typeof f.comment === 'string' && f.comment.trim() ? f.comment.trim().slice(0, 1000) : null,
     typeof f.sound_on === 'boolean' ? Number(f.sound_on) : null, ts, new Date().toISOString());
+  return { ok: true };
+}
+
+// quick chapter check-in: 1-4 + an optional suggestion; a resend for the same chapter replaces it
+export function ingestCheckpoint(db, f) {
+  const session = Number(f?.session), chapter = Number(f?.chapter), rating = Number(f?.rating);
+  if (!f || !str(f.user_id, 220) || !Number.isInteger(session) || session < 1 || session > SESSION_COUNT
+      || !Number.isInteger(chapter) || chapter < 1 || chapter > 40 || !Number.isInteger(rating) || rating < 1 || rating > 4) return { error: 'bad checkpoint' };
+  const lms = f.user_id.startsWith('lms:');
+  const ts = Number.isNaN(Date.parse(f.client_ts)) ? new Date().toISOString() : new Date(Math.min(Date.parse(f.client_ts), Date.now())).toISOString();
+  db.prepare(`INSERT OR REPLACE INTO checkpoint_feedback (student_id, is_guest, session, chapter, rating, comment, client_ts, received_at)
+              VALUES (?,?,?,?,?,?,?,?)`).run(
+    lms ? (normalizeId(f.user_id.slice(4)) ?? f.user_id.slice(4)) : f.user_id, lms ? 0 : 1, session, chapter, rating,
+    typeof f.comment === 'string' && f.comment.trim() ? f.comment.trim().slice(0, 1000) : null, ts, new Date().toISOString());
   return { ok: true };
 }
 
@@ -233,7 +347,7 @@ export class Analytics {
         COUNT(DISTINCT CASE WHEN e.session = 0 THEN e.event_id END) > 0 AS saw_briefing
       FROM events e WHERE 1=1 ${s.sql}
       GROUP BY e.student_id`, s.params);
-    const names = new Map(this.all('SELECT student_id, name, batch FROM students').map((r) => [r.student_id, r]));
+    const names = new Map(this.all('SELECT student_id, COALESCE(name, entered_name) AS name, batch, entered_name, registered_at, last_login_at, logins FROM students').map((r) => [r.student_id, r]));
     const completed = this.completedBySession(f);
     const total = this.cat.totalBeats;
     return rows.map((r) => {
@@ -242,6 +356,7 @@ export class Analytics {
       const done = completed.get(r.student_id) ?? new Set();
       return {
         student_id: r.student_id, name: n?.name ?? null, batch: n?.batch ?? null, is_guest: !!r.is_guest,
+        entered_name: n?.entered_name ?? null, registered_at: n?.registered_at ?? null, logins: n?.logins ?? 0,
         level, level_title: this.cat.get(level)?.title ?? (r.saw_briefing ? 'Briefing' : '—'),
         level_status: !level ? 'briefing' : done.has(level) ? 'completed' : 'in progress',
         episodes_done: r.episodes_done, beats_done: r.beats_done, progress_pct: pct(r.beats_done, total),
@@ -373,8 +488,12 @@ export class Analytics {
         seconds: mine.reduce((a, e) => a + (e.seconds ?? 0), 0),
         attempts: mine.filter((e) => e.verb === 'task_attempted').length, hints: mine.filter((e) => e.verb === 'hint_used').length,
         traps: mine.filter((e) => e.verb === 'trap_hit').length, resets: mine.filter((e) => e.verb === 'session_reset').length,
-        beats: mine.length ? ep.beats.map((b) => ({ id: b.id, type: b.type, label: b.label, done: done.has(b.id), seconds: time.get(b.id) ?? 0,
+        beats: mine.length ? ep.beats.map((b) => ({ id: b.id, type: b.type, label: b.label, chapter: b.chapter, done: done.has(b.id), seconds: time.get(b.id) ?? 0,
           attempts: per('task_attempted', b), hints: per('hint_used', b), traps: per('trap_hit', b) })) : [],
+        chapters: mine.length ? Array.from({ length: ep.chapters }, (_, i) => {
+          const bs = ep.beats.filter((b) => b.chapter === i + 1);
+          return { chapter: i + 1, beats: bs.length, beats_done: bs.filter((b) => done.has(b.id)).length, seconds: bs.reduce((a, b) => a + (time.get(b.id) ?? 0), 0) };
+        }) : [],
       };
     });
     const local = (ts) => new Date(Date.parse(ts) + this.tzMs).toISOString().slice(0, 10);
@@ -385,7 +504,10 @@ export class Analytics {
       return { at: e.client_ts, verb: e.verb, session: e.session, beat: e.beat, id: e.object_id,
         detail: e.verb === 'task_attempted' ? { status: r.status, sql: r.sql } : e.verb === 'session_completed' ? { points: r.points } : e.verb === 'hint_used' ? { tier: r.tier } : null };
     });
-    return { ...base, episodes, daily: [...days].map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) })), recent };
+    const fb = this.all('SELECT session, rating, mood, difficulty, liked, comment, client_ts FROM feedback WHERE student_id = ? ORDER BY session', [id])
+      .map((r) => ({ ...r, liked: JSON.parse(r.liked || '[]') }));
+    const cps = this.all('SELECT session, chapter, rating, comment, client_ts FROM checkpoint_feedback WHERE student_id = ? ORDER BY session, chapter', [id]);
+    return { ...base, episodes, feedback: fb, checkpoints: cps, daily: [...days].map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) })), recent };
   }
 
   episode(n, f = {}) {
@@ -440,7 +562,7 @@ export class Analytics {
     const rows = this.all(`SELECT e.student_id, MAX(e.client_ts) AS at,
         (SELECT x.session FROM events x WHERE x.student_id = e.student_id ORDER BY x.client_ts DESC LIMIT 1) AS session
       FROM events e WHERE e.client_ts >= ? ${s.sql} GROUP BY e.student_id ORDER BY at DESC`, [since, ...s.params]);
-    const names = new Map(this.all('SELECT student_id, name, batch FROM students').map((r) => [r.student_id, r]));
+    const names = new Map(this.all('SELECT student_id, COALESCE(name, entered_name) AS name, batch, entered_name, registered_at, last_login_at, logins FROM students').map((r) => [r.student_id, r]));
     return { since, count: rows.length, students: rows.map((r) => ({ ...r, name: names.get(r.student_id)?.name ?? null, batch: names.get(r.student_id)?.batch ?? null,
       title: r.session ? this.cat.get(r.session)?.title ?? null : 'Briefing' })) };
   }
@@ -452,7 +574,7 @@ export class Analytics {
     if (f.batch) { where.push('fb.student_id IN (SELECT student_id FROM students WHERE batch = ?)'); params.push(f.batch); }
     if (f.session) { where.push('fb.session = ?'); params.push(Number(f.session)); }
     const w = where.length ? `WHERE ${where.join(' AND ')}` : '';
-    const rows = this.all(`SELECT fb.*, s.name, s.batch FROM feedback fb LEFT JOIN students s USING (student_id) ${w} ORDER BY fb.client_ts DESC`, params);
+    const rows = this.all(`SELECT fb.*, COALESCE(s.name, s.entered_name) AS name, s.batch FROM feedback fb LEFT JOIN students s USING (student_id) ${w} ORDER BY fb.client_ts DESC`, params);
     const count = (key, vals) => Object.fromEntries(vals.map((v) => [v, rows.filter((r) => r[key] === v).length]));
     const liked = {};
     for (const r of rows) for (const x of JSON.parse(r.liked || '[]')) liked[x] = (liked[x] ?? 0) + 1;
@@ -472,6 +594,30 @@ export class Analytics {
       }),
       responses: rows.slice(0, 2000).map((r) => ({ student_id: r.student_id, name: r.name, batch: r.batch, session: r.session, rating: r.rating, mood: r.mood,
         difficulty: r.difficulty, liked: JSON.parse(r.liked || '[]'), comment: r.comment, sound_on: r.sound_on, at: r.client_ts })),
+      checkpoints: this.checkpoints(f),
+    };
+  }
+
+  // chapter check-ins (1 lost · 2 okay · 3 good · 4 great): per episode + chapter, and every suggestion
+  checkpoints(f = {}) {
+    const where = []; const params = [];
+    if (!f.guests) where.push('c.is_guest = 0');
+    if (f.batch) { where.push('c.student_id IN (SELECT student_id FROM students WHERE batch = ?)'); params.push(f.batch); }
+    if (f.session) { where.push('c.session = ?'); params.push(Number(f.session)); }
+    const w = where.length ? `WHERE ${where.join(' AND ')}` : '';
+    const rows = this.all(`SELECT c.*, COALESCE(s.name, s.entered_name) AS name, s.batch FROM checkpoint_feedback c LEFT JOIN students s USING (student_id) ${w} ORDER BY c.client_ts DESC`, params);
+    const by = new Map();
+    for (const r of rows) {
+      const k = `${r.session}:${r.chapter}`;
+      if (!by.has(k)) by.set(k, { session: r.session, title: this.cat.get(r.session)?.title ?? null, chapter: r.chapter, responses: 0, sum: 0, lost: 0 });
+      const x = by.get(k); x.responses++; x.sum += r.rating; if (r.rating === 1) x.lost++;
+    }
+    return {
+      responses: rows.length,
+      chapters: [...by.values()].sort((a, b) => a.session - b.session || a.chapter - b.chapter)
+        .map(({ sum, ...x }) => ({ ...x, avg: Math.round(sum / x.responses * 10) / 10 })),
+      list: rows.slice(0, 2000).map((r) => ({ student_id: r.student_id, name: r.name, batch: r.batch, session: r.session, chapter: r.chapter,
+        rating: r.rating, comment: r.comment, at: r.client_ts })),
     };
   }
 
@@ -479,7 +625,9 @@ export class Analytics {
     const d = this.feedback(f);
     const head = ['student_id', 'name', 'batch', 'episode', 'rating', 'mood', 'difficulty', 'liked', 'comment', 'sound_on', 'at'];
     const lines = d.responses.map((r) => [r.student_id, r.name, r.batch, r.session, r.rating, r.mood, r.difficulty, r.liked.join('; '), r.comment, r.sound_on, r.at].map(csvCell).join(','));
-    return [head.join(','), ...lines].join('\n');
+    const PULSE = ['', 'lost', 'okay', 'good', 'great'];
+    const chap = d.checkpoints.list.map((r) => [r.student_id, r.name, r.batch, r.session, `chapter ${r.chapter}: ${PULSE[r.rating]}`, '', '', '', r.comment, '', r.at].map(csvCell).join(','));
+    return [head.join(','), ...lines, ...chap].join('\n');
   }
 
   saveRoster(rows, replace = false) {
@@ -499,7 +647,7 @@ export class Analytics {
   // roster students who never opened the game (so the admin can nudge them)
   notStarted(f = {}) {
     const params = f.batch ? [f.batch] : [];
-    return this.all(`SELECT student_id, name, batch FROM students s
+    return this.all(`SELECT student_id, COALESCE(name, entered_name) AS name, batch, registered_at FROM students s
       WHERE ${f.batch ? 'batch = ? AND' : ''} NOT EXISTS (SELECT 1 FROM events e WHERE e.student_id = s.student_id) ORDER BY name`, params);
   }
 

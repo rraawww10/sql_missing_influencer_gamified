@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Kaal, useTalking } from './Kaal';
 import type { KaalMood } from './lines';
 import { speak } from '../voice';
+import { personalize } from '../../adapters/identity';
 
 const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -17,7 +18,8 @@ export function TypeLine({ text, speed = 22 }: { text: string; speed?: number })
   return <span aria-label={text}><span aria-hidden="true">{text.slice(0, n)}</span>{n < text.length && <span className="caret" aria-hidden="true" />}</span>;
 }
 
-export function KaalCard({ line, mood = 'whisper', title = 'Inspector Kaal', size = 84 }: { line: string; mood?: KaalMood; title?: string; size?: number }) {
+export function KaalCard({ line: raw, mood = 'whisper', title = 'Inspector Kaal', size = 84 }: { line: string; mood?: KaalMood; title?: string; size?: number }) {
+  const line = personalize(raw);
   const talking = useTalking();
   useEffect(() => { const t = setTimeout(() => speak(line, { mood }), 400); return () => clearTimeout(t); }, [line, mood]);
   return (

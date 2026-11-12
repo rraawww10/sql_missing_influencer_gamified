@@ -9,7 +9,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
-import { playBeats } from './smoke-lib.mjs';
+import { playBeats, seedIdentity } from './smoke-lib.mjs';
 
 const APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = path.join(APP, 'public/content');
@@ -76,6 +76,7 @@ const SCAN = () => {
 
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+await seedIdentity(page);
 const issues = new Map();   // key → {count, sample}
 async function scan(label) {
   await page.waitForTimeout(150);
