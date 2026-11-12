@@ -13,3 +13,4 @@ deploy/
 .vscode/
 .DS_Store
 .claude/settings.local.json
+docs/understanding_server.md
