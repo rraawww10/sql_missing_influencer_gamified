@@ -1,7 +1,10 @@
 # analytics/ — student engagement dashboard
 
 A small server that **collects the game's progress events** and serves an **admin-only dashboard**: who played, how long,
-how far each student got, and which beats (steps) they get stuck on. Zero dependencies: Node 22.5+ and one SQLite file.
+how far each student got, and which beats (steps) they get stuck on. Zero dependencies: **Node 23.4+** (it uses the
+built-in `node:sqlite`, which is still behind `--experimental-sqlite` on Node 22) and one SQLite file.
+
+**Putting it on a real server for students:** `hosting/README.md` - AWS stage by stage, HTTPS, auto-restart, daily backups.
 
 ```
 game (S3, in the LMS iframe; the student types name + NxtWave ID on the start screen, ?user_id= only prefills the ID)

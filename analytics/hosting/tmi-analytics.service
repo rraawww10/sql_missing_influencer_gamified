@@ -1,0 +1,36 @@
+[Unit]
+Description=SQL The Missing Influencer - analytics server (student progress, time and feedback)
+Documentation=https://github.com/rraawww10/sql_missing_influencer_gamified
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=tmi
+Group=tmi
+WorkingDirectory=/opt/tmi/analytics
+EnvironmentFile=/etc/tmi-analytics.env
+ExecStart=/usr/bin/node --no-warnings server.mjs
+
+# Come back from anything: a crash, an out-of-memory kill, a reboot.
+Restart=always
+RestartSec=3
+StartLimitIntervalSec=0
+
+# The database is the only thing worth protecting, so the process may write nowhere else.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/tmi
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=tmi-analytics
+
+[Install]
+WantedBy=multi-user.target

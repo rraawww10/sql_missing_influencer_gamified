@@ -60,17 +60,17 @@ beats:
     rm_ref: { unit_id: da74bf06-388d-4b82-8af9-f880dfb4f36f, heading: "HAVING" }
     prompt: "Your result has one row. What does it tell us?"
     options:
-      - { text: "Since 18:52 her watch has hit only tower RRO-17 ({{outskirts}}) - 47 pings, the last one at 23:28, which is right now", correct: true }
+      - { text: "Since 18:52 her watch has hit only tower RRO-17 ({{outskirts}}) - 47 pings, the last one at 23:28, and it never moved to another tower", correct: true }
       - { text: "Her watch is switched off" }
       - { text: "She is still at the hotel" }
-    explain: "`tower_id` RRO-17, `tower_area` {{outskirts}}, 47 pings, first 18:52, last 23:28. The watch has not left that tower's area all evening - and it is still pinging."
+    explain: "`tower_id` RRO-17, `tower_area` {{outskirts}}, 47 pings, first 18:52, last 23:28. One tower, every ping: the watch has not left that area since she went out of the hotel."
 
   - id: S6.5
     type: clue
     clue_id: S6-C1
     requires_task: T6.2
     title: "The outskirts tower"
-    body: "Your query on `tower_pings`: since **18:52** {{star.first}}'s watch has pinged only tower **RRO-17 · {{outskirts}}** - **47** pings, the last at **23:28**. She has been in that tower's area all evening, and she is still there now."
+    body: "Your query on `tower_pings`: since **18:52** {{star.first}}'s watch has pinged only tower **RRO-17 · {{outskirts}}** - **47** pings, the last at **23:28**. Not one ping from any other tower: wherever that watch went at 18:52, it has not moved since."
 
   - id: S6.6
     type: note

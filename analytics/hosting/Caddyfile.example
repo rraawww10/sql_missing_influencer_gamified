@@ -1,0 +1,32 @@
+# Caddy fetches and renews a free Let's Encrypt certificate for {{DOMAIN}} on its own.
+# setup.sh copies this to /etc/caddy/Caddyfile with the real hostname substituted in.
+#
+# Why a proxy at all: the game is served to students over HTTPS, and a browser refuses to let an
+# HTTPS page send data to a plain http:// address. Without this, every event, every feedback card
+# and every "welcome back" would be blocked by the browser before it left the student's laptop.
+
+{{DOMAIN}} {
+	encode zstd gzip
+
+	# The app listens on loopback only (HOST=127.0.0.1 in /etc/tmi-analytics.env).
+	# Caddy adds X-Forwarded-For and X-Forwarded-Proto, which the server uses for the admin
+	# rate-limit and for the Secure flag on the admin cookie.
+	reverse_proxy 127.0.0.1:8787 {
+		# A far-along student's /api/history response is a few hundred KB; don't cut it short.
+		flush_interval -1
+	}
+
+	# The dashboard is the only page here; nothing should frame it.
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Frame-Options "DENY"
+		-Server
+	}
+
+	log {
+		output file /var/log/caddy/access.log {
+			roll_size 10mb
+			roll_keep 5
+		}
+	}
+}

@@ -16,9 +16,10 @@ beats:
     type: scene
     speaker: mentor
     body: |
-      The gate log is here: `gate_log` has every entry and exit at the hotel's three gates - 
+      The gate log is here: `gate_log` has every entry and exit at the hotel's three gates -
       **MAIN**, **SERVICE** and **STAFF** - since noon.
       Each row has the gate, direction (IN/OUT), time, vehicle number, vehicle colour, and sometimes a name the guard wrote down.
+      The hotel's system is still writing to it. Every time someone passes a gate tonight, a new row lands while we work - so keep looking, the log will grow under your hands.
 
   - id: S3.2
     type: note

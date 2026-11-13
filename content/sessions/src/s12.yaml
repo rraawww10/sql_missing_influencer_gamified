@@ -315,7 +315,7 @@ beats:
     clue_id: S12-C2
     requires_task: T12.10
     title: "The edited contract"
-    body: "Your log queries: the missed-show clause was **Not Applicable** until user **{{manager.login}}** wrote *Applicable* at 18:05 (T7 - lost in the 18:07 crash) and again at **18:20** (T9 - **committed**, with the bonus set to ₹25 lakh). Both writes came **after** she left the hotel in his SUV at 18:12 (S3-C1). She never agreed to skip the show."
+    body: "Your log queries: the missed-show clause was **Not Applicable** until user **{{manager.login}}** wrote *Applicable* at 18:05 (T7 - lost in the 18:07 crash) and again at **18:20** (T9 - **committed**, with the bonus set to ₹25 lakh). The first attempt came **before** she left the hotel in his SUV at 18:12 (S3-C1); the committed one came eight minutes after. He had already written the clause while she was still in the building. She never agreed to skip the show."
 
   - id: S12.23
     type: note

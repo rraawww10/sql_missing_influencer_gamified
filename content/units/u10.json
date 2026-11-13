@@ -69,7 +69,7 @@
       "id": "S3.1",
       "type": "scene",
       "speaker": "mentor",
-      "body": "The gate log is here: `gate_log` has every entry and exit at the hotel's three gates - \n**MAIN**, **SERVICE** and **STAFF** - since noon.\nEach row has the gate, direction (IN/OUT), time, vehicle number, vehicle colour, and sometimes a name the guard wrote down.\n"
+      "body": "The gate log is here: `gate_log` has every entry and exit at the hotel's three gates -\n**MAIN**, **SERVICE** and **STAFF** - since noon.\nEach row has the gate, direction (IN/OUT), time, vehicle number, vehicle colour, and sometimes a name the guard wrote down.\nThe hotel's system is still writing to it. Every time someone passes a gate tonight, a new row lands while we work - so keep looking, the log will grow under your hands.\n"
     },
     {
       "id": "S3.2",

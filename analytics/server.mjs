@@ -18,7 +18,8 @@
 //   GET  /api/admin/export.csv       the students table as CSV
 //   GET  /                           the dashboard (public/index.html)
 //
-// Config (env): ADMIN_PASSWORD (required), PORT=8787, DB_PATH=./data/analytics.sqlite, SESSION_SECRET (random per boot if unset),
+// Config (env): ADMIN_PASSWORD (required), PORT=8787, HOST=0.0.0.0 (set 127.0.0.1 when a reverse proxy fronts it),
+// DB_PATH=./data/analytics.sqlite, SESSION_SECRET (random per boot if unset),
 // TZ_OFFSET=+05:30 (what "today" means on the dashboard), CONTENT_DIR=../content/sessions.
 import http from 'node:http';
 import fs from 'node:fs';
@@ -29,6 +30,8 @@ import { openDb, loadCatalogue, Analytics, ingest, ingestFeedback, ingestCheckpo
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 8787);
+// In production a reverse proxy (Caddy) holds the certificate and forwards to this port on loopback only.
+const HOST = process.env.HOST ?? '0.0.0.0';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 const SECRET = process.env.SESSION_SECRET ?? crypto.randomBytes(32).toString('hex');
 const DB_PATH = process.env.DB_PATH ?? path.join(HERE, 'data', 'analytics.sqlite');
@@ -58,6 +61,17 @@ const passwordOk = (p) => {
   const a = crypto.createHash('sha256').update(String(p ?? '')).digest(), b = crypto.createHash('sha256').update(ADMIN_PASSWORD).digest();
   return crypto.timingSafeEqual(a, b);
 };
+// Who is really calling. Behind a reverse proxy on the same host every request arrives from 127.0.0.1, so a
+// per-IP limit would count all admins as one and lock everybody out after 10 typos. X-Forwarded-For is trusted
+// ONLY for loopback connections (in production HOST=127.0.0.1, so nothing but the proxy can reach us), and the
+// LAST entry is used: a client can forge earlier entries, but the proxy appends the address it actually saw.
+function clientIp(req) {
+  const peer = req.socket.remoteAddress ?? '?';
+  if (peer !== '127.0.0.1' && peer !== '::1' && peer !== '::ffff:127.0.0.1') return peer;
+  const fwd = String(req.headers['x-forwarded-for'] ?? '').split(',').map((s) => s.trim()).filter(Boolean);
+  return fwd.at(-1) ?? peer;
+}
+
 // Slow down password guessing: 10 tries per IP per 15 minutes
 const tries = new Map();
 function tooManyTries(ip) {
@@ -137,7 +151,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (p === '/api/login' && req.method === 'POST') {
-      const ip = req.socket.remoteAddress ?? '?';
+      const ip = clientIp(req);
       if (tooManyTries(ip)) return send(res, 429, { error: 'Too many attempts. Try again in 15 minutes.' });
       let body = {};
       try { body = JSON.parse(await readBody(req, 10_000)); } catch { /* empty */ }
@@ -188,4 +202,4 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, () => console.log(`Analytics: http://localhost:${PORT}  (db ${DB_PATH}, ${catalogue.totalBeats} beats in ${catalogue.sessions.length} episodes)`));
+server.listen(PORT, HOST, () => console.log(`Analytics: http://${HOST}:${PORT}  (db ${DB_PATH}, ${catalogue.totalBeats} beats in ${catalogue.sessions.length} episodes)`));

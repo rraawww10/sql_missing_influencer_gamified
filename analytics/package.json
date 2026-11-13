@@ -2,8 +2,8 @@
   "name": "missing-influencer-analytics",
   "private": true,
   "type": "module",
-  "description": "Collects the game's progress events and serves the admin engagement dashboard. No dependencies; Node 22+.",
-  "engines": { "node": ">=22.5" },
+  "description": "Collects the game's progress events and serves the admin engagement dashboard. No dependencies; Node 23.4+ (node:sqlite is still flag-gated on 22).",
+  "engines": { "node": ">=23.4" },
   "scripts": {
     "start": "node --no-warnings server.mjs",
     "demo": "node --no-warnings seed-demo.mjs && DB_PATH=data/demo.sqlite ADMIN_PASSWORD=demo node --no-warnings server.mjs",

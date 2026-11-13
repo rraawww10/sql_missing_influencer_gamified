@@ -7,7 +7,8 @@ the dashboard and two versions of the game, all connected to **one test database
 
 ## 0. One-time setup
 
-You need **Node.js 22.5 or newer** (`node -v`) and Google Chrome.
+You need **Node.js 23.4 or newer** (`node -v`; 24 is what this was built on) and Google Chrome.
+On Node 22 the local server will not start - it uses the built-in `node:sqlite`, which is still flag-gated there.
 
 ```bash
 cd sql_missing_influencer_gamified/app
