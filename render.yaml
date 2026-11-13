@@ -1,0 +1,37 @@
+# Render Blueprint - a free DEMO: the game + the analytics server/dashboard, connected.
+# Render dashboard → New → Blueprint → pick this repo → Apply. Then follow docs/RENDER_DEMO.md.
+#
+# DEMO ONLY: the free web service sleeps after 15 min without traffic and its disk is wiped when it
+# sleeps or redeploys, so the recorded data does not last. For the real launch use analytics/hosting/.
+services:
+  # 1. analytics server + dashboard (stores events, feedback, check-ins)
+  - type: web
+    name: tmi-analytics-demo
+    runtime: node
+    plan: free
+    rootDir: analytics
+    buildCommand: echo "no dependencies"
+    startCommand: node --no-warnings server.mjs
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: ADMIN_PASSWORD
+        sync: false          # Render asks you for the dashboard password
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: TZ_OFFSET
+        value: "+05:30"
+
+  # 2. the game (case map: briefing + all 13 episodes on one page)
+  - type: web
+    name: tmi-game-demo
+    runtime: static
+    rootDir: app
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: VITE_ANALYTICS_URL
+        sync: false          # the analytics address, e.g. https://tmi-analytics-demo.onrender.com (no slash at the end)
