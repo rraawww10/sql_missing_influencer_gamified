@@ -14,3 +14,9 @@ deploy/
 .DS_Store
 .claude/settings.local.json
 docs/understanding_server.md
+
+# analytics databases (local/test data, 160MB+)
+analytics/data/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

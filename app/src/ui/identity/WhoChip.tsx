@@ -2,7 +2,7 @@
 // student and show the start screen again (their progress stays on the server under their ID).
 import { clearIdentity, currentIdentity } from '../../adapters/identity';
 
-export function WhoChip() {
+export function WhoChip({ full = false }: { full?: boolean }) {
   const who = currentIdentity();
   if (!who) return null;
   const sw = () => {
@@ -12,7 +12,7 @@ export function WhoChip() {
   };
   return (
     <span className="who-chip" title={`Playing as ${who.name} · NxtWave ID ${who.id}`}>
-      <span aria-hidden="true">👤</span> <b>{who.name.split(' ')[0]}</b><span className="hide-phone"> · {who.id}</span>
+      <span aria-hidden="true">👤</span> <b>{full ? who.name : who.name.split(' ')[0]}</b><span className="hide-phone"> · {who.id}</span>
       <button className="linkish" onClick={sw}>Not you?</button>
     </span>
   );

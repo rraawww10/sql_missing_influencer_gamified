@@ -559,6 +559,7 @@ button.on > small, .tables-tabs button.on small { color: var(--on-accent) !impor
 .gate-note { margin: 0; text-align: center; }
 .gate-wait { margin: 0; font-weight: 600; }
 .who-chip { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--glass); white-space: nowrap; }
+.who-chip b { max-width: 40vw; overflow: hidden; text-overflow: ellipsis; }
 .linkish { background: none; border: 0; padding: 0 0 0 4px; color: var(--accent-2); text-decoration: underline; cursor: pointer; font: inherit; }
 .welcome-toast { position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 50; padding: 10px 18px; border-radius: 10px; background: rgb(20 60 45 / 95%); border: 1px solid rgb(47 214 123 / 55%); color: #eafff3; font-weight: 600; pointer-events: none; animation: rise .4s var(--ease) both; max-width: calc(100% - 32px); text-align: center; }
 .pulse { margin: 8px auto 0; padding: 8px 12px; border-radius: 8px; background: var(--panel); border: 1px solid var(--line-2); display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 12px; max-width: min(760px, calc(100% - 24px)); font-size: 14px; animation: rise .4s var(--ease) both; }

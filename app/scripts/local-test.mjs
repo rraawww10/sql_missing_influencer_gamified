@@ -1,6 +1,6 @@
 // ONE COMMAND to test everything on this computer: game + database + dashboard, connected, with sample data.
-//   cd app && npm run local-test            (fresh test database every time)
-//   cd app && npm run local-test -- --keep  (keep what you recorded in the last run)
+//   cd app && npm run local-test             (keeps the existing test database; seeds one only if missing)
+//   cd app && npm run local-test -- --fresh  (WIPES analytics/data/test.sqlite and re-seeds sample students)
 //
 // Starts:
 //   1. the analytics server (database + dashboard) on http://localhost:8787   password: test   database: analytics/data/test.sqlite
@@ -21,7 +21,7 @@ const DB = path.join(ANALYTICS, 'data', 'test.sqlite');
 const UPLOAD = path.join(ROOT, 'test-upload');
 const API_PORT = 8787, MAP_PORT = 5180, SHIP_PORT = 5181;
 const API = `http://localhost:${API_PORT}`;
-const keep = process.argv.includes('--keep');
+const keep = !process.argv.includes('--fresh');
 const node = process.execPath;
 const env = { ...process.env, VITE_ANALYTICS_URL: API };
 const step = (m) => console.log(`\n▶ ${m}`);

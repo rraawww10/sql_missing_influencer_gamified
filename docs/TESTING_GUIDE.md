@@ -33,10 +33,9 @@ Wait about one minute, until it prints **READY**. Leave this terminal open; **Ct
 | **Dashboard** (admin) | http://localhost:8787 | password **`test`** |
 | **Game: case map** (all 13 episodes on one page) | http://localhost:5180 | quickest for testing |
 | **Game: exactly as on S3** (one site per episode) | http://localhost:5181/intro/index.html | episodes: `/s01/index.html` … `/s13/index.html` |
-| **Database file** | `analytics/data/test.sqlite` | a fresh copy is made on every start |
+| **Database file** | `analytics/data/test.sqlite` | kept between runs (`--fresh` re-seeds it) |
 
-* `npm run local-test` = fresh sample data every time (anything you recorded is wiped).
-* `npm run local-test -- --keep` = keep what you recorded last time.
+* `npm run local-test` keeps what is recorded (default). `npm run local-test -- --fresh` wipes it and re-seeds sample students.
 
 ---
 
@@ -173,7 +172,7 @@ the board. Dashboard → student → episode 1 shows **reset 1×**. (Compare wit
 ### Stage H - Feedback when the internet drops
 1. In the `npm run local-test` terminal press **Ctrl+C** (server stops = "offline").
 2. In the game finish a chapter and send the check-in (the game does not complain).
-3. Start again with `npm run local-test -- --keep`, reload the game page.
+3. Start again with `npm run local-test`, reload the game page.
 4. The check-in now appears on the dashboard (it waited in the game's queue and was sent later).
 
 ### Stage I - Switch student on a shared computer
@@ -220,4 +219,4 @@ with the same ID the history comes back.
 | Game asks for the name again in another window | expected: each browser window type / address has its own storage. Same ID = same student |
 | Dashboard numbers did not change | press **Refresh** on the dashboard (numbers are cached for up to 20 s); time arrives in 30-second steps |
 | Nothing at all reaches the dashboard | make sure you use the addresses from section 1 (those builds point at the local server) |
-| Want a clean start | stop and run `npm run local-test` again (without `--keep`) |
+| Want a clean start | stop and run `npm run local-test -- --fresh` (deletes all recorded data) |
