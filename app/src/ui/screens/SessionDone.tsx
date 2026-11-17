@@ -1,6 +1,6 @@
 // Episode solved: confetti, a medal, points that count up, new clues, and where to go next.
 import { WhoChip } from '../identity/WhoChip';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useProgress } from '../useProgress';
 import { useServices } from '../services';
 import { postToParent } from '../embed';
@@ -17,7 +17,7 @@ import { TEASE } from '../kaal/lines';
 import { sfx } from '../sound';
 import { kaal } from '../kaal/bus';
 
-const RANK_ICON: Record<string, string> = { Intern: '🎓', Constable: '🛡️', 'Sub-Inspector': '⭐', Inspector: '🏅' };
+import { rankIcon, nextRank, solvedCount, takePromotion } from '../ranks';
 
 interface Props { session: number; onNext(): void; onMap(): void; onReset(): void; hasNext: boolean; standalone?: boolean }
 
@@ -46,6 +46,13 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
   const title = episodeTitle(session, pack?.title);
   const ep = episodeOf(session);
   const points = useCountUp(p?.points ?? 0);
+  // "Promoted!" once, on the episode that earns a new rank
+  const [promoted, setPromoted] = useState<string | null>(null);
+  useEffect(() => { if (whole?.status === 'completed' && !promoted) { const r = takePromotion(progress); if (r) setPromoted(r); } }, [progress, whole?.status, promoted]);
+  const upNext = nextRank(solvedCount(progress));
+  // the next steps unlock once this episode's feedback is in (FeedbackCard is required)
+  const [fbDone, setFbDone] = useState(false);
+  const markFb = useCallback(() => setFbDone(true), []);
 
   // tell the embedding page (once per completion) that this episode / unit is solved
   useEffect(() => {
@@ -65,7 +72,7 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
       <div className="page-inner">
         <nav className="topnav">
           <span className="brand">SQL: The Missing Influencer</span>
-          <span className="row" style={{ gap: 6 }}><WhoChip /><button className="btn small ghost" onClick={onMap}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
+          <span className="row" style={{ gap: 6 }}><WhoChip /><button className="btn small ghost" disabled={!fbDone} onClick={onMap}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
         </nav>
         <section className="poster art-only"><SceneArt session={session} /></section>
         <section className="newspaper result-hero">
@@ -82,12 +89,23 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
               <div className="stat"><b>{p.trapsFound}</b><span>trap{p.trapsFound === 1 ? '' : 's'} spotted</span></div>
             </div>
           )}
-          {progress && <p><span className="rank-badge"><i aria-hidden="true">{RANK_ICON[progress.rank] ?? '🎖️'}</i>Rank: {progress.rank}</span>{progress.badges.length > 0 && <span className="muted"> · 🏅 {progress.badges.join(', ')}</span>}</p>}
+          {promoted && (
+            <div className="promotion" role="status">
+              <div className="promo-medal" aria-hidden="true">{rankIcon(promoted)}</div>
+              <div className="promo-kicker">Achievement unlocked · Promoted!</div>
+              <h3>You are now a {promoted}</h3>
+              <p>{upNext ? `${upNext.left} more episode${upNext.left === 1 ? '' : 's'} to become ${upNext.name}.` : 'The highest rank in the Data Cell. Case closed, Inspector.'}</p>
+            </div>
+          )}
+          {progress && <p><span className="rank-badge"><i aria-hidden="true">{rankIcon(progress.rank)}</i>Rank: {progress.rank}</span>{progress.badges.length > 0 && <span className="muted"> · 🏅 {progress.badges.join(', ')}</span>}</p>}
+          {progress && !promoted && upNext && <p className="muted small" style={{ marginTop: 0 }}>{upNext.left} more episode{upNext.left === 1 ? '' : 's'} to {upNext.name}</p>}
           {clues.length > 0 && <p>New on your Evidence Board: {clues.map((c) => <span key={c.clue_id} className="chip accent" style={{ margin: 3 }}>📌 {c.title}</span>)}</p>}
           {standalone && <p className="muted">Well done. {unit && unit.part < unit.parts ? 'Open the next reading material to continue the case.' : 'Continue with the next part of your course to follow the case.'}</p>}
+          <FeedbackCard session={session} onDone={markFb} />
+          {!fbDone && <p className="muted small" style={{ marginTop: 10 }}>🔒 Send your feedback above to unlock the next episode.</p>}
           <div className="row" style={{ justifyContent: 'center', marginTop: 16 }}>
-            {hasNext && <button className="btn primary big go" onClick={onNext}>Next episode: {episodeOf(session + 1).title} →</button>}
-            <button className={`btn ${hasNext ? '' : 'primary big'}`} onClick={onMap}>{standalone ? 'See the Evidence Board' : 'Back to the case map'}</button>
+            {hasNext && <button className="btn primary big go" disabled={!fbDone} onClick={onNext}>Next episode: {episodeOf(session + 1).title} →</button>}
+            <button className={`btn ${hasNext ? '' : 'primary big'}`} disabled={!fbDone} onClick={onMap}>{standalone ? 'See the Evidence Board' : 'Back to the case map'}</button>
           </div>
           {nextN && !multiPart && (
             <div className="next-lead" style={{ marginTop: 18 }}>
@@ -100,8 +118,7 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
             <ResetControl session={session} label={multiPart ? '↺ Reset this part and play again' : '↺ Reset this episode and play again'} small onDone={onReset} />
           </div>
         </section>
-        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={session === EPISODE_COUNT ? 'We did it, {you}. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, {you}. File it - and don’t go far. The night isn’t over.'} /></div>
-        <FeedbackCard session={session} />
+        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={promoted && session !== EPISODE_COUNT ? `Promoted, {you}! ${promoted} now. Wear it well - and don’t go far. The night isn’t over.` : session === EPISODE_COUNT ? 'We did it, {you}. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, {you}. File it - and don’t go far. The night isn’t over.'} /></div>
       </div>
     </div>
   );

@@ -106,7 +106,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
     const b = runner.pack.beats[view];
     if (!firstStep.current) sfx('whoosh');
     if (review) { if (firstStep.current) kaal('review', { silent: true }); }
-    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: '{you}! New lead tonight. Stay close - chalo!' } : {});
+    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: '{you}! New lead tonight. Stay close, let’s go!' } : {});
     else if (KAAL_ON[b.type]) kaal(KAAL_ON[b.type]!, { silent: true });
     else if (b.type === 'scene' && view % 4 === 0) kaal('scene', { silent: true });
     firstStep.current = false;

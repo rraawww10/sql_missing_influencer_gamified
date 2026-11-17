@@ -83,3 +83,13 @@ export async function signIn(f, who = TEST_STUDENT) {
   await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
   await f.getByRole('button', { name: /Open the case file/ }).click();
 }
+
+// The end-of-episode feedback is required (2026-11-17): fill it in if the solved screen asks for it.
+export async function giveFeedback(f) {
+  const card = f.locator('.feedback-card');
+  if (!(await card.getByRole('radio', { name: '4 stars' }).isVisible().catch(() => false))) return;
+  await card.getByRole('radio', { name: '4 stars' }).click();
+  await card.getByRole('button', { name: /Fun/ }).click();
+  await card.getByRole('button', { name: /Just right/ }).click();
+  await card.getByRole('button', { name: /Send feedback/ }).click();
+}

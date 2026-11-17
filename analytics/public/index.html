@@ -104,6 +104,23 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
 .type{font-size:11px;padding:1px 6px;border-radius:4px;background:var(--panel-2);color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
 .type.task{background:var(--accent-soft);color:var(--accent)}
 [hidden]{display:none!important}
+/* v8 look (2026-11-17): colourful header, bold KPI tiles, feedback feed */
+header{background:linear-gradient(110deg,#6d28d9,#db2777 55%,#f59e0b);border:0;color:#fff}
+header .top h1 small{color:#ffffffcc}
+header .btn{background:#ffffff22;border-color:#ffffff44;color:#fff}header .btn:hover{background:#ffffff38}
+header .live{color:#fff}
+nav.tabs button{color:#ffffffbb}nav.tabs button[aria-selected=true]{color:#fff;border-color:#fff}
+.card{border-radius:16px}
+.kpi{--k1:#7c3aed;--k2:#a855f7;position:relative;overflow:hidden;color:#fff;border:0;background:linear-gradient(135deg,var(--k1),var(--k2))}
+.kpi .v{font-size:32px}.kpi .l{color:#ffffffe6;font-size:13px;font-weight:600}
+.kpi .ico{position:absolute;right:12px;top:10px;font-size:30px;opacity:.9}
+.k1{--k1:#7c3aed;--k2:#a855f7}.k2{--k1:#0891b2;--k2:#22d3ee}.k3{--k1:#059669;--k2:#34d399}.k4{--k1:#f59e0b;--k2:#f97316}.k5{--k1:#db2777;--k2:#f472b6}
+.feed{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.fb{border-radius:14px;padding:12px 14px;background:var(--panel-2);border-left:5px solid var(--c,#a855f7);cursor:pointer;animation:fbIn .4s ease both}
+.fb:hover{transform:translateY(-2px);transition:transform .15s}
+.fb .who{font-weight:650}.fb .meta{color:var(--muted);font-size:12px}.fb .big{font-size:22px;margin:4px 0}.fb .cm{margin-top:4px}
+@keyframes fbIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
 @media (max-width:640px){details.ep summary{grid-template-columns:1fr 1fr}.hbar{grid-template-columns:110px 1fr auto}}
 </style>
 </head>
@@ -126,8 +143,8 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
       <h1>SQL: The Missing Influencer <small>Student engagement &amp; progress</small></h1>
       <div class="spacer"></div>
       <div class="ctl">
-        <select id="batch" aria-label="Batch"><option value="">All batches</option></select>
-        <label class="chk"><input type="checkbox" id="guests"> Include guests</label>
+        <select id="batch" aria-label="Batch" hidden><option value="">All batches</option></select>
+        <label class="chk" hidden><input type="checkbox" id="guests"> Include guests</label>
         <button class="btn" id="refresh" title="Reload the numbers">↻ Refresh</button>
         <a class="btn" id="export" href="/api/admin/export.csv" style="text-decoration:none">⬇ Export CSV</a>
         <span class="live" id="liveNow" title="Students with any activity in the last 5 minutes"></span>
@@ -140,7 +157,7 @@ code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consola
       <button role="tab" data-tab="students" aria-selected="false">Students</button>
       <button role="tab" data-tab="episodes" aria-selected="false">Episodes &amp; beats</button>
       <button role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
-      <button role="tab" data-tab="roster" aria-selected="false">Roster</button>
+      <button role="tab" data-tab="roster" aria-selected="false" hidden>Roster</button>
     </nav>
   </div>
 </header>
@@ -272,44 +289,37 @@ const hbars = (rows) => `<div class="hbar">${rows.map((r) => `<div class="name" 
   <div class="track">${r.back != null ? `<b style="width:${r.back}%"></b>` : ''}<b class="on" style="width:${r.pct}%"></b></div><div class="num">${r.text}</div>`).join('')}</div>`;
 
 // ---------------------------------------------------------------- overview
+function feedCards(fb, n = 8) {
+  if (!fb) return '<p class="faint">Loading feedback…</p>';
+  const MOOD_E = { 'Loved it': '🤩', Fun: '😀', Okay: '😐', Confusing: '😕', Boring: '😴' };
+  const all = [
+    ...fb.responses.map((r) => ({ at: r.at, id: r.student_id, name: r.name, where: `Episode ${r.session} · end`, big: `${'⭐'.repeat(r.rating)} ${MOOD_E[r.mood] ?? ''}`, text: r.comment, c: r.rating >= 4 ? '#10b981' : r.rating <= 2 ? '#ef4444' : '#f59e0b', extra: r.difficulty ? `SQL: ${r.difficulty === 'right' ? 'just right' : 'too ' + r.difficulty}` : '' })),
+    ...fb.checkpoints.list.map((r) => ({ at: r.at, id: r.student_id, name: r.name, where: `Episode ${r.session} · chapter ${r.chapter}`, big: ['', '😕 Lost', '😐 Okay', '🙂 Good', '🤩 Great'][r.rating] ?? '', text: r.comment, c: r.rating >= 3 ? '#10b981' : r.rating === 1 ? '#ef4444' : '#f59e0b', extra: '' })),
+  ].sort((x, y) => String(y.at).localeCompare(String(x.at))).slice(0, n);
+  return all.length ? `<div class="feed">${all.map((f) => `<div class="fb" style="--c:${f.c}" data-id="${esc(f.id)}"><div class="who">${esc(f.name ?? f.id)}</div><div class="meta">${esc(f.where)} · ${ago(f.at)}</div><div class="big">${f.big}</div>${f.extra ? `<div class="meta">${esc(f.extra)}</div>` : ''}${f.text ? `<div class="cm">“${esc(f.text)}”</div>` : ''}</div>`).join('')}</div>` : '<p class="faint">No feedback yet. It appears here the moment a student sends it.</p>';
+}
 function renderOverview() {
-  const o = state.overview, t = o.totals;
-  const kpi = (v, l, s = '') => `<div class="card kpi"><div class="v">${v}</div><div class="l">${l}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
+  const o = state.overview, t = o.totals, fb = state.fbAll;
+  const kpi = (v, l, ico, k) => `<div class="card kpi ${k}"><span class="ico">${ico}</span><div class="v">${v}</div><div class="l">${l}</div></div>`;
   const maxStarted = Math.max(1, ...o.funnel.map((f) => f.started));
-  const maxLevel = Math.max(1, ...o.levels.map((l) => l.students));
-  const maxBucket = Math.max(1, ...o.progress_buckets.map((b) => b.students));
   const daily = o.daily.map((d) => ({ ...d, _x: d.date.slice(5).replace('-', '/') }));
-  const hours = o.hours.map((h) => ({ ...h, _x: `${h.hour}` }));
-  const funnelRows = o.funnel.map((f) => ({ name: `${f.n}. ${f.title}`, back: (f.started / maxStarted) * 100, pct: (f.completed / maxStarted) * 100,
-    text: `${f.completed}/${f.started} done · ${f.avg_minutes}m avg` }));
+  const funnelRows = o.funnel.map((f) => ({ name: `${f.n}. ${f.title}`, back: (f.started / maxStarted) * 100, pct: (f.completed / maxStarted) * 100, text: `${f.completed}/${f.started}` }));
+  const fbCount = fb ? fb.totals.responses + fb.checkpoints.responses : '…';
   $('#tab-overview').innerHTML = `
     <div class="grid kpis">
-      ${kpi(fmtNum(t.playing), 'Students who played', t.roster ? `of ${fmtNum(t.roster)} on the roster · ${fmtNum(t.not_started)} not started` : 'upload a roster to see who hasn’t started')}
-      ${kpi(fmtNum(t.active_today), 'Active today', `${fmtNum(t.active_7d)} in the last 7 days`)}
-      ${kpi(`${fmtNum(t.total_hours)} h`, 'Total active play time', 'idle and background time not counted')}
-      ${kpi(dur(t.avg_minutes_per_student * 60), 'Avg time per student')}
-      ${kpi(`${t.avg_progress_pct}%`, 'Avg game progress', 'beats completed across all 13 episodes')}
-      ${kpi(fmtNum(t.finished_game), 'Finished all 13 episodes')}
-      ${kpi(fmtNum(t.inactive_7d), 'Inactive 7+ days', 'started, then stopped')}
+      ${kpi(fmtNum(t.playing), 'Students played', '👥', 'k1')}
+      ${kpi(fmtNum(t.active_today), 'Active today', '🔥', 'k2')}
+      ${kpi(dur(t.avg_minutes_per_student * 60), 'Avg time per student', '⏱️', 'k3')}
+      ${kpi(fb?.totals.avg_rating ?? '—', 'Avg rating (out of 5)', '⭐', 'k4')}
+      ${kpi(fmtNum(fbCount), 'Feedback received', '💬', 'k5')}
     </div>
+    <div class="card" style="margin-top:12px"><h2>Latest feedback</h2><p class="sub">Click a card to open that student.</p>${feedCards(fb)}</div>
     <div class="grid two">
-      <div class="card chart"><h2>Daily activity</h2><p class="sub">Students active per day (bars) and minutes played (line), last 30 days</p>
-        ${columnChart(daily, { key: 'students', key2: 'minutes', label: (d) => `${d.date}: ${d.students} students, ${d.minutes} min` })}
-        <div class="legend"><span><i style="background:var(--bar)"></i>Active students</span><span><i style="background:var(--warn)"></i>Minutes played</span></div></div>
-      <div class="card"><h2>Episode funnel</h2><p class="sub">Light bar: started · dark bar: completed. Where the dark bar drops is where students stop.</p>${hbars(funnelRows)}</div>
-      <div class="card"><h2>Where students are now</h2><p class="sub">Each student’s furthest episode</p>
-        ${hbars(o.levels.map((l) => ({ name: `${l.n}. ${l.title}`, pct: (l.students / maxLevel) * 100, text: `${l.students}` })))}</div>
-      <div class="card"><h2>Progress distribution</h2><p class="sub">Students by overall game progress</p>
-        ${hbars(o.progress_buckets.map((b) => ({ name: b.label, pct: (b.students / maxBucket) * 100, text: `${b.students}` })))}
-        <h2 style="margin-top:18px">When students play</h2><p class="sub">Minutes played by hour of day</p>
-        <div class="chart">${columnChart(hours, { key: 'minutes', h: 120, label: (h) => `${h.hour}:00 – ${h.minutes} min` })}</div></div>
-    </div>
-    <div class="card" style="margin-top:12px"><h2>Episode summary</h2><p class="sub">Time is active play time. “First-pass” is SQL attempts that were correct.</p>
-      <div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">Episode</th><th class="r nosort">Beats</th><th class="r nosort">Started</th><th class="r nosort">Completed</th><th class="r nosort">Completion</th><th class="r nosort">Avg time</th><th class="r nosort">Median to finish</th><th class="r nosort">Planned</th><th class="r nosort">SQL attempts</th><th class="r nosort">Correct</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th></tr></thead><tbody>
-      ${o.funnel.map((f) => `<tr class="click" data-ep="${f.n}"><td>${f.n}. ${esc(f.title)}</td><td class="r">${f.beats}</td><td class="r">${f.started}</td><td class="r">${f.completed}</td><td class="r">${f.completion_pct}%</td><td class="r">${f.avg_minutes}m</td><td class="r">${f.median_finish_minutes == null ? '—' : f.median_finish_minutes + 'm'}</td><td class="r faint">${f.est_minutes ?? '—'}m</td><td class="r">${fmtNum(f.attempts)}</td><td class="r">${f.first_pass_pct}%</td><td class="r">${f.hints}</td><td class="r">${f.traps}</td></tr>`).join('')}
-      </tbody></table></div></div>
-    <dl class="defs card" style="margin-top:12px">${Object.entries(o.definitions).map(([k, v]) => `<div><dt>${esc(k.replace('_', ' '))}:</dt> <dd>${esc(v)}</dd></div>`).join('')}</dl>`;
-  $('#tab-overview').querySelectorAll('[data-ep]').forEach((r) => r.onclick = () => { state.ep = Number(r.dataset.ep); $('#epPick').value = state.ep; setTab('episodes'); });
+      <div class="card chart"><h2>Daily activity</h2><p class="sub">Active students per day, last 30 days</p>
+        ${columnChart(daily, { key: 'students', label: (d) => `${d.date}: ${d.students} students, ${d.minutes} min` })}</div>
+      <div class="card"><h2>Episodes completed</h2><p class="sub">Completed / started. Click Episodes for step-by-step detail.</p>${hbars(funnelRows)}</div>
+    </div>`;
+  $('#tab-overview').querySelectorAll('[data-id]').forEach((c) => c.onclick = () => openStudent(c.dataset.id));
 }
 
 // ---------------------------------------------------------------- students
@@ -462,6 +472,7 @@ function renderFeedback() {
   $('#fbCount').textContent = `${rows.length} response${rows.length === 1 ? '' : 's'}`;
   const MOOD_E = { 'Loved it': '🤩', Fun: '😀', Okay: '😐', Confusing: '😕', Boring: '😴' };
   $('#fbBody').innerHTML = `
+    <div class="card" style="margin-bottom:12px"><h2>Latest feedback</h2><p class="sub">Episode feedback and chapter check-ins, newest first. Every answer is also in the tables below and in the CSV.</p>${feedCards(d, 24)}</div>
     <div class="grid kpis">
       ${kpi(t.avg_rating ?? '—', 'Average rating', 'out of 5 stars')}
       ${kpi(fmtNum(t.responses), 'Responses', `from ${fmtNum(t.students)} students`)}
@@ -492,7 +503,7 @@ function renderFeedback() {
       <div class="tablewrap" style="border:0;max-height:620px"><table><thead><tr><th class="nosort">When</th><th class="nosort">Student</th><th class="nosort">Episode</th><th class="nosort">Rating</th><th class="nosort">Felt</th><th class="nosort">SQL was</th><th class="nosort">Liked</th><th class="nosort">Comment</th></tr></thead><tbody>
       ${rows.slice(0, 500).map((r) => `<tr class="click" data-id="${esc(r.student_id)}"><td class="faint">${when(r.at)}</td><td>${esc(r.name ?? r.student_id)}</td><td>${r.session}</td><td>${STARS(r.rating)}</td><td>${MOOD_E[r.mood] ?? ''} ${esc(r.mood ?? '')}</td><td>${esc(r.difficulty ?? '')}</td><td class="wrap faint">${esc(r.liked.join(', '))}</td><td class="wrap">${esc(r.comment ?? '')}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">No feedback yet.</td></tr>'}
       </tbody></table></div></div>`;
-  $('#fbBody').querySelectorAll('tr[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
+  $('#fbBody').querySelectorAll('[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
 }
 $('#fbEp').onchange = loadFeedback; $('#fbFilter').onchange = renderFeedback; $('#fbQ').oninput = renderFeedback;
 
@@ -506,8 +517,8 @@ async function loadBatches() {
   $('#batch').value = cur;
 }
 async function loadAll() {
-  const [o, s] = await Promise.all([api(`/api/admin/overview${qs()}`), api(`/api/admin/students${qs()}`)]);
-  state.overview = o; state.students = s.students; state.notStarted = s.not_started;
+  const [o, s, fb] = await Promise.all([api(`/api/admin/overview${qs()}`), api(`/api/admin/students${qs()}`), api(`/api/admin/feedback${qs()}`).catch(() => null)]);
+  state.overview = o; state.students = s.students; state.notStarted = s.not_started; state.fbAll = fb;
   $('#export').href = `/api/admin/export.csv${qs()}`;
   if (!$('#epPick').options.length) $('#epPick').innerHTML = o.funnel.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.title)}</option>`).join('');
   if ($('#fbEp').options.length < 2) $('#fbEp').innerHTML += o.funnel.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.title)}</option>`).join('');

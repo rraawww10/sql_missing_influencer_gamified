@@ -571,3 +571,32 @@ button.on > small, .tables-tabs button.on small { color: var(--on-accent) !impor
 .pulse-faces button.on { border-color: var(--accent); background: var(--accent-soft); }
 .pulse-text { flex: 1 1 200px; min-width: 0; font: 14px var(--font); padding: 7px 10px; border-radius: 6px; border: 1px solid var(--line-2); background: var(--bg-2); color: var(--text); }
 .pulse-actions { display: inline-flex; gap: 6px; }
+
+/* ---------------------------------------------------------------- ranks: promotion moment, current rank */
+.promotion { margin: 16px auto; max-width: 460px; padding: 18px 20px; border-radius: 18px; text-align: center;
+  background: radial-gradient(circle at 50% 0%, #ffb54733, transparent 70%), #1d160e; border: 1px solid #ffb54788;
+  box-shadow: 0 0 28px #ffb54744; animation: promo-in .6s cubic-bezier(.2,1.4,.4,1) both; }
+.promotion h3 { margin: 4px 0; font-family: var(--display); color: var(--lamp); font-size: 24px; letter-spacing: .04em; }
+.promotion p { margin: 4px 0 0; color: #f3e6cf; }
+.promo-kicker { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: #ffd27a; }
+.promo-medal { width: 64px; height: 64px; margin: 0 auto 8px; border-radius: 50%; display: grid; place-items: center; font-size: 34px;
+  background: radial-gradient(circle at 35% 30%, #ffe08a, #c08a1c); box-shadow: 0 0 0 3px #fff3, 0 0 24px #ffb547aa; }
+@keyframes promo-in { from { opacity: 0; transform: scale(.7); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .promotion { animation: none; } }
+.ranks .rank.earned { border-color: #ffb54766; }
+.ranks .rank.current { border-color: var(--lamp); box-shadow: 0 0 16px #ffb54755; }
+.ranks .rank em { font-style: normal; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--lamp); margin-top: 4px; }
+.who-rank { color: var(--lamp); }
+
+/* ---------------------------------------------------------------- v8: a bright, animated gradient per episode (theme.ts sky colours).
+   A soft dark veil on top keeps white text readable. The SQL terminal keeps its own look. */
+.game, .page {
+  background:
+    linear-gradient(rgb(14 8 28 / 34%), rgb(14 8 28 / 58%)),
+    linear-gradient(125deg, var(--sky1), var(--sky2), var(--accent), var(--sky1));
+  background-size: 100% 100%, 300% 300%;
+  animation: skyShift 16s ease-in-out infinite;
+}
+.game::before, .page::before { opacity: .12; }
+@keyframes skyShift { 0%, 100% { background-position: 0 0, 0% 50%; } 50% { background-position: 0 0, 100% 50%; } }
+@media (prefers-reduced-motion: reduce) { .game, .page { animation: none; } }

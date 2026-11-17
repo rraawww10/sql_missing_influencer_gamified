@@ -21,7 +21,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
   return (
     <div className="page themed" style={themeVars(13) as React.CSSProperties}>
       <div className="page-inner">
-        <nav className="topnav"><span className="brand">Police Data Cell · Case file</span><WhoChip full /></nav>
+        <nav className="topnav"><span className="brand">Police Data Cell · Case file</span><WhoChip full rank={progress?.rank} /></nav>
         <section className="poster">
           <SceneArt session={13} />
           <div className="poster-body map-hero">

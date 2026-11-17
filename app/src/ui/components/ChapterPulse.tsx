@@ -1,9 +1,9 @@
 // The quick check-in after every chapter (between the full feedback cards on the solved screens): one tap on how that
-// chapter felt, plus an optional suggestion. Asked once per chapter per student; skippable; never blocks the game.
+// chapter felt, plus an optional suggestion. Asked once per chapter per student; no Skip button (2026-11-17), but it never blocks the game.
 // Stored on the analytics server (POST /api/checkpoint) → dashboard Feedback tab and the student's own page.
 import { useEffect, useState } from 'react';
 import { useServices } from '../services';
-import { checkpointGiven, sendCheckpoint, skipCheckpoint, type Checkpoint } from '../feedback';
+import { checkpointGiven, sendCheckpoint, type Checkpoint } from '../feedback';
 import { personalize } from '../../adapters/identity';
 
 const FACES: [Checkpoint['rating'], string, string][] = [[1, '😕', 'Lost'], [2, '😐', 'Okay'], [3, '🙂', 'Good'], [4, '🤩', 'Great']];
@@ -32,7 +32,6 @@ export function ChapterPulse({ session, chapter, of }: { session: number; chapte
         placeholder="Any suggestion? (optional)" onKeyDown={(e) => { e.stopPropagation(); if (e.key === 'Enter') send(); }} aria-label="Your suggestion (optional)" />}
       <span className="pulse-actions">
         <button className="btn small primary" disabled={!rating} onClick={send}>Send</button>
-        <button className="btn small ghost" onClick={() => { skipCheckpoint(user, session, chapter); setState('hidden'); }}>Skip</button>
       </span>
     </div>
   );

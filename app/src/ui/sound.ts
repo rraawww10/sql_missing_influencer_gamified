@@ -137,11 +137,12 @@ export function sfx(name: Sfx) {
   const t = a.currentTime + 0.005, p = pal(), T = tension();
   switch (name) {
     // ---- taps: each kind of control has its own voice, in the episode's key, climbing with the chapter
-    case 'click': tone(a, note(4, 1), t, 0.06, p.tap, 0.22, note(2, 1)); noise(a, t, 0.03, 0.12, 3500); break;
-    case 'tapPrimary': tone(a, note(0, 1), t, 0.08, p.tap, 0.22); tone(a, note(4, 1), t + 0.05, 0.12, p.tap, 0.2); noise(a, t, 0.03, 0.1, 5000, 1, 'highpass'); break;
-    case 'tapChoice': tone(a, note(2, 1), t, 0.1, 'sine', 0.3, note(3, 1)); break;
-    case 'tapPill': tone(a, note(5, 2), t, 0.04, 'triangle', 0.18); break;
-    case 'tapSeg': tone(a, note(0, 2), t, 0.05, 'sine', 0.16, note(1, 2)); break;
+    // playful, bouncy taps: a quick upward "boop" / "pop", in the episode's key
+    case 'click': tone(a, note(2, 1), t, 0.07, 'sine', 0.26, note(5, 1)); tone(a, note(7, 1), t + 0.05, 0.06, 'triangle', 0.12); break;
+    case 'tapPrimary': [0, 2, 4].forEach((d, i) => tone(a, note(d, 1), t + i * 0.045, 0.09, 'triangle', 0.22, note(d + 1, 1))); tone(a, note(7, 1), t + 0.14, 0.14, 'sine', 0.16); break;
+    case 'tapChoice': tone(a, note(1, 1), t, 0.09, 'sine', 0.3, note(4, 1)); tone(a, note(4, 2), t + 0.06, 0.05, 'sine', 0.1); break;
+    case 'tapPill': tone(a, note(4, 2), t, 0.05, 'sine', 0.2, note(6, 2)); break;
+    case 'tapSeg': tone(a, note(0, 2), t, 0.06, 'sine', 0.18, note(2, 2)); break;
     case 'tapEnvelope': noise(a, t, 0.12, 0.25, 2600, 0.8); tone(a, note(6, 1), t + 0.06, 0.18, 'sine', 0.12); break;
     case 'typing': tone(a, note(4, 2, false), t, 0.03, 'sine', 0.06); break;
     case 'notify': tone(a, note(4, 2, false), t, 0.12, 'sine', 0.25); tone(a, note(7, 2, false), t + 0.12, 0.25, 'sine', 0.22); break;

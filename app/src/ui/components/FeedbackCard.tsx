@@ -1,4 +1,5 @@
-// "How was this episode?" - one short card on the solved screen. Skippable, asked once per episode per student.
+// "How was this episode?" - one short card on the solved screen. REQUIRED: the solved screen's next buttons unlock only after it is sent
+// (or if it was already given). Asked once per episode per student. onDone fires when it is sent / already given.
 import { useEffect, useState } from 'react';
 import { useServices } from '../services';
 import { feedbackGiven, sendFeedback, type Feedback } from '../feedback';
@@ -9,7 +10,7 @@ import { personalize } from '../../adapters/identity';
 const MOODS = [['🤩', 'Loved it'], ['😀', 'Fun'], ['😐', 'Okay'], ['😕', 'Confusing'], ['😴', 'Boring']] as const;
 const LIKED = ['The story', 'Inspector Kaal', 'SQL tasks', 'Case Notes', 'Puzzles', 'Sounds', 'The look'];
 
-export function FeedbackCard({ session }: { session: number }) {
+export function FeedbackCard({ session, onDone }: { session: number; onDone?(): void }) {
   const { auth } = useServices();
   const [user, setUser] = useState<string | null>(null);
   const [state, setState] = useState<'ask' | 'sent' | 'hidden'>('ask');
@@ -18,7 +19,7 @@ export function FeedbackCard({ session }: { session: number }) {
   const [difficulty, setDifficulty] = useState<Feedback['difficulty']>();
   const [liked, setLiked] = useState<string[]>([]);
   const [comment, setComment] = useState('');
-  useEffect(() => { auth.currentUser().then((u) => { setUser(u.id); if (feedbackGiven(u.id, session)) setState('hidden'); }); }, [auth, session]);
+  useEffect(() => { auth.currentUser().then((u) => { setUser(u.id); if (feedbackGiven(u.id, session)) { setState('hidden'); onDone?.(); } }); }, [auth, session, onDone]);
   if (!user || state === 'hidden') return null;
   if (state === 'sent') return (
     <section className="feedback-card pop-in" style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
@@ -27,13 +28,14 @@ export function FeedbackCard({ session }: { session: number }) {
   );
   const submit = async () => {
     await sendFeedback({ user_id: user, session, rating, mood, difficulty, liked, comment: comment.trim().slice(0, 1000) || undefined, sound_on: soundOn(), client_ts: new Date().toISOString() });
-    sfx('stamp'); setState('sent');
+    sfx('stamp'); setState('sent'); onDone?.();
   };
+  const ready = !!rating && !!mood && !!difficulty;
   const toggle = (x: string) => setLiked((l) => l.includes(x) ? l.filter((y) => y !== x) : [...l, x]);
   return (
     <section className="feedback-card rise" aria-label="Episode feedback">
       <h3>How was this episode?</h3>
-      <p className="muted small" style={{ margin: 0 }}>30 seconds. It helps us make the next case better.</p>
+      <p className="muted small" style={{ margin: 0 }}>Tell us in 30 seconds to unlock the next episode. Your answers shape the next case.</p>
       <div className="stars" role="radiogroup" aria-label="Rating out of 5">
         {[1, 2, 3, 4, 5].map((n) => <button key={n} role="radio" aria-checked={rating === n} aria-label={`${n} star${n > 1 ? 's' : ''}`} className={n <= rating ? 'on' : ''} onClick={() => setRating(n)}>⭐</button>)}
       </div>
@@ -46,9 +48,8 @@ export function FeedbackCard({ session }: { session: number }) {
       <span className="lbl">Your suggestions for us (optional)</span>
       <textarea value={comment} onChange={(e) => setComment(e.target.value)} maxLength={1000} placeholder="What confused you, what you loved, what to change…" />
       <div className="row" style={{ marginTop: 12 }}>
-        <button className="btn primary" disabled={!rating} onClick={submit}>Send feedback</button>
-        <button className="btn ghost small" onClick={() => setState('hidden')}>Skip</button>
-        {!rating && <span className="muted small">Pick a star rating to send</span>}
+        <button className="btn primary" disabled={!ready} onClick={submit}>Send feedback and continue</button>
+        {!ready && <span className="muted small">Pick a star rating, how it felt and how the SQL was</span>}
       </div>
     </section>
   );

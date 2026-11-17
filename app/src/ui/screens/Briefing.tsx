@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import type { CastFile } from '../../content/types';
 import { resolveCastText } from '../../content/types';
 import { POINTS, RANKS } from '../../engine/progress/derive';
+import { useProgress } from '../useProgress';
+import { rankIcon, solvedCount } from '../ranks';
 import { useServices } from '../services';
 import { storyTime } from '../speakers';
 import { KaalCard } from '../kaal/KaalCard';
@@ -45,6 +47,9 @@ const RULES = [
 ];
 
 export function Briefing({ onStart, onBack, standalone = false }: Props) {
+  const { progress } = useProgress();
+  const rank = progress?.rank ?? 'Intern';
+  const solved = solvedCount(progress);
   const { loader } = useServices();
   const [cast, setCast] = useState<CastFile | null>(null);
   const [minutes, setMinutes] = useState<Record<number, number>>({});
@@ -57,6 +62,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
   const people = cast ? ['star', 'mentor', 'analyst', 'sister', 'manager', 'rival', 'fan', 'driver', 'organiser'].filter((k) => cast.people[k]).map((k) => ({ key: k, ...cast.people[k], role: resolveCastText(cast.people[k].role, cast) })) : [];
   const total = Object.values(minutes).reduce((a, b) => a + b, 0);
   const star = cast?.people.star?.name ?? 'Tara Sen';
+  const hometown = cast?.places?.hometown ?? 'Chandpur';
   const mentor = cast?.people.mentor?.name ?? 'Ira Menon';
 
   // Standalone the briefing is its own site. Inside the LMS iframe the host decides what comes next, so the
@@ -104,6 +110,20 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
           <div>{[...EPISODES, ...EPISODES].map((e, i) => <span key={i}>{storyTime(e.n)} · {e.title}</span>)}</div>
         </div>
 
+        <section className="section" aria-label="What happened">
+          <h2>What happened to {star}?</h2>
+          <p className="sub">Here is everything the police know at 6 PM. The rest, you will find in the data.</p>
+          <div className="loop story-cards">
+            {[
+              { ico: '🎤', title: 'Who she is', text: `${star} is a young singer from ${hometown}, famous for her reels. Tonight is her biggest night: her first stadium concert in the city.` },
+              { ico: '🕕', title: '6 PM: she is gone', text: `She was staying at a hotel in the city. Now she is not in her room, and nobody knows where she went.` },
+              { ico: '📵', title: 'No easy clues', text: 'Her phone is switched off. There is no CCTV footage to look at. Nobody saw her leave.' },
+              { ico: '⏰', title: 'Midnight deadline', text: 'The concert starts at midnight and 40,000 fans are coming. Six hours to find her.' },
+              { ico: '🗄️', title: 'Your job', text: 'The city records everything: hotel entries, cab rides, UPI payments, phone towers, toll booths. You will ask that data questions with SQL, clue by clue, until it shows where she is.' },
+            ].map((s, i) => <div key={s.title} className="how rise" style={{ '--i': i } as React.CSSProperties}><div className="ico">{s.ico}</div><b>{s.title}</b><p>{s.text}</p></div>)}
+          </div>
+        </section>
+
         <section className="section" aria-label="Your role">
           <h2>{personalize('{you}', 'You')}, you are the new intern at the City Police Data Cell.</h2>
           <p className="sub">Your mentor is <b>SI {mentor}</b>. There is no CCTV and no phone signal. There is data - and every clue tonight comes from a query you write.
@@ -115,7 +135,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
 
         <section className="section" aria-label="Your partner">
           <h2>Your partner tonight</h2>
-          <KaalCard size={110} mood="whisper" line={`SI ${mentor} sent me. Name's Kaal - Inspector Kaal. I'll be in the corner of your screen the whole night. Stuck? Ask me for an envelope. Right? I'll know. Wrong? I'll tell you why. Let's find ${star}.`} />
+          <KaalCard size={110} mood="whisper" line={`SI ${mentor} sent me. Name's Kaal - Inspector Kaal. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Let's find ${star}.`} />
         </section>
 
         <section className="section" aria-label="Tonight's timeline">
@@ -145,7 +165,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
             <h2>The people in the case</h2>
             <p className="sub">Some are helpers. Some are suspects. The data decides who is which.</p>
             <div className="cast">
-              <div className="person you rise"><div className="portrait" aria-hidden="true">{initials(currentIdentity()?.name) || 'YOU'}</div><b>{currentIdentity()?.name ?? 'You'}</b><span>That's you! Intern, Data Cell. You write every query.</span></div>
+              <div className="person you rise"><div className="portrait" aria-hidden="true">{initials(currentIdentity()?.name) || 'YOU'}</div><b>{currentIdentity()?.name ?? 'You'}</b><span>That's you! {rankIcon(rank)} {rank}, Data Cell. You write every query.</span></div>
               {people.map((p, i) => (
                 <div key={p.key} className="person rise" style={{ '--i': i + 1 } as React.CSSProperties}>
                   <div className="portrait" style={{ background: p.color }} aria-hidden="true">{p.initials}</div>
@@ -163,7 +183,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
             {RANKS.map((r, i) => (
               <div key={r.name} style={{ display: 'contents' }}>
                 {i > 0 && <span className="arrow" aria-hidden="true">→</span>}
-                <div className="rank"><b>🎖 {r.name}</b><span>{r.minSessions === 0 ? 'where you start' : `${r.minSessions} episodes solved`}</span></div>
+                <div className={`rank ${r.name === rank ? 'current' : ''} ${solved >= r.minSessions ? 'earned' : ''}`}><b>{rankIcon(r.name)} {r.name}</b><span>{r.minSessions === 0 ? 'where you start' : `${r.minSessions} episodes solved`}</span>{r.name === rank && <em>You are here</em>}</div>
               </div>
             ))}
           </div>

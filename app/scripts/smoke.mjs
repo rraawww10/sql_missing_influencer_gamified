@@ -7,7 +7,7 @@ import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
-import { playBeats, runSql, signIn, TEST_STUDENT } from './smoke-lib.mjs';
+import { playBeats, runSql, signIn, TEST_STUDENT, giveFeedback } from './smoke-lib.mjs';
 
 const APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = path.join(APP, 'public/content');
@@ -103,7 +103,7 @@ let failed = false;
 try {
   await page.goto(`${BASE}/`);
   await signIn(page);                                                     // the start screen: name + NxtWave ID
-  await page.locator('.who-chip b').getByText(TEST_STUDENT.name.split(' ')[0], { exact: true }).first().waitFor();
+  await page.locator('.who-chip b').getByText(TEST_STUDENT.name, { exact: true }).first().waitFor();
   if (await page.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) !== TEST_STUDENT.id) throw new Error('NxtWave ID not stored upper-case');
   console.log('  👤 start screen: name + NxtWave ID asked, validated, remembered');
   await page.getByText(pack(1).headline).waitFor();
@@ -121,8 +121,10 @@ try {
   console.log('  📋 briefing: episodes + cast shown, leads into the first episode');
 
   await playSession(1);
+  await giveFeedback(page);
   await page.getByRole('button', { name: /Next episode/ }).click();
   await playSession(2, { leaveAt: 'S2.17' });
+  await giveFeedback(page);
   await page.getByRole('button', { name: /Next episode/ }).click();
   await playSession(3, { trap: { task: 'T3.8', id: 'precedence' } });
 
@@ -138,6 +140,7 @@ try {
   await playBeats(page, pack(3), solutions(3));
   await page.getByText(`Solved: ${pack(3).title}`).waitFor();
   console.log(`  ✓ "${pack(3).title}" replayed after reset`);
+  await giveFeedback(page);
   await page.getByRole('button', { name: 'Back to the case map' }).click();
   await page.getByText('3/13').waitFor();
   await page.getByRole('button', { name: /clues pinned/ }).click();

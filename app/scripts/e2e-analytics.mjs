@@ -42,7 +42,7 @@ const browser = await chromium.launch({ channel: 'chrome', headless: true });
 try {
   console.log('▶ analytics server + game build pointed at it');
   await start(process.execPath, ['--no-warnings', 'server.mjs'], { cwd: ANALYTICS, env: { ...process.env, PORT: String(API_PORT), DB_PATH: path.join(tmp, 'e2e.sqlite'), ADMIN_PASSWORD: 'e2e' } },
-    (o) => o.includes(`localhost:${API_PORT}`));
+    (o) => o.includes(`:${API_PORT}`));
   execFileSync(process.execPath, ['node_modules/vite/bin/vite.js', 'build', '--outDir', 'dist-e2e', '--emptyOutDir'],
     { cwd: APP, env: { ...process.env, VITE_ANALYTICS_URL: API }, stdio: 'pipe' });
   await start(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--outDir', 'dist-e2e', '--port', String(WEB_PORT), '--strictPort'], { cwd: APP },
@@ -56,7 +56,7 @@ try {
   pa.on('pageerror', (e) => errors.push(e.message));
   await pa.goto(`${BASE}/`);
   await signIn(pa, STUDENT);
-  await pa.locator('.who-chip b').getByText('Asha', { exact: true }).first().waitFor();
+  await pa.locator('.who-chip b').getByText(STUDENT.name, { exact: true }).first().waitFor();
   ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) === STUDENT.id, 'start screen: name + NxtWave ID stored (ID upper-cased)');
 
   await pa.goto(`${BASE}/#/s/1`);
@@ -71,7 +71,7 @@ try {
   await pa.getByRole('button', { name: /Fun/ }).click();
   await pa.getByRole('button', { name: /Just right/ }).click();
   await pa.locator('.feedback-card textarea').fill('Loved the story - more puzzles please');
-  await pa.getByRole('button', { name: 'Send feedback' }).click();
+  await pa.getByRole('button', { name: /Send feedback/ }).click();
   await pa.getByText(/Noted, Asha\. Thank you!/).waitFor();
   ok(true, 'episode 1 solved, end-of-episode feedback sent');
 
