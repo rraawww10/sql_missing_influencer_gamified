@@ -656,6 +656,8 @@ Note: §1–§9 above predate commit `16c82db` (analytics). The v3 fixes in §7 
 
 | 2026-11-17 | **Pushed everything to `main` (4b5667a) → Render rebuilds both demo services.** Before pushing: rebuilt the episode packs (`node pipeline/build_sessions.mjs`) so the new premise reaches the case map (only `premise` changed in content/sessions + units); fixed the test scripts for required feedback (`smoke-lib.mjs` `giveFeedback`), the full-name chip, and an old e2e ready check (server prints 0.0.0.0, test waited for localhost). Push from `rework-v4` with `git push origin HEAD:main`. | `content/sessions/*.json`, `content/units/*.json`, `app/scripts/*` | tsc · 127/127 vitest · smoke OK · e2e:analytics OK · 10/10 analytics tests |
 
+| 2026-11-17 | **UptimeRobot keep-alive set up (user's account).** One HTTP monitor on `tmi-analytics-demo.onrender.com`, every 5 min, so the free Render server no longer sleeps and loses data. Still lost on a push to `main` or a Render restart: export CSV + feedback CSV before pushing and daily during testing. | (no code) | monitor Up, server answers /health |
+
 ### Next up (as of 2026-11-12)
 1. Kaal's voice: decided to keep browser speech (2026-11-05). Revisit pre-recorded clips only if students find it robotic.
 2. Music file is 7.7 MB (256 kbps); re-encode to ~96 kbps (~3 MB) when a tool is available - cuts the upload folder size.
