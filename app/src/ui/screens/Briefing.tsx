@@ -108,8 +108,23 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
           </div>
         </section>
 
+        <section className="section" aria-label="The story">
+          <div className="surface card brief-story rise">
+            <h2>The story</h2>
+            <p>{star} is a young singer from {hometown} whose reels made her famous. Tonight at midnight she is meant to sing her first
+              stadium concert in the city, in front of 40,000 fans. At 6 PM she is gone. She is not in her hotel room, nobody saw her
+              leave, and her phone is switched off. There is no CCTV footage to look at. Her sister, her manager, the organisers and
+              thousands of fans are all asking the same question: where is {star.split(' ')[0]}? The show starts at midnight. That leaves six hours.</p>
+            <h2>What this game is about</h2>
+            <p>You are the new intern at the City Police Data Cell, working with SI {mentor}. There are no
+              witnesses, but the city writes everything down: hotel entries, cab rides, UPI payments, phone towers, toll booths.
+              Over {EPISODE_COUNT} episodes, from 6 PM to midnight, you ask that data questions in SQL. Every answer becomes a clue on
+              your Evidence Board. You don't need any SQL to start: you learn it while you solve the case.</p>
+          </div>
+        </section>
+
         <section className="section" aria-label="What happened">
-          <h2 className="shadowed">What happened to {star}?</h2>
+          <h2 className="shadowed">At a glance: what happened to {star}?</h2>
           <p className="sub">Here is everything the police know at 6 PM. The rest, you will find in the data.</p>
           <div className="facts">
             {FACTS.map((f, i) => <div key={f.cap} className="card fact rise" style={{ '--i': i } as React.CSSProperties}><span className="cap">{f.cap}</span><b>{f.big}</b><p>{f.text}</p></div>)}
