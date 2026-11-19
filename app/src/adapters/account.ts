@@ -1,4 +1,4 @@
-// Student log-in on the analytics server (analytics/auth.mjs): sign up once, then log in with the NxtWave ID or email (no password).
+// Student log-in on the analytics server (analytics/auth.mjs): sign up once (name + NxtWave ID), then log in with the ID (no password).
 // Every call answers with a small result the start screen can show a message for; nothing here throws.
 import { normalizeEmail, normalizeId, normalizeName } from './identity';
 
@@ -11,9 +11,9 @@ export type AccountError =
 export type AccountResult = { ok: true; account: Account } | { ok: false; error: AccountError };
 
 export interface AccountApi {
-  // first time: name, NxtWave ID, personal email (an ID that already has an account is simply logged in)
-  signup(a: { id: string; name: string; email: string }): Promise<AccountResult>;
-  // later: the NxtWave ID or the email they signed up with (no password)
+  // first time: name + NxtWave ID; an email is optional (an ID that already has an account is simply logged in)
+  signup(a: { id: string; name: string; email?: string }): Promise<AccountResult>;
+  // later: the NxtWave ID (no password; an email given at sign-up works too)
   login(who: string): Promise<AccountResult>;
   logout(token: string): Promise<void>;
 }
@@ -45,7 +45,7 @@ export function accountApi(url: string, send: typeof fetch = (...a) => fetch(...
     return id && name && token ? { ok: true, account: { id, name, email, token, returning: !!r.json.returning } } : { ok: false, error: 'offline' };
   }
   return {
-    signup: (a) => account('/api/account/signup', { student_id: a.id, name: a.name, email: a.email }),
+    signup: (a) => account('/api/account/signup', { student_id: a.id, name: a.name, ...(a.email ? { email: a.email } : {}) }),
     login: (who) => account('/api/account/login', { who: who.trim() }),
     logout: async (token) => { await post('/api/account/logout', { token }); },
   };

@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""Gives Kaal's recorded lines a calmer pace by lengthening the pauses BETWEEN words and sentences; the words
-themselves are not touched (no time-stretching, so no warble and no pitch change).
+"""Gives Kaal's recorded lines a calm classroom pace (about 125 words a minute), in two gentle steps:
+  1. the speech itself is slowed with WSOLA (a time-stretch made for speech: same pitch, no "chipmunk" or echo),
+     never below 0.78 of the recorded speed, so it still sounds natural;
+  2. the pauses BETWEEN phrases and sentences (110 ms or longer) are lengthened; the closure before a consonant
+     (like the t in "data") is shorter than that and is never touched, so nothing sounds like a stutter.
 
-    python tools/kaal-voice/pace.py                 # content/voice, aiming at 14.5 characters a second
-    python tools/kaal-voice/pace.py --target 14     # calmer still
-    python tools/kaal-voice/pace.py --restore       # put the clips back as recorded
+    ../kaal-voice/venv/bin/python tools/kaal-voice/pace.py                 # aim at 12.5 characters a second
+    ../kaal-voice/venv/bin/python tools/kaal-voice/pace.py --target 13.5   # a little brisker
+    ../kaal-voice/venv/bin/python tools/kaal-voice/pace.py --restore       # put the clips back as recorded
+    ... pace.py --mild 01ce0b13 --mild 0f502285                             # slow these words less (check.py flagged them)
 
 The clips as recorded are copied to ../kaal-voice/as-recorded/<model>/ next to the repo (outside it) the first time,
-and every run starts from those copies, so running it twice never adds pauses twice.
-A pause is a quiet stretch of at least 110 ms inside the line (shorter gaps are the closure before a consonant
-like the t in "data": stretching those would sound like a stutter). Each gets longer by the same share (at most +0.35 s);
-a sentence break (a pause of 150 ms or more) lasts at least 0.4 s. Lines already at or under the target are left
-as recorded. The manifest's `rates` are emptied: the game plays every clip at its own speed.
-Needs numpy + soundfile (both are in the Chatterbox venv).
+and every run starts from those copies, so running it twice never slows anything twice. The game plays every clip at
+its own speed (the manifest's `rates` are emptied). Then run check.py: every line should still be heard word for word.
+Needs numpy, soundfile and audiotsm (pip install audiotsm==0.1.2, MIT) - all in the Chatterbox venv.
 """
 import argparse
 import json
@@ -25,6 +26,9 @@ import soundfile as sf
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
+SLOWEST = 0.78          # never slow the words more than this: below it speech starts to sound drawn out
+MILD = 0.92             # --mild: for the few takes that blur when slowed more (check.py finds them); pauses do the rest
+WORDS_SHARE = 1.12      # step 1 aims a little above the target; the longer pauses bring it the rest of the way
 
 
 def pauses(a, sr):
@@ -62,12 +66,28 @@ def lengthen(a, sr, runs, share):
     return np.concatenate(out)
 
 
+def stretch(a, sr, speed):
+    """the same speech, slower (speed < 1), same pitch: WSOLA with 40 ms frames, as used for speech"""
+    if speed >= 0.995:
+        return a
+    from audiotsm import wsola
+    from audiotsm.io.array import ArrayReader, ArrayWriter
+    frame = int(sr * 0.04) // 2 * 2
+    reader, writer = ArrayReader(a.reshape(1, -1).astype(np.float32)), ArrayWriter(channels=1)
+    wsola(channels=1, speed=speed, frame_length=frame, synthesis_hop=frame // 2).run(reader, writer)
+    b = writer.data[0].astype(np.float32)
+    peak = float(np.max(np.abs(b))) or 1.0
+    return b * (min(1.0, 0.89 / peak))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--voice', default=str(ROOT / 'content' / 'voice'))
     ap.add_argument('--lines', default=str(HERE / 'lines.json'))
-    ap.add_argument('--target', type=float, default=14.5, help='characters a second to aim for (pauses included)')
+    ap.add_argument('--target', type=float, default=12.5, help='characters a second to aim for (pauses included)')
     ap.add_argument('--restore', action='store_true', help='copy the clips as recorded back and stop')
+    ap.add_argument('--mild', action='append', default=[], help='slow the words of this clip less (a key check.py flagged); repeatable')
+    ap.add_argument('--plain', action='append', default=[], help='do not slow the words of this clip at all, only its pauses; repeatable')
     args = ap.parse_args()
 
     voice = Path(args.voice)
@@ -88,7 +108,7 @@ def main():
         return
 
     text = {l['key']: l['text'] for l in json.loads(Path(args.lines).read_text())}
-    before, after, changed = [], [], 0
+    before, after, slowed = [], [], 0
     for key, name in manifest['clips'].items():
         src = keep / name
         if not src.exists() or key not in text:
@@ -99,21 +119,23 @@ def main():
         before.append(p0)
         best = a
         if p0 > args.target and chars >= 12:
-            runs = pauses(a, sr)
-            for share in (0.4, 0.8, 1.2, 1.6, 2.0):
-                b = lengthen(a, sr, runs, share)
-                best = b
-                if chars / (len(b) / sr) <= args.target:
+            floor = 1.0 if key in args.plain else MILD if key in args.mild else SLOWEST
+            best = stretch(a, sr, max(floor, min(1.0, args.target * WORDS_SHARE / p0)))
+            runs = pauses(best, sr)
+            for share in (0.0, 0.4, 0.8, 1.2, 1.6, 2.0):
+                b = lengthen(best, sr, runs, share) if share else best
+                if chars / (len(b) / sr) <= args.target or share == 2.0:
+                    best = b
                     break
-            changed += best is not a
+            slowed += 1
         after.append(chars / (len(best) / sr))
         sf.write(voice / name, best, sr, format='MP3' if name.endswith('.mp3') else 'WAV')
     manifest['rates'] = {}
     manifest['paced'] = args.target
     manifest_file.write_text(json.dumps(manifest, indent=1, sort_keys=True) + '\n')
     med = lambda xs: sorted(xs)[len(xs) // 2] if xs else 0
-    print(f'{changed} of {len(after)} clips got longer pauses · median pace {med(before):.1f} → {med(after):.1f} characters a second '
-          f'· fastest now {max(after):.1f}')
+    print(f'{slowed} of {len(after)} clips slowed · median pace {med(before):.1f} → {med(after):.1f} characters a second '
+          f'· fastest now {max(after):.1f} · slowest {min(after):.1f}')
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
-// Student log-in (since 2026-11-19, as the team asked): NO password. A student signs up once with name, NxtWave ID and
-// personal email, and after that logs in with their NxtWave ID OR that email. Node built-ins only.
+// Student log-in (since 2026-11-19, as the team asked): NO password, and for now NO email either. A student signs up once
+// with name + NxtWave ID and then logs in with the NxtWave ID. An email is optional: when one is given at sign-up, logging
+// in with it works too (kept for the email log-in planned for a later version). Node built-ins only.
 //
 //   accounts            one row per student who signed up: name and email given at sign-up (kept apart from `students`,
 //                       which a roster "replace" empties). pw_hash / pw_salt / temp are left empty (from the password version).
@@ -62,14 +63,14 @@ function welcome(db, id, name, email, now) {
   const before = db.prepare('SELECT registered_at FROM students WHERE student_id = ?').get(id);
   const played = !!db.prepare('SELECT 1 FROM events WHERE student_id = ? LIMIT 1').get(id);
   db.prepare(`INSERT INTO students (student_id, entered_name, email, registered_at, last_login_at, logins) VALUES (?,?,?,?,?,1)
-    ON CONFLICT(student_id) DO UPDATE SET entered_name = excluded.entered_name, email = excluded.email,
+    ON CONFLICT(student_id) DO UPDATE SET entered_name = excluded.entered_name, email = COALESCE(excluded.email, students.email),
       last_login_at = excluded.last_login_at, registered_at = COALESCE(students.registered_at, excluded.registered_at),
-      logins = students.logins + 1`).run(id, name, email, now, now);
+      logins = students.logins + 1`).run(id, name, email || null, now, now);
   return played || !!before?.registered_at;
 }
 
 // Who is this? An NxtWave ID (any case) or the email they signed up with (any case) → { id, name, email } or null.
-// A student from before accounts (only in `students`, with a name and an email) counts too.
+// A student from before accounts (only in `students`, with a name) counts too.
 function find(db, who) {
   const raw = typeof who === 'string' ? who.trim() : '';
   let id;
@@ -83,7 +84,7 @@ function find(db, who) {
   const acc = db.prepare('SELECT name, email FROM accounts WHERE student_id = ?').get(id);
   if (acc) return { id, name: acc.name, email: acc.email };
   const st = db.prepare('SELECT COALESCE(entered_name, name) AS name, email FROM students WHERE student_id = ?').get(id);
-  return st?.name && st.email ? { id, name: st.name, email: st.email } : null;
+  return st?.name ? { id, name: st.name, email: st.email ?? '' } : null;
 }
 
 // Log in with the NxtWave ID or the email: { who } (or the older { student_id }) → a token for this device
@@ -97,12 +98,13 @@ export function login(db, body) {
   return { ok: true, student_id: me.id, name: me.name, email: me.email, token: newSession(db, me.id), returning: true };
 }
 
-// First time: name, NxtWave ID, personal email. An ID that already has an account is simply logged in.
+// First time: name + NxtWave ID (an email is optional). An ID that already has an account is simply logged in.
 export function signup(db, body) {
-  const id = normalizeId(body?.student_id), name = normalizeName(body?.name), email = normalizeEmail(body?.email);
+  const id = normalizeId(body?.student_id), name = normalizeName(body?.name);
+  const given = body?.email != null && body.email !== '', email = given ? normalizeEmail(body.email) : '';
   if (!id) return { error: 'bad id' };
   if (!name) return { error: 'bad name' };
-  if (!email) return { error: 'bad email' };
+  if (given && !email) return { error: 'bad email' };
   if (hasAccount(db, id)) return login(db, { who: id });
   const now = new Date().toISOString();
   db.prepare("INSERT OR IGNORE INTO accounts (student_id, name, email, pw_hash, pw_salt, created_at, updated_at) VALUES (?,?,?,'','',?,?)").run(id, name, email, now, now);

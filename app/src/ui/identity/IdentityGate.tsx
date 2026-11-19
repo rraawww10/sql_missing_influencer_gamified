@@ -1,8 +1,9 @@
 // The start screen: nobody gets into the game before it knows who is playing.
 //
-// With an analytics server (VITE_ANALYTICS_URL) students log in WITHOUT a password (the team's choice, 2026-11-19):
-//   * Sign up (first time)   name, NxtWave ID, personal email (required) → the account is made on the server
-//   * Log in                 the NxtWave ID OR the email they signed up with; an unknown one goes to Sign up, prefilled
+// With an analytics server (VITE_ANALYTICS_URL) students log in WITHOUT a password and WITHOUT an email (the team's
+// choice, 2026-11-19; an email log-in may come in a later version):
+//   * Sign up (first time)   name + NxtWave ID → the account is made on the server
+//   * Log in                 the NxtWave ID; an unknown one goes to Sign up with the ID filled in
 // The server's session token is stored with the identity (adapters/identity.ts) and sent with everything. After logging
 // in, the student's history is pulled into this device (adapters/serverSync.ts) so episodes, points, clues, an unfinished
 // episode and feedback carry over; every later page load refreshes it first.
@@ -52,7 +53,7 @@ export function IdentityGate({ deps, children }: { deps: GateDeps; children: Rea
       // saved before the email was asked: keep the name and ID, ask for the email only
       return mine.email ? { k: 'loading', who: { ...mine, email: mine.email }, first: false } : { k: 'email', who: mine };
     }
-    if (mine?.token && mine.email) return { k: 'loading', who: { ...mine, email: mine.email }, first: false };
+    if (mine?.token) return { k: 'loading', who: { ...mine, email: mine.email ?? '' }, first: false };
     let relogin = false;
     try { relogin = sessionStorage.getItem(RELOGIN_KEY) === '1'; sessionStorage.removeItem(RELOGIN_KEY); } catch { /* ignore */ }
     if (mine && relogin) return { k: 'auth', mode: 'login', notice: 'Please log in again to continue.', prefill: { id: mine.id } };
@@ -125,7 +126,7 @@ function GateShell({ children }: { children: ReactNode }) {
 
 // ---------------------------------------------------------------- log in (ID or email) / sign up
 const MSG: Record<AccountError, string> = {
-  'no-account': 'We could not find this NxtWave ID or email. If you are new, sign up below.',
+  'no-account': 'We could not find this NxtWave ID. If you are new, sign up below.',
   'too-many': 'Too many tries. Please wait a few minutes and try again.',
   'invalid': 'Something you typed was not accepted. Check each box and try again.',
   'offline': 'Could not reach the server. Check your internet and try again.',
@@ -136,10 +137,9 @@ function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
   prefill?: { id?: string; name?: string; email?: string }; onDone(a: Extract<AccountResult, { ok: true }>['account']): void;
 }) {
   const [view, setView] = useState<Mode>(mode);
-  const [who, setWho] = useState(urlId ?? prefill?.id ?? prefill?.email ?? '');
+  const [who, setWho] = useState(urlId ?? prefill?.id ?? '');
   const [name, setName] = useState(prefill?.name ?? '');
   const [id, setId] = useState(urlId ?? prefill?.id ?? '');
-  const [email, setEmail] = useState(prefill?.email ?? '');
   const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<ReactNode>(null);
@@ -148,9 +148,8 @@ function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
 
   const lockId = !!urlId;   // the platform names the student
-  const whoTrim = who.trim(), whoIsEmail = whoTrim.includes('@');
-  const whoOk = whoIsEmail ? normalizeEmail(whoTrim) : normalizeId(whoTrim);
-  const nameOk = normalizeName(name), idOk = normalizeId(id), emailOk = normalizeEmail(email);
+  const whoTrim = who.trim(), whoOk = normalizeId(whoTrim);
+  const nameOk = normalizeName(name), idOk = normalizeId(id);
   const go = (v: Mode) => { setView(v); setTried(false); setErr(null); setInfo(null); };
   const run = async (call: () => Promise<AccountResult>) => {
     setBusy(true); setErr(null);
@@ -167,16 +166,16 @@ function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
     const r = await run(() => api.login(whoTrim));
     if (!r || r.ok) return;
     if (r.error === 'no-account') {
-      // new here: Sign up, with what they typed already filled in
-      if (whoIsEmail) setEmail(whoTrim); else setId(whoTrim);
+      // new here: Sign up, with the ID already filled in
+      setId(whoTrim);
       setView('signup'); setTried(false); setErr(null);
       setInfo(`We don't know ${whoTrim} yet. Sign up once - it takes 20 seconds.`);
     } else setErr(MSG[r.error]);
   };
   const submitSignup = async (e: FormEvent) => {
     e.preventDefault(); setTried(true);
-    if (busy || !nameOk || !idOk || !emailOk) return;
-    const r = await run(() => api.signup({ id: idOk, name: nameOk, email: emailOk }));
+    if (busy || !nameOk || !idOk) return;
+    const r = await run(() => api.signup({ id: idOk, name: nameOk }));
     if (r && !r.ok) setErr(MSG[r.error]);
   };
 
@@ -201,14 +200,14 @@ function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
       {view === 'login' && (
         <form className="gate-card" onSubmit={submitLogin} noValidate aria-labelledby="gate-title">
           {tabs}
-          {head("Who's on the case tonight?", 'Log in with your NxtWave ID or your email.')}
+          {head("Who's on the case tonight?", 'Log in with your NxtWave ID.')}
           {messages}
           <div className="gate-field">
-            <label htmlFor="gate-who"><span>NxtWave ID or email</span></label>
-            <input id="gate-who" required autoFocus={!lockId} readOnly={lockId} value={who} onChange={(e) => setWho(e.target.value)} maxLength={120} autoComplete="username"
-              autoCapitalize="none" spellCheck={false} placeholder="e.g. NW0001234 or priya.sharma@gmail.com" aria-invalid={tried && !whoOk}
+            <label htmlFor="gate-who"><span>NxtWave ID</span></label>
+            <input id="gate-who" required autoFocus={!lockId} readOnly={lockId} value={who} onChange={(e) => setWho(e.target.value)} maxLength={64} autoComplete="username"
+              autoCapitalize="characters" spellCheck={false} placeholder="Your NxtWave ID" aria-invalid={tried && !whoOk}
               aria-describedby={tried && !whoOk ? 'gate-who-err' : undefined} />
-            {tried && !whoOk && <small id="gate-who-err" className="gate-err">{whoIsEmail ? EMAIL_ERR : 'Please type your NxtWave ID (letters and numbers, at least 3) or your email.'}</small>}
+            {tried && !whoOk && <small id="gate-who-err" className="gate-err">Please type your NxtWave ID (letters and numbers, at least 3).</small>}
           </div>
           <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Checking…' : 'Log in'}</button>
           <p className="muted small gate-note">New here? <button type="button" className="linkish" onClick={() => go('signup')}>Sign up</button></p>
@@ -218,7 +217,7 @@ function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
       {view === 'signup' && (
         <form className="gate-card" onSubmit={submitSignup} noValidate aria-labelledby="gate-title">
           {tabs}
-          {head('Join the case', 'First time here? Tell us who you are. Next time, just your NxtWave ID or email.')}
+          {head('Join the case', 'First time here? Tell us your name and NxtWave ID. Next time, just your NxtWave ID.')}
           {messages}
           <div className="gate-field">
             <label htmlFor="gate-name"><span>Your name</span></label>
@@ -232,7 +231,6 @@ function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
               autoCapitalize="characters" spellCheck={false} placeholder="Your NxtWave ID" aria-invalid={tried && !idOk} aria-describedby={tried && !idOk ? 'gate-id-err' : undefined} />
             {tried && !idOk && <small id="gate-id-err" className="gate-err">Please type your NxtWave ID (letters and numbers, at least 3).</small>}
           </div>
-          <EmailField value={email} onChange={setEmail} bad={tried && !emailOk} account />
           <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Starting…' : 'Start playing'}</button>
           <p className="muted small gate-note">Played before? <button type="button" className="linkish" onClick={() => go('login')}>Log in</button></p>
         </form>

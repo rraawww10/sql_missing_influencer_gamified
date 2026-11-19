@@ -41,10 +41,11 @@ export function loadSavedIdentity(kv: Pick<KV, 'getItem'> = localStorage): Saved
       ...(typeof v.token === 'string' && /^[0-9a-f]{64}$/.test(v.token) ? { token: v.token } : {}) };
   } catch { return null; }
 }
-// The signed-in student: a stored identity that is complete (it has an email). Anything less is nobody yet.
+// The signed-in student: logged in on the server (a token: the email is optional there since 2026-11-19), or, in a build
+// without a server, a stored identity that is complete (it has an email). Anything less is nobody yet.
 export function loadIdentity(kv: Pick<KV, 'getItem'> = localStorage): Identity | null {
   const v = loadSavedIdentity(kv);
-  return v?.email ? { ...v, email: v.email } : null;
+  return v && (v.email || v.token) ? { ...v, email: v.email ?? '' } : null;
 }
 export function saveIdentity(i: Identity, kv: Pick<KV, 'setItem'> = localStorage) {
   try { kv.setItem(KEY, JSON.stringify(i)); } catch { /* storage blocked: this page still works, the next one asks again */ }

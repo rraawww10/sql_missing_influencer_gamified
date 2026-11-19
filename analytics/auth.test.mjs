@@ -23,7 +23,7 @@ test('sign up: name, ID and email make the account and log the student in; no pa
   const st = db.prepare('SELECT entered_name, email, logins FROM students WHERE student_id = ?').get('NW1001');
   assert.deepEqual({ ...st }, { entered_name: 'Priya Sharma', email: 'priya@gmail.com', logins: 1 });
   assert.equal(sessionOf(db, r.token), 'NW1001');
-  for (const [patch, error] of [[{ student_id: 'x' }, 'bad id'], [{ name: '<b>' }, 'bad name'], [{ email: 'nope' }, 'bad email'], [{ email: undefined }, 'bad email']])
+  for (const [patch, error] of [[{ student_id: 'x' }, 'bad id'], [{ name: '<b>' }, 'bad name'], [{ email: 'nope' }, 'bad email']])
     assert.equal(signup(openDb(':memory:'), { ...PRIYA, ...patch }).error, error, JSON.stringify(patch));
   // signing up again with the same ID just logs in (the first name and email stay)
   const again = signup(db, { student_id: 'NW1001', name: 'Other Name', email: 'other@x.com' });
@@ -45,16 +45,25 @@ test('log in: with the NxtWave ID or the email, any case; unknown ones are told 
   assert.equal(db.prepare('SELECT logins FROM students WHERE student_id = ?').get('NW1001').logins, 6);
 });
 
-test('a student from before accounts (name + email on file) logs in with the ID or email; one with no email signs up', () => {
+test('no email needed: sign up with name + ID, log in with the ID; a stored email is kept', () => {
   const db = openDb(':memory:');
-  identify(db, { student_id: 'NW5005', name: 'Meera Iyer', email: 'meera@x.com' });
+  const r = signup(db, { student_id: 'nw6006', name: 'Kiran Rao' });
+  assert.deepEqual({ ...r, token: 'x' }, { ok: true, student_id: 'NW6006', name: 'Kiran Rao', email: '', token: 'x', returning: false });
+  assert.equal(login(db, { who: 'NW6006' }).name, 'Kiran Rao');
+  identify(db, { student_id: 'NW5005', name: 'Meera Iyer', email: 'meera@x.com' });   // from before accounts, email on file
+  assert.equal(login(db, { who: 'NW5005' }).email, 'meera@x.com');
+  assert.equal(signup(db, { student_id: 'NW5005', name: 'Meera Iyer' }).email, 'meera@x.com');
+  assert.equal(db.prepare('SELECT email FROM students WHERE student_id = ?').get('NW5005').email, 'meera@x.com');
+});
+
+test('a student from before accounts logs in with the ID (a name on file is enough); their progress is still theirs', () => {
+  const db = openDb(':memory:');
   identify(db, { student_id: 'NW0007816', name: 'Rishu Kumar' });
   ingest(db, [ev('lms:NW0007816', 'old-1')]);
-  assert.equal(login(db, { who: 'meera@x.com' }).student_id, 'NW5005');
-  assert.equal(hasAccount(db, 'NW5005'), true);
-  assert.equal(login(db, { who: 'NW0007816' }).error, 'no account');
-  const rishu = signup(db, { student_id: 'NW0007816', name: 'Rishu Kumar', email: 'rishu@x.com' });
-  assert.deepEqual([rishu.ok, rishu.returning], [true, true]);              // their progress is still theirs
+  const r = login(db, { who: 'nw0007816' });
+  assert.deepEqual([r.ok, r.name, r.returning], [true, 'Rishu Kumar', true]);
+  assert.equal(hasAccount(db, 'NW0007816'), true);
+  assert.equal(login(db, { who: 'NW404404' }).error, 'no account');
 });
 
 test('authorize: once an ID has an account, its data needs a token of that ID', () => {

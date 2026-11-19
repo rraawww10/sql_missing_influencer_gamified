@@ -54,7 +54,7 @@ const services: Services = {
   sittings: new SittingStore<RunnerState>(mailboxOut ? new SyncedSittingKV(localStorage, mailboxOut) : localStorage),
 };
 
-// Student accounts live on the analytics server: without one there is nothing to log in to (name + ID + email only).
+// Student accounts live on the analytics server (name + NxtWave ID): without one there is nothing to log in to (name + ID + email only).
 const accounts = ANALYTICS_URL ? accountApi(ANALYTICS_URL) : null;
 // Everything sent to the server carries the logged-in student's token. If the server stops accepting it (the password
 // was reset, or this ID got an account on another device), the student is sent back to the log-in screen once;
@@ -62,7 +62,7 @@ const accounts = ANALYTICS_URL ? accountApi(ANALYTICS_URL) : null;
 setSessionToken(loadSavedIdentity()?.token ?? null);
 onSessionLost(() => {
   const saved = loadSavedIdentity();
-  if (saved?.email) { const { token: _gone, ...rest } = { ...saved, email: saved.email }; saveIdentity(rest); }
+  if (saved) { const { token: _gone, ...rest } = saved; saveIdentity({ ...rest, email: rest.email ?? '' }); }
   try { sessionStorage.setItem('tmi.relogin', '1'); } catch { /* the log-in screen still appears, without the note */ }
   location.reload();
 });

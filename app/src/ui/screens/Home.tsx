@@ -32,6 +32,8 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
     if (!built.find((x) => x.session === n)) return 'soon';
     return (progress?.sessions[n - 1]?.status as Status | undefined) ?? 'locked';
   };
+  // with every episode open, only the first unsolved one is "Up next"; the others are simply open
+  const labelOf = (n: number, st: Status) => (st === 'available' && n !== nextUp ? 'Open' : STATE[st]);
   const pick = (n: number) => {
     setPicked(n);
     const st = statusOf(n);
@@ -61,7 +63,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
           <div className="hero-info" key={sel}>
             <div className="row">
               <span className="pill sun"><Icon name="clock" /> {storyTime(sel)}</span>
-              <span className={`pill ${status === 'completed' ? 'mint' : ''}`}>{status === 'completed' && p ? `Solved · ${p.points} points` : STATE[status]}</span>
+              <span className={`pill ${status === 'completed' ? 'mint' : ''}`}>{status === 'completed' && p ? `Solved · ${p.points} points` : labelOf(sel, status)}</span>
             </div>
             <h1 className="shadowed">{b?.title ?? ep.title}</h1>
             <p className="teaser">{ep.teaser}</p>
@@ -98,7 +100,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
                 <li key={n}>
                   <button className={`node ${st} ${n === nextUp ? 'next' : ''} ${shake === n ? 'shake' : ''}`} aria-pressed={n === sel}
                     style={{ '--g': `linear-gradient(135deg, ${t.sky[0]}, ${t.sky[1]})` } as React.CSSProperties}
-                    aria-label={`Episode ${n}: ${title}, ${storyTime(n)}, ${STATE[st].toLowerCase()}`} title={`${storyTime(n)} · ${title}`}
+                    aria-label={`Episode ${n}: ${title}, ${storyTime(n)}, ${labelOf(n, st).toLowerCase()}`} title={`${storyTime(n)} · ${title}`}
                     onClick={() => pick(n)} onDoubleClick={() => (st === 'available' || st === 'completed') && onOpen(n)}>
                     <span className="node-face">{st === 'locked' || st === 'soon' ? <Icon name="lock" /> : n}</span>
                     {st === 'completed' && <span className="node-star" aria-hidden="true"><Icon name="star" /></span>}

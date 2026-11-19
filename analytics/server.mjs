@@ -25,6 +25,7 @@
 //   POST /api/admin/roster           CSV student_id,name,batch → names and batches on the dashboard
 //   GET  /api/admin/export.csv       the students table as CSV
 //   GET  /                           the dashboard (public/index.html)
+//   GET  /health                     { ok, started_at, up_minutes } (a restart = a deploy, or a wake-up after sleeping)
 //
 // Config (env): ADMIN_PASSWORD (required), PORT=8787, HOST=0.0.0.0 (set 127.0.0.1 when a reverse proxy fronts it),
 // DB_PATH=./data/analytics.sqlite, SESSION_SECRET (random per boot if unset),
@@ -39,6 +40,7 @@ import { signup, login, logout, authorize, hasAccount, studentOf } from './auth.
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 8787);
+const STARTED_AT = new Date().toISOString();
 // In production a reverse proxy (Caddy) holds the certificate and forwards to this port on loopback only.
 const HOST = process.env.HOST ?? '0.0.0.0';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
@@ -253,7 +255,9 @@ const server = http.createServer(async (req, res) => {
     if (p === '/' || p === '/index.html') {
       return send(res, 200, fs.readFileSync(dashboard, 'utf8'), { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-frame-options': 'DENY' });
     }
-    if (p === '/health') return send(res, 200, { ok: true });
+    // started_at changes only when the process restarts: on free Render that is a deploy, or a wake-up after it slept
+    // (15 minutes without a request). If it stays the same for hours, the keep-alive pings (UptimeRobot) are working.
+    if (p === '/health') return send(res, 200, { ok: true, started_at: STARTED_AT, up_minutes: Math.floor((Date.now() - Date.parse(STARTED_AT)) / 60000) }, { 'cache-control': 'no-store' });
     return send(res, 404, 'not found');
   } catch (e) {
     console.error(e);

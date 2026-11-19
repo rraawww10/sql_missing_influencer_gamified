@@ -42,18 +42,19 @@ A voice model sometimes slurs or drops a word (the first run garbled "Perfect!" 
   "Kaal" → "Kahl", "SQL" → "S Q L", "40,000" → "forty thousand".
 
 ## One steady pace
-The built-in voice speaks briskly (about 17.5 characters a second, some lines 22), and Chatterbox's `cfg_weight` does not
-slow it down reliably (0.05 to 0.3 still gave 14 to 18 on the same lines). The game no longer slows clips while playing
-(changing the speed in the browser made speech warble; since 2026-11-19 `rates` are ignored). Instead:
+The built-in voice speaks briskly (about 17.5 characters a second, some lines 22) and Chatterbox's `cfg_weight` does not
+slow it down reliably. The game plays every clip at its own speed (since 2026-11-19 `rates` are ignored: changing the
+speed in the browser made speech warble). Instead `pace.py` slows the clips once, offline, from the recordings kept in
+`../kaal-voice/as-recorded/<model>/`: WSOLA slows the words (same pitch, never below 0.78), then the pauses between
+phrases get longer. Target 12.5 characters a second (~125 words a minute, a calm classroom pace).
 
-    ../kaal-voice/venv/bin/python tools/kaal-voice/pace.py              # aim at 14.5 characters a second
-    ../kaal-voice/venv/bin/python tools/kaal-voice/pace.py --restore    # the clips exactly as recorded
+    ../kaal-voice/venv/bin/python tools/kaal-voice/pace.py --mild 01ce0b13 --mild dce3ece4 --mild 25b356d1 --plain 0f502285 --plain 94bf7bb3
+    ../kaal-voice/venv/bin/python tools/kaal-voice/check.py          # every line should still be heard word for word
+    ../kaal-voice/venv/bin/python tools/kaal-voice/pace.py --restore # the clips exactly as recorded
 
-`pace.py` lengthens only the pauses between phrases and sentences (110 ms or longer); the words are not touched. The
-clips as recorded are kept in `../kaal-voice/as-recorded/<model>/` and every run starts from them. Result on the
-Chatterbox pack: median 17.6 → 14.7 characters a second; `check.py` 111 of 114 word for word, 3 close, none below 0.85.
-Lines with no pause in them (short ones) stay as recorded. Run it again after recording new lines.
-`generate.py --cfg <weight> --target <ch/s>` are there for experiments.
+`--mild` / `--plain` are the takes that blurred when slowed fully (check.py found them): their words are slowed less /
+not at all. Result 2026-11-19: median 17.6 → 12.8 characters a second; check.py 114 of 114 at 0.85 or better.
+Needs `pip install audiotsm==0.1.2` (MIT) in the Chatterbox venv. Run it again after recording new lines.
 
 ## After changing a line
 Edit the line, run `npm run voice:lines`, then `generate.py` again: only the new or reworded lines are recorded, and

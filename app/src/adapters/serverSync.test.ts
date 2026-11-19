@@ -222,6 +222,12 @@ describe('accounts (adapters/account.ts)', () => {
   };
   const OK = { ok: true, student_id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com', token: TOKEN, returning: false };
 
+  it('sign up without an email sends only name and ID', async () => {
+    const { api, calls } = server({ '/api/account/signup': [200, { ...OK, email: '' }] });
+    expect((await api.signup({ id: 'NW1001', name: 'Priya Sharma' })).ok).toBe(true);
+    expect(calls[0].body).toEqual({ student_id: 'NW1001', name: 'Priya Sharma' });
+  });
+
   it('sign up sends name, ID and email (no password) and returns the logged-in account', async () => {
     const { api, calls } = server({ '/api/account/signup': [200, OK] });
     expect(await api.signup({ id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com' }))

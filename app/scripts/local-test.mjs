@@ -66,8 +66,8 @@ setTimeout(() => console.log(`
  Game - case map       http://localhost:${MAP_PORT}/
  Game - as on S3       http://localhost:${SHIP_PORT}/intro/index.html   (episodes: /s01/index.html … /s13/index.html)
 
- Students SIGN UP once on the start screen (name, NxtWave ID, email), later LOG IN with the NxtWave ID or the email (no password).
- Test students already in the database (log in with the ID; one with no email on file signs up with that ID):
+ Students SIGN UP once on the start screen (name + NxtWave ID), later LOG IN with the NxtWave ID (no password, no email). All episodes are open.
+ Test students already in the database (log in with the ID):
    NWTEST01  Riya Kapoor   registered, never played          → fresh start
    NWTEST02  Arjun Mehta   episode 1 stopped at step 7       → "Continue where I left off"
    NWTEST03  Sana Qureshi  episodes 1-3 solved, ep 4 step 15 → welcome back, 3 clues, ep 4 continues

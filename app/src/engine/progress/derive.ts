@@ -28,6 +28,9 @@ export const RANKS = [
 ] as const;
 
 export type SessionStatus = 'locked' | 'available' | 'completed';
+// 2026-11-19, the team's call for the first rollout: every episode can be opened in any order (no locks).
+// Set back to false to make each episode wait for the one before it.
+export const ALL_EPISODES_OPEN = true;
 
 export interface SessionProgress {
   session: number;
@@ -148,7 +151,7 @@ export function deriveProgress(all: ProgressEvent[]): Progress {
     } else if (allParts) {
       sessions.push({ session: n, status: 'completed', ...fromParts!, ...partInfo });
     } else {
-      const unlocked = n === 1 || sessions[n - 2]?.status === 'completed' || parts.length > 0;   // a unit played on its own unlocks its session
+      const unlocked = ALL_EPISODES_OPEN || n === 1 || sessions[n - 2]?.status === 'completed' || parts.length > 0;   // a unit played on its own unlocks its session
       sessions.push({ session: n, status: unlocked ? 'available' : 'locked', points: fromParts?.points ?? 0, hintsUsed: 0, trapsFound: 0, completedAt: null, ...partInfo });
     }
   }

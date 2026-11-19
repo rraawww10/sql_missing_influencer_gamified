@@ -1,6 +1,6 @@
 // END-TO-END: game ⇄ database ⇄ dashboard, with the real analytics server and a real Chrome.
 //   1. starts the analytics server on a throw-away database, builds the game pointed at it (VITE_ANALYTICS_URL)
-//   2. device A: a student types name + NxtWave ID + email, sees their name in the story, solves episode 1, sends the episode
+//   2. device A: a student types name + NxtWave ID, sees their name in the story, solves episode 1, sends the episode
 //      feedback, plays into episode 2, answers the chapter check-in with a suggestion, leaves mid-episode
 //   3. the DASHBOARD API (admin login) must show that student by NxtWave ID with name, email, progress, time per beat and
 //      chapter, the feedback and the check-in - all read from the same database the game wrote to
@@ -55,10 +55,9 @@ try {
   const errors = [];
   pa.on('pageerror', (e) => errors.push(e.message));
   await pa.goto(`${BASE}/`);
-  await signUp(pa, STUDENT);                                              // a new student signs up once: name, ID, email
+  await signUp(pa, STUDENT);                                              // a new student signs up once: name + ID
   await pa.locator('.who-chip b').getByText(STUDENT.name, { exact: true }).first().waitFor();
   ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) === STUDENT.id, 'start screen: name + NxtWave ID stored (ID upper-cased)');
-  ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).email) === STUDENT.email, 'start screen: email stored (lower-cased)');
 
   await pa.goto(`${BASE}/#/s/1`);
   await pa.getByRole('button', { name: /Start the episode/ }).click();
@@ -109,7 +108,7 @@ try {
   const list = await admin('/api/admin/students?fresh=1');
   const row = list.students.find((s) => s.student_id === STUDENT.id);
   ok(row && row.name === STUDENT.name && !row.is_guest, 'student listed by NxtWave ID with the typed name');
-  ok(row.email === STUDENT.email, 'student listed with the typed email');
+  ok(!row.email, 'no email asked or stored');
   ok(row.episodes_done === 1 && row.level === 2 && row.beats_done > pack(1).beats.length, `progress: ${row.episodes_done} episode solved, ${row.beats_done} steps done, now on episode ${row.level}`);
   ok(row.seconds > 0, `active time recorded: ${row.seconds} s`);
   const d = await admin(`/api/admin/students/${STUDENT.id}`);
@@ -143,7 +142,7 @@ try {
   const peek = await fetch(`${API}/api/history`, { method: 'POST', body: JSON.stringify({ student_id: STUDENT.id }) });
   ok(peek.status === 401, 'her progress cannot be read from the server without logging in');
   await pb.getByRole('tab', { name: 'Log in' }).click();
-  await logIn(pb, STUDENT, STUDENT.email.toUpperCase());                 // the real student, with her EMAIL this time (no password)
+  await logIn(pb, STUDENT);                                              // the real student: just her NxtWave ID
   await pb.getByText(/Welcome back, Asha! Your case file is restored\./).waitFor();
   ok(true, 'returning student recognised by NxtWave ID ("welcome back")');
   await pb.getByText('1/13').first().waitFor();
