@@ -118,7 +118,7 @@
  "lines": 114,
  "model": "elevenlabs/eleven-multilingual-v2",
  "rates": {},
- "speed": 0.72,
+ "speed": 0.8,
  "voice": "Raju (ElevenLabs, via OpenRouter)",
  "voice_id": "pzxut4zZz4GImZNlqQ3H"
 }

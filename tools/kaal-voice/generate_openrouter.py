@@ -71,7 +71,7 @@ def main():
     ap.add_argument('--out', default=str(ROOT / 'content' / 'voice'))
     ap.add_argument('--voice', default=RAJU, help='ElevenLabs voice id (default: Raju)')
     ap.add_argument('--name', default='Raju (ElevenLabs, via OpenRouter)', help='written into the manifest')
-    ap.add_argument('--speed', type=float, default=0.75)
+    ap.add_argument("--speed", type=float, default=0.8)
     ap.add_argument('--seed', type=int, default=7)
     ap.add_argument('--force', action='store_true', help='record every line again')
     ap.add_argument('--only', action='append', default=[], help='record just this key (repeatable)')

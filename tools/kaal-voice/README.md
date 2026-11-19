@@ -1,13 +1,13 @@
 # Kaal's recorded voice
 
 **Current voice (since 2026-11-19): "Raju", an Indian English ElevenLabs voice, recorded through OpenRouter.**
-Chosen by the team after listening to samples: Raju (`pzxut4zZz4GImZNlqQ3H`), speed 0.72 (about 115 words a
+Chosen by the team after listening to samples: Raju (`pzxut4zZz4GImZNlqQ3H`), speed 0.8 (about 135 words a
 minute), the name said "Kaal". Recorded once with `generate_openrouter.py`; the game plays the clips and never calls
 OpenRouter or ElevenLabs.
 
     cd app && npm run voice:lines                                                   # after changing a line
-    python3 tools/kaal-voice/generate_openrouter.py --speed 0.72 --respell Kahl=Kaal          # only new / changed lines
-    python3 tools/kaal-voice/generate_openrouter.py --force --speed 0.72 --respell Kahl=Kaal  # every line again
+    python3 tools/kaal-voice/generate_openrouter.py --speed 0.8 --respell Kahl=Kaal          # only new / changed lines
+    python3 tools/kaal-voice/generate_openrouter.py --force --speed 0.8 --respell Kahl=Kaal  # every line again
     ../kaal-voice/venv/bin/python tools/kaal-voice/check.py                         # speech-to-text check
 
 - Key: `../kaal-voice/openrouter.key` (one line, outside the repo) or `$OPENROUTER_API_KEY`. Never commit it.
