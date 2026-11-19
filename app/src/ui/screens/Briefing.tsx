@@ -1,7 +1,7 @@
 // The briefing: the page before the first episode. What happened, who you are, how the game works,
 // tonight's timeline (every episode by name and story time), the people in the case, points and ranks, house rules.
 // Standalone (deploy/intro) it is its own site; in the team build it is #/intro.
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CastFile } from '../../content/types';
 import { resolveCastText } from '../../content/types';
 import { POINTS, RANKS } from '../../engine/progress/derive';
@@ -56,7 +56,9 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
   const [ready, setReady] = useState(false);
   useEffect(() => { loader.cast().then(setCast).catch(() => setCast(null)); }, [loader]);
   const premise = cast?.premise ? resolveCastText(cast.premise, cast) : EPISODES[0].teaser;
-  const people = cast ? ['star', 'mentor', 'analyst', 'sister', 'manager', 'rival', 'fan', 'driver', 'organiser'].filter((k) => cast.people[k]).map((k) => ({ key: k, ...cast.people[k], role: resolveCastText(cast.people[k].role, cast) })) : [];
+  const people = cast ? ['star', 'mentor', 'analyst', 'sister', 'manager', 'rival', 'fan', 'driver', 'organiser'].filter((k) => cast.people[k]).map((k) => ({ key: k, ...cast.people[k],
+    role: resolveCastText(cast.people[k].role, cast), bio: cast.people[k].bio ? resolveCastText(cast.people[k].bio!, cast) : '' })) : [];
+  const [who, setWho] = useState<string | null>(null);   // the person card opened (tapped)
   const star = cast?.people.star?.name ?? 'Tara Sen';
   const hometown = cast?.places?.hometown ?? 'Chandpur';
   const mentor = cast?.people.mentor?.name ?? 'Ira Menon';
@@ -170,16 +172,26 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
         {people.length > 0 && (
           <section className="section" aria-label="The people">
             <h2 className="shadowed">The people in the case</h2>
-            <p className="sub">Some are helpers. Some are suspects. The data decides who is which.</p>
+            <p className="sub">Some are helpers. Some are suspects. The data decides who is which. Tap a card to read about them.</p>
             <div className="cast">
-              <div className="surface card person you rise"><div className="portrait" aria-hidden="true">{initials(currentIdentity()?.name) || 'YOU'}</div><b>{currentIdentity()?.name ?? 'You'}</b><span>That's you! {rank}, Data Cell. You write every query.</span></div>
+              <button type="button" className="surface card person you rise" onClick={() => setWho('you')} aria-haspopup="dialog">
+                <div className="portrait" aria-hidden="true">{initials(currentIdentity()?.name) || 'YOU'}</div><b>{currentIdentity()?.name ?? 'You'}</b>
+                <span>That's you! {rank}, Data Cell. You write every query.</span></button>
               {people.map((p, i) => (
-                <div key={p.key} className="surface card person rise" style={{ '--i': i + 1 } as React.CSSProperties}>
+                <button type="button" key={p.key} className="surface card person rise" style={{ '--i': i + 1 } as React.CSSProperties} onClick={() => setWho(p.key)} aria-haspopup="dialog">
                   <div className="portrait" style={{ background: p.color }} aria-hidden="true">{p.initials}</div>
                   <b>{p.name}</b><span>{p.role}</span>
-                </div>
+                </button>
               ))}
             </div>
+            {who && (() => {
+              const me = who === 'you';
+              const p = me ? null : people.find((x) => x.key === who);
+              if (!me && !p) return null;
+              return <PersonCard onClose={() => setWho(null)} portrait={me ? (initials(currentIdentity()?.name) || 'YOU') : p!.initials} color={me ? undefined : p!.color}
+                name={me ? (currentIdentity()?.name ?? 'You') : p!.name} role={me ? `${rank}, City Police Data Cell` : p!.role}
+                bio={me ? `You are the new intern at the City Police Data Cell, working with SI ${mentor}. Tonight is your first night on a real case. Every clue in it comes from a SQL query you write, and every answer goes on your Evidence Board.` : p!.bio} />;
+            })()}
           </section>
         )}
 
@@ -214,6 +226,33 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
             ? readyButton('')
             : <button className="btn primary big go" onClick={onStart}><Icon name="play" /> Start: {EPISODES[0].title}</button>}
         </section>
+      </div>
+    </div>
+  );
+}
+
+// A person from the case, opened from their card: who they are and how they are linked to the star. Esc, the close
+// button or a tap outside closes it; focus goes back to the card.
+function PersonCard({ portrait, color, name, role, bio, onClose }: { portrait: string; color?: string; name: string; role: string; bio: string; onClose(): void }) {
+  const close = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
+  useEffect(() => {   // once per opening: focus the close button, Esc closes, focus returns to the card afterwards
+    const back = document.activeElement as HTMLElement | null;
+    close.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeRef.current(); };
+    addEventListener('keydown', onKey);
+    return () => { removeEventListener('keydown', onKey); back?.focus?.(); };
+  }, []);
+  return (
+    <div className="person-pop" onClick={onClose}>
+      <div className="surface card person-pop-card" role="dialog" aria-modal="true" aria-labelledby="person-pop-name" onClick={(e) => e.stopPropagation()}>
+        <div className="person-pop-head">
+          <div className={`portrait${color ? '' : ' you'}`} style={color ? { background: color } : undefined} aria-hidden="true">{portrait}</div>
+          <div><h3 id="person-pop-name">{name}</h3><span className="pill">{role}</span></div>
+          <button ref={close} type="button" className="btn small ghost person-pop-x" onClick={onClose} aria-label="Close"><Icon name="close" /></button>
+        </div>
+        <p>{bio || role}</p>
       </div>
     </div>
   );

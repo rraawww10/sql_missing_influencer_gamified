@@ -7,63 +7,72 @@
       "first": "Tara",
       "role": "Singer, @TARA on reels",
       "initials": "TS",
-      "color": "#7c3aed"
+      "color": "#7c3aed",
+      "bio": "A young singer from {{hometown}} who became famous through her reels as @TARA. Tonight is her first stadium concert in the city, with 40,000 fans coming. At 6 PM she vanished from her hotel room, and her phone has been off ever since."
     },
     "mentor": {
       "name": "Ira Menon",
       "first": "Ira",
       "role": "SI, your mentor, Data Cell",
       "initials": "IM",
-      "color": "#2f4fd8"
+      "color": "#2f4fd8",
+      "bio": "Sub-Inspector at the City Police Data Cell and your mentor tonight. She leads the search for {{star.first}}, hands you each new set of records, and has one rule: evidence, not rumours."
     },
     "analyst": {
       "name": "Kabir Shaikh",
       "first": "Kabir",
-      "role": "Data Cell",
+      "role": "Data analyst, Data Cell",
       "initials": "KS",
-      "color": "#0f766e"
+      "color": "#0f766e",
+      "bio": "The Data Cell's analyst. All night he collects records from the hotel, the cab company, the bank, the phone network and more, and loads them as tables for you to query."
     },
     "sister": {
       "name": "Mahi Sen",
       "first": "Mahi",
       "role": "{{star.first}}'s younger sister",
       "initials": "MS",
-      "color": "#be185d"
+      "color": "#be185d",
+      "bio": "{{star.first}}'s younger sister and the person she trusts most. She is frightened for {{star.first}} and stays in touch with the police all night. Anything strange she hears, she passes on."
     },
     "manager": {
       "name": "Dev Arora",
       "first": "Dev",
       "role": "{{star.first}}'s manager",
       "initials": "DA",
-      "color": "#475569"
+      "color": "#475569",
+      "bio": "{{star.first}}'s manager. His company handles her bookings, contracts, travel and money, so he knows her plans better than anyone. He says he stayed at the hotel all evening."
     },
     "rival": {
       "name": "Nysa Kapoor",
       "first": "Nysa",
       "role": "Singer",
       "initials": "NK",
-      "color": "#9333ea"
+      "color": "#9333ea",
+      "bio": "Another popular singer. Fans online love to compare her with {{star.first}}, so tonight some of them are pointing fingers at her."
     },
     "fan": {
       "name": "Ishita Das",
       "first": "Ishita",
       "role": "Runs @tara_squad",
       "initials": "ID",
-      "color": "#db2777"
+      "color": "#db2777",
+      "bio": "Runs @tara_squad, {{star.first}}'s biggest fan club, from {{hometown}}. She posts about {{star.first}} all day and knows every detail of her life, which makes people online ask what else she knows."
     },
     "driver": {
       "name": "Sunny Gill",
       "first": "Sunny",
       "role": "Cab driver",
       "initials": "SG",
-      "color": "#a16207"
+      "color": "#a16207",
+      "bio": "The cab driver {{star.first}} booked to take her from the hotel to the stadium, just before she disappeared. Online, people are already blaming him."
     },
     "organiser": {
       "name": "Kunal Bajaj",
       "first": "Kunal",
       "role": "Event organiser",
       "initials": "KB",
-      "color": "#0369a1"
+      "color": "#0369a1",
+      "bio": "The organiser of tonight's concert. Every ticket is sold, and if {{star.first}} does not walk on stage at midnight, he has the most to lose."
     },
     "caretaker": {
       "name": "Ramesh Pawar",

@@ -130,7 +130,8 @@ export type CaseNotes = z.infer<typeof CaseNotes>;
 // Text fields may contain {{key}} / {{key.first}} placeholders; `resolveCastText` fills them in.
 export const CastFile = z.object({
   premise: z.string().optional(),
-  people: z.record(z.object({ name: z.string(), first: z.string().optional(), role: z.string(), initials: z.string(), color: z.string() })),
+  people: z.record(z.object({ name: z.string(), first: z.string().optional(), role: z.string(), initials: z.string(), color: z.string(),
+    bio: z.string().optional() })),   // bio: who they are and their link to the star, shown when a card in the briefing is tapped (no spoilers)
   places: z.record(z.string()).default({}),
   handles: z.record(z.string()).default({}),
 }).passthrough();

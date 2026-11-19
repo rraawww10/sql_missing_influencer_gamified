@@ -119,6 +119,17 @@
 .person { padding: 16px; display: grid; gap: 6px; justify-items: start; align-content: start; }
 .person .portrait, .dialogue .portrait { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; color: #fff; font: 700 16px var(--display); background: var(--ink-2); flex: none; }
 .person.you .portrait { background: linear-gradient(135deg, var(--pink), var(--sun)); }
+button.person { border: 0; text-align: left; font: inherit; color: inherit; cursor: pointer; width: 100%; transition: transform .15s ease, box-shadow .15s ease; }
+button.person:hover { transform: translateY(-3px); }
+button.person:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px; }
+.person-pop { position: fixed; inset: 0; z-index: 60; display: grid; place-items: center; padding: 16px; background: rgb(10 8 30 / 55%); animation: fade-in .15s ease both; }
+.person-pop-card { width: min(460px, 100%); padding: 20px 22px; display: grid; gap: 12px; }
+.person-pop-head { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+.person-pop-head .portrait { width: 56px; height: 56px; border-radius: 18px; display: grid; place-items: center; color: #fff; font: 700 18px var(--display); background: var(--ink-2); }
+.person-pop-head .portrait.you { background: linear-gradient(135deg, var(--pink), var(--sun)); }
+.person-pop-head h3 { font: 600 22px var(--display); margin: 0 0 4px; }
+.person-pop-card p { margin: 0; font-size: 16.5px; line-height: 1.6; }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .person b { font: 600 18px var(--display); } .person span { color: var(--ink-2); font-weight: 700; font-size: 14px; }
 .ranks { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
 .rank { background: rgb(255 255 255 / 20%); border-radius: 18px; padding: 14px; display: grid; gap: 2px; align-content: start; }
