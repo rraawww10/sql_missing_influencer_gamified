@@ -1,6 +1,5 @@
-// Before an episode: a poster, the story clock, what's inside (minutes, tasks, clues), how it works,
+// Before an episode: the story clock, the title, what's inside (tasks, clues, the SQL it uses), how it works,
 // "the case so far" (clues from earlier episodes), and start / continue / reset.
-import { WhoChip } from '../identity/WhoChip';
 import { useEffect, useState } from 'react';
 import type { SessionPack } from '../../content/types';
 import { useServices } from '../services';
@@ -13,17 +12,18 @@ import { progressOf } from '../../engine/progress/derive';
 import { packScope } from '../../content/types';
 import { episodeOf, episodeTitle, unitLabel } from '../episodes';
 import { KaalCard } from '../kaal/KaalCard';
-import { TEASE } from '../kaal/lines';
-import { SoundToggle } from '../components/SoundToggle';
-import { VoiceToggle } from '../components/VoiceToggle';
+import { SAY, TEASE } from '../kaal/lines';
+import { Backdrop } from '../design/Backdrop';
+import { Icon, type IconName } from '../design/Icon';
+import { TopBar } from '../components/TopBar';
 
 interface Props { session: number; onStart(): void; onBack(): void; onBriefing?(): void; standalone?: boolean }
 
-const HOW = [
-  { ico: '💬', title: 'Story', text: 'Read the chats and notifications, one step at a time.' },
-  { ico: '📖', title: 'Case Notes', text: 'Learn one idea from the course, in the words of the case.' },
-  { ico: '💻', title: 'SQL console', text: 'Run queries on the real case database. Hints if you get stuck.' },
-  { ico: '📌', title: 'Evidence', text: 'Pin what you prove. Finish the episode to solve it.' },
+const HOW: { ico: IconName; title: string; text: string }[] = [
+  { ico: 'story', title: 'Story', text: 'Read the chats and notifications, one step at a time.' },
+  { ico: 'scroll', title: 'Learn', text: 'Learn one idea from the course. Tap the scroll for the full reading material.' },
+  { ico: 'code', title: 'SQL console', text: 'Run queries on the real case database. Hints if you get stuck.' },
+  { ico: 'pin', title: 'Evidence', text: 'Pin what you prove. Finish the episode to solve it.' },
 ];
 
 export function SessionIntro({ session, onStart, onBack, onBriefing, standalone = false }: Props) {
@@ -40,8 +40,8 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loader, session]);
 
-  if (error) return <div className="page"><div className="page-inner" style={{ paddingTop: 40 }}><div className="panel" role="alert">{error}</div></div></div>;
-  if (!pack) return <div className="page"><div className="page-inner" style={{ paddingTop: 40 }}><p className="muted">Loading…</p></div></div>;
+  if (error) return <div className="page"><Backdrop /><div className="page-inner narrow"><div className="surface card panel" role="alert">{error}</div></div></div>;
+  if (!pack) return <div className="page"><Backdrop /><div className="page-inner narrow"><p className="loading">Loading…</p></div></div>;
   const unit = pack.unit;
   const ep = episodeOf(session);
   const title = episodeTitle(session, pack.title);
@@ -52,87 +52,81 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
   const first = session === 1 && (!unit || unit.part === 1);
   return (
     <div className="page">
+      <Backdrop />
       <div className="page-inner">
-        <nav className="topnav">
-          <span className="brand">SQL: The Missing Influencer</span>
-          <span className="row" style={{ gap: 6 }}><WhoChip /><SoundToggle className="btn small ghost" /><VoiceToggle className="btn small ghost" />
-          <button className="btn small ghost" onClick={onBack}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
-        </nav>
+        <TopBar time={storyTime(session)} rank={progress?.rank}>
+          <button className="btn small ghost" onClick={onBack}><Icon name={standalone ? 'pin' : 'map'} /> {standalone ? 'Evidence Board' : 'Case map'}</button>
+        </TopBar>
 
-        <section className="poster pop-in" style={{ position: 'relative' }}>
-          <span className="confidential-stamp" aria-hidden="true">Case file · Confidential</span>
-          <SceneArt session={session} />
-          <div className="poster-body">
-            <div className="stickers">
-              <span className="sticker">🕕 {storyTime(session)}</span>
-              {unit && unit.parts > 1 && <span className="sticker paper">Part {unit.part} of {unit.parts}</span>}
-              {done && <span className="sticker" style={{ background: 'var(--success)' }}>✓ solved · {mine!.points} pts</span>}
+        <section className="hero pop-in">
+          <div className="hero-info">
+            <div className="row">
+              <span className="pill sun"><Icon name="clock" /> {storyTime(session)}</span>
+              {unit && unit.parts > 1 && <span className="pill white">Part {unit.part} of {unit.parts}</span>}
+              {done && <span className="pill mint"><Icon name="tick" /> solved · {mine!.points} pts</span>}
             </div>
-            <h1>{ep.emoji} {title}</h1>
-            {unit && !unit.finale && <p><b>📖 {unitLabel(unit)}</b></p>}
-            <p>{standalone ? <><b>{pack.headline}</b> {pack.premise}</> : ep.teaser}</p>
+            <h1 className="shadowed">{title}</h1>
+            {unit && !unit.finale && <p className="unit-line"><Icon name="scroll" /> <b>{unitLabel(unit)}</b></p>}
+            <p className="teaser">{standalone ? <><b>{pack.headline}</b> {pack.premise}</> : ep.teaser}</p>
+            {notice && <p className="notice" role="status">{notice}</p>}
+            <div className="row mission-actions">
+              <button className="btn primary big go" onClick={onStart}><Icon name="play" /> {resumable ? 'Continue where I left off' : done ? 'Play again' : 'Start the episode'}</button>
+              {(resumable || done) && <ResetControl session={session} onDone={() => { setNotice('Progress reset. You can start fresh.'); check(); reload(); }} />}
+              {first && onBriefing && <button className="btn ghost" onClick={onBriefing}><Icon name="flag" /> New here? Read the briefing</button>}
+            </div>
+            <p className="muted small"><Icon name="save" /> Stop any time - your place is saved.</p>
+          </div>
+          <div className="surface card epcard">
+            <SceneArt session={session} height={132} />
+            <div className="epcard-body">
+              <div className="stats">
+                {tasks > 0 && <div className="stat"><b>{tasks}</b><span>SQL task{tasks === 1 ? '' : 's'}</span></div>}
+                {clues > 0 && <div className="stat"><b>{clues}</b><span>clue{clues === 1 ? '' : 's'} to find</span></div>}
+              </div>
+              <div><span className="cap">SQL you will use</span>
+                <ul className="tags">{ep.learn.split(', ').map((x) => <li key={x} className="pill">{x}</li>)}</ul></div>
+            </div>
           </div>
         </section>
 
-        <div style={{ margin: '18px 0' }}>
-          <KaalCard mood={first ? 'whisper' : 'think'} line={first
-            ? `${TEASE[1]} Stay close, {you}.`   /* he introduces himself once, on the Briefing */
-            : resumable ? `Welcome back, {you}. ${TEASE[session] ?? ''}` : (TEASE[session] ?? ep.teaser)} />
-        </div>
+        <KaalCard mood={first ? 'whisper' : 'think'} title="Kaal · your assistant" line={first
+          ? SAY.introFirst()   /* he introduces himself once, on the Briefing */
+          : resumable ? SAY.introBack(session) : (TEASE[session] ?? ep.teaser)} />
 
         {pack.previously.length > 0 && (
-          <section aria-label="Previously on the case" style={{ marginBottom: 10 }}>
-            <h2 style={{ margin: '0 0 6px', fontSize: 18, color: 'var(--lamp)' }}>⏪ Previously on the case…</h2>
+          <section className="section" aria-label="Previously on the case">
+            <h2 className="shadowed">Previously on the case</h2>
             <div className="recap">
               {pack.previously.slice(-6).map((c, i) => (
-                <article key={c.clue_id} className="polaroid" style={{ '--i': i } as React.CSSProperties}>
-                  <span className="when">{c.session === session ? 'Earlier tonight' : storyTime(c.session)}</span>
-                  <b>📌 {c.title}</b>
+                <article key={c.clue_id} className="surface polaroid rise" style={{ '--i': i } as React.CSSProperties}>
+                  <span className="cap">{c.session === session ? 'Earlier tonight' : storyTime(c.session)}</span>
+                  <b><Icon name="pin" /> {c.title}</b>
                 </article>
               ))}
             </div>
           </section>
         )}
 
-        <div className="stats">
-          <div className="stat rise" style={{ '--i': 0 } as React.CSSProperties}><b>{Math.round(pack.minutes_estimate)}</b><span>minutes, about</span></div>
-          {tasks > 0 && <div className="stat rise" style={{ '--i': 1 } as React.CSSProperties}><b>{tasks}</b><span>SQL task{tasks === 1 ? '' : 's'}</span></div>}
-          {clues > 0 && <div className="stat rise" style={{ '--i': 2 } as React.CSSProperties}><b>{clues}</b><span>piece{clues === 1 ? '' : 's'} of evidence to find</span></div>}
-          <div className="stat rise" style={{ '--i': 3 } as React.CSSProperties}><b>{ep.emoji}</b><span>{ep.learn}</span></div>
-        </div>
-
-        <section>
-          {notice && <p className="notice" role="status">{notice}</p>}
-          <div className="mission-actions">
-            <button className="btn primary big go" onClick={onStart}>{resumable ? 'Continue where I left off →' : done ? 'Play again →' : 'Start the episode →'}</button>
-            {(resumable || done) && <ResetControl session={session} onDone={() => { setNotice('Progress reset. You can start fresh.'); check(); reload(); }} />}
-            {first && onBriefing && <button className="btn ghost" onClick={onBriefing}>📋 New here? Read the briefing</button>}
-          </div>
-          <p className="muted small" style={{ marginTop: 10 }}>💾 Stop any time - your place is saved on this device.</p>
-        </section>
-
         {(first || standalone) && (
-          <section style={{ marginTop: 26 }} aria-label="How it works">
-            <h2 style={{ margin: '0 0 12px', fontSize: 20 }}>How this works</h2>
-            <div className="howto">
-              {HOW.map((h, i) => <div key={h.title} className="how rise" style={{ '--i': i } as React.CSSProperties}><span className="num" aria-hidden="true">{i + 1}</span><div className="ico">{h.ico}</div><b>{h.title}</b><p>{h.text}</p></div>)}
+          <section className="section" aria-label="How it works">
+            <h2 className="shadowed">How this works</h2>
+            <div className="tiles">
+              {HOW.map((h, i) => <div key={h.title} className="surface card tile rise" style={{ '--i': i } as React.CSSProperties}><span className="tile-n" aria-hidden="true">{i + 1}</span><Icon name={h.ico} className="xl" /><b>{h.title}</b><p>{h.text}</p></div>)}
             </div>
           </section>
         )}
 
         {pack.previously.length > 0 && (
-          <section style={{ marginTop: 26 }} aria-label="The case so far">
-            <h2 style={{ margin: '0 0 12px', fontSize: 22 }}>The case so far</h2>
-            <div className="wall">
-              <div className="evidence">
-                {pack.previously.map((c) => (
-                  <article key={c.clue_id} className="evi">
-                    <div className="tag">{c.session === session ? 'Earlier in this episode' : `${episodeTitle(c.session)} · ${storyTime(c.session)}`}</div>
-                    <h4>{c.title}</h4>
-                    <Markdown source={c.body} />
-                  </article>
-                ))}
-              </div>
+          <section className="section" aria-label="The case so far">
+            <h2 className="shadowed">The case so far</h2>
+            <div className="evidence">
+              {pack.previously.map((c) => (
+                <article key={c.clue_id} className="surface card evi">
+                  <div className="cap">{c.session === session ? 'Earlier in this episode' : `${episodeTitle(c.session)} · ${storyTime(c.session)}`}</div>
+                  <h4>{c.title}</h4>
+                  <Markdown source={c.body} />
+                </article>
+              ))}
             </div>
           </section>
         )}

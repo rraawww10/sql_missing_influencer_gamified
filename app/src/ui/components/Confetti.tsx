@@ -1,8 +1,8 @@
 // A burst of confetti (CSS only, no library). Place inside a `position: relative` box, or `rain` for the whole screen.
-// Hidden when the learner prefers reduced motion (styles.css).
+// Hidden when the learner prefers reduced motion (design/base.css).
 import { useMemo } from 'react';
 
-const COLORS = ['var(--pop)', 'var(--accent)', 'var(--glow)', '#fff', 'var(--success)'];
+const COLORS = ['var(--sun)', 'var(--pink)', 'var(--mint)', 'var(--sky)', '#fff'];
 
 export function Confetti({ count = 28, rain = false }: { count?: number; rain?: boolean }) {
   const bits = useMemo(() => Array.from({ length: count }, (_, i) => ({

@@ -1,5 +1,5 @@
 // Screen-level game juice, driven by Kaal's events: the whole game flashes / shakes / pulses for a moment.
-// Classes go on <body> (styles in noir.css, .fx-*) and fall off on their own. Reduced motion → only the colour flash.
+// Classes go on <body> (styles in design/base.css, .fx-*) and fall off on their own. Reduced motion → only the colour flash.
 import type { KaalEvent } from './kaal/lines';
 
 const FX: Partial<Record<KaalEvent, string>> = {
@@ -20,10 +20,10 @@ export function gameFx(e: KaalEvent) {
   b.classList.add(...current);
   window.clearTimeout(timer);
   timer = window.setTimeout(() => { b.classList.remove(...current); current = []; }, 900);
-  if (cls.includes('fx-pass') || e === 'pinned') floater(e === 'passFirst' ? '+2 ⭐ FIRST TRY!' : e === 'pinned' ? '+1 📌 EVIDENCE' : '+1 ⭐');
+  if (cls.includes('fx-pass') || e === 'pinned') floater(e === 'passFirst' ? 'FIRST TRY!' : e === 'pinned' ? 'EVIDENCE PINNED!' : 'CORRECT!');
 }
 
-// "+1 ⭐" rising from the middle of the screen, game style
+// "CORRECT!" rising from the middle of the screen, game style
 function floater(text: string) {
   const f = document.createElement('div');
   f.className = 'xp-float'; f.textContent = text; f.setAttribute('aria-hidden', 'true');

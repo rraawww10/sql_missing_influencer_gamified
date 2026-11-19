@@ -1,13 +1,20 @@
-// Inspector Kaal - a cheerful desi detective: bright blue trench coat, saffron scarf, brown fedora, big expressive eyes,
+// Kaal, the student's assistant - a cheerful desi detective: bright blue trench coat, saffron scarf, brown fedora, big expressive eyes,
 // a proud moustache, and a magnifying glass. His mouth moves while his voice (voice.ts) is speaking.
-// Pure SVG + CSS (styles in noir.css, .kaal-*): no images, scales to any size, every mood is a class on the root.
+// Pure SVG + CSS (styles in design/kaal.css, .kaal-*): no images, scales to any size, every mood is a class on the root.
 //
 //   <Kaal mood="happy" size={96} />        the figure alone
-//   <KaalDock />                           the companion that lives in the corner of the game, with a speech bubble
-import { useEffect, useRef, useState } from 'react';
-import type { KaalEvent, KaalMood } from './lines';
-import { useKaal } from './bus';
+//   <KaalDock />                           Kaal in the corner of every screen: speech bubble + the Ask Kaal chat
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { PASSIVE_EVENTS, SAY, type KaalMood } from './lines';
+import { kaal, useKaal } from './bus';
 import { onSpeaking } from '../voice';
+import { runDockAction, useDockContext } from './dock';
+import { KaalChat } from './chat/KaalChat';
+import type { ChatAction, ChatContext } from './chat/brain';
+import { useProgress } from '../useProgress';
+import { currentIdentity } from '../../adapters/identity';
+import { openReader } from '../reader/store';
+import { Icon } from '../design/Icon';
 
 // true while Kaal's voice is actually speaking (drives his mouth)
 export function useTalking(): boolean {
@@ -16,7 +23,7 @@ export function useTalking(): boolean {
   return t;
 }
 
-export function Kaal({ mood = 'idle', size = 96, title = 'Inspector Kaal', talking = false }: { mood?: KaalMood; size?: number; title?: string; talking?: boolean }) {
+export function Kaal({ mood = 'idle', size = 96, title = 'Kaal, your assistant', talking = false }: { mood?: KaalMood; size?: number; title?: string; talking?: boolean }) {
   return (
     <svg className={`kaal kaal-${mood}${talking ? ' kaal-talking' : ''}`} viewBox="0 0 120 160" width={size} height={size * 160 / 120} role="img" aria-label={title}>
       <defs>
@@ -91,32 +98,52 @@ export function Kaal({ mood = 'idle', size = 96, title = 'Inspector Kaal', talki
   );
 }
 
-const PASSIVE = new Set<KaalEvent>(['scene', 'note', 'task', 'activity', 'check', 'clue', 'demo', 'hook', 'review', 'resume', 'running']);
+const PASSIVE = PASSIVE_EVENTS;
 
-// The companion in the corner. Speaks when something happens (useKaal), the bubble fades after a while.
-// Tapping him repeats / hides the line. Collapses to a small avatar on phones.
-export function KaalDock({ hint }: { hint?: string }) {
+// Kaal in the corner of every screen: the student's assistant. He speaks when something happens (useKaal; the bubble
+// fades after a while), and tapping him opens "Ask Kaal", the chat that answers questions about the game (chat/KaalChat.tsx).
+export function KaalDock() {
   const k = useKaal();
   const talking = useTalking();
-  const [open, setOpen] = useState(false);
+  const ctx = useDockContext();
+  const { progress } = useProgress();
+  const [bubble, setBubble] = useState(false);
+  const [chat, setChat] = useState(false);
   const timer = useRef<number>();
   useEffect(() => {
-    if (!k.line) { setOpen(false); return; }
+    if (!k.line) { setBubble(false); return; }
     // on a phone the bubble would cover the story: there Kaal only speaks when something happens, not on every step
-    if (k.event && PASSIVE.has(k.event) && typeof matchMedia === 'function' && matchMedia('(max-width: 640px)').matches) { setOpen(false); return; }
-    setOpen(true);
+    if (k.event && PASSIVE.has(k.event) && typeof matchMedia === 'function' && matchMedia('(max-width: 640px)').matches) { setBubble(false); return; }
+    setBubble(true);
     window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setOpen(false), Math.min(9000, 3500 + k.line.length * 45));
+    timer.current = window.setTimeout(() => setBubble(false), Math.min(9000, 3500 + k.line.length * 45));
     return () => window.clearTimeout(timer.current);
   }, [k.n, k.line]);
+
+  useEffect(() => { setBubble(false); }, [ctx.screen, ctx.session]);
+
+  const chatCtx = useMemo<ChatContext>(() => ({
+    screen: ctx.screen, session: ctx.session, beatType: ctx.beatType, onTask: ctx.onTask,
+    rank: progress?.rank, points: progress?.totalPoints, name: currentIdentity()?.name.split(' ')[0],
+  }), [ctx, progress?.rank, progress?.totalPoints]);
+  // what a chat reply's button does: the screen behind handles it if it can, otherwise the dock does the sensible thing
+  const act = (a: ChatAction) => {
+    if (runDockAction(a.kind)) { if (a.kind !== 'open-hints') setChat(false); return; }
+    if (a.kind === 'open-learn') { openReader({ session: ctx.session ?? progress?.sessions.find((x) => x.status === 'available')?.session ?? 1 }); setChat(false); }
+    else if (a.kind === 'open-tables' || a.kind === 'open-hints') kaal('idle', { line: SAY.openEpisodeFirst, silent: true });
+    else kaal('idle', { line: SAY.notInThisEpisode, silent: true });
+  };
   return (
-    <div className={`kaal-dock ${open ? 'talking' : ''}`}>
-      {open && k.line && (
-        <div className="kaal-bubble" role="status" key={k.n} onClick={() => setOpen(false)}>
+    <div className={`kaal-dock ${bubble ? 'talking' : ''} ${chat ? 'chatting' : ''}`}>
+      {chat && <KaalChat ctx={chatCtx} onAction={act} open={chat} onOpenChange={setChat} />}
+      {!chat && bubble && k.line && (
+        <div className="kaal-bubble" role="status" key={k.n} onClick={() => setBubble(false)}>
           <b>Kaal</b>{k.line}
         </div>
       )}
-      <button className="kaal-btn" onClick={() => setOpen((o) => !o)} aria-label={open ? 'Hide Inspector Kaal’s note' : `Inspector Kaal${hint ? ': ' + hint : ''}`} title="Inspector Kaal - your partner on the case">
+      <button className="kaal-btn" onClick={() => setChat((c) => !c)} aria-expanded={chat}
+        aria-label={chat ? 'Close the chat with Kaal' : 'Ask Kaal: open the chat'} title="Kaal - your assistant. Tap to ask a question about the game">
+        <span className="kaal-ask"><Icon name={chat ? 'close' : 'chat'} /><span>{chat ? 'Close' : 'Ask me'}</span></span>
         <Kaal mood={k.mood} size={96} talking={talking} />
       </button>
     </div>

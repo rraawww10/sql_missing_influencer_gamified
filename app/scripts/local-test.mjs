@@ -66,7 +66,11 @@ setTimeout(() => console.log(`
  Game - case map       http://localhost:${MAP_PORT}/
  Game - as on S3       http://localhost:${SHIP_PORT}/intro/index.html   (episodes: /s01/index.html … /s13/index.html)
 
- Test students (type the NxtWave ID + name on the game's start screen):
+ The game now has accounts: SIGN UP on the start screen (name, NxtWave ID, email, password), later LOG IN with ID + password.
+ Forgot a password? Dashboard → open the student → "Reset password" gives a temporary one.
+
+ Test students already in the database (they have progress but no password yet: choose "Sign up" with that ID,
+ any name, any email and a password of your choice to take the account over):
    NWTEST01  Riya Kapoor   registered, never played          → fresh start
    NWTEST02  Arjun Mehta   episode 1 stopped at step 7       → "Continue where I left off"
    NWTEST03  Sana Qureshi  episodes 1-3 solved, ep 4 step 15 → welcome back, 3 clues, ep 4 continues

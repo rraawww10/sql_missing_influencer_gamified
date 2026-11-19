@@ -312,7 +312,8 @@
           "heading": "ER Model of e-commerce application"
         }
       ],
-      "body": "The course builds an e-commerce ER model: customer–cart (1:1), customer–address (1:N), cart–product (M:N). Our case has the same shapes."
+      "body": "The course builds an e-commerce ER model: customer–cart (1:1), customer–address (1:N), cart–product (M:N).",
+      "case": "Our case has the same shapes.\n"
     },
     {
       "id": "S9.7",

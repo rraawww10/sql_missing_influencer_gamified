@@ -149,6 +149,14 @@ async function buildSession(file) {
 
     if (b.type === 'note' && !b.rm_ref) err(where, 'note needs rm_ref');
     if (['scene', 'note', 'hook', 'clue'].includes(b.type) && !b.body) err(where, 'needs body');
+    // Case Notes keep two texts apart: `body` = the learning text (true in any SQL course) and the optional
+    // `case` = how it ties to tonight's story. `case` is handled like `body`: its {{placeholders}} were filled
+    // above (fillDeep covers every string, an unknown one fails the build) and it goes into the pack as written.
+    if (b.type === 'note' && typeof b.body === 'string' && !b.body.trim()) err(where, 'note body is empty (the learning text must stand on its own)');
+    if (b.case !== undefined) {
+      if (b.type !== 'note') err(where, '"case" is only for note beats');
+      else if (typeof b.case !== 'string' || !b.case.trim()) err(where, '"case" must be text (leave it out when the note has nothing case-specific)');
+    }
 
     if (b.type === 'activity') {
       if (!ACTIVITY_KINDS.includes(b.kind)) err(where, `activity kind must be one of ${ACTIVITY_KINDS}`);

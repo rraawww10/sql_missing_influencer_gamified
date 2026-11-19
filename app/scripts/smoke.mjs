@@ -45,17 +45,28 @@ async function playSession(n, { trap, leaveAt } = {}) {
   await playBeats(page, p, sol, {
     beforeBeat: async (b, i) => {
       if (b.id === 'S1.3') {
-        await page.getByRole('button', { name: /Read the full course note/ }).click();
-        await page.getByRole('dialog', { name: 'Course note' }).waitFor();
-        await page.getByText('Any sort of information that is stored is called data.').waitFor();
+        // the Learn step keeps course learning and the case link on separate cards
+        await page.locator('.lesson-card').getByText('is any information that is stored').waitFor();
+        await page.locator('.case-card').getByText('In our case: the hotel register').waitFor();
+        if (await page.locator('.lesson-card').getByText('In our case').count()) throw new Error('case text is mixed into the learning card');
+        // the scroll opens the COMPLETE reading material, full screen, and nothing in it can be selected
+        await page.locator('.lesson-card').getByRole('button', { name: /Learn: open the full reading material/ }).click();
+        const reader = page.getByRole('dialog', { name: 'Reading material' });
+        await reader.waitFor();
+        await reader.getByText('Any sort of information that is stored is called data.').waitFor();
+        await reader.getByRole('heading', { name: 'Non-Relational DBMS' }).waitFor();   // a later section: the whole unit is there, not one part
+        const box = await reader.boundingBox(), vp = page.viewportSize();
+        if (box.width < vp.width - 2 || box.height < vp.height - 2) throw new Error('the reading material does not cover the whole screen');
+        if (await reader.locator('.reader-page').evaluate((el) => getComputedStyle(el).userSelect) !== 'none') throw new Error('reading material text can be selected');
         await page.keyboard.press('Escape');
-        console.log('  📖 course note opens with the reading-material section');
+        await reader.waitFor({ state: 'detached' });
+        console.log('  📖 Learn: learning and case text on separate cards; the scroll opens the full reading material, full screen, copy off');
       }
       if (b.id === leaveAt) {
         await page.goto(`${BASE}/`);                                         // leave the session…
-        await page.getByRole('button', { name: 'Play' }).first().waitFor();
+        await page.locator('.node.next').waitFor();
         await page.goto(`${BASE}/#/s/${n}`);                                 // …and come back later
-        await page.getByRole('button', { name: '↺ Reset progress' }).waitFor();
+        await page.getByRole('button', { name: 'Reset progress' }).waitFor();
         await page.getByRole('button', { name: /Continue where I left off/ }).click();
         await page.getByText(`Step ${i + 1}/${p.beats.length}`).waitFor();   // same step, no time limit
         console.log(`  ↻ left at ${b.id} and came back: resumed at the same step (reset offered)`);
@@ -64,7 +75,7 @@ async function playSession(n, { trap, leaveAt } = {}) {
     beforeTask: async (b) => {
       if (b.task_id === 'T2.1') {
         await runSql(page, 'CREATE table suspects (\n  name VARCHAR(200),\n  role VARCHAR(200),\n  phone VARCHAR(15),\n  age INT\n);');
-        await page.getByText('✓ Correct.').waitFor({ timeout: 10000 });
+        await page.getByText('Correct.', { exact: true }).waitFor({ timeout: 10000 });
         await tabs().getByRole('button', { name: 'suspects' }).waitFor();
         console.log('  ✓ reported T2.1 query (role VARCHAR(200)) passes; "suspects" tab appears');
       }
@@ -76,7 +87,7 @@ async function playSession(n, { trap, leaveAt } = {}) {
         // the console header advertises Ctrl+Enter: it must run the query, not insert a blank line
         await page.locator('.cm-content').fill(sol[b.task_id].ref);
         await page.locator('.cm-content').press('Control+Enter');
-        await page.getByText('✓ Correct.').waitFor({ timeout: 10000 });
+        await page.getByText('Correct.', { exact: true }).waitFor({ timeout: 10000 });
         console.log('  ⌨ Ctrl+Enter runs the query');
         // and the editor autocompletes the case tables, not just SQL keywords
         await page.locator('.cm-content').fill('');
@@ -102,13 +113,15 @@ async function playSession(n, { trap, leaveAt } = {}) {
 let failed = false;
 try {
   await page.goto(`${BASE}/`);
-  await signIn(page);                                                     // the start screen: name + NxtWave ID
+  await signIn(page);                                                     // the start screen: name + NxtWave ID + email
   await page.locator('.who-chip b').getByText(TEST_STUDENT.name, { exact: true }).first().waitFor();
   if (await page.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) !== TEST_STUDENT.id) throw new Error('NxtWave ID not stored upper-case');
-  console.log('  👤 start screen: name + NxtWave ID asked, validated, remembered');
-  await page.getByText(pack(1).headline).waitFor();
-  await page.getByRole('button', { name: 'Play' }).first().waitFor();   // progress loads from IndexedDB
-  if (await page.getByRole('button', { name: 'Play' }).count() !== 1) throw new Error('a new guest should see exactly one playable episode');
+  if (await page.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).email) !== TEST_STUDENT.email) throw new Error('email not stored lower-case');
+  console.log('  👤 start screen: name + NxtWave ID + email asked, validated, remembered');
+  await page.getByRole('heading', { name: "Tonight's trail" }).waitFor();
+  await page.locator('.node.available').first().waitFor();   // progress loads from IndexedDB
+  if (await page.locator('.node.available').count() !== 1) throw new Error('a new guest should see exactly one playable episode');
+  if (await page.getByText(/\b\d+ min\b/).count()) throw new Error('an expected time per episode is still shown on the case map');
 
   // the briefing (the page before the first episode) lists every episode by name and the cast
   await page.getByRole('button', { name: /Read the briefing/ }).click();
@@ -129,7 +142,7 @@ try {
   await playSession(3, { trap: { task: 'T3.8', id: 'precedence' } });
 
   // reset episode 3 from its done screen → it is no longer solved, its clue leaves the board
-  await page.getByRole('button', { name: '↺ Reset this episode and play again' }).click();
+  await page.getByRole('button', { name: 'Reset this episode and play again' }).click();
   await page.getByRole('button', { name: 'Yes, reset' }).click();
   await page.getByRole('button', { name: /Start the episode/ }).waitFor();
   await page.goto(`${BASE}/`);

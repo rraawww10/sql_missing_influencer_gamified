@@ -36,7 +36,9 @@ beats:
       | `>` | Greater than |
       | `>=` | Greater than or equal to |
 
-      Tip: our times look like `'2026-12-12 18:00:00'`. In this format, a later time is "greater", so `>=` works on times too.
+      Tip: in the format `'YYYY-MM-DD HH:MM:SS'`, a later time is "greater", so `>=` works on times too.
+    case: |
+      Our times look like `'2026-12-12 18:00:00'`.
 
   - id: S3.3
     type: task

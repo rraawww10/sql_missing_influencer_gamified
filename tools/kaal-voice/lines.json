@@ -1,0 +1,686 @@
+[
+  {
+    "key": "4a6b2edf",
+    "text": "Let's go! Rule number one: data never lies. People sometimes do.",
+    "mood": "whisper",
+    "show": "Let’s go, {you}! Rule number one: data never lies. People sometimes do."
+  },
+  {
+    "key": "ea246c92",
+    "text": "Here we go! Tonight the database is our only witness. Let's make it talk!",
+    "mood": "whisper",
+    "show": "Here we go, {you}! Tonight the database is our only witness. Let’s make it talk!"
+  },
+  {
+    "key": "d7a9acdc",
+    "text": "Read that carefully. Someone just gave away a clue.",
+    "mood": "idle",
+    "show": "Read that carefully, {you}. Someone just gave away a clue."
+  },
+  {
+    "key": "5df3d099",
+    "text": "Note that down. It may matter later!",
+    "mood": "idle",
+    "show": "Note that down, {you}. It may matter later!"
+  },
+  {
+    "key": "67de27f3",
+    "text": "Interesting. Keep this in mind.",
+    "mood": "idle",
+    "show": "Interesting. Keep this in mind."
+  },
+  {
+    "key": "ac1d36c5",
+    "text": "Did you catch that? I did.",
+    "mood": "idle",
+    "show": "Did you catch that? I did."
+  },
+  {
+    "key": "73ac025d",
+    "text": "Uh-oh. Something big is coming. I can smell it!",
+    "mood": "whisper",
+    "show": "Uh-oh. Something big is coming. I can smell it!"
+  },
+  {
+    "key": "11664336",
+    "text": "The night isn't done with us yet!",
+    "mood": "whisper",
+    "show": "The night isn’t done with us yet, {you}!"
+  },
+  {
+    "key": "38c940d8",
+    "text": "Stay sharp! The next part gets spicy.",
+    "mood": "whisper",
+    "show": "Stay sharp! The next part gets spicy."
+  },
+  {
+    "key": "d9b7927a",
+    "text": "Read this one properly, okay? It's the tool you need in a minute.",
+    "mood": "think",
+    "show": "Read this one properly, okay? It’s the tool you need in a minute."
+  },
+  {
+    "key": "079d01e3",
+    "text": "Every great detective knows their tools. Here's a new one!",
+    "mood": "think",
+    "show": "Every great detective knows their tools. Here’s a new one!"
+  },
+  {
+    "key": "fe992f14",
+    "text": "Learn this, and the next query becomes easy-peasy.",
+    "mood": "think",
+    "show": "Learn this, and the next query becomes easy-peasy."
+  },
+  {
+    "key": "9c7782e4",
+    "text": "Your turn! Ask the database.",
+    "mood": "point",
+    "show": "Your turn, {you}! Ask the database."
+  },
+  {
+    "key": "44b6ba37",
+    "text": "The answer is hiding in those tables. Go and catch it!",
+    "mood": "point",
+    "show": "The answer is hiding in those tables. Go and catch it!"
+  },
+  {
+    "key": "25b356d1",
+    "text": "Write the query. Don't worry, I've got your back.",
+    "mood": "point",
+    "show": "Write the query. Don’t worry, I’ve got your back."
+  },
+  {
+    "key": "00ffc112",
+    "text": "Peek at the tables first, then type. Let's go!",
+    "mood": "point",
+    "show": "Peek at the tables first, then type. Let’s go!"
+  },
+  {
+    "key": "716ced59",
+    "text": "Running it...",
+    "mood": "think",
+    "show": "Running it…"
+  },
+  {
+    "key": "4f3e9b0d",
+    "text": "Let's see what the data says...",
+    "mood": "think",
+    "show": "Let’s see what the data says…"
+  },
+  {
+    "key": "fc5b26a6",
+    "text": "Searching the records...",
+    "mood": "think",
+    "show": "Searching the records…"
+  },
+  {
+    "key": "d5149dda",
+    "text": "Well done! That's it!",
+    "mood": "happy",
+    "show": "Well done! That’s it!"
+  },
+  {
+    "key": "d1e35664",
+    "text": "Clean query! That's exactly the data we needed.",
+    "mood": "happy",
+    "show": "Clean query! That’s exactly the data we needed."
+  },
+  {
+    "key": "0a31db97",
+    "text": "Got it! Ira will be so pleased.",
+    "mood": "happy",
+    "show": "Got it! Ira will be so pleased."
+  },
+  {
+    "key": "b72ff5b1",
+    "text": "See? The database never lies. Well done!",
+    "mood": "happy",
+    "show": "See? The database never lies. Well done!"
+  },
+  {
+    "key": "9e0858fe",
+    "text": "Perfect!",
+    "mood": "happy",
+    "show": "Perfect, {you}!"
+  },
+  {
+    "key": "09d2e078",
+    "text": "First try! You're a natural!",
+    "mood": "cheer",
+    "show": "First try! You’re a natural!"
+  },
+  {
+    "key": "9a6c6c12",
+    "text": "Exactly right, in one shot! I'm impressed.",
+    "mood": "cheer",
+    "show": "Exactly right, in one shot! I’m impressed."
+  },
+  {
+    "key": "ba8775f2",
+    "text": "Not a single wrong step. That's real detective work!",
+    "mood": "cheer",
+    "show": "Not a single wrong step. That’s real detective work!"
+  },
+  {
+    "key": "e4e02e4a",
+    "text": "Close, close! Look at the result again, what's missing?",
+    "mood": "oops",
+    "show": "Close, close! Look at the result again - what’s missing?"
+  },
+  {
+    "key": "1bde48db",
+    "text": "Not quite. Compare it with what was asked.",
+    "mood": "oops",
+    "show": "Not quite, {you}. Compare it with what was asked."
+  },
+  {
+    "key": "ce848922",
+    "text": "Count the rows in your result. Is that what the question asked for?",
+    "mood": "oops",
+    "show": "Count the rows in your result. Is that what the question asked for?"
+  },
+  {
+    "key": "22ca11fe",
+    "text": "No problem! Every wrong turn teaches something. Try again.",
+    "mood": "oops",
+    "show": "No problem! Every wrong turn teaches something. Try again."
+  },
+  {
+    "key": "749d8738",
+    "text": "Oops! The database didn't understand that. Check the spelling and commas.",
+    "mood": "oops",
+    "show": "Oops! The database didn’t understand that. Check the spelling and commas."
+  },
+  {
+    "key": "7935fe49",
+    "text": "Probably a small typo. Read the error slowly.",
+    "mood": "oops",
+    "show": "Probably a small typo. Read the error slowly."
+  },
+  {
+    "key": "5fb69be7",
+    "text": "Even I mistype. Fix it and run again!",
+    "mood": "oops",
+    "show": "Even I mistype, {you}. Fix it and run again!"
+  },
+  {
+    "key": "430f076a",
+    "text": "That's a common mistake! Read the note to see why.",
+    "mood": "smirk",
+    "show": "That’s a common mistake! Read the note to see why."
+  },
+  {
+    "key": "a76480d3",
+    "text": "Gotcha! Classic mistake, now you'll never make it again.",
+    "mood": "smirk",
+    "show": "Gotcha! Classic mistake - now you’ll never make it again."
+  },
+  {
+    "key": "46d8fc4d",
+    "text": "The case tried to fool you! Read the note.",
+    "mood": "smirk",
+    "show": "The case tried to fool you! Read the note."
+  },
+  {
+    "key": "8535b537",
+    "text": "Here, a clue for you: read the course note. Everything you need is in it.",
+    "mood": "whisper",
+    "show": "Here, a clue for you: read the course note. Everything you need is in it."
+  },
+  {
+    "key": "ff75b4e8",
+    "text": "Here's your first hint: the course note. Start there.",
+    "mood": "whisper",
+    "show": "Here’s your first hint: the course note. Start there."
+  },
+  {
+    "key": "77087a83",
+    "text": "I've sketched half the query. You fill in the blanks!",
+    "mood": "whisper",
+    "show": "I’ve sketched half the query. You fill in the blanks!"
+  },
+  {
+    "key": "3e77c8af",
+    "text": "Half done already. You finish it.",
+    "mood": "whisper",
+    "show": "Half done already. You finish it, {you}."
+  },
+  {
+    "key": "f3b97ddf",
+    "text": "Here's the full query. Read every line before you run it, okay?",
+    "mood": "oops",
+    "show": "Here’s the full query. Read every line before you run it, okay?"
+  },
+  {
+    "key": "68263b98",
+    "text": "Here's the full answer. Read how it works, then we move on.",
+    "mood": "oops",
+    "show": "Here’s the full answer. Read how it works, then we move on."
+  },
+  {
+    "key": "3c0ef0dd",
+    "text": "Quick one! Trust your gut.",
+    "mood": "point",
+    "show": "Quick one! Trust your gut."
+  },
+  {
+    "key": "060adcbd",
+    "text": "Your turn. Sort this one out.",
+    "mood": "point",
+    "show": "Your turn, {you}. Sort this one out."
+  },
+  {
+    "key": "1cd2cf27",
+    "text": "A little puzzle. Take your time.",
+    "mood": "point",
+    "show": "A little puzzle. Take your time."
+  },
+  {
+    "key": "c6850691",
+    "text": "Exactly right!",
+    "mood": "happy",
+    "show": "Exactly right!"
+  },
+  {
+    "key": "5222ca72",
+    "text": "Spot on!",
+    "mood": "happy",
+    "show": "Spot on, {you}!"
+  },
+  {
+    "key": "3e3cb354",
+    "text": "Wow, you're getting good at this!",
+    "mood": "happy",
+    "show": "Wow, you’re getting good at this!"
+  },
+  {
+    "key": "4c19415b",
+    "text": "Not quite. Look again!",
+    "mood": "oops",
+    "show": "Not quite. Look again!"
+  },
+  {
+    "key": "ef32cc13",
+    "text": "One more try, you've got this.",
+    "mood": "oops",
+    "show": "One more try, you’ve got this."
+  },
+  {
+    "key": "76cd6cdd",
+    "text": "Hmm, think it through once more.",
+    "mood": "oops",
+    "show": "Hmm, think it through once more."
+  },
+  {
+    "key": "cf2efce8",
+    "text": "Quick question!",
+    "mood": "think",
+    "show": "Quick question, {you}!"
+  },
+  {
+    "key": "a833adf4",
+    "text": "Let's see if that stuck.",
+    "mood": "think",
+    "show": "Let’s see if that stuck."
+  },
+  {
+    "key": "f24a9002",
+    "text": "Correct! Read why anyway.",
+    "mood": "happy",
+    "show": "Correct! Read why anyway."
+  },
+  {
+    "key": "7adf112d",
+    "text": "Correct! Well done.",
+    "mood": "happy",
+    "show": "Correct! Well done."
+  },
+  {
+    "key": "0f4b42ff",
+    "text": "Not this time, the explanation shows why.",
+    "mood": "think",
+    "show": "Not this time - the explanation shows why."
+  },
+  {
+    "key": "f8bdc960",
+    "text": "Read the explanation. That's the real lesson.",
+    "mood": "think",
+    "show": "Read the explanation. That’s the real lesson."
+  },
+  {
+    "key": "3bd54b66",
+    "text": "Evidence! Look at it closely.",
+    "mood": "whisper",
+    "show": "Evidence! Look at it closely."
+  },
+  {
+    "key": "f6305141",
+    "text": "Your own query found this. Not a rumour, a fact!",
+    "mood": "whisper",
+    "show": "Your own query found this. Not a rumour - a fact!"
+  },
+  {
+    "key": "6a147eb3",
+    "text": "Ooh, this changes things...",
+    "mood": "whisper",
+    "show": "Ooh, this changes things…"
+  },
+  {
+    "key": "db4bbc0e",
+    "text": "Pinned! The board is filling up nicely.",
+    "mood": "cheer",
+    "show": "Pinned! The board is filling up nicely."
+  },
+  {
+    "key": "2dd4a954",
+    "text": "Another piece of the puzzle!",
+    "mood": "cheer",
+    "show": "Another piece of the puzzle!"
+  },
+  {
+    "key": "dce3ece4",
+    "text": "We're getting closer to her!",
+    "mood": "cheer",
+    "show": "We’re getting closer to her, {you}!"
+  },
+  {
+    "key": "01ce0b13",
+    "text": "Watch how fast this query finds the answer.",
+    "mood": "point",
+    "show": "Watch how fast this query finds the answer."
+  },
+  {
+    "key": "779f294d",
+    "text": "Stuck? Open a hint envelope, that's what they're for!",
+    "mood": "point",
+    "show": "Stuck? Open a hint envelope - that’s what they’re for!"
+  },
+  {
+    "key": "450734a4",
+    "text": "Take your time. The tables drawer shows every column.",
+    "mood": "point",
+    "show": "Take your time. The tables drawer shows every column."
+  },
+  {
+    "key": "05365457",
+    "text": "Hello? Still with me?",
+    "mood": "point",
+    "show": "Hello? Still with me, {you}?"
+  },
+  {
+    "key": "94bf7bb3",
+    "text": "Case update filed! Fantastic work tonight.",
+    "mood": "cheer",
+    "show": "Case update filed! Fantastic work tonight."
+  },
+  {
+    "key": "88059271",
+    "text": "One more step closer to Tara!",
+    "mood": "cheer",
+    "show": "One more step closer to Tara!"
+  },
+  {
+    "key": "55b0ae78",
+    "text": "That is how it's done!",
+    "mood": "cheer",
+    "show": "That, {you}, is how it’s done!"
+  },
+  {
+    "key": "0b76b29f",
+    "text": "Welcome back! Right where we left it.",
+    "mood": "whisper",
+    "show": "Welcome back, {you}! Right where we left it."
+  },
+  {
+    "key": "4277da19",
+    "text": "You came back! Good. The case was waiting for you.",
+    "mood": "whisper",
+    "show": "You came back! Good. The case was waiting for you."
+  },
+  {
+    "key": "fa4a5690",
+    "text": "Looking back is smart. Patterns hide in old evidence!",
+    "mood": "idle",
+    "show": "Looking back is smart. Patterns hide in old evidence!"
+  },
+  {
+    "key": "68b3e713",
+    "text": "A star vanishes six hours before her show. Her phone is off. Let's see what the data remembers.",
+    "mood": "think",
+    "show": "A star vanishes six hours before her show. Her phone is off. Let’s see what the data remembers."
+  },
+  {
+    "key": "4995e112",
+    "text": "Welcome back. A star vanishes six hours before her show. Her phone is off. Let's see what the data remembers.",
+    "mood": "think",
+    "show": "Welcome back, {you}. A star vanishes six hours before her show. Her phone is off. Let’s see what the data remembers."
+  },
+  {
+    "key": "7c783cbd",
+    "text": "Before we chase anyone, we need a place to keep what we find. Let's build our case file.",
+    "mood": "think",
+    "show": "Before we chase anyone, we need a place to keep what we find. Let’s build our case file."
+  },
+  {
+    "key": "796e4c7e",
+    "text": "Welcome back. Before we chase anyone, we need a place to keep what we find. Let's build our case file.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Before we chase anyone, we need a place to keep what we find. Let’s build our case file."
+  },
+  {
+    "key": "3845e893",
+    "text": "Hotels write down every car that comes in. Every car that goes out, too...",
+    "mood": "think",
+    "show": "Hotels write down every car that comes in. Every car that goes out, too…"
+  },
+  {
+    "key": "0e9cfe6a",
+    "text": "Welcome back. Hotels write down every car that comes in. Every car that goes out, too...",
+    "mood": "think",
+    "show": "Welcome back, {you}. Hotels write down every car that comes in. Every car that goes out, too…"
+  },
+  {
+    "key": "5f7ee32b",
+    "text": "Cabs leave trails. Pickup, drop, time. Someone took a ride tonight.",
+    "mood": "think",
+    "show": "Cabs leave trails. Pickup, drop, time. Someone took a ride tonight."
+  },
+  {
+    "key": "c5a21254",
+    "text": "Welcome back. Cabs leave trails. Pickup, drop, time. Someone took a ride tonight.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Cabs leave trails. Pickup, drop, time. Someone took a ride tonight."
+  },
+  {
+    "key": "73c71261",
+    "text": "Money always moves before people do. Follow the U P I trail.",
+    "mood": "think",
+    "show": "Money always moves before people do. Follow the UPI trail."
+  },
+  {
+    "key": "a22aa402",
+    "text": "Welcome back. Money always moves before people do. Follow the U P I trail.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Money always moves before people do. Follow the UPI trail."
+  },
+  {
+    "key": "31e947ee",
+    "text": "Her phone is off. But something of hers is still talking to a tower...",
+    "mood": "think",
+    "show": "Her phone is off. But something of hers is still talking to a tower…"
+  },
+  {
+    "key": "c8622471",
+    "text": "Welcome back. Her phone is off. But something of hers is still talking to a tower...",
+    "mood": "think",
+    "show": "Welcome back, {you}. Her phone is off. But something of hers is still talking to a tower…"
+  },
+  {
+    "key": "f5097803",
+    "text": "Her watch counted every heartbeat. Was she calm? Or scared?",
+    "mood": "think",
+    "show": "Her watch counted every heartbeat. Was she calm? Or scared?"
+  },
+  {
+    "key": "65f92e0c",
+    "text": "Welcome back. Her watch counted every heartbeat. Was she calm? Or scared?",
+    "mood": "think",
+    "show": "Welcome back, {you}. Her watch counted every heartbeat. Was she calm? Or scared?"
+  },
+  {
+    "key": "8ac1984c",
+    "text": "Five people. Five stories. Not all of them are true.",
+    "mood": "think",
+    "show": "Five people. Five stories. Not all of them are true."
+  },
+  {
+    "key": "0b644cc9",
+    "text": "Welcome back. Five people. Five stories. Not all of them are true.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Five people. Five stories. Not all of them are true."
+  },
+  {
+    "key": "22ccf15e",
+    "text": "Ten tables, all connected. Let's draw how they link, so nothing slips through.",
+    "mood": "think",
+    "show": "Ten tables, all connected. Let’s draw how they link, so nothing slips through."
+  },
+  {
+    "key": "4727c5f7",
+    "text": "Welcome back. Ten tables, all connected. Let's draw how they link, so nothing slips through.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Ten tables, all connected. Let’s draw how they link, so nothing slips through."
+  },
+  {
+    "key": "c8985849",
+    "text": "A car, an owner, a company. One table can't tell us, join them and the dots connect.",
+    "mood": "think",
+    "show": "A car, an owner, a company. One table can’t tell us - join them and the dots connect."
+  },
+  {
+    "key": "36c8ae66",
+    "text": "Welcome back. A car, an owner, a company. One table can't tell us, join them and the dots connect.",
+    "mood": "think",
+    "show": "Welcome back, {you}. A car, an owner, a company. One table can’t tell us - join them and the dots connect."
+  },
+  {
+    "key": "0f502285",
+    "text": "Highways have eyes. The toll booths saw a car tonight.",
+    "mood": "think",
+    "show": "Highways have eyes. The toll booths saw a car tonight."
+  },
+  {
+    "key": "19e13f2e",
+    "text": "Welcome back. Highways have eyes. The toll booths saw a car tonight.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Highways have eyes. The toll booths saw a car tonight."
+  },
+  {
+    "key": "a7cf048d",
+    "text": "Somebody changed her contract tonight. Systems keep logs. Logs remember.",
+    "mood": "think",
+    "show": "Somebody changed her contract tonight. Systems keep logs. Logs remember."
+  },
+  {
+    "key": "4c25fbb0",
+    "text": "Welcome back. Somebody changed her contract tonight. Systems keep logs. Logs remember.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Somebody changed her contract tonight. Systems keep logs. Logs remember."
+  },
+  {
+    "key": "57e5f09b",
+    "text": "Midnight. forty thousand fans. Last chance. Let's bring her home.",
+    "mood": "think",
+    "show": "Midnight. 40,000 fans. Last chance, {you}. Let’s bring her home."
+  },
+  {
+    "key": "4127965c",
+    "text": "Welcome back. Midnight. forty thousand fans. Last chance. Let's bring her home.",
+    "mood": "think",
+    "show": "Welcome back, {you}. Midnight. 40,000 fans. Last chance, {you}. Let’s bring her home."
+  },
+  {
+    "key": "d3da9f78",
+    "text": "A star vanishes six hours before her show. Her phone is off. Let's see what the data remembers. Stay close.",
+    "mood": "whisper",
+    "show": "A star vanishes six hours before her show. Her phone is off. Let’s see what the data remembers. Stay close, {you}."
+  },
+  {
+    "key": "730670ce",
+    "text": "I'm Kahl and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find Tara Sen.",
+    "mood": "whisper",
+    "show": "I'm Kaal, {you}, and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find Tara Sen."
+  },
+  {
+    "key": "84c390f9",
+    "text": "New lead tonight. Stay close, let's go!",
+    "mood": "whisper",
+    "show": "{you}! New lead tonight. Stay close, let’s go!"
+  },
+  {
+    "key": "464047d8",
+    "text": "Chapter closed, your progress is saved. Good place for a break... or keep going?",
+    "mood": "cheer",
+    "show": "Chapter closed - your progress is saved. Good place for a break, {you}… or keep going?"
+  },
+  {
+    "key": "89c49ad7",
+    "text": "We did it. Every claim backed by a query. Ira says you've earned your badge.",
+    "mood": "cheer",
+    "show": "We did it, {you}. Every claim backed by a query. Ira says you’ve earned your badge."
+  },
+  {
+    "key": "027965f9",
+    "text": "Good work tonight. File it, and don't go far. The night isn't over.",
+    "mood": "cheer",
+    "show": "Good work tonight, {you}. File it - and don’t go far. The night isn’t over."
+  },
+  {
+    "key": "1d77465f",
+    "text": "Your evidence so far. Read it in order, it shows how the night unfolds.",
+    "mood": "think",
+    "show": "Your evidence so far, {you}. Read it in order - it shows how the night unfolds."
+  },
+  {
+    "key": "ff329c0f",
+    "text": "An empty board. Solve a task, pin what you prove, and it starts to fill.",
+    "mood": "point",
+    "show": "An empty board. Solve a task, pin what you prove, and it starts to fill."
+  },
+  {
+    "key": "127f465f",
+    "text": "Open an episode first. That tool lives on the game screen.",
+    "mood": "point",
+    "show": "Open an episode first, {you}. That tool lives on the game screen."
+  },
+  {
+    "key": "e9e9a18e",
+    "text": "That page is not part of this episode. Find it in your course.",
+    "mood": "point",
+    "show": "That page is not part of this episode, {you}. Find it in your course."
+  },
+  {
+    "key": "47bf034c",
+    "text": "Kahl here. I'll talk you through it.",
+    "mood": "idle",
+    "show": "Kaal here. I’ll talk you through it, {you}."
+  },
+  {
+    "key": "f936ccfc",
+    "text": "Promoted! Constable now. Wear it well, and don't go far. The night isn't over.",
+    "mood": "cheer",
+    "show": "Promoted, {you}! Constable now. Wear it well - and don’t go far. The night isn’t over."
+  },
+  {
+    "key": "260d2148",
+    "text": "Promoted! Sub-Inspector now. Wear it well, and don't go far. The night isn't over.",
+    "mood": "cheer",
+    "show": "Promoted, {you}! Sub-Inspector now. Wear it well - and don’t go far. The night isn’t over."
+  },
+  {
+    "key": "fb0c08ea",
+    "text": "Promoted! Inspector now. Wear it well, and don't go far. The night isn't over.",
+    "mood": "cheer",
+    "show": "Promoted, {you}! Inspector now. Wear it well - and don’t go far. The night isn’t over."
+  }
+]

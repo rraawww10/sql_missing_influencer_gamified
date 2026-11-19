@@ -3,7 +3,7 @@ import type { CastEntry } from '../content/types';
 // Non-people voices; everyone else comes from the session pack's `cast` (content/story/cast.json)
 const VOICES: Record<string, CastEntry> = {
   narrator: { name: 'Narrator', role: '', initials: '•', color: '#5b6475' },
-  system: { name: 'Notification', role: '', initials: '🔔', color: '#2f4fd8' },
+  system: { name: 'Notification', role: '', initials: '!', color: '#2f4fd8' },
 };
 
 export function speakerOf(key: string | undefined, cast: Record<string, CastEntry>): CastEntry & { key: string } {

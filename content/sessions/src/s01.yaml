@@ -35,6 +35,7 @@ beats:
       **Data** is any information that is stored.
       You already use data every day: messages and photos on WhatsApp, products and orders on Amazon,
       numbers in a telephone directory.
+    case: |
       In our case: the hotel register, cab bookings, UPI payments and phone tower records.
 
   - id: S1.4
@@ -56,6 +57,7 @@ beats:
     rm_ref: { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Database" }
     body: |
       A **database** is an organised collection of data.
+    case: |
       A pile of loose hotel slips is data. The hotel's neat register, where every guest has a row, is a database.
 
   - id: S1.6
@@ -64,6 +66,7 @@ beats:
     body: |
       A **Database Management System (DBMS)** is software that helps us store and access data
       from a database easily and securely.
+    case: |
       The hotel staff never open the database files directly. They use the DBMS.
 
   - id: S1.7
@@ -90,25 +93,41 @@ beats:
       - { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Relational Database" }
       - { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Non-Relational Database" }
 
-  - id: S1.9
+  - id: S1.8b
     type: activity
     kind: sort_into
-    rm_ref: { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Relational Database" }
-    prompt: "Sort the evidence: is it organised as a table, or not?"
-    buckets: ["Relational (tables)", "Non-relational (non-tabular)"]
+    rm_ref: { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Types of Databases" }
+    prompt: "{{analyst.first}} checks you on the two types of databases. Which type does each fact describe?"
+    buckets: ["Relational database", "Non-relational database"]
     items:
-      - { text: "Hotel register: guest, room, check-in time", bucket: "Relational (tables)" }
-      - { text: "Cab bookings: ride id, rider, driver, time", bucket: "Relational (tables)" }
-      - { text: "{{star.first}}'s reel video with its comments", bucket: "Non-relational (non-tabular)" }
-      - { text: "UPI payments: from, to, amount, time", bucket: "Relational (tables)" }
-    feedback: "Most of our evidence sits in tables. That's why we'll use a relational database."
+      - { text: "Organises data in tables", bucket: "Relational database" }
+      - { text: "Stores data in a non-tabular form", bucket: "Non-relational database" }
+      - { text: "Keeps data in rows and columns", bucket: "Relational database" }
+      - { text: "Has four common types", bucket: "Non-relational database" }
+      - { text: "The most commonly used type", bucket: "Relational database" }
+    feedback: "Relational means **tables**: rows and columns. Non-relational means the data is **not** kept in tables."
 
   - id: S1.10
     type: note
     rm_ref: { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Non-Relational Database" }
     body: |
       Non-relational databases don't use tables. They suit data like videos, posts and comments.
-      We'll only need them as background tonight.
+    case: |
+      We'll only need non-relational databases as background tonight.
+
+  - id: S1.9
+    type: activity
+    kind: sort_into
+    rm_ref: { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Non-Relational Database" }
+    prompt: "Now sort tonight's evidence. Which kind of database **suits** each one **best**?"
+    buckets: ["Relational (tables)", "Non-relational (non-tabular)"]
+    items:
+      - { text: "Hotel register: guest, room, check-in time", bucket: "Relational (tables)" }
+      - { text: "Cab bookings: ride id, rider, driver, time", bucket: "Relational (tables)" }
+      - { text: "{{star.first}}'s reel video", bucket: "Non-relational (non-tabular)" }
+      - { text: "UPI payments: from, to, amount, time", bucket: "Relational (tables)" }
+      - { text: "Fan posts and comments about the concert", bucket: "Non-relational (non-tabular)" }
+    feedback: "Records with the same columns every time fit tables. Videos, posts and comments suit a non-relational database better. Most of our evidence sits in tables - that's why we'll use a relational database."
 
   - id: S1.11
     type: note
@@ -119,7 +138,7 @@ beats:
 
       A **Non-Relational DBMS** is designed for non-relational databases.
       Examples: Elasticsearch, CouchDB, DynamoDB, MongoDB, Cassandra, Redis.
-
+    case: |
       {{mentor.first}}: "Our Data Cell uses **SQLite**. So will you."
     see_also:
       - { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Non-Relational DBMS" }
@@ -146,7 +165,9 @@ beats:
     rm_ref: { unit_id: a7ecece7-3f40-4856-92aa-192911076595, heading: "Relational Database" }
     body: |
       In a relational database, every table has **columns** (what we store, like `name` or `room_no`)
-      and **rows** (one row per guest). {{analyst.first}} has sent two printouts of the hotel's guest table.
+      and **rows** (one row per guest).
+    case: |
+      {{analyst.first}} has sent two printouts of the hotel's guest table.
 
   - id: S1.14
     type: activity

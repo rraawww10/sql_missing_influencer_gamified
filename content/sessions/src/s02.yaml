@@ -134,7 +134,9 @@ beats:
         (value1, value2, ...),
         (value1, value2, ...);
       ```
-      {{analyst.first}} warns: there are **4 common mistakes** with INSERT. He stamps every one in red.
+      There are **4 common mistakes** with INSERT.
+    case: |
+      {{analyst.first}} warns about these mistakes. He stamps every one in red.
 
   - id: S2.9
     type: task
@@ -320,11 +322,13 @@ beats:
       - { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete Specific Rows" }
       - { unit_id: 00dceceb-b806-4a3d-be86-9d35d4e8b82b, heading: "Delete All Rows" }
     body: |
-      {{mentor.first}} made a `rumours` table from social media. Most of it is noise.
+      `DELETE FROM` deletes rows from a table:
       ```sql
       DELETE FROM table_name WHERE condition;   -- deletes matching rows
       DELETE FROM table_name;                   -- deletes ALL rows (table stays)
       ```
+    case: |
+      {{mentor.first}} made a `rumours` table from social media. Most of it is noise.
 
   - id: S2.20
     type: task

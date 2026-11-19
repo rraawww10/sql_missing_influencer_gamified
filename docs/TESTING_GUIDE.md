@@ -108,16 +108,24 @@ What each table holds:
 Tip: for each stage, keep the dashboard open in one tab and press **Refresh** there after acting in the game.
 Most numbers appear within a few seconds; **time spent** appears in 30-second steps (see stage E).
 
-### Stage A - Start screen (name + NxtWave ID)
-Open http://localhost:5180 in a **new incognito window**.
-1. Press **Open the case file →** with both boxes empty → both red messages appear.
-2. Type name `A` → still refused (min 2 letters). Type `<b>` → refused (letters only).
-3. Type ID `ab` → refused (min 3). Type `nw new 1` → refused (no spaces).
-4. Type name `Tester One`, ID `nwnew001` → the game opens.
-5. Top bar shows **👤 Tester · NWNEW001 · Not you?** (the ID is stored in capitals).
-
-✅ In the DB: `inspect.mjs NWNEW001` → `students` row with `entered_name = Tester One`, `logins = 1`.
-✅ Dashboard → Students → filter **Registered / on roster, not started** → Tester One is listed.
+### Stage A - Start screen: accounts (sign up, log in, password)
+Open http://localhost:5180 in a **new incognito window**. The screen opens on **Log in**.
+1. **Sign up** tab → press **Create my account** with every box empty → a red message under each box.
+2. Type name `A` → refused (min 2 letters). ID `ab` → refused (min 3). Email `tester` → refused. Password `12345` → refused (min 6).
+   The yellow note says the email is required and why.
+3. Type name `Tester One`, ID `nwnew001`, email `tester.one@example.com`, password `secret1`, and `secret2` in
+   "Type the password again" → "The two passwords are not the same." Fix it → the game opens.
+4. Top bar shows your name, rank and **NWNEW001**, with a **Log out** link (the ID is stored in capitals).
+5. **Log out** → confirm → the start screen is back. Log in with `NWNEW001` and a wrong password → "Wrong NxtWave ID or
+   password." Log in with `secret1` → the game opens with your progress.
+6. **Nobody else gets in:** Sign up again with ID `NWNEW001` and a different password → "This NxtWave ID already has an
+   account." Eight wrong passwords in a row lock that ID for 15 minutes.
+7. **Forgot your NxtWave ID?** → type the email → it shows the ID (the password is still needed).
+8. **Forgot password?** → type the ID → on this test server (no mail service) it says "Ask your teacher".
+   Dashboard → Students → **Reset a student's password** → type `NWNEW001` → a temporary password appears. Log in with
+   it: the game asks you to choose your own password before it opens.
+9. The six test students (`NWTEST01` …) have progress but no password yet: choose **Sign up** with that ID to take the
+   account over, then their saved progress opens.
 
 ### Stage B - Name used in the game
 1. Read the briefing (**Read the briefing**): "Welcome, **Tester**", "**Tester**, you are the new intern…", the
@@ -166,7 +174,7 @@ In a new incognito window each, sign in as the test students in 2.1 and check th
 Best one: **`NWTEST03` Sana Qureshi** → 3/13, Evidence Board with 3 clues, episode 4 continues at step 15.
 
 ### Stage G - Reset an episode
-Sign in as `NWNEW001`, open the solved episode 1 → **↺ Reset** → confirm → it is no longer solved, its clue leaves
+Sign in as `NWNEW001`, open the solved episode 1 → **Reset** → confirm → it is no longer solved, its clue leaves
 the board. Dashboard → student → episode 1 shows **reset 1×**. (Compare with test student `NWTEST06`.)
 
 ### Stage H - Feedback when the internet drops
@@ -176,7 +184,7 @@ the board. Dashboard → student → episode 1 shows **reset 1×**. (Compare wit
 4. The check-in now appears on the dashboard (it waited in the game's queue and was sent later).
 
 ### Stage I - Switch student on a shared computer
-Top bar → **Not you?** → confirm → the start screen appears again. Sign in as another ID: you see that student's
+Top bar → **Switch** → confirm → the start screen appears again. Sign in as another ID: you see that student's
 progress, not the previous one's.
 
 ### Stage J - The dashboard, tab by tab

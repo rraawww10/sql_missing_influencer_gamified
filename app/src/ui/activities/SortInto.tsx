@@ -59,7 +59,7 @@ export function SortInto({ beat, locked, parts, reveal, onSubmit }: WidgetProps<
           );
         })}
       </div>
-      {!locked && <div className="row" style={{ marginTop: 14 }}><button className="btn pop" disabled={unplaced.length > 0} onClick={() => onSubmit({ kind: 'sort_into', placement })}>Check</button>{unplaced.length > 0 && <span className="muted small">{unplaced.length} left to sort</span>}</div>}
+      {!locked && <div className="row check-row"><button className="btn pop" disabled={unplaced.length > 0} onClick={() => onSubmit({ kind: 'sort_into', placement })}>Check</button>{unplaced.length > 0 && <span className="muted small">{unplaced.length} left to sort</span>}</div>}
     </div>
   );
 }

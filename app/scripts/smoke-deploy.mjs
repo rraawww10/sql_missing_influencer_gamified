@@ -103,7 +103,7 @@ try {
     if (errors.length) throw new Error(`${s.id}: page errors: ${errors.join(' | ')}`);
     if (s.n === 1) {   // reset from inside the iframe: progress for this session is cleared
       await frame.goto(frame.url().replace(/#.*$/, '') + '#/');
-      await frame.getByRole('button', { name: '↺ Reset progress' }).click();
+      await frame.getByRole('button', { name: 'Reset progress' }).click();
       await frame.getByRole('button', { name: 'Yes, reset' }).click();
       await frame.getByText('Progress reset. You can start fresh.').waitFor();
       const after = await page.evaluate(() => (window.tmiMessages ?? []).some((m) => m.type === 'reset' && m.session === 1));

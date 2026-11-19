@@ -98,7 +98,7 @@ for (const n of SESSIONS) {
   await playBeats(page, pack, solutions, {
     beforeBeat: async (b, i) => {
       await scan(`ep ${n} step ${i + 1} ${b.type}`);
-      if (b.type === 'note' && !note) { note = true; await page.getByRole('button', { name: /Read the full course note/ }).click(); await page.waitForTimeout(400); await scan(`ep ${n} course note sheet`); await page.keyboard.press('Escape'); await page.waitForTimeout(200); }
+      if (b.type === 'note' && !note) { note = true; await page.getByRole('button', { name: /Learn: open the full reading material/ }).click(); await page.waitForTimeout(400); await scan(`ep ${n} course note sheet`); await page.keyboard.press('Escape'); await page.waitForTimeout(200); }
       if (b.type === 'task' && !tables) { tables = true; await page.getByRole('button', { name: 'Open the case database tables' }).click(); await page.waitForTimeout(600); await scan(`ep ${n} tables sheet`); await page.keyboard.press('Escape'); await page.waitForTimeout(200); }
     },
     afterBeat: async (b, i) => { if (['task', 'check', 'activity', 'clue', 'demo'].includes(b.type)) await scan(`ep ${n} step ${i + 1} ${b.type} (done)`); },

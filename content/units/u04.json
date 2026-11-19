@@ -101,7 +101,8 @@
           "heading": "Possible Mistakes"
         }
       ],
-      "body": "`INSERT INTO` adds rows to a table. You can add many rows in one query:\n```sql\nINSERT INTO table_name (column1, column2, ...)\nVALUES\n  (value1, value2, ...),\n  (value1, value2, ...);\n```\nKabir warns: there are **4 common mistakes** with INSERT. He stamps every one in red.\n"
+      "body": "`INSERT INTO` adds rows to a table. You can add many rows in one query:\n```sql\nINSERT INTO table_name (column1, column2, ...)\nVALUES\n  (value1, value2, ...),\n  (value1, value2, ...);\n```\nThere are **4 common mistakes** with INSERT.\n",
+      "case": "Kabir warns about these mistakes. He stamps every one in red.\n"
     },
     {
       "id": "S2.9",

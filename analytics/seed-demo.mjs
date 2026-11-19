@@ -83,7 +83,7 @@ for (let i = 1; i <= N; i++) {
     }
     if (last === ep.beats.length) {
       push('session_completed', n, { type: 'session', id: `S${n}` }, { points: Math.round(40 + rnd() * 60) });
-      if (rnd() < 0.55) feedback.push({ user_id: `lms:${id}`, session: n, rating: Math.max(1, Math.min(5, Math.round(3.6 + (rnd() - 0.3) * 2.6 - (n > 9 ? 0.6 : 0)))),
+      if (rnd() < 0.55) feedback.push({ user_id: `lms:${id}`, session: n, scale: 11, rating: Math.max(1, Math.min(11, Math.round(5.6 + (rnd() - 0.35) * 5 - (n > 9 ? 1.2 : 0)))),
         mood: pick(['Loved it', 'Fun', 'Fun', 'Okay', 'Confusing', 'Boring']), difficulty: pick(n > 8 ? ['right', 'hard', 'hard'] : ['easy', 'right', 'right']),
         liked: ['The story', 'Inspector Kaal', 'SQL tasks', 'Case Notes', 'Puzzles', 'Sounds', 'The look'].filter(() => rnd() < 0.35),
         comment: rnd() < 0.3 ? pick(['Kaal is so cool!', 'The JOIN task was confusing', 'Loved the newspaper at the end', 'Too many steps before the SQL', 'Sounds are fun', 'Hint envelopes helped a lot', 'Please add more puzzles', 'The story is getting interesting!']) : undefined,

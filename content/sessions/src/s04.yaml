@@ -59,7 +59,9 @@ beats:
       ```sql
       SELECT * FROM table_name WHERE c1 BETWEEN lower AND upper;
       ```
-      Times work too: `booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'`.
+      Times work too.
+    case: |
+      In our case: `booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'`.
 
   - id: S4.6
     type: task

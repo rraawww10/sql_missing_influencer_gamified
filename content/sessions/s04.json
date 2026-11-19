@@ -151,7 +151,8 @@
         "unit_id": "936e638c-7179-460d-9a9f-95f9f423c344",
         "heading": "BETWEEN Operator"
       },
-      "body": "`BETWEEN` keeps values in a **range**, including both ends:\n```sql\nSELECT * FROM table_name WHERE c1 BETWEEN lower AND upper;\n```\nTimes work too: `booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'`.\n"
+      "body": "`BETWEEN` keeps values in a **range**, including both ends:\n```sql\nSELECT * FROM table_name WHERE c1 BETWEEN lower AND upper;\n```\nTimes work too.\n",
+      "case": "In our case: `booked_at BETWEEN '2026-12-12 17:30:00' AND '2026-12-12 18:30:00'`.\n"
     },
     {
       "id": "S4.6",

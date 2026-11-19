@@ -3,7 +3,7 @@ export const stepOf = async (f) => Number((await f.getByText(/^Step \d+\/\d+$/).
 
 export async function cont(f) {
   const before = await stepOf(f).catch(() => null);
-  await f.getByRole('button', { name: /Continue →|Finish episode ✓|Finish this part ✓/ }).last().click();   // tasks show two (verdict + bottom)
+  await f.getByRole('button', { name: /^(Continue|Finish episode|Finish this part)$/ }).last().click();   // tasks show two (verdict + bottom)
   if (before !== null) await f.waitForFunction((b) => {
     const m = document.body.innerText.match(/Step (\d+)\//);
     return !m || Number(m[1]) !== b;
@@ -30,12 +30,12 @@ export async function answerActivity(f, b) {
   }
   if (b.kind === 'multi_select') for (const o of b.options.filter((x) => x.correct)) await f.getByRole('button', { name: o.text }).click();
   await f.getByRole('button', { name: 'Check', exact: true }).click();
-  await f.getByText('✓ Well done.').waitFor();
+  await f.getByText('Well done.').waitFor();
 }
 
 export async function runSql(f, sql) {
   await f.locator('.cm-content').fill(sql);
-  await f.getByRole('button', { name: 'Run ▶' }).click();
+  await f.getByRole('button', { name: 'Run query' }).click();
 }
 
 // Plays the current session from its first step to "solved". hooks.beforeBeat(b, i) can add extra checks.
@@ -47,17 +47,17 @@ export async function playBeats(f, pack, solutions, hooks = {}) {
     if (b.type === 'activity') await answerActivity(f, b);
     if (b.type === 'check') {
       await f.locator('.choices button').nth(b.options.findIndex((o) => o.correct)).click();
-      await f.getByText('✓ Right.').waitFor();
+      await f.getByText('Right.').waitFor();
     }
-    if (b.type === 'clue') await f.getByRole('button', { name: '📌 Pin to Evidence Board' }).click();
+    if (b.type === 'clue') await f.getByRole('button', { name: 'Pin to Evidence Board' }).click();
     if (b.type === 'demo') {
-      await f.getByRole('button', { name: 'Run the demo ▶' }).click();
+      await f.getByRole('button', { name: 'Run the demo' }).click();
       await f.getByText(/faster with the index/).waitFor({ timeout: 30000 });
     }
     if (b.type === 'task') {
       await hooks.beforeTask?.(b);
       await runSql(f, solutions[b.task_id].ref);
-      await f.getByText('✓ Correct.').waitFor({ timeout: 10000 });
+      await f.getByText('Correct.', { exact: true }).waitFor({ timeout: 10000 });
     }
     await hooks.afterBeat?.(b, i);
     const last = i === pack.beats.length - 1;
@@ -66,29 +66,58 @@ export async function playBeats(f, pack, solutions, hooks = {}) {
   }
 }
 
-// The start screen (name + NxtWave ID) comes before everything. Browser checks that aren't about it seed an identity
-// before any page script runs (works for iframes too when called on a context); smoke.mjs fills the real form once.
-export const TEST_STUDENT = { id: 'SMOKE-001', name: 'Smoke Tester' };
+// The start screen comes before everything. Browser checks that aren't about it seed an identity before any page script
+// runs (works for iframes too when called on a context); smoke.mjs fills the real form once.
+//   * a build WITHOUT a server asks name + NxtWave ID + email (signIn below)
+//   * a build WITH a server has accounts: signUp (name, ID, email, password twice) and logIn (ID + password)
+// The email is required: an identity seeded without one would stop at the "Add your email" step, so a student given
+// without an email gets one made from their ID.
+export const TEST_STUDENT = { id: 'SMOKE-001', name: 'Smoke Tester', email: 'smoke-001@example.com' };
+export const emailOf = (who) => who.email ?? `${who.id.toLowerCase()}@example.com`;
+export const passwordOf = (who) => who.password ?? `pw-${who.id.toLowerCase()}`;
 export async function seedIdentity(target, who = TEST_STUDENT) {
   await target.addInitScript((w) => {
     try { if (!localStorage.getItem('tmi.identity.v1')) localStorage.setItem('tmi.identity.v1', JSON.stringify({ ...w, at: new Date().toISOString() })); } catch { /* opaque origin */ }
-  }, who);
+  }, { ...who, email: emailOf(who) });
 }
 export async function signIn(f, who = TEST_STUDENT) {
   await f.getByRole('heading', { name: /Who's on the case tonight/ }).waitFor();
-  await f.getByRole('button', { name: /Open the case file/ }).click();                       // empty form: both errors shown
+  await f.getByRole('button', { name: /Open the case file/ }).click();                       // empty form: all three errors shown
   await f.getByText(/Please type your name/).waitFor();
   await f.getByText(/Please type your NxtWave ID/).waitFor();
+  await f.getByText(/Please type your email/).waitFor();
   await f.getByLabel('Your name').fill(who.name);
   await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
+  await f.getByLabel('Personal email').fill(emailOf(who).toUpperCase());                     // stored lower-case
   await f.getByRole('button', { name: /Open the case file/ }).click();
+}
+// An account build: create the account. Empty and mismatched forms are refused first.
+export async function signUp(f, who = TEST_STUDENT) {
+  await f.getByRole('tab', { name: 'Sign up' }).click();
+  await f.getByRole('button', { name: 'Create my account' }).click();                        // empty form: every error shown
+  for (const msg of [/Please type your name/, /Please type your NxtWave ID/, /Please type your email/, /Use at least 6 letters or numbers/]) await f.getByText(msg).waitFor();
+  await f.getByLabel('Your name').fill(who.name);
+  await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
+  await f.getByLabel('Personal email').fill(emailOf(who).toUpperCase());                     // stored lower-case
+  await f.getByLabel('Password', { exact: true }).fill(passwordOf(who));
+  await f.getByLabel('Type the password again').fill(`${passwordOf(who)}x`);
+  await f.getByRole('button', { name: 'Create my account' }).click();
+  await f.getByText('The two passwords are not the same.').waitFor();
+  await f.getByLabel('Type the password again').fill(passwordOf(who));
+  await f.getByRole('button', { name: 'Create my account' }).click();
+}
+export async function logIn(f, who = TEST_STUDENT, password = passwordOf(who)) {
+  await f.getByRole('heading', { name: /Who's on the case tonight/ }).waitFor();
+  await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());
+  await f.getByLabel('Password', { exact: true }).fill(password);
+  await f.getByRole('button', { name: 'Log in', exact: true }).last().click();               // the tab has the same name: the submit button is the last one
 }
 
 // The end-of-episode feedback is required (2026-11-17): fill it in if the solved screen asks for it.
 export async function giveFeedback(f) {
   const card = f.locator('.feedback-card');
-  if (!(await card.getByRole('radio', { name: '4 stars' }).isVisible().catch(() => false))) return;
-  await card.getByRole('radio', { name: '4 stars' }).click();
+  if (!(await card.getByRole('radio', { name: /^7 of 11/ }).isVisible().catch(() => false))) return;
+  await card.getByRole('radio', { name: /^7 of 11/ }).click();
   await card.getByRole('button', { name: /Fun/ }).click();
   await card.getByRole('button', { name: /Just right/ }).click();
   await card.getByRole('button', { name: /Send feedback/ }).click();

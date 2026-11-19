@@ -1,8 +1,8 @@
 // END-TO-END: game ⇄ database ⇄ dashboard, with the real analytics server and a real Chrome.
 //   1. starts the analytics server on a throw-away database, builds the game pointed at it (VITE_ANALYTICS_URL)
-//   2. device A: a student types name + NxtWave ID, sees their name in the story, solves episode 1, sends the episode
+//   2. device A: a student types name + NxtWave ID + email, sees their name in the story, solves episode 1, sends the episode
 //      feedback, plays into episode 2, answers the chapter check-in with a suggestion, leaves mid-episode
-//   3. the DASHBOARD API (admin login) must show that student by NxtWave ID with name, progress, time per beat and
+//   3. the DASHBOARD API (admin login) must show that student by NxtWave ID with name, email, progress, time per beat and
 //      chapter, the feedback and the check-in - all read from the same database the game wrote to
 //   4. device B (fresh browser, nothing stored): the same student types the same ID → "welcome back", episode 1 solved,
 //      the clue on the board, no second feedback ask, and episode 2 continues at the exact step they left on device A
@@ -13,7 +13,7 @@ import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
-import { playBeats, signIn, stepOf } from './smoke-lib.mjs';
+import { playBeats, signUp, logIn, stepOf } from './smoke-lib.mjs';
 
 const APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ANALYTICS = path.join(APP, '..', 'analytics');
@@ -23,7 +23,7 @@ const solutions = (n) => JSON.parse(fs.readFileSync(path.join(CONTENT, `solution
 
 const API_PORT = 8799, WEB_PORT = 4181;
 const API = `http://localhost:${API_PORT}`, BASE = `http://localhost:${WEB_PORT}`;
-const STUDENT = { id: 'NW-E2E-1', name: 'Asha Verma' };
+const STUDENT = { id: 'NW-E2E-1', name: 'Asha Verma', email: 'asha.verma@example.com' };
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tmi-e2e-'));
 const children = [];
 const start = (cmd, args, opts, ready) => new Promise((resolve, reject) => {
@@ -55,9 +55,10 @@ try {
   const errors = [];
   pa.on('pageerror', (e) => errors.push(e.message));
   await pa.goto(`${BASE}/`);
-  await signIn(pa, STUDENT);
+  await signUp(pa, STUDENT);                                              // a new student makes an account: name, ID, email, password
   await pa.locator('.who-chip b').getByText(STUDENT.name, { exact: true }).first().waitFor();
   ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) === STUDENT.id, 'start screen: name + NxtWave ID stored (ID upper-cased)');
+  ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).email) === STUDENT.email, 'start screen: email stored (lower-cased)');
 
   await pa.goto(`${BASE}/#/s/1`);
   await pa.getByRole('button', { name: /Start the episode/ }).click();
@@ -67,7 +68,7 @@ try {
   } });
   ok(named, 'the story addresses the student by name (no "intern")');
   await pa.getByText(`Solved: ${pack(1).title}`, { exact: true }).waitFor();
-  await pa.getByRole('radio', { name: '4 stars' }).click();
+  await pa.getByRole('radio', { name: /^7 of 11/ }).click();
   await pa.getByRole('button', { name: /Fun/ }).click();
   await pa.getByRole('button', { name: /Just right/ }).click();
   await pa.locator('.feedback-card textarea').fill('Loved the story - more puzzles please');
@@ -108,6 +109,7 @@ try {
   const list = await admin('/api/admin/students?fresh=1');
   const row = list.students.find((s) => s.student_id === STUDENT.id);
   ok(row && row.name === STUDENT.name && !row.is_guest, 'student listed by NxtWave ID with the typed name');
+  ok(row.email === STUDENT.email, 'student listed with the typed email');
   ok(row.episodes_done === 1 && row.level === 2 && row.beats_done > pack(1).beats.length, `progress: ${row.episodes_done} episode solved, ${row.beats_done} steps done, now on episode ${row.level}`);
   ok(row.seconds > 0, `active time recorded: ${row.seconds} s`);
   const d = await admin(`/api/admin/students/${STUDENT.id}`);
@@ -116,11 +118,17 @@ try {
   ok(e2.seconds > 0 && d.episodes.slice(0, 2).every((e) => e.chapters.length > 0 && e.beats.length > 0)
      && e2.chapters.reduce((a, c) => a + c.seconds, 0) === e2.seconds && e2.beats.reduce((a, x) => a + x.seconds, 0) === e2.seconds,
     `student page: time per beat and per chapter add up (episode 2: ${e2.seconds} s over ${e2.chapters.length} chapters)`);
-  ok(d.feedback.length === 1 && d.feedback[0].rating === 4 && d.feedback[0].comment.includes('more puzzles'), 'student page: episode feedback stored');
+  ok(d.feedback.length === 1 && d.feedback[0].rating === 7 && d.feedback[0].scale === 11 && d.feedback[0].comment.includes('more puzzles'), 'student page: episode feedback stored');
   ok(d.checkpoints.length === 1 && d.checkpoints[0].rating === 3 && d.checkpoints[0].comment === 'Chapter 1 was clear', 'student page: chapter check-in + suggestion stored');
   ok(d.logins === 1 && d.registered_at, 'registration recorded');
   const fb = await admin('/api/admin/feedback');
   ok(fb.responses.some((r) => r.student_id === STUDENT.id) && fb.checkpoints.list.some((r) => r.student_id === STUDENT.id), 'Feedback tab: both kinds of feedback listed');
+  ok(fb.ladder.responses === 1 && fb.ladder.levels[6].n === 1 && fb.ladder.episodes[0].ratings[0] === 7, 'Feedback tab: the 7 of 11 is on the 11-star ladder (episode 1)');
+  const kinds = new Set(d.timeline.items.map((i) => i.kind));
+  ok(['login', 'start', 'step', 'feedback', 'checkin', 'finish'].every((k) => kinds.has(k)) && !kinds.has('heartbeat'),
+    `student page: every interaction in one timeline (${[...kinds].join(', ')})`);
+  const sqlRun = d.timeline.items.find((i) => i.kind === 'sql');
+  ok(!sqlRun || (typeof sqlRun.sql === 'string' && sqlRun.sql.length > 0), 'student page: SQL runs carry the query the student typed');
 
   // ------------------------------------------------------------ device B
   console.log('▶ device B: same student, nothing stored on this computer');
@@ -128,7 +136,22 @@ try {
   const pb = await b.newPage();
   pb.on('pageerror', (e) => errors.push(e.message));
   await pb.goto(`${BASE}/`);
-  await signIn(pb, { id: STUDENT.id.toLowerCase(), name: STUDENT.name });
+  // somebody else at that computer first: a wrong password, and a sign-up for the same ID, both get nowhere
+  await logIn(pb, STUDENT, 'not-her-password');
+  await pb.getByRole('alert').getByText(/Wrong NxtWave ID or password/).waitFor();
+  await pb.getByRole('tab', { name: 'Sign up' }).click();
+  await pb.getByLabel('Your name').fill('Someone Else');
+  await pb.getByLabel('NxtWave ID').fill(STUDENT.id);
+  await pb.getByLabel('Personal email').fill('someone.else@example.com');
+  await pb.getByLabel('Password', { exact: true }).fill('takeover1');
+  await pb.getByLabel('Type the password again').fill('takeover1');
+  await pb.getByRole('button', { name: 'Create my account' }).click();
+  await pb.getByRole('alert').getByText(/already has an account/).waitFor();
+  ok(await pb.evaluate(() => localStorage.getItem('tmi.identity.v1')) === null, 'a wrong password and a second sign-up for the same ID are both refused');
+  const peek = await fetch(`${API}/api/history`, { method: 'POST', body: JSON.stringify({ student_id: STUDENT.id }) });
+  ok(peek.status === 401, 'her progress cannot be read from the server without her login');
+  await pb.getByRole('tab', { name: 'Log in' }).click();
+  await logIn(pb, STUDENT);                                              // the real student: ID + her password
   await pb.getByText(/Welcome back, Asha! Your case file is restored\./).waitFor();
   ok(true, 'returning student recognised by NxtWave ID ("welcome back")');
   await pb.getByText('1/13').first().waitFor();

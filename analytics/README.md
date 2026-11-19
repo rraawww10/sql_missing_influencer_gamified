@@ -37,6 +37,7 @@ ADMIN_PASSWORD='<a long password>' npm start      # http://localhost:8787
 | `PORT` | `8787` | |
 | `DB_PATH` | `data/analytics.sqlite` | **put this on a persistent disk and back it up** |
 | `SESSION_SECRET` | random per start | set it so admin logins survive a restart |
+| `RESEND_API_KEY`, `MAIL_FROM` | — | optional: switches the "Forgot password" email on ([resend.com](https://resend.com); `MAIL_FROM` must be an address on a domain verified there). Without them teachers reset passwords from the dashboard |
 | `TZ_OFFSET` | `+05:30` | what "today" and the hour-of-day chart mean |
 
 Host it anywhere that runs Node with a persistent disk (a small VM, Render/Railway with a volume, an EC2 instance) behind
@@ -52,21 +53,47 @@ VITE_ANALYTICS_URL=https://analytics.example.com npm run build:s3
 
 Without `VITE_ANALYTICS_URL` the game behaves exactly as before (nothing is sent).
 
-## Students: name + NxtWave ID, no login (v7)
+## Students: accounts with a password (v8)
 
-The game opens with a start screen asking the student's **name** and **NxtWave ID** (no password). The NxtWave ID is the
-student's key everywhere: every event is sent as `user_id: "lms:<ID>"` and stored under `student_id = <ID>` (upper-cased, so
-`nw123` and `NW123` are the same student). The name replaces "intern" in the story and in Kaal's lines.
+The game opens with a start screen: **Sign up** (name, NxtWave ID, personal email, password twice) or **Log in**
+(NxtWave ID + password). The NxtWave ID is the student's key everywhere: every event is sent as `user_id: "lms:<ID>"` and
+stored under `student_id = <ID>` (upper-cased, so `nw123` and `NW123` are the same student). The name replaces "intern" in
+the story and in Kaal's lines. The email is required: "Forgot password" codes go to it and "Forgot your NxtWave ID?" looks it up.
+
+**What protects a student** (`auth.mjs`, tests in `auth.test.mjs`):
+- The password is stored as a salted **scrypt** hash (`accounts.pw_hash`, `pw_salt`), never as text. At least 6 characters.
+- Logging in gives the game a random **session token** (the server keeps only its SHA-256, in `student_sessions`). The game
+  sends it with everything. Once an ID has an account, its history, events, feedback, check-ins, saved place and
+  name / email can be read or changed **only with that student's own token**: every such route answers
+  `401 {error: "login required"}` otherwise.
+- An ID that already has an account cannot be signed up again (`409 taken`).
+- **8 wrong passwords** for an ID in 15 minutes lock that ID (429), so a classmate cannot guess their way in.
+- Accounts live in their own table, so a roster upload with "replace" does not remove them.
 
 | Endpoint (public, CORS open) | |
 |---|---|
-| `POST /api/identify` `{student_id, name}` | registers the student (`students.entered_name`, `registered_at`, `last_login_at`, `logins`); says whether they are returning |
-| `GET /api/history/:id` | a returning student's events (heartbeats excluded, stored exactly as sent in `events.raw`), the episodes they already gave feedback on, their chapter check-ins and unfinished sittings - the game loads these into the new device, so solved episodes, points, clues, the episode in progress (same step) and "feedback already given" all carry over |
-| `POST /api/sitting` | the unfinished attempt at an episode (newest copy wins; cleared when the episode is solved or reset) |
-| `POST /api/checkpoint` | the quick check-in after every chapter (1-4 + optional suggestion) |
+| `POST /api/account/signup` `{student_id, name, email, password}` | creates the account and logs in: `{ok, student_id, name, email, token, returning}`. `409 taken` when the ID has an account; `409 email mismatch` when the ID was used before accounts with a different email on file |
+| `POST /api/account/login` `{student_id, password}` | `{ok, …, token}` · `401 wrong` · `404 no account` · `428 new password needed` (a temporary password: send it again with `new_password`) · `429 too many` |
+| `POST /api/account/logout` `{token}` | ends that device's session |
+| `POST /api/account/forgot` `{student_id}` | emails a 6-digit code to the account's email: `{sent: true, to: "p****@gmail.com"}`. Needs `RESEND_API_KEY` + `MAIL_FROM`; without them `{sent: false, reason: "no-mail"}` and the game says "ask your teacher". 3 per ID per 15 minutes |
+| `POST /api/account/reset` `{student_id, code, password}` | sets the new password (code lives 15 minutes, 5 tries), ends every old session, logs in |
+| `POST /api/history` `{student_id, token}` | the student's events (heartbeats excluded, stored exactly as sent in `events.raw`), the episodes they already gave feedback on, their chapter check-ins and unfinished sittings - the game loads these into the device, so solved episodes, points, clues, the episode in progress (same step) and feedback state carry over |
+| `POST /api/events` `{events, token}` · `/api/feedback` · `/api/checkpoint` · `/api/sitting` (`…, token`) | what the game records; refused with 401 for an ID with an account unless the token is that student's |
+| `POST /api/recover` `{email}` | "Forgot your NxtWave ID?": `{found: true, student_id, name}` for the student seen most recently with that email, else `{found: false}`. The game shows the ID; the student still needs their password. 30 lookups per IP per 15 minutes, then 429 |
+| `POST /api/identify`, `GET /api/history/:id` | for an ID that has **no account** (a game build without accounts, old data); refused with 401 once the ID has one |
 
-Anyone who knows a student's NxtWave ID can read that student's game progress through `/api/history` - that is the
-trade-off of "no login" and was accepted for this pilot. Nothing else (no other student, no dashboard data) is reachable.
+**When a student forgets the password.** With a mail service set up, they tap "Forgot password?" and get a code by email.
+Without one (the default), the teacher opens the student on the dashboard and presses **Reset password**
+(`POST /api/admin/students/:id/reset-password`): it shows a temporary password to pass on. The student logs in with it
+once and the game makes them choose their own. Every other device of that student is logged out.
+
+**Old data.** A student who played before accounts (progress under an ID, no password) signs up with the same ID to
+take the account over. If that ID has an email on file, the sign-up must give the same email; if it has none, the
+first sign-up gets it (ask those students to sign up early, or use Reset password to hand them the account).
+
+**Still open to anyone:** `/api/recover` tells whoever knows a student's email that student's ID and name (not their
+progress). Nothing else is reachable without the password or the dashboard login.
+
 A roster name (CSV upload) takes precedence over the typed name on the dashboard; registered students who have not played
 a step yet appear under "not started".
 

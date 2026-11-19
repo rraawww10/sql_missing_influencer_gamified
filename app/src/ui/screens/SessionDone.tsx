@@ -1,23 +1,23 @@
-// Episode solved: confetti, a medal, points that count up, new clues, and where to go next.
-import { WhoChip } from '../identity/WhoChip';
+// Episode solved: confetti, points that count up, the rank bar, new clues, the feedback card (required), and where to go next.
 import { useCallback, useEffect, useState } from 'react';
 import { useProgress } from '../useProgress';
 import { useServices } from '../services';
 import { postToParent } from '../embed';
-import { SceneArt } from '../art/SceneArt';
 import { ResetControl } from '../components/ResetControl';
 import { Confetti } from '../components/Confetti';
-import { progressOf } from '../../engine/progress/derive';
+import { progressOf, RANKS } from '../../engine/progress/derive';
 import type { SessionPack } from '../../content/types';
 import { episodeOf, episodeTitle, unitLabel, EPISODE_COUNT } from '../episodes';
 import { storyTime } from '../speakers';
 import { FeedbackCard } from '../components/FeedbackCard';
 import { KaalCard } from '../kaal/KaalCard';
-import { TEASE } from '../kaal/lines';
+import { SAY, TEASE } from '../kaal/lines';
 import { sfx } from '../sound';
 import { kaal } from '../kaal/bus';
-
 import { rankIcon, nextRank, solvedCount, takePromotion } from '../ranks';
+import { Backdrop } from '../design/Backdrop';
+import { Icon } from '../design/Icon';
+import { TopBar } from '../components/TopBar';
 
 interface Props { session: number; onNext(): void; onMap(): void; onReset(): void; hasNext: boolean; standalone?: boolean }
 
@@ -44,7 +44,6 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
   const whole = progress?.sessions[session - 1];
   const clues = (progress?.evidence ?? []).filter((c) => c.session === session);
   const title = episodeTitle(session, pack?.title);
-  const ep = episodeOf(session);
   const points = useCountUp(p?.points ?? 0);
   // "Promoted!" once, on the episode that earns a new rank
   const [promoted, setPromoted] = useState<string | null>(null);
@@ -63,62 +62,74 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
       ...(unit ? { unit: unit.n, unit_id: unit.unit_id, part: unit.part, parts: unit.parts, session_completed: whole?.status === 'completed' } : {}) });
   }, [p, session, unit, whole?.status]);
 
-  useEffect(() => { const t = setTimeout(() => { sfx('solved'); kaal('solved', { silent: true }); }, 300); return () => clearTimeout(t); }, []);
+  useEffect(() => { const t = setTimeout(() => { sfx('solved'); kaal('solved', { silent: true, mute: true, line: '' }); }, 300); return () => clearTimeout(t); }, []);
   const multiPart = !!unit && unit.parts > 1;
   const nextN = session + 1 <= EPISODE_COUNT ? session + 1 : null;
+  // how far along the rank ladder: from the current rank's threshold to the next one's
+  const solvedN = solvedCount(progress);
+  const fromN = [...RANKS].reverse().find((r) => r.minSessions <= solvedN)?.minSessions ?? 0;
+  const rankPct = upNext ? Math.round(((solvedN - fromN) / Math.max(1, solvedN + upNext.left - fromN)) * 100) : 100;
   return (
     <div className="page">
+      <Backdrop />
       <Confetti count={60} rain />
       <div className="page-inner">
-        <nav className="topnav">
-          <span className="brand">SQL: The Missing Influencer</span>
-          <span className="row" style={{ gap: 6 }}><WhoChip /><button className="btn small ghost" disabled={!fbDone} onClick={onMap}>{standalone ? '📌 Evidence Board' : '← Case map'}</button></span>
-        </nav>
-        <section className="poster art-only"><SceneArt session={session} /></section>
-        <section className="newspaper result-hero">
-          <div className="masthead">The City Night Times</div>
-          <div className="dateline"><span>Late edition</span><span>{storyTime(session)}</span><span>Police Data Cell</span></div>
-          <div className="row" style={{ justifyContent: 'center' }}><span className="solved-stamp">Case update</span></div>
-          <div className="medal" aria-hidden="true">{ep.emoji}</div>
-          <h2>{multiPart ? `Part ${unit!.part} of ${unit!.parts} solved` : `Solved: ${title}`}</h2>
-          {unit && !unit.finale && <p className="muted" style={{ marginTop: 0 }}>📖 {unitLabel(unit)}{whole?.status === 'completed' && multiPart && <> · ✓ all {unit.parts} parts of {title} done</>}</p>}
-          {p && (
-            <div className="stats" style={{ maxWidth: 560, margin: '14px auto' }}>
-              <div className="stat"><b>{points}</b><span>points</span></div>
-              <div className="stat"><b>{p.hintsUsed}</b><span>hint{p.hintsUsed === 1 ? '' : 's'} used</span></div>
-              <div className="stat"><b>{p.trapsFound}</b><span>trap{p.trapsFound === 1 ? '' : 's'} spotted</span></div>
-            </div>
-          )}
-          {promoted && (
-            <div className="promotion" role="status">
-              <div className="promo-medal" aria-hidden="true">{rankIcon(promoted)}</div>
-              <div className="promo-kicker">Achievement unlocked · Promoted!</div>
-              <h3>You are now a {promoted}</h3>
-              <p>{upNext ? `${upNext.left} more episode${upNext.left === 1 ? '' : 's'} to become ${upNext.name}.` : 'The highest rank in the Data Cell. Case closed, Inspector.'}</p>
-            </div>
-          )}
-          {progress && <p><span className="rank-badge"><i aria-hidden="true">{rankIcon(progress.rank)}</i>Rank: {progress.rank}</span>{progress.badges.length > 0 && <span className="muted"> · 🏅 {progress.badges.join(', ')}</span>}</p>}
-          {progress && !promoted && upNext && <p className="muted small" style={{ marginTop: 0 }}>{upNext.left} more episode{upNext.left === 1 ? '' : 's'} to {upNext.name}</p>}
-          {clues.length > 0 && <p>New on your Evidence Board: {clues.map((c) => <span key={c.clue_id} className="chip accent" style={{ margin: 3 }}>📌 {c.title}</span>)}</p>}
-          {standalone && <p className="muted">Well done. {unit && unit.part < unit.parts ? 'Open the next reading material to continue the case.' : 'Continue with the next part of your course to follow the case.'}</p>}
-          <FeedbackCard session={session} onDone={markFb} />
-          {!fbDone && <p className="muted small" style={{ marginTop: 10 }}>🔒 Send your feedback above to unlock the next episode.</p>}
-          <div className="row" style={{ justifyContent: 'center', marginTop: 16 }}>
-            {hasNext && <button className="btn primary big go" disabled={!fbDone} onClick={onNext}>Next episode: {episodeOf(session + 1).title} →</button>}
-            <button className={`btn ${hasNext ? '' : 'primary big'}`} disabled={!fbDone} onClick={onMap}>{standalone ? 'See the Evidence Board' : 'Back to the case map'}</button>
+        <TopBar time={storyTime(session)} rank={progress?.rank}>
+          <button className="btn small ghost" disabled={!fbDone} onClick={onMap}><Icon name={standalone ? 'pin' : 'map'} /> {standalone ? 'Evidence Board' : 'Case map'}</button>
+        </TopBar>
+
+        <section className="win result-hero">
+          <div className="win-big">
+            <span className="pill mint"><Icon name="tick" /> Episode {session} · {storyTime(session)}</span>
+            <h1 className="shadowed">{multiPart ? `Part ${unit!.part} of ${unit!.parts} solved` : `Solved: ${title}`}</h1>
+            {unit && !unit.finale && <p className="unit-line"><Icon name="scroll" /> {unitLabel(unit)}{whole?.status === 'completed' && multiPart && <> · all {unit.parts} parts of {title} done</>}</p>}
+            {p && (
+              <div className="stats score">
+                <div className="stat"><b>{points}</b><span>points</span></div>
+                <div className="stat"><b>{p.hintsUsed}</b><span>hint{p.hintsUsed === 1 ? '' : 's'} used</span></div>
+                <div className="stat"><b>{p.trapsFound}</b><span>trap{p.trapsFound === 1 ? '' : 's'} spotted</span></div>
+              </div>
+            )}
+            {promoted && (
+              <div className="surface card promotion pop-in" role="status">
+                <Icon name={rankIcon(promoted)} className="xl" />
+                <div><div className="cap">Achievement unlocked · Promoted!</div>
+                  <h3>You are now a {promoted}</h3>
+                  <p>{upNext ? `${upNext.left} more episode${upNext.left === 1 ? '' : 's'} to become ${upNext.name}.` : 'The highest rank in the Data Cell. Case closed, Inspector.'}</p></div>
+              </div>
+            )}
+            {progress && (
+              <div className="rankbar">
+                <div className="row between"><span className="rank-badge"><Icon name={rankIcon(progress.rank)} /> Rank: {progress.rank}</span>
+                  {upNext ? <span>{upNext.left} more episode{upNext.left === 1 ? '' : 's'} to {upNext.name}</span> : <span>Top rank reached</span>}</div>
+                <div className="xp" aria-hidden="true"><i style={{ width: `${Math.max(6, rankPct)}%` }} /></div>
+              </div>
+            )}
+            {progress && progress.badges.length > 0 && <p className="row">{progress.badges.map((x) => <span key={x} className="pill white"><Icon name="medal" /> {x}</span>)}</p>}
+            {clues.length > 0 && <div className="stack" style={{ gap: 8 }}><span className="cap">New on your Evidence Board</span><p className="row">{clues.map((c) => <span key={c.clue_id} className="pill white wrap"><Icon name="pin" /> {c.title}</span>)}</p></div>}
+            {standalone && <p className="muted">Well done. {unit && unit.part < unit.parts ? 'Open the next reading material to continue the case.' : 'Continue with the next part of your course to follow the case.'}</p>}
+            <KaalCard mood="cheer" title="Kaal · your assistant" line={promoted && session !== EPISODE_COUNT ? SAY.promoted(promoted) : session === EPISODE_COUNT ? SAY.caseClosed : SAY.goodWork} />
           </div>
-          {nextN && !multiPart && (
-            <div className="next-lead" style={{ marginTop: 18 }}>
-              <h3>{episodeOf(nextN).emoji} {episodeOf(nextN).title} · {storyTime(nextN)}</h3>
-              <p>{TEASE[nextN] ?? episodeOf(nextN).teaser}</p>
-              <p className="blur" aria-hidden="true" style={{ marginTop: 8 }}>Suspect file 0{nextN} · Evidence ref #{1000 + nextN * 37} · Location: classified</p>
+
+          <div className="win-side">
+            <FeedbackCard session={session} onDone={markFb} />
+            <div className="surface card next-card">
+              {!fbDone && <p className="locknote"><Icon name="lock" /> Send your feedback to unlock the next episode.</p>}
+              <div className="row">
+                {hasNext && <button className="btn primary big go" disabled={!fbDone} onClick={onNext}>Next episode: {episodeOf(session + 1).title} <Icon name="right" /></button>}
+                <button className={`btn ${hasNext ? 'ghost' : 'primary big'}`} disabled={!fbDone} onClick={onMap}>{standalone ? 'See the Evidence Board' : 'Back to the case map'}</button>
+              </div>
+              {nextN && !multiPart && (
+                <div className="next-lead">
+                  <span className="cap">Coming up · {storyTime(nextN)}</span>
+                  <h3>{episodeOf(nextN).title}</h3>
+                  <p>{TEASE[nextN] ?? episodeOf(nextN).teaser}</p>
+                </div>
+              )}
+              <ResetControl session={session} label={multiPart ? 'Reset this part and play again' : 'Reset this episode and play again'} small onDone={onReset} />
             </div>
-          )}
-          <div className="row" style={{ justifyContent: 'center', marginTop: 14 }}>
-            <ResetControl session={session} label={multiPart ? '↺ Reset this part and play again' : '↺ Reset this episode and play again'} small onDone={onReset} />
           </div>
         </section>
-        <div style={{ maxWidth: 760, margin: '20px auto 0' }}><KaalCard mood="cheer" line={promoted && session !== EPISODE_COUNT ? `Promoted, {you}! ${promoted} now. Wear it well - and don’t go far. The night isn’t over.` : session === EPISODE_COUNT ? 'We did it, {you}. Every claim backed by a query. Ira says you’ve earned your badge.' : 'Good work tonight, {you}. File it - and don’t go far. The night isn’t over.'} /></div>
       </div>
     </div>
   );

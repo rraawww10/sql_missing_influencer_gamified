@@ -1,0 +1,16 @@
+/* "Arcade Night" (2026-11-18, rework-v5). One stylesheet for the whole game, in six parts.
+   latin subsets only (the game is in English): keeps the bundle small */
+@import '@fontsource/fredoka/latin-500.css';
+@import '@fontsource/fredoka/latin-600.css';
+@import '@fontsource/fredoka/latin-700.css';
+@import '@fontsource/nunito/latin-500.css';
+@import '@fontsource/nunito/latin-700.css';
+@import '@fontsource/nunito/latin-800.css';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-600.css';
+@import './base.css';      /* tokens, surfaces, buttons, cards, pills, sheets, motion */
+@import './screens.css';   /* start screen, case map, briefing, episode intro, solved, evidence */
+@import './player.css';    /* the game screen: top bar, stage, dock, SQL task */
+@import './stages.css';    /* story chat, Learn cards, clues, checks, activities */
+@import './kaal.css';      /* Kaal's figure, corner dock and chat */
+@import './reader.css';    /* the full-screen reading material */

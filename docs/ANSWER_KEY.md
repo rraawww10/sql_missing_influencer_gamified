@@ -16,16 +16,24 @@ Step 2 (Activity): A DBMS has four advantages. Match each problem Ira has tonigh
 - Last night's entries must still be there after a power cut → Durability and Availability
 - We need the answer in seconds, not hours → Performance
 
-Step 3 (Activity): Sort the evidence: is it organised as a table, or not?
+Step 3 (Activity): Kabir checks you on the two types of databases. Which type does each fact describe?
+- Organises data in tables → Relational database
+- Stores data in a non-tabular form → Non-relational database
+- Keeps data in rows and columns → Relational database
+- Has four common types → Non-relational database
+- The most commonly used type → Relational database
+
+Step 4 (Activity): Now sort tonight's evidence. Which kind of database suits each one best? (asked after the note that says what non-relational databases suit)
 - Hotel register: guest, room, check-in time → Relational (tables)
 - Cab bookings: ride id, rider, driver, time → Relational (tables)
-- Tara's reel video with its comments → Non-relational (non-tabular)
+- Tara's reel video → Non-relational (non-tabular)
 - UPI payments: from, to, amount, time → Relational (tables)
+- Fan posts and comments about the concert → Non-relational (non-tabular)
 
-Step 4 (Quick check): Which of these is a Relational DBMS?
+Step 5 (Quick check): Which of these is a Relational DBMS?
 - Answer: SQLite
 
-Step 5 (Activity): Two printouts of the same table — one from 5 PM, one from 6 PM. Find Tara's row and tap the cell that changed.
+Step 6 (Activity): Two printouts of the same table — one from 5 PM, one from 6 PM. Find Tara's row and tap the cell that changed.
 - Answer: In the table hotel_guests at 6:00 PM, click row 1, column status (value KEY_NOT_RETURNED)
 
 Step 7 (Quick check): The hotel staff add and find guests without opening any database files. What do they use?

@@ -5,10 +5,15 @@
 //                      other (only the newest sitting copy is worth sending). Never blocks the game.
 //   SyncedSittingKV    the storage the SittingStore writes to: localStorage as before, plus a copy of every save / clear
 //                      for an identified student, so an unfinished episode continues on another device.
-//   restoreFromServer  a returning student: pulls their history (GET /api/history/:id) into this device - events into the
+//   restoreFromServer  a returning student: pulls their history (POST /api/history, with their token) into this device - events into the
 //                      local log (idempotent by event_id), unfinished sittings when the server's copy is newer, and the
 //                      "feedback already given" marks - so progress, points, clues and feedback state carry over.
+//   recoverByEmail     "Forgot your NxtWave ID?": asks the server which student signed up with this email
+//                      (POST /api/recover); the start screen shows the ID, and the student logs in with their password.
+// Everything sent carries the logged-in student's token (session.ts); a "login required" answer keeps the item queued.
 import type { ProgressEvent, ProgressStore } from '../ports/progress';
+import { normalizeId, normalizeName } from './identity';
+import { sessionLost, sessionToken, withToken } from './session';
 
 export interface KV { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void }
 interface Item { path: string; body: unknown; key?: string; tries?: number }
@@ -45,9 +50,10 @@ export class Mailbox {
         let res: Response;
         try {
           res = await this.send(`${this.url}${item.path}`, { method: 'POST', headers: { 'content-type': 'text/plain' },   // no CORS preflight
-            body: JSON.stringify(item.body), keepalive: opts.keepalive && JSON.stringify(item.body).length < 60_000 });
+            body: JSON.stringify(withToken(item.body as object)), keepalive: opts.keepalive && JSON.stringify(item.body).length < 60_000 });
         } catch { return; }                                   // offline: keep everything, retry later
         if (res.status >= 500 || res.status === 429) return;  // server trouble: retry later
+        if (res.status === 401) { sessionLost(); return; }    // not logged in any more: keep it for after the next log-in
         const same = (x: Item) => x.path === item.path && JSON.stringify(x.body) === JSON.stringify(item.body);
         if (res.ok || (item.tries ?? 0) + 1 > MAX_TRIES_ON_REJECT) this.write(this.read().filter((x) => !same(x)));
         else this.write(this.read().map((x) => (same(x) ? { ...x, tries: (x.tries ?? 0) + 1 } : x)));
@@ -85,7 +91,7 @@ export interface History {
   feedback: number[]; checkpoints: { session: number; chapter: number }[];
   sittings: { scope: string; saved_at: number; value: string }[];
 }
-export interface RestoreResult { ok: boolean; events: number; sittings: number; name: string | null }
+export interface RestoreResult { ok: boolean; events: number; sittings: number; name: string | null; unauthorized?: boolean }   // unauthorized: log in again
 
 export const feedbackKey = (user: string, s: number) => `tmi.feedback.v1.${user}.s${s}`;
 export const checkpointKey = (user: string, s: number, c: number) => `tmi.checkpoint.v1.${user}.s${s}.c${c}`;
@@ -97,7 +103,9 @@ export async function restoreFromServer(url: string, nxtwaveId: string, local: P
   const t = ctrl ? setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 8000) : null;
   let h: History;
   try {
-    const res = await (opts.send ?? fetch)(`${url}/api/history/${encodeURIComponent(nxtwaveId)}`, { signal: ctrl?.signal, cache: 'no-store' });
+    const res = await (opts.send ?? fetch)(`${url}/api/history`, { method: 'POST', headers: { 'content-type': 'text/plain' },   // no CORS preflight
+      body: JSON.stringify({ student_id: nxtwaveId, ...(sessionToken() ? { token: sessionToken() } : {}) }), signal: ctrl?.signal, cache: 'no-store' });
+    if (res.status === 401) return { ok: false, events: 0, sittings: 0, name: null, unauthorized: true };
     if (!res.ok) return { ok: false, events: 0, sittings: 0, name: null };
     h = await res.json() as History;
   } catch { return { ok: false, events: 0, sittings: 0, name: null }; } finally { if (t) clearTimeout(t); }
@@ -132,6 +140,25 @@ export async function restoreFromServer(url: string, nxtwaveId: string, local: P
   for (const n of h.feedback ?? []) try { if (!kv.getItem(feedbackKey(user, n))) kv.setItem(feedbackKey(user, n), 'server'); } catch { /* ignore */ }
   for (const c of h.checkpoints ?? []) try { kv.setItem(checkpointKey(user, c.session, c.chapter), 'server'); } catch { /* ignore */ }
   return { ok: true, events, sittings, name: h.name };
+}
+
+// found = the student to sign in as · none = no student has this email · wait = too many tries (429) · error = offline / server trouble
+export type RecoverResult = { k: 'found'; id: string; name: string } | { k: 'none' } | { k: 'wait' } | { k: 'error' };
+
+export async function recoverByEmail(url: string, email: string, opts: { timeoutMs?: number; send?: typeof fetch } = {}): Promise<RecoverResult> {
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const t = ctrl ? setTimeout(() => ctrl.abort(), opts.timeoutMs ?? 8000) : null;
+  try {
+    const res = await (opts.send ?? fetch)(`${url}/api/recover`, { method: 'POST', headers: { 'content-type': 'text/plain' },   // no CORS preflight
+      body: JSON.stringify({ email }), signal: ctrl?.signal });
+    if (res.status === 429) return { k: 'wait' };
+    if (!res.ok) return { k: 'error' };
+    const r = await res.json() as { found?: boolean; student_id?: unknown; name?: unknown };
+    if (!r.found) return { k: 'none' };
+    const id = typeof r.student_id === 'string' ? normalizeId(r.student_id) : null;
+    const name = typeof r.name === 'string' ? normalizeName(r.name) : null;
+    return id && name ? { k: 'found', id, name } : { k: 'error' };
+  } catch { return { k: 'error' }; } finally { if (t) clearTimeout(t); }
 }
 
 // One mailbox per page, set by main.tsx when the build names an analytics server (null = nothing is sent)

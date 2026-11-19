@@ -59,6 +59,8 @@ for n in only:
         for c in beats[max(0, i-3):i]:
             kind = c['type'] + (f"/{c.get('kind')}" if c.get('kind') else '')
             txt = c.get('body') or c.get('ask') or c.get('prompt') or ''
+            if c.get('case'):   # a Case Note's story part (the lead often sits there)
+                txt += ' ' + c['case']
             print(f"    ← {c['id']} {kind} [{c.get('speaker','')}] {short(txt, 140)}")
         if not task:
             print('    !! NO TASK unlocks this clue (requires_task =', b.get('requires_task'), ')')

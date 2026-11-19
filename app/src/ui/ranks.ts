@@ -2,9 +2,11 @@
 // The rank itself is derived from solved episodes in engine/progress/derive.ts (RANKS).
 import { RANKS, type Progress } from '../engine/progress/derive';
 import { currentIdentity } from '../adapters/identity';
+import type { IconName } from './design/Icon';
 
-export const RANK_ICON: Record<string, string> = { Intern: '🎓', Constable: '🛡️', 'Sub-Inspector': '⭐', Inspector: '🏅' };
-export const rankIcon = (rank: string) => RANK_ICON[rank] ?? '🎖️';
+// the icon (design/Icon.tsx) for each rank
+export const RANK_ICON: Record<string, IconName> = { Intern: 'cap', Constable: 'shield', 'Sub-Inspector': 'star', Inspector: 'medal' };
+export const rankIcon = (rank: string): IconName => RANK_ICON[rank] ?? 'medal';
 
 export const solvedCount = (p: Progress | null) => p?.sessions.filter((s) => s.status === 'completed').length ?? 0;
 

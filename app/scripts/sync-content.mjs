@@ -40,6 +40,11 @@ wanted.set('reading_materials.json', Buffer.from(JSON.stringify(notes)));
 // the cast (people and places) for the briefing page
 wanted.set('cast.json', fs.readFileSync(path.join(CONTENT, 'story/cast.json')));
 
+// Kaal's recorded voice, when there is one (tools/kaal-voice/generate.py): manifest.json + one clip per line
+const VOICE = path.join(CONTENT, 'voice');
+if (fs.existsSync(path.join(VOICE, 'manifest.json')))
+  for (const f of fs.readdirSync(VOICE).filter((x) => /\.(json|mp3|wav)$/.test(x))) wanted.set(`voice/${f}`, fs.readFileSync(path.join(VOICE, f)));
+
 let written = 0, removed = 0;
 for (const [rel, buf] of wanted) {
   const file = path.join(OUT, rel);

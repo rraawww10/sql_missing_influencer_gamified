@@ -7,10 +7,11 @@ import { useServices } from '../services';
 import { postToParent } from '../embed';
 import { forgetRunner } from '../screens/Player';
 import { episodeTitle } from '../episodes';
+import { Icon } from '../design/Icon';
 
 interface Props { session: number; onDone(): void; label?: string; small?: boolean; popover?: boolean }
 
-export function ResetControl({ session, onDone, label = '↺ Reset progress', small = false, popover = false }: Props) {
+export function ResetControl({ session, onDone, label = 'Reset progress', small = false, popover = false }: Props) {
   const services = useServices();
   const [asking, setAsking] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -31,10 +32,10 @@ export function ResetControl({ session, onDone, label = '↺ Reset progress', sm
     } finally { setBusy(false); }
   };
 
-  const button = <button className={`btn danger ${small ? 'small' : ''}`} onClick={() => setAsking(!asking)} aria-expanded={asking}>{label}</button>;
+  const button = <button className={`btn danger ${small ? 'small' : ''}`} onClick={() => setAsking(!asking)} aria-expanded={asking} aria-label={label}><Icon name="reset" /><span className="lbl">{label}</span></button>;
   if (!asking) return popover ? <span className="reset-wrap">{button}</span> : button;
   const panel = (
-    <div className={`confirm ${popover ? 'popover' : ''}`} role="alertdialog" aria-label="Reset this episode?">
+    <div className={`surface confirm ${popover ? 'popover' : ''}`} role="alertdialog" aria-label="Reset this episode?">
       {unit && unit.parts > 1
         ? <p><b>Reset part {unit.part} of “{title}”?</b> Your saved place, points and clues for this part will be cleared. Other parts and episodes are not affected.</p>
         : <p><b>Reset “{title}”?</b> Your saved place, points and clues for this episode will be cleared. Other episodes are not affected.</p>}

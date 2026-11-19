@@ -10,6 +10,9 @@ import { SessionDone } from './screens/SessionDone';
 import { EvidenceBoard } from './screens/EvidenceBoard';
 import { useServices } from './services';
 import { ThemeScope } from './components/ThemeScope';
+import { KaalDock } from './kaal/Kaal';
+import { onDockAction, setDockContext } from './kaal/dock';
+import { ReaderHost } from './reader/Reader';
 
 // heavy screens load on demand: the Player brings CodeMirror; the dev harness is team-only
 const Player = lazy(() => import('./screens/Player').then((m) => ({ default: m.Player })));
@@ -38,9 +41,16 @@ export function App() {
   useEffect(() => { loader.index().then((i) => setBuilt(i.map((e) => e.session))).catch(() => {}); }, [loader]);
   const go = (hash: string) => { location.hash = hash; };
 
+  // Kaal's dock: which screen is behind him (the player adds the step itself), and where his chat can send the student
+  useEffect(() => {
+    if (route.name === 'play' || route.name === 'dev') return;
+    setDockContext({ screen: route.name === 'home' ? 'map' : route.name, session: 'n' in route ? route.n : undefined });
+  }, [route]);
+  useEffect(() => onDockAction({ 'go-map': () => go('#/'), 'go-briefing': () => go('#/intro'), 'open-evidence': () => go('#/evidence') }), []);
+
   return (
     <div className="app">
-      <Suspense fallback={<p className="muted">Loading…</p>}>
+      <Suspense fallback={<p className="loading">Loading…</p>}>
       {route.name === 'home' && <Home onOpen={(n) => go(`#/s/${n}`)} onEvidence={() => go('#/evidence')} onBriefing={() => go('#/intro')} />}
       {route.name === 'briefing' && <Briefing onBack={() => go('#/')} onStart={() => go('#/s/1')} />}
       {route.name === 'intro' && <ThemeScope session={route.n}><SessionIntro session={route.n} onBack={() => go('#/')} onStart={() => go(`#/play/${route.n}`)} onBriefing={() => go('#/intro')} /></ThemeScope>}
@@ -49,6 +59,7 @@ export function App() {
       {route.name === 'evidence' && <EvidenceBoard onBack={() => go('#/')} />}
       {route.name === 'dev' && <DevHarness />}
       </Suspense>
+      {route.name !== 'dev' && <><KaalDock /><ReaderHost /></>}
     </div>
   );
 }

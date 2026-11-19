@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import type { TablePreview } from '../../engine/sql/engine';
 import { useServices } from '../services';
 import { ResultTable } from './ResultTable';
+import { Icon } from '../design/Icon';
 
 interface Props {
   snapshot: string;
@@ -49,7 +50,7 @@ export function TablesDrawer({ snapshot, setup, learnerSql, refreshKey = 0, onIn
   return (
     <div className="tables" role="group" aria-label="Tables">
       <div className="tables-head">
-        <h3>🗄 Case database</h3>
+        <h3><Icon name="db" /> Case database</h3>
         <div className="seg" role="group" aria-label="View">
           <button className={view === 'data' ? 'on' : ''} aria-pressed={view === 'data'} onClick={() => setView('data')}>Data</button>
           <button className={view === 'schema' ? 'on' : ''} aria-pressed={view === 'schema'} onClick={() => setView('schema')}>Schema</button>
@@ -75,7 +76,7 @@ export function TablesDrawer({ snapshot, setup, learnerSql, refreshKey = 0, onIn
               <tr key={c.name}>
                 <td><code>{c.name}</code></td>
                 <td className="muted">{c.type || ' - '}{c.notnull && !c.pk ? ' · not null' : ''}</td>
-                <td>{c.pk ? <span className="chip accent">PK</span> : ''}</td>
+                <td>{c.pk ? <span className="pill sun"><Icon name="key" /> PK</span> : ''}</td>
               </tr>
             ))}
           </tbody>

@@ -53,7 +53,7 @@ the session still covers it. Tasks never depend on an earlier task's result (eac
 | type | Required fields | Optional |
 |---|---|---|
 | `scene` | `body` | `speaker`, `minutes` |
-| `note` | `rm_ref`, `body` | `see_also` (more rm_refs), `minutes` |
+| `note` | `rm_ref`, `body` (learning text only) | `case` (the story part, see below), `see_also` (more rm_refs), `minutes` |
 | `activity` | `kind`, `prompt` + kind fields | `rm_ref`, `feedback` |
 | `task` | `task_id`, `ask`, `ref`, hints tier 1 (`rm_ref`) + tier 2 (`skeleton`) | `setup`, `grading`, `traps`, `on_pass.clue`, `reply_on_pass`, `rm_ref` |
 | `clue` | `clue_id`, `title`, `body` | `requires_task` |
@@ -63,6 +63,24 @@ the session still covers it. Tasks never depend on an earlier task's result (eac
 Activity kinds: `sort_into` (buckets + items), `match` (pairs), `order` (steps, in correct order), `pick_cell` (tables + answer), `multi_select` (options).
 
 Speakers: `narrator`, `system`, or any person key in `content/story/cast.json` (`mentor`, `analyst`, `guard`, `driver`, `sister`, `star`, `manager`, …).
+
+### Case Notes: learning text and case text stay apart
+
+A `note` teaches one concept. Its `body` holds only what is true in any SQL course: the definition, the rule, the generic syntax
+(`table_name`, `c1`) and generic or course examples. Sentences that tie the concept to tonight's story (the case, its people, its
+places, its own tables) go into the optional `case` field, right after `body`. Leave `case` out when a note has nothing case-specific.
+Both parts must read as complete sentences on their own. If a case-flavoured example is the only example a note has, keep it in `body`.
+`case` gets the same `{{placeholders}}` as `body`; the build fails on a `case` that is empty or sits on a beat that is not a `note`.
+
+```yaml
+- id: S1.3
+  type: note
+  rm_ref: { unit_id: …, heading: "Data" }
+  body: |
+    **Data** is any information that is stored.
+  case: |
+    In our case: the hotel register, cab bookings, UPI payments and phone tower records.
+```
 
 ## Names, places and plates: always placeholders
 

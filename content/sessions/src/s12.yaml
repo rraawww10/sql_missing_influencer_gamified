@@ -100,7 +100,9 @@ beats:
   - id: S12.7
     type: note
     rm_ref: { unit_id: 5f97427b-16d2-45f3-b5d7-480fce90fd97, heading: "Advantages" }
-    body: "Views keep **complex queries** (joins, group by…) ready to reuse, and **restrict access** - {{mentor.first}} shares a view with the organiser that hides personal data."
+    body: "Views keep **complex queries** (joins, group by…) ready to reuse, and **restrict access**."
+    case: |
+      {{mentor.first}} shares a view with the organiser that hides personal data.
 
   - id: S12.8
     type: note

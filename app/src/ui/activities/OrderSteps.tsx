@@ -3,6 +3,7 @@ import { useState } from 'react';
 import type { ActivityBeat } from '../../content/types';
 import { shuffled } from '../../engine/activities/check';
 import type { WidgetProps } from './ActivityPanel';
+import { Icon } from '../design/Icon';
 
 type Beat = Extract<ActivityBeat, { kind: 'order' }>;
 
@@ -19,20 +20,20 @@ export function OrderSteps({ beat, locked, parts, reveal, onSubmit }: WidgetProp
   return (
     <div>
       {!locked && <p className="howto-line">Use the arrows to move each step up or down until the order is right.</p>}
-      <ol style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 8 }}>
+      <ol className="order-list">
         {list.map((s, i) => (
           <li key={s} className={`order-item ${parts && s in parts ? (parts[s] ? 'right' : 'wrong') : ''}`}>
             <b>{i + 1}</b><span>{s}</span>
             {!locked && (
-              <span className="row" style={{ gap: 4 }}>
-                <button className="btn small" aria-label={`Move "${s}" up`} disabled={i === 0} onClick={() => move(i, -1)}>↑</button>
-                <button className="btn small" aria-label={`Move "${s}" down`} disabled={i === list.length - 1} onClick={() => move(i, 1)}>↓</button>
+              <span className="row moves">
+                <button className="btn small ghost icon" aria-label={`Move "${s}" up`} disabled={i === 0} onClick={() => move(i, -1)}><Icon name="up" /></button>
+                <button className="btn small ghost icon" aria-label={`Move "${s}" down`} disabled={i === list.length - 1} onClick={() => move(i, 1)}><Icon name="down" /></button>
               </span>
             )}
           </li>
         ))}
       </ol>
-      {!locked && <div className="row" style={{ marginTop: 14 }}><button className="btn pop" onClick={() => onSubmit({ kind: 'order', steps })}>Check</button></div>}
+      {!locked && <div className="row check-row"><button className="btn pop" onClick={() => onSubmit({ kind: 'order', steps })}>Check</button></div>}
     </div>
   );
 }

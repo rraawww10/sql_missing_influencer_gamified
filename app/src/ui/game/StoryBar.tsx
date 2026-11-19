@@ -3,9 +3,10 @@
 import type { Beat } from '../../content/types';
 import type { SessionRunner } from '../../engine/runner/sessionRunner';
 import { speakerOf } from '../speakers';
+import { Icon, type IconName } from '../design/Icon';
 
-export const ICON: Record<Beat['type'], string> = { scene: '💬', hook: '🎬', note: '📖', task: '💻', clue: '🔎', check: '❓', activity: '🧩', demo: '⚡' };
-export const KIND: Record<Beat['type'], string> = { scene: 'Story', hook: 'Coming up', note: 'Case Note', task: 'SQL task', clue: 'Evidence', check: 'Quick check', activity: 'Activity', demo: 'Live demo' };
+export const ICON: Record<Beat['type'], IconName> = { scene: 'story', hook: 'film', note: 'scroll', task: 'code', clue: 'clue', check: 'check', activity: 'puzzle', demo: 'bolt' };
+export const KIND: Record<Beat['type'], string> = { scene: 'Story', hook: 'Coming up', note: 'Learn', task: 'SQL task', clue: 'Evidence', check: 'Quick check', activity: 'Activity', demo: 'Live demo' };
 
 function firstHeading(md: string): string | undefined {
   return md.match(/^#{1,4}\s+(.+)$/m)?.[1]?.replace(/[*_`]/g, '').trim();
@@ -50,7 +51,7 @@ export function StepsList({ runner, viewing, onPick }: Props) {
         return (
           <li key={b.id}>
             <button className={cls} disabled={!reachable} onClick={() => onPick(i)} aria-current={i === viewing ? 'step' : undefined}>
-              <span className="ico" aria-hidden="true">{done && i !== runner.index ? '✓' : ICON[b.type]}</span>
+              <span className="step-ico" aria-hidden="true"><Icon name={done && i !== runner.index ? 'ok' : ICON[b.type]} /></span>
               <span className="lbl">{reachable ? beatLabel(runner, b, true) : KIND[b.type]}</span>
             </button>
           </li>

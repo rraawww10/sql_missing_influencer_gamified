@@ -31,7 +31,7 @@
       "S1.14"
     ]
   },
-  "minutes_estimate": 23.5,
+  "minutes_estimate": 25.5,
   "premise": "Tonight at midnight, reel star Tara Sen from Chandpur is meant to sing her first stadium concert, in front of 40,000 fans. At 6 PM she is gone. She is not in her hotel room and her phone is switched off. You're the new intern at the City Police Data Cell. You have six hours, and your only witness is the data.",
   "headline": "Tara Sen is missing.",
   "previously": [],
@@ -69,7 +69,8 @@
         "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
         "heading": "Data"
       },
-      "body": "**Data** is any information that is stored.\nYou already use data every day: messages and photos on WhatsApp, products and orders on Amazon,\nnumbers in a telephone directory.\nIn our case: the hotel register, cab bookings, UPI payments and phone tower records.\n"
+      "body": "**Data** is any information that is stored.\nYou already use data every day: messages and photos on WhatsApp, products and orders on Amazon,\nnumbers in a telephone directory.\n",
+      "case": "In our case: the hotel register, cab bookings, UPI payments and phone tower records.\n"
     },
     {
       "id": "S1.4",
@@ -115,7 +116,8 @@
         "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
         "heading": "Database"
       },
-      "body": "A **database** is an organised collection of data.\nA pile of loose hotel slips is data. The hotel's neat register, where every guest has a row, is a database.\n"
+      "body": "A **database** is an organised collection of data.\n",
+      "case": "A pile of loose hotel slips is data. The hotel's neat register, where every guest has a row, is a database.\n"
     },
     {
       "id": "S1.6",
@@ -124,7 +126,8 @@
         "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
         "heading": "Database Management System (DBMS)"
       },
-      "body": "A **Database Management System (DBMS)** is software that helps us store and access data\nfrom a database easily and securely.\nThe hotel staff never open the database files directly. They use the DBMS.\n"
+      "body": "A **Database Management System (DBMS)** is software that helps us store and access data\nfrom a database easily and securely.\n",
+      "case": "The hotel staff never open the database files directly. They use the DBMS.\n"
     },
     {
       "id": "S1.7",
@@ -174,14 +177,61 @@
       ]
     },
     {
+      "id": "S1.8b",
+      "type": "activity",
+      "kind": "sort_into",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Types of Databases"
+      },
+      "prompt": "Kabir checks you on the two types of databases. Which type does each fact describe?",
+      "buckets": [
+        "Relational database",
+        "Non-relational database"
+      ],
+      "items": [
+        {
+          "text": "Organises data in tables",
+          "bucket": "Relational database"
+        },
+        {
+          "text": "Stores data in a non-tabular form",
+          "bucket": "Non-relational database"
+        },
+        {
+          "text": "Keeps data in rows and columns",
+          "bucket": "Relational database"
+        },
+        {
+          "text": "Has four common types",
+          "bucket": "Non-relational database"
+        },
+        {
+          "text": "The most commonly used type",
+          "bucket": "Relational database"
+        }
+      ],
+      "feedback": "Relational means **tables**: rows and columns. Non-relational means the data is **not** kept in tables."
+    },
+    {
+      "id": "S1.10",
+      "type": "note",
+      "rm_ref": {
+        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
+        "heading": "Non-Relational Database"
+      },
+      "body": "Non-relational databases don't use tables. They suit data like videos, posts and comments.\n",
+      "case": "We'll only need non-relational databases as background tonight.\n"
+    },
+    {
       "id": "S1.9",
       "type": "activity",
       "kind": "sort_into",
       "rm_ref": {
         "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
-        "heading": "Relational Database"
+        "heading": "Non-Relational Database"
       },
-      "prompt": "Sort the evidence: is it organised as a table, or not?",
+      "prompt": "Now sort tonight's evidence. Which kind of database **suits** each one **best**?",
       "buckets": [
         "Relational (tables)",
         "Non-relational (non-tabular)"
@@ -196,24 +246,19 @@
           "bucket": "Relational (tables)"
         },
         {
-          "text": "Tara's reel video with its comments",
+          "text": "Tara's reel video",
           "bucket": "Non-relational (non-tabular)"
         },
         {
           "text": "UPI payments: from, to, amount, time",
           "bucket": "Relational (tables)"
+        },
+        {
+          "text": "Fan posts and comments about the concert",
+          "bucket": "Non-relational (non-tabular)"
         }
       ],
-      "feedback": "Most of our evidence sits in tables. That's why we'll use a relational database."
-    },
-    {
-      "id": "S1.10",
-      "type": "note",
-      "rm_ref": {
-        "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
-        "heading": "Non-Relational Database"
-      },
-      "body": "Non-relational databases don't use tables. They suit data like videos, posts and comments.\nWe'll only need them as background tonight.\n"
+      "feedback": "Records with the same columns every time fit tables. Videos, posts and comments suit a non-relational database better. Most of our evidence sits in tables - that's why we'll use a relational database."
     },
     {
       "id": "S1.11",
@@ -222,7 +267,8 @@
         "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
         "heading": "Relational DBMS"
       },
-      "body": "A **Relational DBMS** is a DBMS designed for relational databases.\nExamples: Oracle, PostgreSQL, MySQL, **SQLite**, SQL Server, IBM DB2.\n\nA **Non-Relational DBMS** is designed for non-relational databases.\nExamples: Elasticsearch, CouchDB, DynamoDB, MongoDB, Cassandra, Redis.\n\nIra: \"Our Data Cell uses **SQLite**. So will you.\"\n",
+      "body": "A **Relational DBMS** is a DBMS designed for relational databases.\nExamples: Oracle, PostgreSQL, MySQL, **SQLite**, SQL Server, IBM DB2.\n\nA **Non-Relational DBMS** is designed for non-relational databases.\nExamples: Elasticsearch, CouchDB, DynamoDB, MongoDB, Cassandra, Redis.\n",
+      "case": "Ira: \"Our Data Cell uses **SQLite**. So will you.\"\n",
       "see_also": [
         {
           "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
@@ -269,7 +315,8 @@
         "unit_id": "a7ecece7-3f40-4856-92aa-192911076595",
         "heading": "Relational Database"
       },
-      "body": "In a relational database, every table has **columns** (what we store, like `name` or `room_no`)\nand **rows** (one row per guest). Kabir has sent two printouts of the hotel's guest table.\n"
+      "body": "In a relational database, every table has **columns** (what we store, like `name` or `room_no`)\nand **rows** (one row per guest).\n",
+      "case": "Kabir has sent two printouts of the hotel's guest table.\n"
     },
     {
       "id": "S1.14",

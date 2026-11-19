@@ -359,7 +359,8 @@
         "unit_id": "5f97427b-16d2-45f3-b5d7-480fce90fd97",
         "heading": "Advantages"
       },
-      "body": "Views keep **complex queries** (joins, group by…) ready to reuse, and **restrict access** - Ira shares a view with the organiser that hides personal data."
+      "body": "Views keep **complex queries** (joins, group by…) ready to reuse, and **restrict access**.",
+      "case": "Ira shares a view with the organiser that hides personal data.\n"
     },
     {
       "id": "S12.8",

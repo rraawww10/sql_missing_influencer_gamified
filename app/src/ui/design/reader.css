@@ -1,0 +1,47 @@
+/* The reading material, full screen (reader/Reader.tsx). It covers the whole game; text cannot be selected or copied. */
+
+.nocopy, .nocopy * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.nocopy img { -webkit-user-drag: none; pointer-events: none; }
+body.reader-open { overflow: hidden; }
+
+.reader { position: fixed; inset: 0; z-index: var(--z-reader); display: flex; flex-direction: column;
+  background: linear-gradient(rgb(20 12 60 / 30%), rgb(20 12 60 / 46%)), linear-gradient(160deg, var(--c1), var(--c2)); animation: readerIn .35s var(--ease); }
+@keyframes readerIn { from { opacity: 0; transform: translateY(24px); } }
+.reader-bar { position: relative; flex: none; display: flex; gap: 14px; align-items: center; padding-block: calc(12px + env(safe-area-inset-top, 0px)) 14px;
+  padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); background: rgb(20 12 60 / 34%); }
+.reader-title { flex: 1; min-width: 0; }
+.reader-title h2 { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 0 rgb(0 0 0 / 18%); }
+.reader-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: rgb(20 12 60 / 30%); }
+.reader-progress i { display: block; height: 100%; background: var(--sun); border-radius: 0 4px 4px 0; transition: width .15s; }
+.reader-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 18px; padding-block: 18px; width: min(1240px, 100%); margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.reader-toc { overflow-y: auto; display: grid; gap: 12px; align-content: start; padding: 4px 6px 20px 2px; }
+.reader-toc .jump { justify-self: start; text-align: left; }
+.reader-toc ol, .reader-toc ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.reader-toc > ol { gap: 12px; }
+.reader-toc button:not(.btn) { width: 100%; border: 0; background: none; color: #fff; text-align: left; border-radius: 10px; padding: 5px 10px; font: 700 14px var(--body); }
+.reader-toc button:not(.btn):hover { background: rgb(255 255 255 / 18%); }
+.reader-toc .toc-unit { display: flex; gap: 8px; align-items: center; font: 600 17px var(--display); background: rgb(20 12 60 / 30%); padding: 8px 10px; }
+.toc-n { width: 26px; height: 26px; border-radius: 50%; background: var(--sun); color: var(--ink); display: grid; place-items: center; font: 700 13px var(--display); flex: none; }
+.reader-toc ul { padding-left: 14px; margin-top: 4px; }
+.reader-toc button.here { background: var(--pink); }
+.reader-toc button.here::after { content: " · you are here"; font-weight: 800; opacity: .9; }
+.reader-page { overflow-y: auto; border-radius: var(--r); box-shadow: var(--drop); padding: clamp(20px, 4vw, 44px); scroll-behavior: smooth; outline: 0; }
+.reader-page article { max-width: 74ch; margin: 0 auto; padding-bottom: 34px; scroll-margin-top: 10px; }
+.reader-page article + article { border-top: 3px dashed var(--lilac-line); padding-top: 34px; }
+.reader-page .md { font-size: 17.5px; line-height: 1.65; margin-top: 14px; }
+.reader-page .md h1 { font-size: clamp(28px, 3.6vw, 38px); }
+.reader-page .md h2 { font-size: 25px; margin-top: 1.5em; padding-top: .6em; border-top: 2px solid var(--lilac-line); scroll-margin-top: 10px; }
+.reader-page .md h3 { font-size: 20px; scroll-margin-top: 10px; } .reader-page .md h4, .reader-page .md h5 { font: 800 15px var(--body); letter-spacing: .04em; margin: 1em 0 .4em; }
+.reader-page .md a { color: var(--pink-edge); }
+.reader-end { max-width: 74ch; margin: 0 auto; display: flex; gap: 8px; align-items: center; font-weight: 800; color: var(--ink-2); }
+/* never on paper: the reading material is for reading in the game */
+@media print { body.reader-open > * { display: none !important; } }
+
+@media (max-width: 860px) {
+  .reader-body { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
+  .reader-toc { max-height: 150px; }
+  .reader-bar .btn { padding: 9px 12px; font-size: 15px; }
+  .reader-bar { gap: 10px; } .reader-bar > .scroll-art { display: none; }
+  .reader-title .cap { display: none; } .reader-title h2 { font-size: 19px; }
+}

@@ -8,6 +8,7 @@
 //                        queues a 'heartbeat' with the seconds played and the beat the learner was on. Heartbeats only go
 //                        to the server - they are not part of the local event log, so points and progress are unchanged.
 import type { ProgressEvent, ProgressStore } from '../ports/progress';
+import { sessionLost, withToken } from './session';
 
 export interface RemoteEvent extends Omit<ProgressEvent, 'verb'> { verb: ProgressEvent['verb'] | 'heartbeat' }
 
@@ -42,8 +43,9 @@ export class Outbox {
         if (!batch.length) return;
         const res = await this.send(`${this.url}/api/events`, {
           method: 'POST', headers: { 'content-type': 'text/plain' },   // text/plain: no CORS preflight
-          body: JSON.stringify({ events: batch }), keepalive: opts.keepalive,
+          body: JSON.stringify(withToken({ events: batch })), keepalive: opts.keepalive,
         });
+        if (res.status === 401) { sessionLost(); return; }   // not logged in any more: the events wait for the next log-in
         if (!res.ok) return;
         const sent = new Set(batch.map((e) => e.event_id));
         this.write(this.read().filter((e) => !sent.has(e.event_id)));

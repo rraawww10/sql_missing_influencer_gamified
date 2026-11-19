@@ -10,6 +10,9 @@ import { EvidenceBoard } from './screens/EvidenceBoard';
 import { Briefing } from './screens/Briefing';
 import { postToParent, startResizeReports } from './embed';
 import { ThemeScope } from './components/ThemeScope';
+import { KaalDock } from './kaal/Kaal';
+import { onDockAction, setDockContext } from './kaal/dock';
+import { ReaderHost } from './reader/Reader';
 
 const Player = lazy(() => import('./screens/Player').then((m) => ({ default: m.Player })));
 
@@ -27,16 +30,19 @@ export function SessionApp({ session, unit }: { session: number; unit?: { n: num
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
   const go = (h: string) => { location.hash = h; };
+  useEffect(() => { if (route !== 'play') setDockContext({ screen: route, session }); }, [route, session]);
+  useEffect(() => onDockAction({ 'go-map': () => go('#/'), 'open-evidence': () => go('#/evidence') }), []);
 
   return (
     <ThemeScope session={session}>
     <div className="app">
-      <Suspense fallback={<p className="muted">Loading…</p>}>
+      <Suspense fallback={<p className="loading">Loading…</p>}>
         {route === 'intro' && <SessionIntro session={session} standalone onBack={() => go('#/evidence')} onStart={() => go('#/play')} />}
-        {route === 'play' && <Player session={session} exitLabel="← Episode intro" onExit={() => go('#/')} onFinished={() => go('#/done')} />}
+        {route === 'play' && <Player session={session} exitLabel="Episode intro" onExit={() => go('#/')} onFinished={() => go('#/done')} />}
         {route === 'done' && <SessionDone session={session} hasNext={false} onNext={() => {}} onMap={() => go('#/evidence')} onReset={() => go('#/')} standalone />}
         {route === 'evidence' && <EvidenceBoard session={session} onBack={() => go('#/')} />}
       </Suspense>
+      <KaalDock /><ReaderHost />
     </div>
     </ThemeScope>
   );

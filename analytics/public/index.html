@@ -5,123 +5,227 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
 <title>Missing Influencer Analytics</title>
+<!--
+  The team's dashboard (2026-11-19 rebuild). Four tabs, each starting from a decision:
+    Now       who needs help today, how many play, how happy they are (11-star scale), where they are
+    Students  everyone at a glance (13-episode journey strip); one student = every interaction they had, SQL included
+    Feedback  the 11-star ladder (5 = as expected, 6-7 = the target), per episode, and every "one star better" suggestion
+    Episodes  opened vs solved, time, first-try SQL, stars, then step by step for one episode
+  Charts follow the dataviz rules: one blue series, hairline grid, thin bars with a rounded data end, hover tooltips,
+  status colours only with an icon and a label.
+-->
 <style>
 :root{
-  --bg:#f5f6f8;--panel:#fff;--panel-2:#f0f2f5;--line:#e2e5ea;--text:#16191f;--muted:#5d6573;--faint:#8a93a3;
-  --accent:#4f46e5;--accent-soft:#e8e7fd;--good:#15803d;--good-soft:#dcfce7;--warn:#b45309;--warn-soft:#fef3c7;--bad:#b91c1c;--bad-soft:#fee2e2;
-  --bar:#6366f1;--bar-2:#c7d2fe;--shadow:0 1px 2px rgba(16,24,40,.06),0 1px 3px rgba(16,24,40,.08);
+  --bg:#f6f6f3;--panel:#fff;--panel-2:#f2f1ec;--line:#e1e0d9;--text:#0b0b0b;--muted:#52514e;--faint:#898781;
+  --s1:#2a78d6;--s1-hi:#1c5cab;--s1-2:#86b6ef;--s1-soft:#e1edfb;
+  --good:#0ca30c;--warn:#fab219;--serious:#ec835a;--crit:#d03b3b;
+  --shadow:0 1px 2px rgba(16,24,40,.05),0 1px 3px rgba(16,24,40,.07);
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0f1115;--panel:#171a21;--panel-2:#1e222b;--line:#2a2f3a;--text:#e8eaef;--muted:#a3abb9;--faint:#727b8b;
-  --accent:#8b85ff;--accent-soft:#25234a;--good:#4ade80;--good-soft:#11331f;--warn:#fbbf24;--warn-soft:#3a2c0b;--bad:#f87171;--bad-soft:#3b1414;
-  --bar:#8b85ff;--bar-2:#353a6b;--shadow:none}}
+  --bg:#0d0d0d;--panel:#1a1a19;--panel-2:#242422;--line:#2c2c2a;--text:#f0efec;--muted:#c3c2b7;--faint:#898781;
+  --s1:#3987e5;--s1-hi:#6da7ec;--s1-2:#184f95;--s1-soft:#16263b;--shadow:none}}
 :root[data-theme="dark"]{
-  --bg:#0f1115;--panel:#171a21;--panel-2:#1e222b;--line:#2a2f3a;--text:#e8eaef;--muted:#a3abb9;--faint:#727b8b;
-  --accent:#8b85ff;--accent-soft:#25234a;--good:#4ade80;--good-soft:#11331f;--warn:#fbbf24;--warn-soft:#3a2c0b;--bad:#f87171;--bad-soft:#3b1414;
-  --bar:#8b85ff;--bar-2:#353a6b;--shadow:none}
+  --bg:#0d0d0d;--panel:#1a1a19;--panel-2:#242422;--line:#2c2c2a;--text:#f0efec;--muted:#c3c2b7;--faint:#898781;
+  --s1:#3987e5;--s1-hi:#6da7ec;--s1-2:#184f95;--s1-soft:#16263b;--shadow:none}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-button,input,select{font:inherit;color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
 .wrap{max-width:1320px;margin:0 auto;padding:0 16px}
-header{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
-.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0}
-.top h1{font-size:16px;margin:0;font-weight:650;letter-spacing:-.01em}
-.top h1 small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+svg.i{width:16px;height:16px;flex:none;vertical-align:-3px}
+[hidden]{display:none!important}
+
+/* header */
+header{background:linear-gradient(110deg,#6d28d9,#db2777 55%,#f59e0b);color:#fff;position:sticky;top:0;z-index:5}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 0 4px}
+.top h1{font-size:16px;margin:0;font-weight:680;letter-spacing:-.01em}
 .spacer{flex:1}
-.ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+header .btn{background:#ffffff22;border-color:#ffffff44;color:#fff}header .btn:hover{background:#ffffff38}
+header select{background:#ffffff22;border-color:#ffffff44;color:#fff}header select option{color:#000}
+header label.chk{color:#fff}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:13px;padding:0 6px;white-space:nowrap;font-weight:600}
+.live .dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 #4ade8088;animation:livepulse 2s infinite}
+@keyframes livepulse{70%{box-shadow:0 0 0 8px #4ade8000}100%{box-shadow:0 0 0 0 #4ade8000}}
+nav.tabs{display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{border:0;background:none;padding:10px 14px;border-bottom:3px solid transparent;color:#ffffffc0;cursor:pointer;white-space:nowrap;display:flex;gap:6px;align-items:center;font-weight:550}
+nav.tabs button[aria-selected=true]{color:#fff;border-color:#fff}
+nav.tabs .badge{background:#fff;color:#b4235a;border-radius:99px;padding:0 7px;font-size:11.5px;font-weight:700}
+
+/* controls */
 select,input[type=search],input[type=password],textarea{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px}
-.btn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer}
+.btn{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center;text-decoration:none;color:inherit;white-space:nowrap}
 .btn:hover{background:var(--panel-2)}
-.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
-label.chk{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:13px}
-nav.tabs{display:flex;gap:4px;overflow-x:auto}
-.live{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);padding:0 8px;white-space:nowrap}
-.live .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 #22c55e88;animation:livepulse 2s infinite}
-@keyframes livepulse{70%{box-shadow:0 0 0 8px #22c55e00}100%{box-shadow:0 0 0 0 #22c55e00}}
-nav.tabs button{border:0;background:none;padding:10px 12px;border-bottom:2px solid transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
-nav.tabs button[aria-selected=true]{color:var(--text);border-color:var(--accent);font-weight:600}
-main{padding:20px 0 60px}
+.btn.primary{background:var(--s1);border-color:var(--s1);color:#fff}
+.btn.small{padding:4px 10px;font-size:13px}
+label.chk{display:flex;gap:6px;align-items:center;font-size:13px}
+.seg{display:inline-flex;background:var(--panel-2);border-radius:9px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;border-radius:7px;padding:5px 11px;cursor:pointer;color:var(--muted);font-size:13px;display:inline-flex;gap:5px;align-items:center}
+.seg button[aria-pressed=true]{background:var(--panel);color:var(--text);box-shadow:var(--shadow);font-weight:600}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.toolbar input[type=search]{min-width:min(100%,240px)}
+
+/* layout */
+main.wrap{padding:18px 16px 60px}
 .grid{display:grid;gap:12px}
-.kpis{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
-.kpi .v{font-size:26px;font-weight:650;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
-.kpi .l{color:var(--muted);font-size:12.5px}
-.kpi .s{color:var(--faint);font-size:12px;margin-top:2px}
-.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));margin-top:12px}
-.card h2{font-size:14px;margin:0 0 2px;font-weight:620}
-.card .sub{color:var(--muted);font-size:12.5px;margin:0 0 12px}
-.chart svg{display:block;width:100%;height:auto;overflow:visible}
-.chart text{fill:var(--muted);font-size:10px}
-.legend{display:flex;gap:14px;color:var(--muted);font-size:12px;margin-top:6px}
-.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
-.hbar{display:grid;grid-template-columns:minmax(120px,190px) 1fr auto;gap:8px 10px;align-items:center;font-size:13px}
-.hbar .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.track{position:relative;height:16px;background:var(--panel-2);border-radius:4px;overflow:hidden}
-.track b{position:absolute;inset:0 auto 0 0;background:var(--bar-2);border-radius:4px}
-.track b.on{background:var(--bar)}
-.num{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px;white-space:nowrap}
-.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+.two{grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));margin-top:12px}
+.three{grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));margin-top:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow);min-width:0}
+.card h2{font-size:14px;margin:0 0 10px;font-weight:650;display:flex;gap:8px;align-items:center}
+.card h2 .n{color:var(--faint);font-weight:500}
+.card h2 .more{margin-left:auto}
+.info{color:var(--faint);cursor:help;display:inline-flex}
+.muted{color:var(--muted)}.faint{color:var(--faint)}
+.empty{padding:22px;text-align:center;color:var(--faint)}
+
+/* stat tiles */
+.kpis{grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kpi{position:relative;overflow:hidden;color:#fff;border:0;background:linear-gradient(135deg,var(--k1),var(--k2));cursor:default}
+.kpi.go{cursor:pointer}
+.kpi .v{font-size:30px;font-weight:700;letter-spacing:-.02em}
+.kpi .v small{font-size:15px;opacity:.85;font-weight:600}
+.kpi .l{color:#ffffffe8;font-size:13px;font-weight:600}
+.kpi .ico{position:absolute;right:12px;top:12px;opacity:.9}.kpi .ico svg{width:26px;height:26px}
+.k1{--k1:#7c3aed;--k2:#a855f7}.k2{--k1:#0e7490;--k2:#06b6d4}.k3{--k1:#047857;--k2:#10b981}.k4{--k1:#d97706;--k2:#f59e0b}.k5{--k1:#be185d;--k2:#ec4899}
+.mini{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+.mini .card{padding:10px 12px;border-radius:12px}
+.mini .v{font-size:20px;font-weight:680}.mini .l{color:var(--muted);font-size:12px}
+
+/* status chips: colour + icon + words, never colour alone */
+.chip{--c:var(--faint);display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;border-radius:99px;font-size:12px;font-weight:550;white-space:nowrap;
+  background:color-mix(in srgb,var(--c) 13%,var(--panel));border:1px solid color-mix(in srgb,var(--c) 38%,transparent);color:var(--text)}
+.chip svg.i{width:13px;height:13px;color:var(--c)}
+.good{--c:var(--good)}.warn{--c:var(--warn)}.serious{--c:var(--serious)}.crit{--c:var(--crit)}.mute{--c:var(--faint)}.blue{--c:var(--s1)}
+.stars{display:inline-flex;align-items:center;gap:3px;font-weight:650;white-space:nowrap}
+.stars svg.i{width:14px;height:14px;color:var(--warn);fill:var(--warn)}
+.stars small{color:var(--faint);font-weight:500}
+
+/* charts */
+.plot{display:block;width:100%;height:auto;overflow:visible}
+.plot .gl{stroke:var(--line);stroke-width:1}
+.plot .ax{fill:var(--faint);font-size:11px}
+.plot .lab{fill:var(--muted);font-size:11.5px}
+.plot .bar{fill:var(--s1)}
+.plot .bar.lite{fill:var(--s1-2)}
+.plot g:hover .bar{fill:var(--s1-hi)}
+.plot .hit{fill:transparent}
+.plot .band{fill:var(--s1-soft)}
+.plot .med{stroke:var(--text);stroke-width:2}
+.plot .dot{fill:var(--s1);stroke:var(--panel);stroke-width:2}
+.plot g:hover .dot{fill:var(--s1-hi)}
+.legend{display:flex;gap:14px;color:var(--muted);font-size:12px;margin-top:6px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+#tip{position:fixed;z-index:50;pointer-events:none;background:var(--text);color:var(--panel);font-size:12.5px;padding:6px 9px;border-radius:8px;max-width:300px;white-space:pre-line;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+.hb{display:grid;grid-template-columns:minmax(90px,160px) 1fr auto;gap:7px 10px;align-items:center;font-size:13px}
+.hb .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hb .tr{position:relative;height:14px}
+.hb .tr b{position:absolute;inset:0 auto 0 0;background:var(--s1);border-radius:0 4px 4px 0;max-width:100%}
+.hb .tr b.lite{background:var(--s1-2)}
+.hb .v{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px;white-space:nowrap}
+
+/* needs you */
+.need{display:grid;gap:6px}
+.need-row{display:grid;grid-template-columns:32px minmax(110px,170px) 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:7px 10px;cursor:pointer;text-align:left}
+.need-row:hover{background:var(--panel-2)}
+.av{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--s1-soft);color:var(--s1-hi);font-weight:700;font-size:12px}
+.who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.who small{color:var(--faint)}
+.why{display:flex;gap:4px;flex-wrap:wrap}
+.when{color:var(--faint);font-size:12px;white-space:nowrap}
+.allgood{display:flex;gap:8px;align-items:center;padding:18px;color:var(--muted)}.allgood svg{color:var(--good)}
+
+/* voices (suggestion cards) */
+.wall{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(270px,1fr))}
+.voice{border:1px solid var(--line);border-radius:14px;padding:12px 14px;background:var(--panel);cursor:pointer;display:flex;flex-direction:column;gap:6px;border-top:4px solid var(--c,var(--line))}
+.voice:hover{background:var(--panel-2)}
+.voice .top2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.voice .q{font-size:15px;line-height:1.4}
+.voice .q.none{color:var(--faint);font-size:13px}
+.voice .by{color:var(--faint);font-size:12px;margin-top:auto}
+.voice .lad{color:var(--muted);font-size:12.5px}
+
+/* tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
 table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
-th{font-weight:600;color:var(--muted);font-size:12px;background:var(--panel-2);position:sticky;top:0;cursor:pointer;user-select:none}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12px;background:var(--panel-2);position:sticky;top:0;cursor:pointer;user-select:none;z-index:1}
 th.nosort{cursor:default}
 th[aria-sort=ascending]::after{content:" ▲";font-size:9px}th[aria-sort=descending]::after{content:" ▼";font-size:9px}
 tbody tr:hover{background:var(--panel-2)}
 tr.click{cursor:pointer}
 td.r,th.r{text-align:right;font-variant-numeric:tabular-nums}
-td.wrap{white-space:normal;min-width:260px}
-.pbar{display:flex;align-items:center;gap:8px;min-width:130px}
-.pbar .track{flex:1;height:8px}
-.chip{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11.5px;font-weight:550}
-.chip.good{background:var(--good-soft);color:var(--good)}.chip.warn{background:var(--warn-soft);color:var(--warn)}
-.chip.bad{background:var(--bad-soft);color:var(--bad)}.chip.mute{background:var(--panel-2);color:var(--muted)}
-.chip.acc{background:var(--accent-soft);color:var(--accent)}
-.muted{color:var(--muted)}.faint{color:var(--faint)}
-.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
-.toolbar input[type=search]{min-width:min(100%,260px)}
-.hot{background:var(--warn-soft)}
+td.wrap{white-space:normal;min-width:240px}
+tr.sel{background:var(--s1-soft)!important}
+.pb{display:flex;align-items:center;gap:8px;min-width:110px}
+.pb .tr{flex:1;height:8px;background:var(--panel-2);border-radius:4px;position:relative}
+.pb .tr b{position:absolute;inset:0 auto 0 0;background:var(--s1);border-radius:4px}
+.pb span{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12px;min-width:34px;text-align:right}
+.type{font-size:10.5px;padding:1px 6px;border-radius:4px;background:var(--panel-2);color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.type.task{background:var(--s1-soft);color:var(--s1-hi)}
+tr.hot{background:color-mix(in srgb,var(--warn) 12%,transparent)}
+.flags{display:inline-flex;gap:3px}.flags svg{width:15px;height:15px}
+
+/* journey strip: 13 episodes */
+.jr{display:inline-flex;gap:2px;vertical-align:middle}
+.jr i{width:9px;height:16px;border-radius:2px;border:1px solid var(--line);background:transparent;font-style:normal}
+.jr i.s1{background:var(--s1-2);border-color:var(--s1-2)}
+.jr i.s2{background:var(--s1);border-color:var(--s1)}
+.jr i.cur{outline:2px solid var(--text);outline-offset:1px}
+.jr.big{display:flex;width:100%;gap:4px}
+.jr.big i{flex:1;height:34px;border-radius:6px;display:grid;place-items:center;font-size:12px;font-weight:650;color:var(--muted)}
+.jr.big i.s2{color:#fff}
+.jr.big i.s1{color:var(--text)}
+
+/* drawer + timeline */
 .drawer{position:fixed;inset:0;display:none;z-index:20}
 .drawer.open{display:block}
-.drawer .scrim{position:absolute;inset:0;background:rgba(0,0,0,.35)}
-.drawer .sheet{position:absolute;top:0;right:0;bottom:0;width:min(940px,100%);background:var(--bg);overflow:auto;box-shadow:-8px 0 30px rgba(0,0,0,.2)}
-.sheet .head{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);padding:14px 16px;display:flex;gap:12px;align-items:center;z-index:2}
+.drawer .scrim{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+.drawer .sheet{position:absolute;top:0;right:0;bottom:0;width:min(980px,100%);background:var(--bg);overflow:auto;box-shadow:-8px 0 30px rgba(0,0,0,.25)}
+.sheet .head{position:sticky;top:0;background:var(--panel);border-bottom:1px solid var(--line);padding:12px 16px;display:flex;gap:12px;align-items:flex-start;z-index:3}
+.sheet .head .av{width:42px;height:42px;font-size:15px}
 .sheet .body{padding:16px}
-details.ep{border:1px solid var(--line);border-radius:10px;background:var(--panel);margin-bottom:8px}
-details.ep summary{list-style:none;cursor:pointer;padding:10px 12px;display:grid;grid-template-columns:minmax(150px,1.4fr) minmax(120px,1fr) 80px 90px auto;gap:10px;align-items:center}
+.sheet h3{font-size:13px;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;display:flex;gap:8px;align-items:center}
+.tl-day{font-size:12px;color:var(--faint);margin:14px 0 2px;font-weight:650;text-transform:uppercase;letter-spacing:.05em}
+.tl-item{display:grid;grid-template-columns:62px 28px 1fr;gap:8px;align-items:start;padding:7px 0;border-bottom:1px solid var(--line)}
+.tl-time{font-size:12px;color:var(--faint);padding-top:4px;white-space:nowrap}
+.tl-ico{--c:var(--faint);width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 15%,var(--panel));color:var(--c)}
+.tl-ico svg.i{width:15px;height:15px;vertical-align:0}
+.tl-main{min-width:0}
+.tl-main .t{font-weight:600;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.tl-main .m{color:var(--muted);font-size:12.5px}
+.tl-main blockquote{margin:4px 0 0;padding:6px 10px;border-left:3px solid var(--s1);background:var(--panel-2);border-radius:0 8px 8px 0}
+code.sql{display:block;white-space:pre-wrap;font:12px/1.45 ui-monospace,Menlo,Consolas,monospace;background:var(--panel-2);padding:6px 9px;border-radius:8px;margin-top:4px;max-height:180px;overflow:auto;word-break:break-word}
+details.ep{border:1px solid var(--line);border-radius:12px;background:var(--panel);margin-bottom:8px}
+details.ep summary{list-style:none;cursor:pointer;padding:9px 12px;display:grid;grid-template-columns:minmax(150px,1.4fr) minmax(110px,1fr) 70px 90px auto;gap:10px;align-items:center}
 details.ep summary::-webkit-details-marker{display:none}
 details.ep[open] summary{border-bottom:1px solid var(--line)}
 details.ep .inner{padding:8px 12px 12px;overflow-x:auto}
-code.sql{display:block;white-space:pre-wrap;font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--panel-2);padding:6px 8px;border-radius:6px;max-width:520px}
+
+/* feedback */
+.hero{display:flex;gap:18px;align-items:flex-end;flex-wrap:wrap;margin-bottom:6px}
+.hero .big{font-size:46px;font-weight:750;letter-spacing:-.03em;line-height:1}
+.hero .big small{font-size:18px;color:var(--faint);font-weight:600}
+.hero .facts{display:flex;gap:6px;flex-wrap:wrap;padding-bottom:4px}
+.eprow{display:grid;grid-template-columns:minmax(110px,1fr) minmax(180px,300px) 40px 54px;gap:8px;align-items:center;font-size:13px;padding:2px 0}
+.eprow .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.eprow .v{text-align:right;font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+.eprow.head{color:var(--faint);font-size:11.5px}
+.chapters{display:grid;gap:6px}
+.chapters .row{display:grid;grid-template-columns:minmax(110px,180px) 1fr;gap:8px;align-items:center;font-size:13px}
+.chapters .cells{display:flex;gap:4px;flex-wrap:wrap}
+
+/* login */
 .login{max-width:360px;margin:12vh auto;padding:0 16px}
 .login .card{padding:24px}
 .login h1{font-size:18px;margin:0 0 4px}
 .login input{width:100%;margin:14px 0 10px}
-.err{color:var(--bad);font-size:13px;min-height:18px}
-.empty{padding:28px;text-align:center;color:var(--muted)}
-.defs{margin-top:12px;color:var(--muted);font-size:12.5px}
-.defs dt{font-weight:600;color:var(--text);display:inline}.defs dd{display:inline;margin:0}
-.defs div{margin-bottom:4px}
-.type{font-size:11px;padding:1px 6px;border-radius:4px;background:var(--panel-2);color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
-.type.task{background:var(--accent-soft);color:var(--accent)}
-[hidden]{display:none!important}
-/* v8 look (2026-11-17): colourful header, bold KPI tiles, feedback feed */
-header{background:linear-gradient(110deg,#6d28d9,#db2777 55%,#f59e0b);border:0;color:#fff}
-header .top h1 small{color:#ffffffcc}
-header .btn{background:#ffffff22;border-color:#ffffff44;color:#fff}header .btn:hover{background:#ffffff38}
-header .live{color:#fff}
-nav.tabs button{color:#ffffffbb}nav.tabs button[aria-selected=true]{color:#fff;border-color:#fff}
-.card{border-radius:16px}
-.kpi{--k1:#7c3aed;--k2:#a855f7;position:relative;overflow:hidden;color:#fff;border:0;background:linear-gradient(135deg,var(--k1),var(--k2))}
-.kpi .v{font-size:32px}.kpi .l{color:#ffffffe6;font-size:13px;font-weight:600}
-.kpi .ico{position:absolute;right:12px;top:10px;font-size:30px;opacity:.9}
-.k1{--k1:#7c3aed;--k2:#a855f7}.k2{--k1:#0891b2;--k2:#22d3ee}.k3{--k1:#059669;--k2:#34d399}.k4{--k1:#f59e0b;--k2:#f97316}.k5{--k1:#db2777;--k2:#f472b6}
-.feed{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-.fb{border-radius:14px;padding:12px 14px;background:var(--panel-2);border-left:5px solid var(--c,#a855f7);cursor:pointer;animation:fbIn .4s ease both}
-.fb:hover{transform:translateY(-2px);transition:transform .15s}
-.fb .who{font-weight:650}.fb .meta{color:var(--muted);font-size:12px}.fb .big{font-size:22px;margin:4px 0}.fb .cm{margin-top:4px}
-@keyframes fbIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.err{color:var(--crit);font-size:13px;min-height:18px}
 
-@media (max-width:640px){details.ep summary{grid-template-columns:1fr 1fr}.hbar{grid-template-columns:110px 1fr auto}}
+@media (max-width:700px){
+  .need-row{grid-template-columns:32px 1fr;}.need-row .why{grid-column:1/-1}.need-row .when{display:none}
+  details.ep summary{grid-template-columns:1fr 1fr}
+  .eprow{grid-template-columns:1fr 150px 30px 44px}
+  .hero .big{font-size:38px}
+  .top h1{font-size:15px}
+}
 </style>
 </head>
 <body>
@@ -129,10 +233,10 @@ nav.tabs button{color:#ffffffbb}nav.tabs button[aria-selected=true]{color:#fff;b
 <div id="login" class="login" hidden>
   <form class="card" id="loginForm">
     <h1>Missing Influencer Analytics</h1>
-    <div class="muted">Admin sign in</div>
+    <div class="muted">Team sign in</div>
     <input type="password" id="pw" placeholder="Admin password" autocomplete="current-password" required>
     <div class="err" id="loginErr"></div>
-    <button class="btn primary" style="width:100%">Sign in</button>
+    <button class="btn primary" style="width:100%;justify-content:center">Sign in</button>
   </form>
 </div>
 
@@ -140,71 +244,75 @@ nav.tabs button{color:#ffffffbb}nav.tabs button[aria-selected=true]{color:#fff;b
 <header>
   <div class="wrap">
     <div class="top">
-      <h1>SQL: The Missing Influencer <small>Student engagement &amp; progress</small></h1>
+      <h1>SQL: The Missing Influencer</h1>
+      <span class="live" id="liveNow" data-tip="Students with any activity in the last 5 minutes"></span>
       <div class="spacer"></div>
       <div class="ctl">
         <select id="batch" aria-label="Batch" hidden><option value="">All batches</option></select>
-        <label class="chk" hidden><input type="checkbox" id="guests"> Include guests</label>
-        <button class="btn" id="refresh" title="Reload the numbers">↻ Refresh</button>
-        <a class="btn" id="export" href="/api/admin/export.csv" style="text-decoration:none">⬇ Export CSV</a>
-        <span class="live" id="liveNow" title="Students with any activity in the last 5 minutes"></span>
-        <button class="btn" id="theme" title="Switch light / dark">Theme</button>
-        <button class="btn" id="logout">Sign out</button>
+        <label class="chk" hidden><input type="checkbox" id="guests"> Guests</label>
+        <button class="btn" id="refresh" data-tip="Reload the numbers" aria-label="Refresh"></button>
+        <a class="btn" id="export" href="/api/admin/export.csv" data-tip="Every student, one row each (CSV)"></a>
+        <button class="btn" id="theme" data-tip="Light / dark" aria-label="Switch light or dark"></button>
+        <button class="btn" id="logout" data-tip="Sign out" aria-label="Sign out"></button>
       </div>
     </div>
     <nav class="tabs" role="tablist">
-      <button role="tab" data-tab="overview" aria-selected="true">Overview</button>
-      <button role="tab" data-tab="students" aria-selected="false">Students</button>
-      <button role="tab" data-tab="episodes" aria-selected="false">Episodes &amp; beats</button>
-      <button role="tab" data-tab="feedback" aria-selected="false">Feedback</button>
+      <button role="tab" data-tab="now" aria-selected="true"></button>
+      <button role="tab" data-tab="students" aria-selected="false"></button>
+      <button role="tab" data-tab="feedback" aria-selected="false"></button>
+      <button role="tab" data-tab="episodes" aria-selected="false"></button>
       <button role="tab" data-tab="roster" aria-selected="false" hidden>Roster</button>
     </nav>
   </div>
 </header>
 
 <main class="wrap">
-  <section id="tab-overview"></section>
+  <section id="tab-now"></section>
+
   <section id="tab-students" hidden>
     <div class="toolbar">
-      <input type="search" id="q" placeholder="Search name or NxtWave ID">
-      <select id="statusFilter" aria-label="Status">
-        <option value="">Everyone</option><option value="active">Active in last 7 days</option>
-        <option value="inactive">Inactive 7+ days</option><option value="finished">Finished all 13</option>
-        <option value="notstarted">Registered / on roster, not started</option>
-      </select>
-      <span class="muted" id="count"></span>
+      <input type="search" id="q" placeholder="Search name, ID or email">
+      <div class="seg" id="stuSeg" role="group" aria-label="Show"></div>
+      <span class="faint" id="count"></span>
+      <button class="btn" id="resetAny" style="margin-left:auto" data-tip="For a student who forgot their password. Gives a temporary one that works once."></button>
     </div>
+    <div id="resetAnyOut" class="card" style="padding:12px 14px;margin-bottom:12px" hidden></div>
     <div class="tablewrap"><table id="studentsTable"></table></div>
   </section>
-  <section id="tab-episodes" hidden>
-    <div class="toolbar"><select id="epPick" aria-label="Episode"></select><span class="muted" id="epSummary"></span></div>
-    <div id="epBody"></div>
-  </section>
+
   <section id="tab-feedback" hidden>
-    <div class="toolbar"><select id="fbEp" aria-label="Episode"><option value="">All episodes</option></select>
-      <select id="fbFilter" aria-label="Show"><option value="">All responses</option><option value="comments">With a comment</option><option value="low">1–2 stars</option><option value="hard">Said “too hard”</option><option value="confusing">Confusing / boring</option></select>
-      <input type="search" id="fbQ" placeholder="Search comments, names"><a class="btn" id="fbExport" href="/api/admin/feedback.csv">Export feedback CSV</a><span class="muted" id="fbCount"></span></div>
+    <div class="toolbar">
+      <select id="fbEp" aria-label="Episode"><option value="">All episodes</option></select>
+      <div class="seg" id="fbSeg" role="group" aria-label="Which answers"></div>
+      <input type="search" id="fbQ" placeholder="Search suggestions, names">
+      <a class="btn" id="fbExport" href="/api/admin/feedback.csv" data-tip="Every answer, with the 11-star rating (CSV)"></a>
+    </div>
     <div id="fbBody"></div>
   </section>
+
+  <section id="tab-episodes" hidden>
+    <div id="epAll"></div>
+    <div class="card" style="margin-top:12px">
+      <h2 id="epTitle"></h2>
+      <div class="toolbar" style="margin-bottom:8px"><select id="epPick" aria-label="Episode"></select><span class="faint" id="epSummary"></span></div>
+      <div id="epBody"></div>
+    </div>
+  </section>
+
   <section id="tab-roster" hidden>
     <div class="grid two" style="margin-top:0">
       <div class="card">
         <h2>Upload the student list</h2>
-        <p class="sub">A CSV with a header row: <b>student_id</b>, <b>name</b>, <b>batch</b>. The student_id is the student's <b>NxtWave ID</b> - the same ID students type on the game's start screen. Names typed by students show automatically; a roster name, when uploaded, takes precedence. Uploading again updates names and batches.</p>
+        <p class="muted">CSV with a header row: <b>student_id</b>, <b>name</b>, <b>batch</b> (student_id = NxtWave ID).</p>
         <input type="file" id="csvFile" accept=".csv,text/csv">
-        <p class="sub" style="margin-top:12px">…or paste it:</p>
-        <textarea id="csvText" rows="7" style="width:100%" placeholder="student_id,name,batch&#10;STU1001,Aarav Sharma,Beta-A"></textarea>
+        <textarea id="csvText" rows="7" style="width:100%;margin-top:10px" placeholder="student_id,name,batch&#10;STU1001,Aarav Sharma,Beta-A"></textarea>
         <div class="toolbar" style="margin-top:10px">
           <button class="btn primary" id="upload">Save roster</button>
           <label class="chk"><input type="checkbox" id="replace"> Replace the whole list</label>
         </div>
         <div id="uploadMsg" class="muted"></div>
       </div>
-      <div class="card">
-        <h2>On the roster but not started</h2>
-        <p class="sub">On the roster, or entered their NxtWave ID on the start screen, but have not played a step yet.</p>
-        <div id="notStarted"></div>
-      </div>
+      <div class="card"><h2>On the roster, not started</h2><div id="notStarted"></div></div>
     </div>
   </section>
 </main>
@@ -213,23 +321,94 @@ nav.tabs button{color:#ffffffbb}nav.tabs button[aria-selected=true]{color:#fff;b
 <div class="drawer" id="drawer" aria-hidden="true">
   <div class="scrim" data-close></div>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="dTitle">
-    <div class="head"><div style="flex:1;min-width:0"><div id="dTitle" style="font-weight:650;font-size:16px"></div><div id="dSub" class="muted"></div></div><button class="btn" data-close>✕ Close</button></div>
+    <div class="head" id="dHead"></div>
     <div class="body" id="dBody"></div>
   </div>
 </div>
+<div id="tip" hidden></div>
 
 <script>
 const $ = (s, r = document) => r.querySelector(s);
 const esc = (v) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmtNum = (n) => Number(n ?? 0).toLocaleString('en-IN');
+const pct = (a, b) => (b ? Math.round((a / b) * 100) : 0);
 const dur = (sec) => { sec = Math.round(sec || 0); if (sec < 60) return sec ? `${sec}s` : '0m'; const h = Math.floor(sec / 3600), m = Math.round((sec % 3600) / 60); return h ? `${h}h ${m}m` : `${m}m`; };
-const ago = (iso) => { if (!iso) return '—'; const d = (Date.now() - Date.parse(iso)) / 1000; if (d < 3600) return `${Math.max(1, Math.round(d / 60))} min ago`; if (d < 86400) return `${Math.round(d / 3600)} h ago`; const days = Math.round(d / 86400); return days === 1 ? 'yesterday' : `${days} days ago`; };
-const when = (iso) => iso ? new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '—';
-const pbar = (p) => `<div class="pbar"><div class="track"><b class="on" style="width:${Math.min(100, p)}%"></b></div><span class="num">${p}%</span></div>`;
-const TYPE_NAMES = { scene: 'Scene', note: 'Case Note', activity: 'Activity', task: 'SQL task', check: 'Check', clue: 'Clue', hook: 'Teaser', demo: 'Demo' };
+const ago = (iso) => { if (!iso) return '-'; const d = (Date.now() - Date.parse(iso)) / 1000; if (d < 60) return 'just now'; if (d < 3600) return `${Math.round(d / 60)} min ago`; if (d < 86400) return `${Math.round(d / 3600)} h ago`; const days = Math.round(d / 86400); return days === 1 ? 'yesterday' : `${days} days ago`; };
+const when = (iso) => iso ? new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' }) : '-';
+const clock = (iso) => new Date(iso).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' });
+const initials = (s) => String(s ?? '?').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+const pbar = (p) => `<div class="pb"><div class="tr"><b style="width:${Math.min(100, p)}%"></b></div><span>${p}%</span></div>`;
+
+// ---------------------------------------------------------------- icons (stroke, 24 grid)
+const P = {
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>',
+  zap: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  clock: '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
+  star: '<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>',
+  flag: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7"/>',
+  alert: '<path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/>',
+  bulb: '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/>',
+  frown: '<circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2M9 9h.01M15 9h.01"/>',
+  meh: '<circle cx="12" cy="12" r="10"/><path d="M8 15h8M9 9h.01M15 9h.01"/>',
+  smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/>',
+  help: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>',
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  userplus: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M20 8v6M23 11h-6"/>',
+  check: '<path d="M20 6 9 17l-5-5"/>',
+  x: '<path d="M18 6 6 18M6 6l12 12"/>',
+  code: '<path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/>',
+  grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  pin: '<path d="M12 17v5M9 10.76V3h6v7.76l3 3.24H6l3-3.24z"/>',
+  eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  play: '<path d="M6 3l14 9-14 9V3z"/>',
+  trophy: '<path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/>',
+  rotate: '<path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>',
+  message: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  login: '<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>',
+  logout: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',
+  download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+  refresh: '<path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  key: '<circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/>',
+  contrast: '<circle cx="12" cy="12" r="10"/><path d="M12 2v20" /><path d="M12 2a10 10 0 0 1 0 20z" fill="currentColor"/>',
+  home: '<path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/>',
+  layers: '<path d="m12 2 10 5-10 5L2 7l10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>',
+  book: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2zM22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+};
+const ic = (n) => `<svg class="i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n] ?? ''}</svg>`;
+const info = (text) => `<span class="info" data-tip="${esc(text)}" tabindex="0" aria-label="${esc(text)}">${ic('info')}</span>`;
+
+// the 11-star ladder (the same words the student sees on the card in the game: app/src/ui/feedback.ts)
+const LADDER = { 1: 'I gave up', 2: 'Stuck, I needed help', 3: 'Confusing in places', 4: 'Okay, but hard to follow', 5: 'It worked, as expected', 6: 'Better than a normal class',
+  7: 'Felt made for me', 8: "I didn't want to stop", 9: "I'd tell my friends", 10: 'One of the best ways I have learnt', 11: 'It changed how I see coding' };
+const band = (r, scale = 11) => scale === 11 ? (r <= 3 ? 'low' : r <= 5 ? 'okay' : 'delight') : (r <= 2 ? 'low' : r <= 3 ? 'okay' : 'delight');
+const BAND = { low: ['crit', 'frown', 'Not working'], okay: ['mute', 'meh', 'As expected'], delight: ['good', 'smile', 'Delight'] };
+const bandChip = (b) => `<span class="chip ${BAND[b][0]}">${ic(BAND[b][1])}${BAND[b][2]}</span>`;
+const starsOf = (r, scale = 11) => `<span class="stars" data-tip="${esc(scale === 11 ? `${r} of 11: ${LADDER[r]}` : `${r} of 5 (the earlier 5-star card)`)}">${ic('star')}${r}<small>/${scale}</small></span>`;
+const PULSE = { 1: ['crit', 'frown', 'Lost'], 2: ['mute', 'meh', 'Okay'], 3: ['good', 'smile', 'Good'], 4: ['good', 'star', 'Great'] };
+const MOOD_ICON = { 'Loved it': 'star', Fun: 'smile', Okay: 'meh', Confusing: 'help', Boring: 'moon' };
+const REASON = { stuck: ['crit', 'alert'], answers: ['warn', 'bulb'], low: ['crit', 'frown'], lost: ['serious', 'help'], quiet: ['warn', 'moon'], notstarted: ['mute', 'userplus'] };
+const reasonChip = (r) => `<span class="chip ${REASON[r.kind]?.[0] ?? 'mute'}" data-tip="${esc([r.text, r.detail, ago(r.at)].filter(Boolean).join('\n'))}">${ic(REASON[r.kind]?.[1] ?? 'flag')}${esc(r.text)}</span>`;
+const TYPE_NAMES = { scene: 'Scene', note: 'Learn', activity: 'Activity', task: 'SQL', check: 'Check', clue: 'Clue', hook: 'Teaser', demo: 'Demo' };
 const typeChip = (t) => `<span class="type ${t === 'task' ? 'task' : ''}">${esc(TYPE_NAMES[t] ?? t)}</span>`;
 
-const state = { tab: 'overview', overview: null, students: [], notStarted: [], sort: { key: 'last_seen', dir: -1 }, ep: 1 };
+const state = { tab: 'now', overview: null, students: [], notStarted: [], fbAll: null, fb: null, need: new Map(), needAll: false,
+  sort: { key: 'last_seen', dir: -1 }, stuFilter: '', fbMode: 'suggestions', wallAll: false, ep: 1, tlFilter: 'key', student: null };
+
+// ---------------------------------------------------------------- one tooltip for everything with data-tip
+const tip = $('#tip');
+function showTip(e) {
+  const t = e.target.closest?.('[data-tip]');
+  if (!t || !t.dataset.tip) { tip.hidden = true; return; }
+  tip.textContent = t.dataset.tip; tip.hidden = false;
+  const r = tip.getBoundingClientRect(), x = e.clientX ?? t.getBoundingClientRect().left, y = e.clientY ?? t.getBoundingClientRect().bottom;
+  tip.style.left = `${Math.max(8, Math.min(innerWidth - r.width - 8, x + 12))}px`;
+  tip.style.top = `${y + 16 + r.height > innerHeight ? y - r.height - 10 : y + 16}px`;
+}
+document.addEventListener('pointermove', showTip);
+document.addEventListener('focusin', (e) => { const t = e.target.closest?.('[data-tip]'); if (t) { const b = t.getBoundingClientRect(); showTip({ target: t, clientX: b.left, clientY: b.bottom }); } });
+document.addEventListener('focusout', () => { tip.hidden = true; });
+document.addEventListener('scroll', () => { tip.hidden = true; }, true);
 
 // ---------------------------------------------------------------- api + auth
 async function api(path, opts) {
@@ -246,10 +425,16 @@ $('#loginForm').onsubmit = async (e) => {
   try { await api('/api/login', { method: 'POST', body: JSON.stringify({ password: $('#pw').value }) }); $('#pw').value = ''; boot(); }
   catch (err) { $('#loginErr').textContent = err.message; }
 };
+$('#logout').innerHTML = ic('logout');
 $('#logout').onclick = async () => { await api('/api/logout', { method: 'POST' }); showLogin(); };
+$('#refresh').innerHTML = ic('refresh');
+$('#export').innerHTML = `${ic('download')} CSV`;
+$('#fbExport').innerHTML = `${ic('download')} CSV`;
+$('#resetAny').innerHTML = `${ic('key')} Reset a password`;
 
 // ---------------------------------------------------------------- theme
 try { const t = localStorage.getItem('tmi-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
+$('#theme').innerHTML = ic('contrast');
 $('#theme').onclick = () => {
   const dark = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
   document.documentElement.dataset.theme = dark ? 'light' : 'dark';
@@ -257,184 +442,390 @@ $('#theme').onclick = () => {
 };
 
 // ---------------------------------------------------------------- tabs
+const TABS = { now: ['home', 'Now'], students: ['users', 'Students'], feedback: ['star', 'Feedback'], episodes: ['layers', 'Episodes'] };
+for (const [k, [i, l]] of Object.entries(TABS)) $(`[data-tab="${k}"]`).innerHTML = `${ic(i)}${l}<span class="badge" hidden></span>`;
 document.querySelectorAll('[data-tab]').forEach((b) => b.onclick = () => setTab(b.dataset.tab));
 function setTab(t) {
   state.tab = t;
   document.querySelectorAll('[data-tab]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.tab === t)));
-  for (const id of ['overview', 'students', 'episodes', 'feedback', 'roster']) $(`#tab-${id}`).hidden = id !== t;
-  if (t === 'episodes') loadEpisode();
+  for (const id of ['now', 'students', 'feedback', 'episodes', 'roster']) $(`#tab-${id}`).hidden = id !== t;
+  if (t === 'episodes') { renderEpisodes(); loadEpisode(); }
   if (t === 'feedback') loadFeedback();
+}
+function seg(el, options, value, onPick) {
+  el.innerHTML = options.map(([v, label, icon]) => `<button type="button" data-v="${esc(v)}" aria-pressed="${v === value}">${icon ? ic(icon) : ''}${label}</button>`).join('');
+  el.querySelectorAll('button').forEach((b) => b.onclick = () => onPick(b.dataset.v));
 }
 
 // ---------------------------------------------------------------- charts (inline SVG)
-function columnChart(rows, { key, key2, label, h = 170 }) {
-  const W = 640, pad = { l: 34, r: 8, t: 8, b: 22 }, iw = W - pad.l - pad.r, ih = h - pad.t - pad.b;
-  const max = Math.max(1, ...rows.map((r) => r[key])), step = iw / rows.length, bw = Math.max(2, step * 0.66);
-  const max2 = key2 ? Math.max(1, ...rows.map((r) => r[key2])) : 1;
-  const ticks = [0, 0.5, 1].map((f) => Math.round(max * f));
-  let s = `<svg viewBox="0 0 ${W} ${h}" role="img">`;
-  for (const t of ticks) { const y = pad.t + ih - (t / max) * ih; s += `<line x1="${pad.l}" x2="${W - pad.r}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${pad.l - 6}" y="${y + 3}" text-anchor="end">${t}</text>`; }
+// thin bars with a 4px rounded data end on the baseline; hairline grid; a wide invisible hit target per column for the tooltip
+const barPath = (x, y, w, h, r = 4) => { r = Math.min(r, w / 2, h); return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`; };
+const niceMax = (m) => { if (m <= 4) return 4; const p = 10 ** Math.floor(Math.log10(m)), f = m / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 4 ? 4 : f <= 5 ? 5 : 10) * p; };
+function columns(rows, { h = 150, every = 1, W = 600, bands = [] } = {}) {
+  const pad = { l: 30, r: 4, t: bands.length ? 18 : 8, b: 20 }, iw = W - pad.l - pad.r, ih = h - pad.t - pad.b;
+  const max = niceMax(Math.max(1, ...rows.map((r) => r.v)));
+  const step = iw / rows.length, bw = Math.min(24, step * 0.66);
+  let s = `<svg viewBox="0 0 ${W} ${h}" class="plot" role="img">`;
+  for (const b of bands) s += `<rect class="band" x="${pad.l + b.from * step}" y="${pad.t - 14}" width="${(b.to - b.from) * step}" height="${ih + 14}" rx="6"/><text class="lab" x="${pad.l + ((b.from + b.to) / 2) * step}" y="${pad.t - 4}" text-anchor="middle">${esc(b.label)}</text>`;
+  for (const f of [0, 0.5, 1]) { const y = pad.t + ih - f * ih; s += `<line class="gl" x1="${pad.l}" x2="${W - pad.r}" y1="${y}" y2="${y}"/><text class="ax" x="${pad.l - 6}" y="${y + 3}" text-anchor="end">${fmtNum(max * f)}</text>`; }
   rows.forEach((r, i) => {
-    const x = pad.l + i * step + (step - bw) / 2, bh = (r[key] / max) * ih;
-    s += `<rect x="${x}" y="${pad.t + ih - bh}" width="${bw}" height="${Math.max(0, bh)}" rx="2" fill="var(--bar)"><title>${esc(label(r))}</title></rect>`;
-    if (i % Math.ceil(rows.length / 8) === 0) s += `<text x="${x + bw / 2}" y="${h - 6}" text-anchor="middle">${esc(r._x)}</text>`;
+    const cx = pad.l + i * step + step / 2, bh = (r.v / max) * ih;
+    s += `<g data-tip="${esc(r.tip)}"><rect class="hit" x="${pad.l + i * step}" y="${pad.t}" width="${step}" height="${ih + pad.b}"/>${bh > 0 ? `<path class="bar ${r.cls ?? ''}" d="${barPath(cx - bw / 2, pad.t + ih - bh, bw, bh)}"/>` : ''}</g>`;
+    if (i % every === 0) s += `<text class="ax" x="${cx}" y="${h - 5}" text-anchor="middle">${esc(r.x)}</text>`;
   });
-  if (key2) {
-    const pts = rows.map((r, i) => `${pad.l + i * step + step / 2},${pad.t + ih - (r[key2] / max2) * ih}`).join(' ');
-    s += `<polyline points="${pts}" fill="none" stroke="var(--warn)" stroke-width="2"/>`;
+  return `${s}</svg>`;
+}
+// horizontal bars, one series (or two overlaid: light = the whole, dark = the part)
+const hbars = (rows) => `<div class="hb">${rows.map((r) => `<div class="nm" data-tip="${esc(r.tip ?? r.name)}">${r.html ?? esc(r.name)}</div>
+  <div class="tr" data-tip="${esc(r.tip ?? r.name)}">${r.back != null ? `<b class="lite" style="width:${r.back}%"></b>` : ''}<b style="width:${Math.max(r.pct, r.pct > 0 ? 1.5 : 0)}%"></b></div><div class="v">${r.text}</div>`).join('')}</div>`;
+// one row per episode: every rating as a dot on the 1-11 line (size = how many students), the median as a black tick, 6-7 shaded
+const SX = (l, W = 300, pad = 10) => pad + ((l - 1) / 10) * (W - 2 * pad);
+function strip(ep) {
+  const W = 300, h = 26, counts = {};
+  for (const r of ep.ratings) counts[r] = (counts[r] ?? 0) + 1;
+  let s = `<svg viewBox="0 0 ${W} ${h}" class="plot" role="img" aria-label="${esc(`${ep.title}: ${ep.responses} ratings, median ${ep.median ?? '-'}`)}">`;
+  s += `<rect class="band" x="${SX(5.5)}" y="1" width="${SX(7.5) - SX(5.5)}" height="${h - 2}" rx="4"/><line class="gl" x1="${SX(1)}" x2="${SX(11)}" y1="${h / 2}" y2="${h / 2}"/>`;
+  for (const [l, c] of Object.entries(counts)) {
+    const r = Math.min(11, 3 + 2.2 * Math.sqrt(c));
+    s += `<g data-tip="${esc(`Episode ${ep.n} · ${l} of 11 (${LADDER[l]})\n${c} student${c > 1 ? 's' : ''}`)}"><circle class="hit" cx="${SX(+l)}" cy="${h / 2}" r="12"/><circle class="dot" cx="${SX(+l)}" cy="${h / 2}" r="${r}"/></g>`;
   }
-  return s + '</svg>';
+  if (ep.median != null) s += `<line class="med" x1="${SX(ep.median)}" x2="${SX(ep.median)}" y1="2" y2="${h - 2}"><title>median ${ep.median}</title></line>`;
+  return `${s}</svg>`;
 }
-const hbars = (rows) => `<div class="hbar">${rows.map((r) => `<div class="name" title="${esc(r.name)}">${esc(r.name)}</div>
-  <div class="track">${r.back != null ? `<b style="width:${r.back}%"></b>` : ''}<b class="on" style="width:${r.pct}%"></b></div><div class="num">${r.text}</div>`).join('')}</div>`;
+const stripAxis = () => `<svg viewBox="0 0 300 14" class="plot">${Array.from({ length: 11 }, (_, i) => `<text class="ax" x="${SX(i + 1)}" y="11" text-anchor="middle">${i + 1}</text>`).join('')}</svg>`;
+// the 13-episode journey: empty = not opened, light = opened, blue = solved; the outlined one is where they are now
+const journey = (j, cur, big = false) => `<span class="jr${big ? ' big' : ''}" role="img" aria-label="${j.filter((x) => x === 2).length} of 13 episodes solved">${j.map((x, i) =>
+  `<i class="s${x}${i + 1 === cur ? ' cur' : ''}" data-tip="${esc(`Episode ${i + 1}: ${epTitle(i + 1)}\n${['not opened', 'opened, not solved yet', 'solved'][x]}`)}">${big ? i + 1 : ''}</i>`).join('')}</span>`;
+const epTitle = (n) => state.overview?.funnel.find((f) => f.n === n)?.title ?? `Episode ${n}`;
 
-// ---------------------------------------------------------------- overview
-function feedCards(fb, n = 8) {
-  if (!fb) return '<p class="faint">Loading feedback…</p>';
-  const MOOD_E = { 'Loved it': '🤩', Fun: '😀', Okay: '😐', Confusing: '😕', Boring: '😴' };
-  const all = [
-    ...fb.responses.map((r) => ({ at: r.at, id: r.student_id, name: r.name, where: `Episode ${r.session} · end`, big: `${'⭐'.repeat(r.rating)} ${MOOD_E[r.mood] ?? ''}`, text: r.comment, c: r.rating >= 4 ? '#10b981' : r.rating <= 2 ? '#ef4444' : '#f59e0b', extra: r.difficulty ? `SQL: ${r.difficulty === 'right' ? 'just right' : 'too ' + r.difficulty}` : '' })),
-    ...fb.checkpoints.list.map((r) => ({ at: r.at, id: r.student_id, name: r.name, where: `Episode ${r.session} · chapter ${r.chapter}`, big: ['', '😕 Lost', '😐 Okay', '🙂 Good', '🤩 Great'][r.rating] ?? '', text: r.comment, c: r.rating >= 3 ? '#10b981' : r.rating === 1 ? '#ef4444' : '#f59e0b', extra: '' })),
-  ].sort((x, y) => String(y.at).localeCompare(String(x.at))).slice(0, n);
-  return all.length ? `<div class="feed">${all.map((f) => `<div class="fb" style="--c:${f.c}" data-id="${esc(f.id)}"><div class="who">${esc(f.name ?? f.id)}</div><div class="meta">${esc(f.where)} · ${ago(f.at)}</div><div class="big">${f.big}</div>${f.extra ? `<div class="meta">${esc(f.extra)}</div>` : ''}${f.text ? `<div class="cm">“${esc(f.text)}”</div>` : ''}</div>`).join('')}</div>` : '<p class="faint">No feedback yet. It appears here the moment a student sends it.</p>';
+// ---------------------------------------------------------------- NOW
+const voiceCard = (v) => `<div class="voice" style="--c:var(--${v.band === 'low' ? 'crit' : v.band === 'delight' ? 'good' : 'line'})" data-id="${esc(v.id)}">
+  <div class="top2">${v.badge}${bandChip(v.band)}<span class="faint" style="margin-left:auto;font-size:12px">${ago(v.at)}</span></div>
+  ${v.ladder ? `<div class="lad">${esc(v.ladder)}</div>` : ''}
+  <div class="q${v.text ? '' : ' none'}">${v.text ? `“${esc(v.text)}”` : 'No suggestion written'}</div>
+  <div class="by">${esc(v.name ?? v.id)} · ${esc(v.where)}${v.extra ? ` · ${esc(v.extra)}` : ''}</div></div>`;
+function voicesOf(fb) {
+  if (!fb) return [];
+  return [
+    ...fb.responses.map((r) => ({ kind: 'episode', at: r.at, id: r.student_id, name: r.name, session: r.session, text: r.comment, rating: r.rating, scale: r.scale ?? 5,
+      band: band(r.rating, r.scale ?? 5), badge: starsOf(r.rating, r.scale ?? 5), ladder: (r.scale ?? 5) === 11 ? LADDER[r.rating] : '', where: `Episode ${r.session}`,
+      extra: [r.mood, r.difficulty && (r.difficulty === 'right' ? 'SQL just right' : `SQL too ${r.difficulty}`)].filter(Boolean).join(', '), difficulty: r.difficulty, mood: r.mood })),
+    ...fb.checkpoints.list.map((r) => ({ kind: 'checkin', at: r.at, id: r.student_id, name: r.name, session: r.session, text: r.comment, rating: r.rating,
+      band: r.rating === 1 ? 'low' : r.rating === 2 ? 'okay' : 'delight', badge: `<span class="chip ${PULSE[r.rating][0]}">${ic(PULSE[r.rating][1])}${PULSE[r.rating][2]}</span>`,
+      ladder: '', where: `Episode ${r.session}, chapter ${r.chapter} check-in`, extra: '' })),
+  ].sort((a, b) => String(b.at).localeCompare(String(a.at)));
 }
-function renderOverview() {
-  const o = state.overview, t = o.totals, fb = state.fbAll;
-  const kpi = (v, l, ico, k) => `<div class="card kpi ${k}"><span class="ico">${ico}</span><div class="v">${v}</div><div class="l">${l}</div></div>`;
-  const maxStarted = Math.max(1, ...o.funnel.map((f) => f.started));
-  const daily = o.daily.map((d) => ({ ...d, _x: d.date.slice(5).replace('-', '/') }));
-  const funnelRows = o.funnel.map((f) => ({ name: `${f.n}. ${f.title}`, back: (f.started / maxStarted) * 100, pct: (f.completed / maxStarted) * 100, text: `${f.completed}/${f.started}` }));
-  const fbCount = fb ? fb.totals.responses + fb.checkpoints.responses : '…';
-  $('#tab-overview').innerHTML = `
+function needList(att, n) {
+  if (!att.length) return `<div class="allgood">${ic('check')} Nobody needs you right now.</div>`;
+  return `<div class="need">${att.slice(0, n).map((x) => `<button class="need-row" data-id="${esc(x.student_id)}"><span class="av">${esc(initials(x.name ?? x.student_id))}</span>
+    <span class="who"><b>${esc(x.name ?? x.student_id)}</b><small>${esc(x.student_id)}</small></span><span class="why">${x.reasons.map(reasonChip).join('')}</span>
+    <span class="when">${ago(x.reasons[0].at)}</span></button>`).join('')}</div>`;
+}
+function renderNow() {
+  const o = state.overview, t = o.totals, L = o.ladder, att = o.attention;
+  const tile = (v, l, icon, k, tipText, go) => `<div class="card kpi ${k}${go ? ' go' : ''}" ${go ? `data-go="${go}" role="button" tabindex="0"` : ''} data-tip="${esc(tipText)}"><span class="ico">${ic(icon)}</span><div class="v">${v}</div><div class="l">${l}</div></div>`;
+  const voices = voicesOf(state.fbAll).filter((v) => v.text).slice(0, 6);
+  const maxLevel = Math.max(1, ...o.levels.map((l) => l.students));
+  $('#tab-now').innerHTML = `
     <div class="grid kpis">
-      ${kpi(fmtNum(t.playing), 'Students played', '👥', 'k1')}
-      ${kpi(fmtNum(t.active_today), 'Active today', '🔥', 'k2')}
-      ${kpi(dur(t.avg_minutes_per_student * 60), 'Avg time per student', '⏱️', 'k3')}
-      ${kpi(fb?.totals.avg_rating ?? '—', 'Avg rating (out of 5)', '⭐', 'k4')}
-      ${kpi(fmtNum(fbCount), 'Feedback received', '💬', 'k5')}
+      ${tile(fmtNum(t.playing), 'Played', 'users', 'k1', `${t.students} signed up\n${t.not_started} have not started\n${t.finished_game} finished all 13 episodes`, 'students')}
+      ${tile(fmtNum(t.active_today), 'Active today', 'zap', 'k2', `${t.active_7d} active in the last 7 days\n${t.inactive_7d} quiet for 7+ days`)}
+      ${tile(dur(t.avg_minutes_per_student * 60), 'Time per student', 'clock', 'k3', `${t.total_hours} hours played in all\nonly active time counts (tab open, recent tap or key)`)}
+      ${tile(L.avg ?? '-', `Stars <small style="opacity:.85">out of 11</small>`, 'star', 'k4', L.responses ? `Average of ${L.responses} answers\nmedian ${L.median} · ${pct(L.delight, L.responses)}% gave 6 or more\n5 = "it worked, as expected"` : 'No 11-star answers yet', 'feedback')}
+      ${tile(fmtNum(att.length), 'Need you', 'flag', 'k5', 'Stuck on a task, low stars, lost in a chapter,\nquiet for 3+ days, or signed up and never played', 'need')}
     </div>
-    <div class="card" style="margin-top:12px"><h2>Latest feedback</h2><p class="sub">Click a card to open that student.</p>${feedCards(fb)}</div>
     <div class="grid two">
-      <div class="card chart"><h2>Daily activity</h2><p class="sub">Active students per day, last 30 days</p>
-        ${columnChart(daily, { key: 'students', label: (d) => `${d.date}: ${d.students} students, ${d.minutes} min` })}</div>
-      <div class="card"><h2>Episodes completed</h2><p class="sub">Completed / started. Click Episodes for step-by-step detail.</p>${hbars(funnelRows)}</div>
+      <div class="card"><h2>${ic('flag')} Need you <span class="n">${att.length}</span>${info('Who to reach out to, and why. Hover a reason for details; click a student for everything they did.')}
+        ${att.length > 6 ? `<button class="btn small more" id="needMore">${state.needAll ? 'Show fewer' : `Show all ${att.length}`}</button>` : ''}</h2>${needList(att, state.needAll ? 999 : 6)}</div>
+      <div class="card"><h2>${ic('message')} Latest suggestions${info('Newest written feedback: end-of-episode cards and chapter check-ins. All of it is on the Feedback tab.')}
+        <button class="btn small more" data-go="feedback">All feedback</button></h2>
+        ${voices.length ? `<div class="wall" style="grid-template-columns:repeat(auto-fill,minmax(230px,1fr))">${voices.slice(0, 4).map(voiceCard).join('')}</div>` : '<div class="empty">No written suggestions yet.</div>'}</div>
+    </div>
+    <div class="grid three">
+      <div class="card"><h2>${ic('layers')} Where they are now${info('Students on each episode right now (the one they are working on, or the last one they solved)')}</h2>
+        ${columns(o.levels.map((l) => ({ v: l.students, x: l.n, tip: `Episode ${l.n}: ${l.title}\n${l.students} student${l.students === 1 ? '' : 's'} here` })), { h: 170, W: 420 })}</div>
+      <div class="card"><h2>${ic('zap')} Active students per day${info('Last 30 days')}</h2>
+        ${columns(o.daily.map((d) => ({ v: d.students, x: d.date.slice(8), tip: `${new Date(d.date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}\n${d.students} students · ${d.minutes} min played` })), { h: 170, every: 5, W: 420 })}</div>
+      <div class="card"><h2>${ic('clock')} When they play${info('Minutes played in each hour of the day, all days together (India time of the browser)')}</h2>
+        ${columns(o.hours.map((x) => ({ v: x.minutes, x: x.hour, tip: `${String(x.hour).padStart(2, '0')}:00 - ${String(x.hour).padStart(2, '0')}:59\n${x.minutes} min played` })), { h: 170, every: 3, W: 420 })}</div>
     </div>`;
-  $('#tab-overview').querySelectorAll('[data-id]').forEach((c) => c.onclick = () => openStudent(c.dataset.id));
+  wireGo($('#tab-now'));
+  $('#needMore')?.addEventListener('click', () => { state.needAll = !state.needAll; renderNow(); });
+}
+function wireGo(root) {
+  root.querySelectorAll('[data-id]').forEach((c) => c.onclick = () => openStudent(c.dataset.id));
+  root.querySelectorAll('[data-go]').forEach((c) => {
+    const go = () => { const g = c.dataset.go; if (g === 'need') { state.stuFilter = 'need'; renderStudents(); setTab('students'); } else setTab(g); };
+    c.onclick = go; c.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } };
+  });
 }
 
-// ---------------------------------------------------------------- students
-const COLS = [
-  ['name', 'Student'], ['batch', 'Batch'], ['level', 'Current level'], ['progress_pct', 'Progress', 'r'], ['episodes_done', 'Episodes done', 'r'],
-  ['seconds', 'Time played', 'r'], ['active_days', 'Active days', 'r'], ['accuracy_pct', 'SQL correct', 'r'], ['hints', 'Hints', 'r'], ['last_seen', 'Last active'],
-];
+// ---------------------------------------------------------------- STUDENTS
 const weekAgo = () => Date.now() - 7 * 86400_000;
-function statusChip(r) {
-  if (r.episodes_done >= 13) return '<span class="chip good">Finished</span>';
-  if (Date.parse(r.last_seen) >= weekAgo()) return '<span class="chip acc">Active</span>';
-  return '<span class="chip warn">Inactive</span>';
-}
+const lastStars = (r) => r.stars?.length ? r.stars[r.stars.length - 1] : null;
+const COLS = [
+  ['name', 'Student'], ['journey', 'Journey', '', 'The 13 episodes: blue = solved, light = opened. The outlined one is where they are now.'], ['progress_pct', 'Progress', 'r'],
+  ['seconds', 'Time', 'r'], ['accuracy_pct', 'SQL right', 'r', 'Share of SQL runs that were correct'], ['hints', 'Hints', 'r'],
+  ['stars', 'Stars', 'r', 'The latest rating they gave (out of 11; older answers out of 5)'], ['last_seen', 'Last active'], ['need', '', '', 'Why they need you'],
+];
 function renderStudents() {
-  const q = $('#q').value.trim().toLowerCase(), f = $('#statusFilter').value;
+  const q = $('#q').value.trim().toLowerCase(), f = state.stuFilter;
+  seg($('#stuSeg'), [['', 'Everyone'], ['need', `Need you (${state.need.size})`, 'flag'], ['active', 'Active 7 days'], ['inactive', 'Quiet 7+ days'], ['finished', 'Finished'], ['notstarted', `Not started (${state.notStarted.length})`]],
+    f, (v) => { state.stuFilter = v; renderStudents(); });
   const table = $('#studentsTable');
   if (f === 'notstarted') {
-    const rows = state.notStarted.filter((r) => !q || `${r.name} ${r.student_id}`.toLowerCase().includes(q));
-    $('#count').textContent = `${rows.length} students`;
-    table.innerHTML = `<thead><tr><th class="nosort">Student</th><th class="nosort">NxtWave ID</th><th class="nosort">Batch</th></tr></thead><tbody>${rows.map((r) => `<tr><td>${esc(r.name ?? '—')}</td><td>${esc(r.student_id)}</td><td>${esc(r.batch ?? '—')}</td></tr>`).join('') || '<tr><td colspan="3" class="empty">Nobody — everyone on the roster has started.</td></tr>'}</tbody>`;
+    const rows = state.notStarted.filter((r) => !q || `${r.name} ${r.student_id} ${r.email ?? ''}`.toLowerCase().includes(q));
+    $('#count').textContent = `${rows.length}`;
+    table.innerHTML = `<thead><tr><th class="nosort">Student</th><th class="nosort">NxtWave ID</th><th class="nosort">Signed up</th><th class="nosort">Batch</th></tr></thead><tbody>${rows.map((r) => `<tr class="click" data-id="${esc(r.student_id)}"><td><b>${esc(r.name ?? '-')}</b>${r.email ? `<div class="faint">${esc(r.email)}</div>` : ''}</td><td>${esc(r.student_id)}</td><td>${ago(r.registered_at)}</td><td>${esc(r.batch ?? '-')}</td></tr>`).join('') || '<tr><td colspan="4" class="empty">Everyone has started.</td></tr>'}</tbody>`;
+    table.querySelectorAll('tr[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
     return;
   }
-  let rows = state.students.filter((r) => !q || `${r.name ?? ''} ${r.student_id}`.toLowerCase().includes(q));
+  let rows = state.students.filter((r) => !q || `${r.name ?? ''} ${r.student_id} ${r.email ?? ''}`.toLowerCase().includes(q));
+  if (f === 'need') rows = rows.filter((r) => state.need.has(r.student_id));
   if (f === 'active') rows = rows.filter((r) => Date.parse(r.last_seen) >= weekAgo());
   if (f === 'inactive') rows = rows.filter((r) => Date.parse(r.last_seen) < weekAgo() && r.episodes_done < 13);
   if (f === 'finished') rows = rows.filter((r) => r.episodes_done >= 13);
   const { key, dir } = state.sort;
-  const val = (r) => key === 'name' ? (r.name ?? r.student_id).toLowerCase() : key === 'level' ? r.level * 10 + (r.level_status === 'completed' ? 1 : 0) : r[key] ?? '';
+  const val = (r) => key === 'name' ? (r.name ?? r.student_id).toLowerCase() : key === 'journey' ? r.beats_done : key === 'stars' ? (lastStars(r) ? lastStars(r).rating / lastStars(r).scale : -1)
+    : key === 'need' ? (state.need.get(r.student_id)?.length ?? 0) : r[key] ?? '';
   rows.sort((a, b) => (val(a) < val(b) ? -1 : val(a) > val(b) ? 1 : 0) * dir);
-  $('#count').textContent = `${rows.length} students`;
-  table.innerHTML = `<thead><tr>${COLS.map(([k, l, c]) => `<th class="${c ?? ''}" data-k="${k}" aria-sort="${key === k ? (dir > 0 ? 'ascending' : 'descending') : 'none'}">${l}</th>`).join('')}<th class="nosort">Status</th></tr></thead>
-    <tbody>${rows.map((r) => `<tr class="click" data-id="${esc(r.student_id)}">
-      <td><b>${esc(r.name ?? r.student_id)}</b>${r.name ? `<div class="faint">${esc(r.student_id)}</div>` : ''}${r.is_guest ? ' <span class="chip mute">guest</span>' : ''}</td>
-      <td>${esc(r.batch ?? '—')}</td>
-      <td>${r.level ? `${r.level}. ${esc(r.level_title)}<div class="faint">${esc(r.level_status)}</div>` : '<span class="faint">Briefing only</span>'}</td>
-      <td class="r">${pbar(r.progress_pct)}</td><td class="r">${r.episodes_done}/13</td><td class="r">${dur(r.seconds)}</td><td class="r">${r.active_days}</td>
-      <td class="r">${r.attempts ? r.accuracy_pct + '%' : '—'}</td><td class="r">${r.hints}</td>
-      <td title="${esc(when(r.last_seen))}">${ago(r.last_seen)}</td><td>${statusChip(r)}</td></tr>`).join('') || `<tr><td colspan="${COLS.length + 1}" class="empty">No students yet. They appear here as soon as they open the game.</td></tr>`}</tbody>`;
+  $('#count').textContent = `${rows.length}`;
+  table.innerHTML = `<thead><tr>${COLS.map(([k, l, c, t]) => `<th class="${c ?? ''}" data-k="${k}" aria-sort="${key === k ? (dir > 0 ? 'ascending' : 'descending') : 'none'}"${t ? ` data-tip="${esc(t)}"` : ''}>${l}</th>`).join('')}</tr></thead>
+    <tbody>${rows.map((r) => { const st = lastStars(r), need = state.need.get(r.student_id) ?? [];
+      return `<tr class="click" data-id="${esc(r.student_id)}">
+      <td><b>${esc(r.name ?? r.student_id)}</b>${r.is_guest ? ' <span class="chip mute">guest</span>' : ''}<div class="faint">${esc(r.student_id)}${r.batch ? ` · ${esc(r.batch)}` : ''}</div></td>
+      <td>${journey(r.journey, r.level)}</td>
+      <td class="r">${pbar(r.progress_pct)}</td><td class="r">${dur(r.seconds)}</td>
+      <td class="r">${r.attempts ? `${r.accuracy_pct}%` : '-'}</td><td class="r">${r.hints || '-'}</td>
+      <td class="r">${st ? starsOf(st.rating, st.scale) : '<span class="faint">-</span>'}</td>
+      <td data-tip="${esc(when(r.last_seen))}">${ago(r.last_seen)}</td>
+      <td><span class="flags">${need.map((x) => `<span class="${REASON[x.kind]?.[0] ?? 'mute'}" style="color:var(--c)" data-tip="${esc([x.text, x.detail].filter(Boolean).join('\n'))}">${ic(REASON[x.kind]?.[1] ?? 'flag')}</span>`).join('')}</span></td></tr>`; }).join('')
+      || `<tr><td colspan="${COLS.length}" class="empty">${f ? 'Nobody here.' : 'No students yet. They appear the moment they open the game.'}</td></tr>`}</tbody>`;
   table.querySelectorAll('th[data-k]').forEach((th) => th.onclick = () => {
-    state.sort = { key: th.dataset.k, dir: state.sort.key === th.dataset.k ? -state.sort.dir : (['name', 'batch'].includes(th.dataset.k) ? 1 : -1) };
+    state.sort = { key: th.dataset.k, dir: state.sort.key === th.dataset.k ? -state.sort.dir : (th.dataset.k === 'name' ? 1 : -1) };
     renderStudents();
   });
   table.querySelectorAll('tr[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
 }
+$('#resetAny').onclick = async () => {
+  const id = (prompt("Reset a student's password\n\nThe student's NxtWave ID:") ?? '').trim();
+  if (!id) return;
+  const out = $('#resetAnyOut'); out.hidden = false;
+  try {
+    const r = await api(`/api/admin/students/${encodeURIComponent(id)}/reset-password`, { method: 'POST' });
+    out.innerHTML = `${ic('key')} Temporary password for <b>${esc(r.student_id)}</b>: <b style="font:600 16px ui-monospace,monospace;user-select:all">${esc(r.temp_password)}</b> <span class="muted">Works once, then they choose their own.</span>`;
+  } catch (e) { out.textContent = e.message === 'no such student' ? `No student with the ID "${id}".` : `Could not reset: ${e.message}`; }
+};
 $('#q').oninput = renderStudents;
-$('#statusFilter').onchange = renderStudents;
 
-// ---------------------------------------------------------------- one student
+// ---------------------------------------------------------------- ONE STUDENT: every interaction
+const TL = {
+  sql: (i) => { const s = { pass: ['good', 'Correct'], trap: ['warn', 'Trap'], fail: ['crit', 'Wrong'], error: ['serious', 'Error'] }[i.status] ?? ['mute', i.status ?? 'Ran'];
+    return { icon: 'code', cls: s[0], t: `Ran SQL <span class="chip ${s[0]}">${ic(s[0] === 'good' ? 'check' : s[0] === 'warn' ? 'alert' : 'x')}${esc(s[1])}</span>`, m: [i.task, i.attempt && `try ${i.attempt}`], x: i.sql ? `<code class="sql">${esc(i.sql)}</code>` : '' }; },
+  solved: (i) => ({ icon: 'check', cls: 'good', t: `Solved ${esc(i.task ?? 'a task')}`, m: [i.attempts && `${i.attempts} ${i.attempts === 1 ? 'try' : 'tries'}`, i.hint ? `hint ${i.hint} used` : 'no hints'] }),
+  hint: (i) => ({ icon: 'bulb', cls: i.tier >= 3 ? 'warn' : 'mute', t: i.tier >= 3 ? 'Opened the answer (hint 3)' : `Opened hint ${esc(i.tier)}`, m: [i.task] }),
+  trap: (i) => ({ icon: 'alert', cls: 'warn', t: 'Fell into a trap', m: [i.task, i.trap] }),
+  activity: (i) => ({ icon: 'grid', cls: i.first_try ? 'good' : i.revealed ? 'warn' : 'mute', t: `Activity ${i.first_try ? 'right first try' : i.revealed ? 'answer shown' : `done in ${i.attempts ?? '?'} tries`}`, m: [i.label] }),
+  check: (i) => ({ icon: 'help', cls: i.correct ? 'good' : 'crit', t: `Quick check ${i.correct ? 'right' : 'wrong'}`, m: [i.label] }),
+  clue: (i) => ({ icon: 'pin', cls: 'blue', t: 'Pinned a clue', m: [i.title] }),
+  step: (i) => ({ icon: i.type === 'note' ? 'book' : 'eye', cls: 'mute', t: `Step ${i.step ?? ''} ${typeChip(i.type)}`, m: [i.label] }),
+  start: (i) => ({ icon: 'play', cls: 'blue', t: `Started episode ${i.session}`, m: [i.episode] }),
+  resume: (i) => ({ icon: 'play', cls: 'mute', t: `Came back to episode ${i.session}`, m: [i.episode] }),
+  finish: (i) => ({ icon: 'trophy', cls: 'good', t: `Solved episode ${i.session}`, m: [i.episode, i.points != null && `${i.points} points`] }),
+  reset: (i) => ({ icon: 'rotate', cls: 'warn', t: `Reset episode ${i.session}`, m: [i.episode] }),
+  restart: (i) => ({ icon: 'rotate', cls: 'mute', t: `Started episode ${i.session} over`, m: [i.episode] }),
+  feedback: (i) => ({ icon: 'star', cls: BAND[band(i.rating, i.scale)][0], t: `Rated episode ${i.session} ${starsOf(i.rating, i.scale)}`,
+    m: [i.scale === 11 && LADDER[i.rating], i.mood, i.difficulty && (i.difficulty === 'right' ? 'SQL just right' : `SQL too ${i.difficulty}`), i.liked?.length && `liked ${i.liked.join(', ')}`],
+    x: i.comment ? `<blockquote>${esc(i.comment)}</blockquote>` : '' }),
+  checkin: (i) => ({ icon: 'message', cls: PULSE[i.rating]?.[0] ?? 'mute', t: `Chapter ${i.chapter} check-in <span class="chip ${PULSE[i.rating]?.[0]}">${ic(PULSE[i.rating]?.[1])}${PULSE[i.rating]?.[2]}</span>`, m: [i.episode],
+    x: i.comment ? `<blockquote>${esc(i.comment)}</blockquote>` : '' }),
+  login: () => ({ icon: 'login', cls: 'mute', t: 'Logged in', m: [] }),
+};
+const TL_FILTERS = [
+  ['key', 'Key moments', (i) => i.kind !== 'step'], ['sql', 'SQL', (i) => i.kind === 'sql' || i.kind === 'solved'], ['help', 'Hints & traps', (i) => i.kind === 'hint' || i.kind === 'trap'],
+  ['voice', 'Feedback', (i) => i.kind === 'feedback' || i.kind === 'checkin'], ['steps', 'Steps', (i) => ['step', 'activity', 'check', 'clue'].includes(i.kind)], ['all', 'Everything', () => true],
+];
+function timelineHtml(items) {
+  const keep = TL_FILTERS.find((f) => f[0] === state.tlFilter)[2];
+  const list = items.filter(keep);
+  if (!list.length) return '<div class="empty">Nothing here yet.</div>';
+  let day = '', out = '';
+  const today = new Date().toDateString(), yest = new Date(Date.now() - 86400_000).toDateString();
+  for (const i of list) {
+    const d = new Date(i.at).toDateString();
+    if (d !== day) { day = d; out += `<div class="tl-day">${d === today ? 'Today' : d === yest ? 'Yesterday' : new Date(i.at).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</div>`; }
+    const v = (TL[i.kind] ?? (() => ({ icon: 'flag', cls: 'mute', t: esc(i.kind), m: [] })))(i);
+    const where = i.session ? `Ep ${i.session}${i.step && i.kind !== 'step' ? ` · step ${i.step}` : ''}` : '';
+    const meta = [where, ...v.m].filter(Boolean).map((x) => esc(x)).join(' · ');
+    out += `<div class="tl-item"><div class="tl-time">${clock(i.at)}</div><div class="tl-ico ${v.cls}">${ic(v.icon)}</div><div class="tl-main"><div class="t">${v.t}</div>${meta ? `<div class="m">${meta}</div>` : ''}${v.x ?? ''}</div></div>`;
+  }
+  return out;
+}
+function renderTimeline() {
+  const d = state.student; if (!d) return;
+  const counts = Object.fromEntries(TL_FILTERS.map(([k, , f]) => [k, d.timeline.items.filter(f).length]));
+  seg($('#tlSeg'), TL_FILTERS.map(([k, l]) => [k, `${l} <span class="faint">${counts[k]}</span>`]), state.tlFilter, (v) => { state.tlFilter = v; renderTimeline(); });
+  $('#tlBody').innerHTML = timelineHtml(d.timeline.items) + (d.timeline.more ? `<div style="text-align:center;margin-top:12px"><button class="btn" id="tlMore">Load older</button></div>` : '');
+  $('#tlMore')?.addEventListener('click', async () => {
+    const more = await api(`/api/admin/students/${encodeURIComponent(d.student_id)}/timeline?before=${encodeURIComponent(d.timeline.next)}`);
+    d.timeline = { items: [...d.timeline.items, ...more.items], more: more.more, next: more.next };
+    renderTimeline();
+  });
+}
 async function openStudent(id) {
   const d = await api(`/api/admin/students/${encodeURIComponent(id)}`);
-  $('#dTitle').textContent = d.name ?? d.student_id;
-  $('#dSub').textContent = [`NxtWave ID ${d.student_id}`, d.batch, d.registered_at ? `registered ${when(d.registered_at)}` : null, d.logins ? `entered their ID ${d.logins}×` : null,
-    `first played ${when(d.first_seen)}`, `last active ${ago(d.last_seen)}`].filter(Boolean).join(' · ');
-  const PULSE = { 1: '😕 Lost', 2: '😐 Okay', 3: '🙂 Good', 4: '🤩 Great' };
-  const kpi = (v, l) => `<div class="card kpi"><div class="v" style="font-size:22px">${v}</div><div class="l">${l}</div></div>`;
+  state.student = d;
+  const name = d.name ?? d.entered_name ?? d.student_id;
+  $('#dHead').innerHTML = `<span class="av">${esc(initials(name))}</span>
+    <div style="flex:1;min-width:0"><div id="dTitle" style="font-weight:700;font-size:17px">${esc(name)}</div>
+      <div class="faint" style="font-size:12.5px">${[d.student_id, d.email, d.batch].filter(Boolean).map(esc).join(' · ')}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
+        <span class="chip ${d.has_account ? 'good' : 'mute'}">${ic(d.has_account ? 'check' : 'x')}${d.has_account ? 'Has a password' : 'No account yet'}</span>
+        ${d.logins ? `<span class="chip mute">${ic('login')}${d.logins} log-in${d.logins === 1 ? '' : 's'}</span>` : ''}
+        ${d.attention.map(reasonChip).join('')}
+      </div></div>
+    <button class="btn small" id="resetPw" data-tip="Gives a temporary password to pass on. It works once.">${ic('key')} Reset password</button>
+    <button class="btn small" data-close aria-label="Close">${ic('x')}</button>
+    <div id="resetPwOut" style="flex-basis:100%" hidden></div>`;
+  $('#resetPw').onclick = async () => {
+    if (!confirm(`Reset the password of ${name} (${d.student_id})?\n\nThey are logged out everywhere and must use the temporary password you give them.`)) return;
+    const out = $('#resetPwOut'); out.hidden = false;
+    try { const r = await api(`/api/admin/students/${encodeURIComponent(d.student_id)}/reset-password`, { method: 'POST' });
+      out.innerHTML = `Temporary password: <b style="font:600 15px ui-monospace,monospace;user-select:all">${esc(r.temp_password)}</b> <span class="muted">Works once.</span>`; }
+    catch (e) { out.textContent = `Could not reset: ${e.message}`; }
+  };
+  const mini = (v, l, t) => `<div class="card"${t ? ` data-tip="${esc(t)}"` : ''}><div class="v">${v}</div><div class="l">${l}</div></div>`;
+  const stars = d.stars ?? [];
   const maxDay = Math.max(1, ...d.daily.map((x) => x.minutes));
-  const RVERB = { session_started: 'Started episode', session_resumed: 'Came back to episode', session_completed: 'Solved episode', session_reset: 'Reset episode',
-    session_abandoned: 'Started episode over', task_attempted: 'Ran SQL', task_passed: 'Solved SQL task', hint_used: 'Used a hint', trap_hit: 'Hit a trap',
-    activity_done: 'Finished activity', check_answered: 'Answered check', clue_pinned: 'Pinned a clue', beat_viewed: 'Read' };
   $('#dBody').innerHTML = `
-    <div class="grid kpis">${kpi(`${d.progress_pct}%`, 'Game progress')}${kpi(`${d.episodes_done}/13`, 'Episodes solved')}${kpi(dur(d.seconds), 'Active play time')}
-      ${kpi(d.active_days, 'Days active')}${kpi(d.attempts ? d.accuracy_pct + '%' : '—', `SQL correct (${d.tasks_passed}/${d.attempts})`)}${kpi(`${d.hints} / ${d.traps}`, 'Hints / traps')}</div>
-    <div class="card" style="margin-top:12px"><h2>Time played per day</h2>
-      ${d.daily.length ? hbars(d.daily.slice(-14).map((x) => ({ name: x.date, pct: (x.minutes / maxDay) * 100, text: `${x.minutes} min` }))) : '<div class="muted">No time recorded yet.</div>'}</div>
-    <h2 style="font-size:14px;margin:18px 0 8px">Episodes <span class="muted" style="font-weight:400">— open one to see time on every beat</span></h2>
-    ${d.episodes.map((e) => {
+    <div class="grid mini">${mini(`${d.progress_pct}%`, 'Progress', `${d.beats_done} steps done`)}${mini(`${d.episodes_done}/13`, 'Episodes solved')}${mini(dur(d.seconds), 'Play time', 'Active time only')}
+      ${mini(d.active_days, 'Days active')}${mini(d.attempts ? `${d.accuracy_pct}%` : '-', 'SQL right', `${d.tasks_passed} tasks solved, ${d.attempts} runs`)}${mini(`${d.hints}<small class="faint" style="font-size:13px"> / ${d.traps}</small>`, 'Hints / traps')}
+      ${mini(stars.length ? starsOf(stars[stars.length - 1].rating, stars[stars.length - 1].scale) : '-', 'Latest stars', stars.map((s) => `Ep ${s.session}: ${s.rating}/${s.scale}`).join('\n'))}</div>
+    <h3>${ic('layers')} Journey</h3>${journey(d.journey, d.level, true)}
+    <div class="legend"><span><i style="background:var(--s1)"></i>Solved</span><span><i style="background:var(--s1-2)"></i>Opened</span><span><i style="border:1px solid var(--line)"></i>Not opened</span><span>first played ${when(d.first_seen)} · last active ${ago(d.last_seen)}</span></div>
+    <h3>${ic('zap')} Every interaction</h3>
+    <div class="seg" id="tlSeg" role="group" aria-label="Show"></div>
+    <div id="tlBody" style="margin-top:6px"></div>
+    <h3>${ic('clock')} Minutes per day</h3>
+    <div class="card">${d.daily.length ? columns(d.daily.slice(-30).map((x) => ({ v: x.minutes, x: x.date.slice(8), tip: `${x.date}\n${x.minutes} min` })), { h: 130, W: 880, every: Math.ceil(Math.min(30, d.daily.length) / 10) }) : '<div class="faint">No time yet.</div>'}</div>
+    <h3>${ic('book')} Step by step</h3>
+    ${d.episodes.filter((e) => e.status !== 'not started').map((e) => {
       const maxB = Math.max(1, ...e.beats.map((b) => b.seconds));
-      const chip = e.status === 'completed' ? '<span class="chip good">Solved</span>' : e.status === 'in progress' ? '<span class="chip acc">In progress</span>' : '<span class="chip mute">Not started</span>';
-      return `<details class="ep"${e.status === 'in progress' ? ' open' : ''}><summary><b>${e.n}. ${esc(e.title)}</b>${pbar(e.progress_pct)}<span class="num">${dur(e.seconds)}</span><span class="num">${e.attempts} SQL runs</span>${chip}</summary>
-        ${e.chapters?.length ? `<div class="inner"><b style="font-size:13px">Time per chapter (stage)</b><table><thead><tr><th class="nosort">Chapter</th><th class="nosort">Time</th><th class="r nosort">Steps done</th></tr></thead><tbody>
-          ${e.chapters.map((c) => `<tr><td>Chapter ${c.chapter}</td><td><div class="pbar"><div class="track"><b class="on" style="width:${(c.seconds / Math.max(1, ...e.chapters.map((x) => x.seconds))) * 100}%"></b></div><span class="num">${dur(c.seconds)}</span></div></td><td class="r">${c.beats_done}/${c.beats}</td></tr>`).join('')}
-          </tbody></table></div>` : ''}
-        ${e.beats.length ? `<div class="inner"><table><thead><tr><th class="nosort">#</th><th class="nosort">Ch.</th><th class="nosort">Beat</th><th class="nosort">Time on it</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="nosort">Done</th></tr></thead><tbody>
-          ${e.beats.map((b, i) => `<tr class="${b.hints >= 2 || b.attempts >= 6 ? 'hot' : ''}"><td class="faint">${i + 1}</td><td class="faint">${b.chapter ?? ''}</td><td class="wrap">${typeChip(b.type)} ${esc(b.label)}</td>
-            <td><div class="pbar"><div class="track"><b class="on" style="width:${(b.seconds / maxB) * 100}%"></b></div><span class="num">${dur(b.seconds)}</span></div></td>
-            <td class="r">${b.attempts || ''}</td><td class="r">${b.hints || ''}</td><td class="r">${b.traps || ''}</td><td>${b.done ? '✓' : '<span class="faint">—</span>'}</td></tr>`).join('')}
-          </tbody></table><div class="faint" style="margin-top:6px">${e.started_at ? `Started ${when(e.started_at)}` : ''}${e.completed_at ? ` · solved ${when(e.completed_at)}` : ''}${e.points != null ? ` · ${e.points} points` : ''}${e.resets ? ` · reset ${e.resets}×` : ''}. Highlighted rows: many SQL runs or hints.</div></div>` : ''}
-      </details>`;
-    }).join('')}
-    <div class="card" style="margin-top:12px"><h2>Feedback from this student</h2>
-      ${d.feedback.length || d.checkpoints.length ? `<div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">When</th><th class="nosort">Where</th><th class="nosort">Rating</th><th class="nosort">Details</th><th class="nosort">Suggestion / comment</th></tr></thead><tbody>
-        ${[...d.feedback.map((f) => ({ at: f.client_ts, where: `Ep ${f.session} (end)`, rating: STARS(f.rating), det: [f.mood, f.difficulty && `SQL ${f.difficulty}`, f.liked.length && `liked: ${f.liked.join(', ')}`].filter(Boolean).join(' · '), c: f.comment })),
-           ...d.checkpoints.map((c) => ({ at: c.client_ts, where: `Ep ${c.session} · chapter ${c.chapter}`, rating: esc(PULSE[c.rating] ?? c.rating), det: '', c: c.comment }))]
-          .sort((a, b) => (a.at < b.at ? 1 : -1))
-          .map((r) => `<tr><td class="faint">${when(r.at)}</td><td>${esc(r.where)}</td><td>${r.rating}</td><td class="wrap faint">${esc(r.det)}</td><td class="wrap">${esc(r.c ?? '')}</td></tr>`).join('')}
-        </tbody></table></div>` : '<div class="muted">No feedback from this student yet.</div>'}</div>
-    <div class="card" style="margin-top:12px"><h2>Recent activity</h2><p class="sub">Latest 40 actions, newest first (time checks not shown)</p>
-      <div class="tablewrap" style="border:0"><table><tbody>${d.recent.map((r) => `<tr><td class="faint">${when(r.at)}</td><td>${r.session ? `Ep ${r.session}` : 'Briefing'}</td>
-        <td>${esc(RVERB[r.verb] ?? r.verb)} ${r.verb === 'task_attempted' ? `<span class="chip ${r.detail?.status === 'pass' ? 'good' : r.detail?.status === 'trap' ? 'warn' : 'bad'}">${esc(r.detail?.status)}</span>` : ''}${r.detail?.tier ? ` tier ${esc(r.detail.tier)}` : ''}${r.detail?.points != null ? ` · ${esc(r.detail.points)} pts` : ''}</td>
-        <td class="wrap">${r.detail?.sql ? `<code class="sql">${esc(r.detail.sql)}</code>` : `<span class="faint">${esc(r.id ?? '')}</span>`}</td></tr>`).join('')}</tbody></table></div></div>`;
+      const chip = e.status === 'completed' ? `<span class="chip good">${ic('check')}Solved</span>` : `<span class="chip blue">${ic('play')}In progress</span>`;
+      return `<details class="ep"><summary><b>${e.n}. ${esc(e.title)}</b>${pbar(e.progress_pct)}<span class="faint">${dur(e.seconds)}</span><span class="faint">${e.attempts} SQL runs</span>${chip}</summary>
+        <div class="inner"><table><thead><tr><th class="nosort">#</th><th class="nosort">Step</th><th class="nosort">Time</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="nosort">Done</th></tr></thead><tbody>
+          ${e.beats.map((b, i) => `<tr class="${b.hints >= 2 || b.attempts >= 6 ? 'hot' : ''}"><td class="faint">${i + 1}</td><td class="wrap">${typeChip(b.type)} ${esc(b.label)}</td>
+            <td><div class="pb"><div class="tr"><b style="width:${(b.seconds / maxB) * 100}%"></b></div><span>${dur(b.seconds)}</span></div></td>
+            <td class="r">${b.attempts || ''}</td><td class="r">${b.hints || ''}</td><td class="r">${b.traps || ''}</td><td>${b.done ? `<span style="color:var(--good)">${ic('check')}</span>` : ''}</td></tr>`).join('')}
+        </tbody></table></div></details>`;
+    }).join('') || '<div class="faint">No episode opened yet.</div>'}`;
+  renderTimeline();
+  $('#drawer').querySelectorAll('[data-close]').forEach((b) => b.onclick = closeDrawer);
   $('#drawer').classList.add('open'); $('#drawer').setAttribute('aria-hidden', 'false');
+  $('#drawer .sheet').scrollTop = 0;
 }
-const closeDrawer = () => { $('#drawer').classList.remove('open'); $('#drawer').setAttribute('aria-hidden', 'true'); };
+const closeDrawer = () => { $('#drawer').classList.remove('open'); $('#drawer').setAttribute('aria-hidden', 'true'); state.student = null; };
 document.querySelectorAll('[data-close]').forEach((b) => b.onclick = closeDrawer);
 addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawer(); });
 
-// ---------------------------------------------------------------- one episode, beat by beat
+// ---------------------------------------------------------------- FEEDBACK: the 11-star ladder
+async function loadFeedback() {
+  const ep = $('#fbEp').value;
+  const p = new URLSearchParams(qs().slice(1)); if (ep) p.set('session', ep);
+  state.fb = await api(`/api/admin/feedback?${p}`);
+  $('#fbExport').href = `/api/admin/feedback.csv${qs()}`;
+  renderFeedback();
+}
+const FB_MODES = [['suggestions', 'Suggestions', 'message'], ['all', 'Every answer'], ['low', 'Not working', 'frown'], ['okay', 'As expected', 'meh'], ['delight', 'Delight', 'smile'], ['hard', 'SQL too hard']];
+function renderFeedback() {
+  const d = state.fb; if (!d) return;
+  const epN = Number($('#fbEp').value) || null, q = $('#fbQ').value.trim().toLowerCase(), m = state.fbMode;
+  seg($('#fbSeg'), FB_MODES, m, (v) => { state.fbMode = v; renderFeedback(); });
+  const L = d.ladder, scope = epN ? L.episodes[epN - 1] : L;
+  const ratings = epN ? scope.ratings : null;
+  const levels = epN ? Array.from({ length: 11 }, (_, i) => ({ level: i + 1, n: ratings.filter((r) => r === i + 1).length })) : L.levels;
+  let voices = voicesOf(d).filter((v) => !epN || v.session === epN);
+  voices = voices.filter((v) => (!q || `${v.name ?? ''} ${v.id} ${v.text ?? ''}`.toLowerCase().includes(q))
+    && (m !== 'suggestions' || v.text) && (!['low', 'okay', 'delight'].includes(m) || v.band === m) && (m !== 'hard' || v.difficulty === 'hard'));
+  const n = scope.responses;
+  const diff = d.difficulty, diffN = Math.max(1, diff.easy + diff.right + diff.hard);
+  const moodMax = Math.max(1, ...Object.values(d.moods)), likedMax = Math.max(1, ...d.liked.map((x) => x.n));
+  const chap = d.checkpoints.chapters;
+  const byEp = new Map(); for (const c of chap) { if (!byEp.has(c.session)) byEp.set(c.session, []); byEp.get(c.session).push(c); }
+  $('#fbBody').innerHTML = `
+    <div class="grid two" style="margin-top:0">
+      <div class="card">
+        <h2>${ic('star')} ${epN ? `Episode ${epN}: ${esc(epTitle(epN))}` : 'How students rate it'} ${info('Students rate each episode from 1 to 11 stars (the Airbnb 11-star idea).\n5 = "it worked, as expected". 6-7 = better than a normal class, made for them: the target.\n8-11 = beyond. 1-3 = it is not working for them.')}</h2>
+        <div class="hero"><div class="big">${scope.avg ?? '-'}<small> / 11</small></div>
+          <div class="facts">${n ? `<span class="chip mute">${n} answers</span><span class="chip mute">median ${scope.median}</span>
+            <span class="chip good">${ic('smile')}${pct(scope.delight, n)}% at 6+</span><span class="chip crit">${ic('frown')}${pct(scope.low, n)}% at 1-3</span>` : '<span class="faint">No 11-star answers yet</span>'}</div></div>
+        ${columns(levels.map((l) => ({ v: l.n, x: l.level, tip: `${l.level} of 11: ${LADDER[l.level]}\n${l.n} answer${l.n === 1 ? '' : 's'}${n ? ` (${pct(l.n, n)}%)` : ''}` })), { h: 190, bands: [{ from: 5, to: 7, label: 'target' }] })}
+        <div class="legend"><span>1-3 not working</span><span>4-5 as expected</span><span>6-7 target</span><span>8-11 beyond</span>${L.legacy ? `<span class="faint">+ ${L.legacy} earlier answers on the 5-star card (in the list, not in these numbers)</span>` : ''}</div>
+      </div>
+      <div class="card">
+        <h2>${ic('layers')} By episode ${info('Every rating as a dot (bigger = more students). Black tick = median. Shaded = 6-7, the target. Right: answers, and the share at 6 or more.')}</h2>
+        <div class="eprow head"><span></span>${stripAxis()}<span class="v">n</span><span class="v">6+</span></div>
+        ${L.episodes.map((e) => `<div class="eprow"><span class="nm" data-tip="${esc(`Episode ${e.n}: ${e.title}${e.responses ? `\naverage ${e.avg} · median ${e.median}` : ''}`)}">${e.n}. ${esc(e.title)}</span>${e.responses ? strip(e) : '<span class="faint" style="font-size:12px">no answers yet</span>'}
+          <span class="v">${e.responses || ''}</span><span class="v">${e.responses ? `${pct(e.delight, e.responses)}%` : ''}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h2>${ic('message')} ${m === 'suggestions' ? '"What would make it one star better?"' : 'Answers'} <span class="n">${voices.length}</span>${info('End-of-episode cards and chapter check-ins, newest first. Click one to see everything that student did.')}</h2>
+      ${voices.length ? `<div class="wall">${voices.slice(0, state.wallAll ? 600 : 24).map(voiceCard).join('')}</div>
+        ${voices.length > 24 ? `<div style="text-align:center;margin-top:12px"><button class="btn" id="wallMore">${state.wallAll ? 'Show the newest 24' : `Show all ${Math.min(600, voices.length)}`}</button></div>` : ''}
+        ${state.wallAll && voices.length > 600 ? `<p class="faint">The newest 600 of ${voices.length}. The CSV has all.</p>` : ''}` : '<div class="empty">Nothing matches.</div>'}
+    </div>
+    <div class="grid three">
+      <div class="card"><h2>${ic('smile')} How it felt</h2>${hbars(Object.entries(d.moods).map(([k, v]) => ({ name: k, html: `${ic(MOOD_ICON[k] ?? 'meh')} ${esc(k)}`, pct: (v / moodMax) * 100, text: fmtNum(v) })))}</div>
+      <div class="card"><h2>${ic('code')} The SQL was</h2>${hbars([['easy', 'Too easy'], ['right', 'Just right'], ['hard', 'Too hard']].map(([k, l]) => ({ name: l, pct: (diff[k] / diffN) * 100, text: `${pct(diff[k], diffN)}%`, tip: `${l}: ${diff[k]} answers` })))}</div>
+      <div class="card"><h2>${ic('check')} What they liked</h2>${d.liked.length ? hbars(d.liked.map((x) => ({ name: x.what, pct: (x.n / likedMax) * 100, text: fmtNum(x.n) }))) : '<div class="faint">Nothing picked yet.</div>'}</div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h2>${ic('message')} Chapter check-ins <span class="n">${fmtNum(d.checkpoints.responses)}</span>${info('The quick question after every chapter: Lost · Okay · Good · Great.\nA chapter is flagged when its average is under 2.5 or a quarter of students felt lost.')}</h2>
+      ${byEp.size ? `<div class="chapters">${[...byEp].map(([s, cs]) => `<div class="row"><span class="nm">${s}. ${esc(epTitle(s))}</span><span class="cells">${cs.map((c) => {
+        const bad = c.avg < 2.5 || c.lost / c.responses >= 0.25, ok = c.avg >= 3;
+        return `<span class="chip ${bad ? 'crit' : ok ? 'good' : 'mute'}" data-tip="${esc(`Episode ${s}, chapter ${c.chapter}\naverage ${c.avg} of 4 · ${c.responses} answers · ${c.lost} felt lost`)}">${ic(bad ? 'frown' : ok ? 'smile' : 'meh')}Ch ${c.chapter} · ${c.avg}</span>`; }).join('')}</span></div>`).join('')}</div>`
+        : '<div class="faint">No chapter check-ins yet.</div>'}
+    </div>`;
+  $('#fbBody').querySelectorAll('[data-id]').forEach((c) => c.onclick = () => openStudent(c.dataset.id));
+  $('#wallMore')?.addEventListener('click', () => { state.wallAll = !state.wallAll; renderFeedback(); });
+}
+$('#fbEp').onchange = loadFeedback; $('#fbQ').oninput = renderFeedback;
+
+// ---------------------------------------------------------------- EPISODES
+function renderEpisodes() {
+  const o = state.overview; if (!o) return;
+  const L = o.ladder, maxS = Math.max(1, ...o.funnel.map((f) => f.started));
+  $('#epAll').innerHTML = `<div class="card"><h2>${ic('layers')} All 13 episodes ${info('Click an episode for its steps. Bars: light = opened, blue = solved.')}</h2>
+    <div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">Episode</th><th class="nosort">Opened → solved</th><th class="r nosort">Solved</th><th class="r nosort" data-tip="Average active minutes per student who played it">Avg time</th>
+      <th class="r nosort" data-tip="SQL tasks solved on the first run">1st-try SQL</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="r nosort" data-tip="Median of the 11-star ratings, and the share at 6 or more">Stars</th></tr></thead><tbody>
+    ${o.funnel.map((f) => { const e = L.episodes[f.n - 1];
+      return `<tr class="click${f.n === state.ep ? ' sel' : ''}" data-ep="${f.n}"><td><b>${f.n}.</b> ${esc(f.title)}</td>
+      <td style="min-width:160px"><div class="hb" style="grid-template-columns:1fr auto"><div class="tr" data-tip="${esc(`${f.started} opened · ${f.completed} solved`)}"><b class="lite" style="width:${(f.started / maxS) * 100}%"></b><b style="width:${(f.completed / maxS) * 100}%"></b></div><div class="v">${f.completed}/${f.started}</div></div></td>
+      <td class="r">${f.started ? `${f.completion_pct}%` : '-'}</td><td class="r">${f.avg_minutes ? `${f.avg_minutes}m` : '-'}</td><td class="r">${f.attempts ? `${f.first_pass_pct}%` : '-'}</td>
+      <td class="r">${f.hints || '-'}</td><td class="r">${f.traps || '-'}</td><td class="r">${e?.responses ? `<span data-tip="${esc(`${e.responses} answers · average ${e.avg}`)}">${starsOf(e.median, 11)} <span class="faint">${pct(e.delight, e.responses)}%</span></span>` : '-'}</td></tr>`; }).join('')}
+    </tbody></table></div>
+    <div class="legend"><span><i style="background:var(--s1-2)"></i>Opened</span><span><i style="background:var(--s1)"></i>Solved</span></div></div>`;
+  $('#epAll').querySelectorAll('tr[data-ep]').forEach((tr) => tr.onclick = () => { state.ep = Number(tr.dataset.ep); $('#epPick').value = state.ep; renderEpisodes(); loadEpisode(); $('#epTitle').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+}
 async function loadEpisode() {
   const e = await api(`/api/admin/episodes/${state.ep}${qs()}`);
   const maxT = Math.max(1, ...e.beats.map((b) => b.avg_seconds));
   const worst = [...e.beats].sort((a, b) => b.here_now - a.here_now)[0];
-  $('#epSummary').textContent = `${e.started} started · ${e.completed} completed${worst?.here_now ? ` · most unfinished students are on beat ${worst.index + 1}` : ''}`;
-  $('#epBody').innerHTML = e.started ? `<div class="tablewrap"><table><thead><tr><th class="nosort">#</th><th class="nosort">Beat</th><th class="nosort">Reached &amp; completed</th><th class="nosort">Avg time</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="r nosort">Stopped here</th></tr></thead><tbody>
+  $('#epTitle').innerHTML = `${ic('book')} Episode ${e.n}: ${esc(e.title)} ${info('Every step. "Stopped here" = students who opened this episode, have not solved it, and whose next step is this one. Highlighted rows are where students get stuck.')}`;
+  $('#epSummary').innerHTML = `${e.started} opened · ${e.completed} solved${worst?.here_now ? ` · most waiting on step ${worst.index + 1}` : ''}`;
+  $('#epBody').innerHTML = e.started ? `<div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">#</th><th class="nosort">Step</th><th class="nosort">Reached it</th><th class="nosort">Avg time</th><th class="r nosort">SQL runs</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="r nosort">Stopped here</th></tr></thead><tbody>
     ${e.beats.map((b) => `<tr class="${b.here_now >= Math.max(2, e.started * 0.05) ? 'hot' : ''}"><td class="faint">${b.index + 1}</td><td class="wrap">${typeChip(b.type)} ${esc(b.label)}</td>
-      <td>${pbar(b.done_pct)}</td><td><div class="pbar"><div class="track"><b class="on" style="width:${(b.avg_seconds / maxT) * 100}%"></b></div><span class="num">${dur(b.avg_seconds)}</span></div></td>
+      <td>${pbar(b.done_pct)}</td><td><div class="pb"><div class="tr"><b style="width:${(b.avg_seconds / maxT) * 100}%"></b></div><span>${dur(b.avg_seconds)}</span></div></td>
       <td class="r">${b.attempts || ''}</td><td class="r">${b.hints || ''}</td><td class="r">${b.traps || ''}</td><td class="r">${b.here_now ? `<b>${b.here_now}</b>` : ''}</td></tr>`).join('')}
-    </tbody></table></div><p class="faint">“Stopped here”: students who started this episode, haven’t solved it, and whose next step is this beat. Highlighted rows are where students get stuck.</p>`
-    : '<div class="card empty">Nobody has opened this episode yet.</div>';
+    </tbody></table></div>` : '<div class="empty">Nobody has opened this episode yet.</div>';
 }
-$('#epPick').onchange = () => { state.ep = Number($('#epPick').value); loadEpisode(); };
+$('#epPick').onchange = () => { state.ep = Number($('#epPick').value); renderEpisodes(); loadEpisode(); };
 
 // ---------------------------------------------------------------- roster
 function renderNotStarted() {
   const r = state.notStarted;
-  $('#notStarted').innerHTML = r.length ? `<div class="tablewrap" style="max-height:420px"><table><thead><tr><th class="nosort">Name</th><th class="nosort">NxtWave ID</th><th class="nosort">Batch</th></tr></thead><tbody>${r.map((x) => `<tr><td>${esc(x.name ?? '—')}</td><td>${esc(x.student_id)}</td><td>${esc(x.batch ?? '—')}</td></tr>`).join('')}</tbody></table></div>`
+  $('#notStarted').innerHTML = r.length ? `<div class="tablewrap" style="max-height:420px"><table><thead><tr><th class="nosort">Name</th><th class="nosort">NxtWave ID</th><th class="nosort">Batch</th></tr></thead><tbody>${r.map((x) => `<tr><td>${esc(x.name ?? '-')}</td><td>${esc(x.student_id)}</td><td>${esc(x.batch ?? '-')}</td></tr>`).join('')}</tbody></table></div>`
     : `<div class="muted">${state.overview?.totals.roster ? 'Everyone on the roster has started.' : 'No roster uploaded yet.'}</div>`;
 }
 $('#csvFile').onchange = async () => { const f = $('#csvFile').files[0]; if (f) $('#csvText').value = await f.text(); };
@@ -450,80 +841,26 @@ $('#upload').onclick = async () => {
 };
 
 // ---------------------------------------------------------------- load
-// ---------------------------------------------------------------- feedback
-const STARS = (n) => '★'.repeat(n) + '<span class="faint">' + '★'.repeat(5 - n) + '</span>';
-async function loadFeedback() {
-  const ep = $('#fbEp').value;
-  const p = new URLSearchParams(qs().slice(1)); if (ep) p.set('session', ep);
-  state.fb = await api(`/api/admin/feedback?${p}`);
-  $('#fbExport').href = `/api/admin/feedback.csv${qs()}`;
-  renderFeedback();
-}
-function renderFeedback() {
-  const d = state.fb; if (!d) return;
-  const t = d.totals, q = $('#fbQ').value.trim().toLowerCase(), f = $('#fbFilter').value;
-  const kpi = (v, l, s = '') => `<div class="card kpi"><div class="v">${v}</div><div class="l">${l}</div>${s ? `<div class="s">${s}</div>` : ''}</div>`;
-  const maxStar = Math.max(1, ...d.stars.map((x) => x.responses));
-  const moodTotal = Math.max(1, ...Object.values(d.moods));
-  const diffTotal = Math.max(1, d.difficulty.easy + d.difficulty.right + d.difficulty.hard);
-  const maxLiked = Math.max(1, ...d.liked.map((x) => x.n));
-  const rows = d.responses.filter((r) => (!q || `${r.name ?? ''} ${r.student_id} ${r.comment ?? ''}`.toLowerCase().includes(q))
-    && (f !== 'comments' || r.comment) && (f !== 'low' || r.rating <= 2) && (f !== 'hard' || r.difficulty === 'hard') && (f !== 'confusing' || r.mood === 'Confusing' || r.mood === 'Boring'));
-  $('#fbCount').textContent = `${rows.length} response${rows.length === 1 ? '' : 's'}`;
-  const MOOD_E = { 'Loved it': '🤩', Fun: '😀', Okay: '😐', Confusing: '😕', Boring: '😴' };
-  $('#fbBody').innerHTML = `
-    <div class="card" style="margin-bottom:12px"><h2>Latest feedback</h2><p class="sub">Episode feedback and chapter check-ins, newest first. Every answer is also in the tables below and in the CSV.</p>${feedCards(d, 24)}</div>
-    <div class="grid kpis">
-      ${kpi(t.avg_rating ?? '—', 'Average rating', 'out of 5 stars')}
-      ${kpi(fmtNum(t.responses), 'Responses', `from ${fmtNum(t.students)} students`)}
-      ${kpi(fmtNum(t.comments), 'Written comments')}
-      ${kpi(`${d.difficulty.hard ? Math.round(d.difficulty.hard / diffTotal * 100) : 0}%`, 'Said “too hard”', `${Math.round(d.difficulty.easy / diffTotal * 100)}% too easy`)}
-      ${kpi(`${t.sound_on_pct}%`, 'Played with sound on')}
-    </div>
-    <div class="grid two">
-      <div class="card"><h2>Ratings</h2>${hbars([...d.stars].reverse().map((x) => ({ name: '★'.repeat(x.stars), pct: x.responses / maxStar * 100, text: `${x.responses}` })))}
-        <h2 style="margin-top:18px">How it felt</h2>${hbars(Object.entries(d.moods).map(([m, n]) => ({ name: `${MOOD_E[m] ?? ''} ${m}`, pct: n / moodTotal * 100, text: `${n}` })))}</div>
-      <div class="card"><h2>Difficulty of the SQL</h2>${hbars([['easy', '🟢 Too easy'], ['right', '🟡 Just right'], ['hard', '🔴 Too hard']].map(([k, l]) => ({ name: l, pct: d.difficulty[k] / diffTotal * 100, text: `${d.difficulty[k]} · ${Math.round(d.difficulty[k] / diffTotal * 100)}%` })))}
-        <h2 style="margin-top:18px">What students liked</h2>${d.liked.length ? hbars(d.liked.map((x) => ({ name: x.what, pct: x.n / maxLiked * 100, text: `${x.n}` }))) : '<p class="faint">Nothing picked yet.</p>'}</div>
-    </div>
-    <div class="card" style="margin-top:12px"><h2>By episode</h2><p class="sub">Rows in red: average under 3.5 or a third of students said “too hard”.</p>
-      <div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">Episode</th><th class="r nosort">Responses</th><th class="nosort">Avg rating</th><th class="r nosort">Too easy</th><th class="r nosort">Just right</th><th class="r nosort">Too hard</th><th class="r nosort">Confusing / boring</th></tr></thead><tbody>
-      ${d.episodes.map((e) => `<tr class="${e.responses && (e.avg_rating < 3.5 || e.hard / e.responses >= 1 / 3) ? 'hot' : ''}"><td>${e.n}. ${esc(e.title)}</td><td class="r">${e.responses}</td><td>${e.avg_rating == null ? '—' : `${STARS(Math.round(e.avg_rating))} ${e.avg_rating}`}</td><td class="r">${e.easy}</td><td class="r">${e.right}</td><td class="r">${e.hard}</td><td class="r">${e.confusing}</td></tr>`).join('')}
-      </tbody></table></div></div>
-    <div class="card" style="margin-top:12px"><h2>Chapter check-ins</h2><p class="sub">The quick question after every chapter: 😕 Lost (1) · 😐 Okay (2) · 🙂 Good (3) · 🤩 Great (4). ${fmtNum(d.checkpoints.responses)} answers. Rows in red: average under 2.5 or a quarter felt lost.</p>
-      ${d.checkpoints.chapters.length ? `<div class="tablewrap" style="border:0;max-height:360px"><table><thead><tr><th class="nosort">Episode</th><th class="r nosort">Chapter</th><th class="r nosort">Answers</th><th class="r nosort">Average</th><th class="r nosort">Felt lost</th></tr></thead><tbody>
-        ${d.checkpoints.chapters.map((c) => `<tr class="${c.avg < 2.5 || c.lost / c.responses >= 0.25 ? 'hot' : ''}"><td>${c.session}. ${esc(c.title ?? '')}</td><td class="r">${c.chapter}</td><td class="r">${c.responses}</td><td class="r">${c.avg}</td><td class="r">${c.lost}</td></tr>`).join('')}
-        </tbody></table></div>` : '<p class="faint">No chapter check-ins yet.</p>'}
-      ${(() => { const sug = d.checkpoints.list.filter((r) => r.comment && (!q || `${r.name ?? ''} ${r.student_id} ${r.comment}`.toLowerCase().includes(q)));
-        return sug.length ? `<h2 style="margin-top:14px">Suggestions from check-ins</h2><div class="tablewrap" style="border:0;max-height:420px"><table><thead><tr><th class="nosort">When</th><th class="nosort">Student</th><th class="nosort">Where</th><th class="nosort">Felt</th><th class="nosort">Suggestion</th></tr></thead><tbody>
-          ${sug.slice(0, 500).map((r) => `<tr class="click" data-id="${esc(r.student_id)}"><td class="faint">${when(r.at)}</td><td>${esc(r.name ?? r.student_id)}<div class="faint">${esc(r.student_id)}</div></td><td>Ep ${r.session} · ch ${r.chapter}</td><td>${['', '😕', '😐', '🙂', '🤩'][r.rating] ?? ''}</td><td class="wrap">${esc(r.comment)}</td></tr>`).join('')}
-          </tbody></table></div>` : ''; })()}
-    </div>
-    <div class="card" style="margin-top:12px"><h2>Responses</h2>
-      <div class="tablewrap" style="border:0;max-height:620px"><table><thead><tr><th class="nosort">When</th><th class="nosort">Student</th><th class="nosort">Episode</th><th class="nosort">Rating</th><th class="nosort">Felt</th><th class="nosort">SQL was</th><th class="nosort">Liked</th><th class="nosort">Comment</th></tr></thead><tbody>
-      ${rows.slice(0, 500).map((r) => `<tr class="click" data-id="${esc(r.student_id)}"><td class="faint">${when(r.at)}</td><td>${esc(r.name ?? r.student_id)}</td><td>${r.session}</td><td>${STARS(r.rating)}</td><td>${MOOD_E[r.mood] ?? ''} ${esc(r.mood ?? '')}</td><td>${esc(r.difficulty ?? '')}</td><td class="wrap faint">${esc(r.liked.join(', '))}</td><td class="wrap">${esc(r.comment ?? '')}</td></tr>`).join('') || '<tr><td colspan="8" class="empty">No feedback yet.</td></tr>'}
-      </tbody></table></div></div>`;
-  $('#fbBody').querySelectorAll('[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
-}
-$('#fbEp').onchange = loadFeedback; $('#fbFilter').onchange = renderFeedback; $('#fbQ').oninput = renderFeedback;
-
 async function loadLive() {
-  try { const l = await api(`/api/admin/live${qs()}`); $('#liveNow').innerHTML = `<i class="dot"></i>${l.count} playing now`; $('#liveNow').title = l.students.slice(0, 30).map((s) => `${s.name ?? s.student_id} — ${s.title ?? ''}`).join('\n'); } catch { /* ignore */ }
+  try { const l = await api(`/api/admin/live${qs()}`); $('#liveNow').innerHTML = `<i class="dot"></i>${l.count} playing now`;
+    $('#liveNow').dataset.tip = l.count ? l.students.slice(0, 30).map((s) => `${s.name ?? s.student_id}: ${s.title ?? ''}`).join('\n') : 'Nobody in the last 5 minutes'; } catch { /* ignore */ }
 }
-
 async function loadBatches() {
   const b = await api('/api/admin/batches'), cur = $('#batch').value;
   $('#batch').innerHTML = '<option value="">All batches</option>' + b.map((x) => `<option value="${esc(x.batch)}">${esc(x.batch)} (${x.students})</option>`).join('');
+  $('#batch').hidden = b.length < 2;
   $('#batch').value = cur;
 }
 async function loadAll() {
   const [o, s, fb] = await Promise.all([api(`/api/admin/overview${qs()}`), api(`/api/admin/students${qs()}`), api(`/api/admin/feedback${qs()}`).catch(() => null)]);
   state.overview = o; state.students = s.students; state.notStarted = s.not_started; state.fbAll = fb;
+  state.need = new Map(o.attention.map((x) => [x.student_id, x.reasons]));
+  const badge = $('[data-tab="students"] .badge'); badge.hidden = !o.attention.length; badge.textContent = o.attention.length; badge.dataset.tip = `${o.attention.length} need you`;
   $('#export').href = `/api/admin/export.csv${qs()}`;
   if (!$('#epPick').options.length) $('#epPick').innerHTML = o.funnel.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.title)}</option>`).join('');
   if ($('#fbEp').options.length < 2) $('#fbEp').innerHTML += o.funnel.map((f) => `<option value="${f.n}">${f.n}. ${esc(f.title)}</option>`).join('');
-  renderOverview(); renderStudents(); renderNotStarted(); loadLive();
-  if (state.tab === 'episodes') loadEpisode();
+  renderNow(); renderStudents(); renderNotStarted(); loadLive();
+  if (state.tab === 'episodes') { renderEpisodes(); loadEpisode(); }
   if (state.tab === 'feedback') loadFeedback();
 }
 $('#batch').onchange = loadAll; $('#guests').onchange = loadAll; $('#refresh').onclick = () => { loadBatches(); loadAll(); };
@@ -532,7 +869,7 @@ async function boot() {
   $('#login').hidden = true; $('#app').hidden = false;
   await loadAll();
 }
-setInterval(() => { if (!$('#app').hidden && !document.hidden) loadAll().catch(() => {}); }, 120_000);
+setInterval(() => { if (!$('#app').hidden && !document.hidden && !state.student) loadAll().catch(() => {}); }, 120_000);
 setInterval(() => { if (!$('#app').hidden && !document.hidden) loadLive(); }, 30_000);
 boot();
 </script>

@@ -27,6 +27,7 @@ export interface BeatState {
   attempts: number;
   hintTier: 0 | 1 | 2 | 3;
   revealed?: boolean;          // activity answer shown after too many tries
+  picked?: number;             // quick check: the option the learner chose (shown again when they come back to the step)
   lastStatus?: string;
   passSql?: string;            // the learner's passing query (evidence for the clue it unlocks)
 }
@@ -249,6 +250,7 @@ export class SessionRunner {
     if (!st.done) {
       st.done = true;
       st.attempts = 1;
+      st.picked = optionIndex;
       await this.emit('check_answered', { type: 'check', id: b.id }, { correct, option: optionIndex, source: b.source ?? 'authored' }, undefined, b);
       this.save();
     }

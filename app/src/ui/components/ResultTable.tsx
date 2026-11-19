@@ -2,6 +2,7 @@
 // says how many rows there are, hints when there are more columns to the right, and can open in a full-width view.
 import { useEffect, useRef, useState } from 'react';
 import type { QueryResult } from '../../engine/sql/engine';
+import { Icon } from '../design/Icon';
 
 interface Props {
   result: QueryResult | undefined;
@@ -34,8 +35,8 @@ export function ResultTable({ result, caption, limit = 50, total, compact = fals
     <div className={`results-wrap ${compact ? 'compact' : ''}`}>
       <div className="results-bar">
         <span><b>{caption ?? 'Result'}</b> · {count} row{count === 1 ? '' : 's'} · {result.columns.length} column{result.columns.length === 1 ? '' : 's'}{shown < count ? ` · showing first ${shown}` : ''}</span>
-        {overflow && <span className="scroll-hint">↔ scroll for more columns</span>}
-        {onExpand && <button className="btn small ghost" onClick={onExpand}>⤢ Full view</button>}
+        {overflow && <span className="scroll-hint">scroll sideways for more columns</span>}
+        {onExpand && <button className="btn small ghost" onClick={onExpand}><Icon name="expand" /> Full view</button>}
       </div>
       <div className="results" tabIndex={0} aria-label={caption ? `${caption} rows` : 'Query result'} ref={box}>
         <table>

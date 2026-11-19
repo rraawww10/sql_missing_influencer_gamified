@@ -86,6 +86,31 @@ export function openDb(file) {
       PRIMARY KEY (student_id, scope)
     );
   `);
+  // student accounts (auth.mjs): kept apart from `students`, which a roster upload with "replace" empties
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS accounts (
+      student_id TEXT PRIMARY KEY,
+      name       TEXT NOT NULL,
+      email      TEXT NOT NULL,           -- given at sign-up; "forgot password" codes go here
+      pw_hash    TEXT NOT NULL,           -- scrypt, hex; the password itself is never stored
+      pw_salt    TEXT NOT NULL,
+      temp       INTEGER NOT NULL DEFAULT 0,   -- 1 = a temporary password from the teacher: must be changed at the next log-in
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS student_sessions (
+      token_hash TEXT PRIMARY KEY,        -- SHA-256 of the token the game holds
+      student_id TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS student_sessions_by_student ON student_sessions (student_id);
+    CREATE TABLE IF NOT EXISTS password_resets (
+      student_id TEXT PRIMARY KEY,
+      code_hash  TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      tries      INTEGER NOT NULL DEFAULT 0
+    );
+  `);
   // migrations for databases created before student identification (columns can't be added with IF NOT EXISTS)
   const cols = (t) => new Set(db.prepare(`PRAGMA table_info(${t})`).all().map((c) => c.name));
   const st = cols('students');
@@ -93,11 +118,13 @@ export function openDb(file) {
   if (!st.has('registered_at')) db.exec('ALTER TABLE students ADD COLUMN registered_at TEXT');    // first time they entered their id
   if (!st.has('last_login_at')) db.exec('ALTER TABLE students ADD COLUMN last_login_at TEXT');    // last time they entered it
   if (!st.has('logins')) db.exec('ALTER TABLE students ADD COLUMN logins INTEGER NOT NULL DEFAULT 0');
+  if (!st.has('email')) db.exec('ALTER TABLE students ADD COLUMN email TEXT');                    // typed at the start (lower-case); "forgot my ID" looks it up
   if (!cols('events').has('raw')) db.exec('ALTER TABLE events ADD COLUMN raw TEXT');              // the event as sent, to restore it on another device
+  if (!cols('feedback').has('scale')) db.exec('ALTER TABLE feedback ADD COLUMN scale INTEGER NOT NULL DEFAULT 5');  // 5 = the old 5-star card, 11 = the 11-star ladder
   return db;
 }
 
-// ---------------------------------------------------------------- student identity (no login: NxtWave ID + name)
+// ---------------------------------------------------------------- student identity (no login: NxtWave ID + name + email)
 // The id is case-insensitive (stored upper-case); letters, digits and . _ @ - only.
 export function normalizeId(v) {
   const id = typeof v === 'string' ? v.trim().toUpperCase() : '';
@@ -107,17 +134,39 @@ export function normalizeName(v) {
   const n = typeof v === 'string' ? v.normalize('NFC').replace(/\s+/g, ' ').trim() : '';
   return n.length >= 2 && n.length <= 60 && /^[\p{L}\p{M}][\p{L}\p{M} .'-]*$/u.test(n) ? n : null;
 }
+// Trimmed and lower-cased; something@domain.tld with no spaces, at most 120 characters. Same rule as the game.
+export function normalizeEmail(v) {
+  const e = typeof v === 'string' ? v.trim().toLowerCase() : '';
+  return e.length <= 120 && /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[^\s@.]{2,}$/.test(e) ? e : null;
+}
+// The email is optional here (a game build from before it was asked sends none): a request without one keeps the
+// stored email, a request with one replaces it. The stored email is never sent back (this route is public).
 export function identify(db, body) {
   const id = normalizeId(body?.student_id), name = normalizeName(body?.name);
   if (!id) return { error: 'bad id' };
   if (!name) return { error: 'bad name' };
+  const given = body.email != null && body.email !== '';
+  const email = given ? normalizeEmail(body.email) : null;
+  if (given && !email) return { error: 'bad email' };
   const now = new Date().toISOString();
   const before = db.prepare('SELECT entered_name, registered_at FROM students WHERE student_id = ?').get(id);
   const played = !!db.prepare('SELECT 1 FROM events WHERE student_id = ? LIMIT 1').get(id);
-  db.prepare(`INSERT INTO students (student_id, entered_name, registered_at, last_login_at, logins) VALUES (?,?,?,?,1)
-    ON CONFLICT(student_id) DO UPDATE SET entered_name = excluded.entered_name, last_login_at = excluded.last_login_at,
-      registered_at = COALESCE(students.registered_at, excluded.registered_at), logins = students.logins + 1`).run(id, name, now, now);
+  db.prepare(`INSERT INTO students (student_id, entered_name, email, registered_at, last_login_at, logins) VALUES (?,?,?,?,?,1)
+    ON CONFLICT(student_id) DO UPDATE SET entered_name = excluded.entered_name, email = COALESCE(excluded.email, students.email),
+      last_login_at = excluded.last_login_at, registered_at = COALESCE(students.registered_at, excluded.registered_at),
+      logins = students.logins + 1`).run(id, name, email, now, now);
   return { ok: true, student_id: id, name, returning: played || !!before?.registered_at, previous_name: before?.entered_name ?? null };
+}
+
+// "Forgot your NxtWave ID?": the student who signed in with this email. When several did (one student, two IDs), the
+// one seen most recently: the later of their last sign-in and their last event.
+export function recover(db, body) {
+  const email = normalizeEmail(body?.email);
+  if (!email) return { error: 'bad email' };
+  const row = db.prepare(`SELECT s.student_id, COALESCE(s.entered_name, s.name) AS name FROM students s WHERE s.email = ?
+    ORDER BY MAX(COALESCE(s.last_login_at, ''), COALESCE((SELECT MAX(e.client_ts) FROM events e WHERE e.student_id = s.student_id AND e.is_guest = 0), '')) DESC,
+      s.student_id LIMIT 1`).get(email);
+  return row ? { found: true, student_id: row.student_id, name: row.name } : { found: false };
 }
 
 // Everything the game needs to rebuild a student's progress on a new device: the event log (heartbeats excluded),
@@ -164,7 +213,7 @@ export function saveSitting(db, b) {
 // ---------------------------------------------------------------- the beat catalogue (from the generated session packs)
 const clean = (s) => String(s ?? '').replace(/\{\{[^}]*\}\}/g, '…').replace(/\[\[name\]\]/g, '(student)').replace(/[*`#>|]/g, '').replace(/\s+/g, ' ').trim();
 function beatLabel(b) {
-  if (b.type === 'note' && b.rm_ref?.heading) return `Case Note: ${clean(b.rm_ref.heading)}`;
+  if (b.type === 'note' && b.rm_ref?.heading) return `Learn: ${clean(b.rm_ref.heading)}`;
   for (const k of ['title', 'ask', 'prompt', 'question', 'body', 'text']) {
     const v = typeof b[k] === 'string' ? b[k] : b[k]?.text;
     if (v) { const t = clean(v); return t.length > 80 ? `${t.slice(0, 77)}…` : t; }
@@ -245,16 +294,17 @@ export const csvCell = (v) => { const t = v == null ? '' : String(v); return /["
 // ---------------------------------------------------------------- feedback
 const MOODS = new Set(['Loved it', 'Fun', 'Okay', 'Confusing', 'Boring']);
 const DIFFICULTY = new Set(['easy', 'right', 'hard']);
+// rating: 1 to 11 on the 11-star ladder (scale 11, the card since 2026-11-19), or 1 to 5 (scale 5, older game builds)
 export function ingestFeedback(db, f) {
-  const session = Number(f?.session), rating = Number(f?.rating);
+  const session = Number(f?.session), rating = Number(f?.rating), scale = Number(f?.scale) === 11 ? 11 : 5;
   if (!f || !str(f.user_id, 220) || !Number.isInteger(session) || session < 1 || session > SESSION_COUNT
-      || !Number.isInteger(rating) || rating < 1 || rating > 5) return { error: 'bad feedback' };
+      || !Number.isInteger(rating) || rating < 1 || rating > scale) return { error: 'bad feedback' };
   const lms = f.user_id.startsWith('lms:');
   const liked = Array.isArray(f.liked) ? f.liked.filter((x) => typeof x === 'string').map((x) => x.slice(0, 40)).slice(0, 12) : [];
   const ts = Number.isNaN(Date.parse(f.client_ts)) ? new Date().toISOString() : new Date(Math.min(Date.parse(f.client_ts), Date.now())).toISOString();
-  db.prepare(`INSERT OR REPLACE INTO feedback (student_id, is_guest, session, rating, mood, difficulty, liked, comment, sound_on, client_ts, received_at)
-              VALUES (?,?,?,?,?,?,?,?,?,?,?)`).run(
-    lms ? (normalizeId(f.user_id.slice(4)) ?? f.user_id.slice(4)) : f.user_id, lms ? 0 : 1, session, rating,
+  db.prepare(`INSERT OR REPLACE INTO feedback (student_id, is_guest, session, rating, scale, mood, difficulty, liked, comment, sound_on, client_ts, received_at)
+              VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`).run(
+    lms ? (normalizeId(f.user_id.slice(4)) ?? f.user_id.slice(4)) : f.user_id, lms ? 0 : 1, session, rating, scale,
     MOODS.has(f.mood) ? f.mood : null, DIFFICULTY.has(f.difficulty) ? f.difficulty : null, JSON.stringify(liked),
     typeof f.comment === 'string' && f.comment.trim() ? f.comment.trim().slice(0, 1000) : null,
     typeof f.sound_on === 'boolean' ? Number(f.sound_on) : null, ts, new Date().toISOString());
@@ -347,8 +397,9 @@ export class Analytics {
         COUNT(DISTINCT CASE WHEN e.session = 0 THEN e.event_id END) > 0 AS saw_briefing
       FROM events e WHERE 1=1 ${s.sql}
       GROUP BY e.student_id`, s.params);
-    const names = new Map(this.all('SELECT student_id, COALESCE(name, entered_name) AS name, batch, entered_name, registered_at, last_login_at, logins FROM students').map((r) => [r.student_id, r]));
+    const names = new Map(this.all('SELECT student_id, COALESCE(name, entered_name) AS name, batch, entered_name, registered_at, last_login_at, logins, email FROM students').map((r) => [r.student_id, r]));
     const completed = this.completedBySession(f);
+    const journeys = this.journeys(f);
     const total = this.cat.totalBeats;
     return rows.map((r) => {
       const n = names.get(r.student_id);
@@ -356,7 +407,7 @@ export class Analytics {
       const done = completed.get(r.student_id) ?? new Set();
       return {
         student_id: r.student_id, name: n?.name ?? null, batch: n?.batch ?? null, is_guest: !!r.is_guest,
-        entered_name: n?.entered_name ?? null, registered_at: n?.registered_at ?? null, logins: n?.logins ?? 0,
+        entered_name: n?.entered_name ?? null, email: n?.email ?? null, registered_at: n?.registered_at ?? null, logins: n?.logins ?? 0,
         level, level_title: this.cat.get(level)?.title ?? (r.saw_briefing ? 'Briefing' : '—'),
         level_status: !level ? 'briefing' : done.has(level) ? 'completed' : 'in progress',
         episodes_done: r.episodes_done, beats_done: r.beats_done, progress_pct: pct(r.beats_done, total),
@@ -364,6 +415,8 @@ export class Analytics {
         attempts: r.attempts, tasks_passed: r.tasks_passed, hints: r.hints, traps: r.traps, clues: r.clues,
         accuracy_pct: pct(r.tasks_passed, r.attempts),
         first_seen: r.first_seen, last_seen: r.last_seen,
+        journey: journeys.get(r.student_id)?.episodes ?? Array(SESSION_COUNT).fill(0),
+        stars: journeys.get(r.student_id)?.stars ?? [],
       };
     }).sort((a, b) => (a.last_seen < b.last_seen ? 1 : -1));
   }
@@ -421,6 +474,8 @@ export class Analytics {
       hours,
       funnel: this.funnel(f),
       levels: this.cat.sessions.map((ep) => ({ n: ep.n, title: ep.title, students: players.filter((r) => r.level === ep.n).length })),
+      attention: this.attention(f),
+      ladder: this.ladder(f),
       progress_buckets: [0, 10, 25, 50, 75, 100].slice(0, -1).map((lo, i, a) => {
         const hi = [10, 25, 50, 75, 100.01][i];
         return { label: `${lo}–${Math.min(100, Math.floor(hi))}%`, students: students.filter((r) => r.progress_pct >= lo && r.progress_pct < hi).length };
@@ -504,10 +559,11 @@ export class Analytics {
       return { at: e.client_ts, verb: e.verb, session: e.session, beat: e.beat, id: e.object_id,
         detail: e.verb === 'task_attempted' ? { status: r.status, sql: r.sql } : e.verb === 'session_completed' ? { points: r.points } : e.verb === 'hint_used' ? { tier: r.tier } : null };
     });
-    const fb = this.all('SELECT session, rating, mood, difficulty, liked, comment, client_ts FROM feedback WHERE student_id = ? ORDER BY session', [id])
+    const fb = this.all('SELECT session, rating, scale, mood, difficulty, liked, comment, client_ts FROM feedback WHERE student_id = ? ORDER BY session', [id])
       .map((r) => ({ ...r, liked: JSON.parse(r.liked || '[]') }));
     const cps = this.all('SELECT session, chapter, rating, comment, client_ts FROM checkpoint_feedback WHERE student_id = ? ORDER BY session, chapter', [id]);
-    return { ...base, episodes, feedback: fb, checkpoints: cps, daily: [...days].map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) })), recent };
+    return { ...base, episodes, feedback: fb, checkpoints: cps, daily: [...days].map(([date, seconds]) => ({ date, minutes: Math.round(seconds / 60) })), recent,
+      timeline: this.timeline(id), attention: this.attention({ guests: true }).find((x) => x.student_id === id)?.reasons ?? [] };
   }
 
   episode(n, f = {}) {
@@ -579,22 +635,24 @@ export class Analytics {
     const liked = {};
     for (const r of rows) for (const x of JSON.parse(r.liked || '[]')) liked[x] = (liked[x] ?? 0) + 1;
     const avg = (xs) => xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length * 10) / 10 : null;
+    const five = (r) => r.scale !== 11;          // the star numbers here are the old 5-star card; the 11-star ones are in ladder
     return {
-      totals: { responses: rows.length, students: new Set(rows.map((r) => r.student_id)).size, avg_rating: avg(rows.map((r) => r.rating)),
+      totals: { responses: rows.length, students: new Set(rows.map((r) => r.student_id)).size, avg_rating: avg(rows.filter(five).map((r) => r.rating)),
         comments: rows.filter((r) => r.comment).length, sound_on_pct: pct(rows.filter((r) => r.sound_on === 1).length, rows.filter((r) => r.sound_on != null).length) },
-      stars: [1, 2, 3, 4, 5].map((n) => ({ stars: n, responses: rows.filter((r) => r.rating === n).length })),
+      stars: [1, 2, 3, 4, 5].map((n) => ({ stars: n, responses: rows.filter((r) => five(r) && r.rating === n).length })),
       moods: count('mood', [...MOODS]),
       difficulty: count('difficulty', [...DIFFICULTY]),
       liked: Object.entries(liked).sort((a, b) => b[1] - a[1]).map(([what, n]) => ({ what, n })),
       episodes: this.cat.sessions.map((ep) => {
         const r = rows.filter((x) => x.session === ep.n);
-        return { n: ep.n, title: ep.title, responses: r.length, avg_rating: avg(r.map((x) => x.rating)),
+        return { n: ep.n, title: ep.title, responses: r.length, avg_rating: avg(r.filter(five).map((x) => x.rating)),
           easy: r.filter((x) => x.difficulty === 'easy').length, right: r.filter((x) => x.difficulty === 'right').length, hard: r.filter((x) => x.difficulty === 'hard').length,
           confusing: r.filter((x) => x.mood === 'Confusing' || x.mood === 'Boring').length };
       }),
-      responses: rows.slice(0, 2000).map((r) => ({ student_id: r.student_id, name: r.name, batch: r.batch, session: r.session, rating: r.rating, mood: r.mood,
+      responses: rows.slice(0, 2000).map((r) => ({ student_id: r.student_id, name: r.name, batch: r.batch, session: r.session, rating: r.rating, scale: r.scale, mood: r.mood,
         difficulty: r.difficulty, liked: JSON.parse(r.liked || '[]'), comment: r.comment, sound_on: r.sound_on, at: r.client_ts })),
       checkpoints: this.checkpoints(f),
+      ladder: this.ladder(f),
     };
   }
 
@@ -623,11 +681,132 @@ export class Analytics {
 
   feedbackCsv(f = {}) {
     const d = this.feedback(f);
-    const head = ['student_id', 'name', 'batch', 'episode', 'rating', 'mood', 'difficulty', 'liked', 'comment', 'sound_on', 'at'];
-    const lines = d.responses.map((r) => [r.student_id, r.name, r.batch, r.session, r.rating, r.mood, r.difficulty, r.liked.join('; '), r.comment, r.sound_on, r.at].map(csvCell).join(','));
+    const head = ['student_id', 'name', 'batch', 'episode', 'rating', 'out_of', 'mood', 'difficulty', 'liked', 'comment', 'sound_on', 'at'];
+    const lines = d.responses.map((r) => [r.student_id, r.name, r.batch, r.session, r.rating, r.scale, r.mood, r.difficulty, r.liked.join('; '), r.comment, r.sound_on, r.at].map(csvCell).join(','));
     const PULSE = ['', 'lost', 'okay', 'good', 'great'];
-    const chap = d.checkpoints.list.map((r) => [r.student_id, r.name, r.batch, r.session, `chapter ${r.chapter}: ${PULSE[r.rating]}`, '', '', '', r.comment, '', r.at].map(csvCell).join(','));
+    const chap = d.checkpoints.list.map((r) => [r.student_id, r.name, r.batch, r.session, `chapter ${r.chapter}: ${PULSE[r.rating]}`, '', '', '', '', r.comment, '', r.at].map(csvCell).join(','));
     return [head.join(','), ...lines, ...chap].join('\n');
+  }
+
+  // ---------------------------------------------------------------- the 11-star ladder (feedback since 2026-11-19)
+  // Answers on the old 5-star card (scale 5) are counted apart, never mixed into the 11-star numbers.
+  ladder(f = {}) {
+    const where = ['fb.scale = 11']; const params = [];
+    if (!f.guests) where.push('fb.is_guest = 0');
+    if (f.batch) { where.push('fb.student_id IN (SELECT student_id FROM students WHERE batch = ?)'); params.push(f.batch); }
+    const rows = this.all(`SELECT fb.session, fb.rating FROM feedback fb WHERE ${where.join(' AND ')}`, params);
+    const legacy = this.get(`SELECT COUNT(*) AS n FROM feedback fb WHERE ${where.join(' AND ').replace('fb.scale = 11', 'fb.scale <> 11')}`, params).n;
+    const avg = (xs) => xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length * 10) / 10 : null;
+    const median = (xs) => { if (!xs.length) return null; const a = [...xs].sort((x, y) => x - y), m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
+    const band = (xs) => ({ low: xs.filter((r) => r <= 3).length, okay: xs.filter((r) => r >= 4 && r <= 5).length, delight: xs.filter((r) => r >= 6).length });
+    const all = rows.map((r) => r.rating);
+    return {
+      responses: all.length, avg: avg(all), median: median(all), ...band(all),
+      levels: Array.from({ length: 11 }, (_, i) => ({ level: i + 1, n: all.filter((r) => r === i + 1).length })),
+      legacy,
+      episodes: this.cat.sessions.map((ep) => {
+        const xs = rows.filter((r) => r.session === ep.n).map((r) => r.rating);
+        return { n: ep.n, title: ep.title, responses: xs.length, avg: avg(xs), median: median(xs), ratings: xs.sort((a, b) => a - b), ...band(xs) };
+      }),
+    };
+  }
+
+  // ---------------------------------------------------------------- every interaction of one student, newest first
+  // One list for the student's page: steps, every SQL run (with the query), hints, traps, activities, checks, clues,
+  // episode starts / finishes / resets, log-ins, the episode feedback and the chapter check-ins.
+  timeline(id, { limit = 300, before = null } = {}) {
+    const lbl = (n, beat) => this.cat.get(n)?.beats.find((b) => b.id === beat) ?? null;
+    const items = [];
+    const ev = this.all(`SELECT event_id, verb, session, beat, object_id, result, client_ts FROM events
+      WHERE student_id = ? AND verb <> 'heartbeat' ${before ? 'AND client_ts < ?' : ''} ORDER BY client_ts DESC LIMIT ?`, before ? [id, before, limit] : [id, limit]);
+    for (const e of ev) {
+      const r = (() => { try { return e.result ? JSON.parse(e.result) : {}; } catch { return {}; } })();
+      const b = lbl(e.session, e.beat), base = { at: e.client_ts, session: e.session, episode: this.cat.get(e.session)?.title ?? (e.session ? `Episode ${e.session}` : 'Briefing'),
+        beat: e.beat, step: b ? b.index + 1 : null, label: b?.label ?? null };
+      switch (e.verb) {
+        case 'task_attempted': items.push({ ...base, kind: 'sql', status: r.status ?? null, sql: typeof r.sql === 'string' ? r.sql.slice(0, 4000) : null, attempt: r.attempt ?? null, task: b?.task_id ?? e.object_id, trap: r.trap ?? null }); break;
+        case 'task_passed': items.push({ ...base, kind: 'solved', task: b?.task_id ?? e.object_id, attempts: r.attempts ?? null, hint: r.max_hint_tier ?? 0 }); break;
+        case 'hint_used': items.push({ ...base, kind: 'hint', tier: r.tier ?? Number(String(e.object_id).split('#')[1]) ?? null, task: String(e.object_id).split('#')[0] }); break;
+        case 'trap_hit': items.push({ ...base, kind: 'trap', trap: r.trap ?? null, task: b?.task_id ?? null }); break;
+        case 'activity_done': items.push({ ...base, kind: 'activity', first_try: !!r.first_try, attempts: r.attempts ?? null, revealed: !!r.revealed }); break;
+        case 'check_answered': items.push({ ...base, kind: 'check', correct: !!r.correct, option: r.option ?? null }); break;
+        case 'clue_pinned': items.push({ ...base, kind: 'clue', title: r.title ?? e.object_id }); break;
+        case 'beat_viewed': items.push({ ...base, kind: 'step', type: b?.type ?? null }); break;
+        case 'session_started': items.push({ ...base, kind: 'start' }); break;
+        case 'session_resumed': items.push({ ...base, kind: 'resume' }); break;
+        case 'session_completed': items.push({ ...base, kind: 'finish', points: r.points ?? null }); break;
+        case 'session_reset': items.push({ ...base, kind: 'reset' }); break;
+        case 'session_abandoned': items.push({ ...base, kind: 'restart' }); break;
+        default: break;
+      }
+    }
+    const since = items.length === limit ? items[items.length - 1].at : null;   // older events exist: everything else stops there too
+    const keep = (at) => (!before || at < before) && (!since || at >= since);
+    for (const f of this.all('SELECT session, rating, scale, mood, difficulty, liked, comment, client_ts FROM feedback WHERE student_id = ?', [id]))
+      if (keep(f.client_ts)) items.push({ at: f.client_ts, kind: 'feedback', session: f.session, episode: this.cat.get(f.session)?.title ?? null, rating: f.rating, scale: f.scale,
+        mood: f.mood, difficulty: f.difficulty, liked: JSON.parse(f.liked || '[]'), comment: f.comment });
+    for (const c of this.all('SELECT session, chapter, rating, comment, client_ts FROM checkpoint_feedback WHERE student_id = ?', [id]))
+      if (keep(c.client_ts)) items.push({ at: c.client_ts, kind: 'checkin', session: c.session, episode: this.cat.get(c.session)?.title ?? null, chapter: c.chapter, rating: c.rating, comment: c.comment });
+    for (const l of this.all('SELECT created_at FROM student_sessions WHERE student_id = ?', [id]))
+      if (keep(l.created_at)) items.push({ at: l.created_at, kind: 'login' });
+    items.sort((a, b) => (a.at < b.at ? 1 : a.at > b.at ? -1 : 0));
+    return { items, more: !!since, next: since };
+  }
+
+  // ---------------------------------------------------------------- who needs the team's attention, and why
+  // Each reason comes with what to look at. Sorted: stuck now, then unhappy, then gone quiet, then never started.
+  attention(f = {}) {
+    const s = this.scope(f);
+    const now = Date.now(), DAY = 86400_000;
+    const names = new Map(this.all('SELECT student_id, COALESCE(name, entered_name) AS name, registered_at FROM students').map((r) => [r.student_id, r]));
+    const out = new Map();
+    const add = (id, reason) => { if (!out.has(id)) out.set(id, { student_id: id, name: names.get(id)?.name ?? null, reasons: [] }); out.get(id).reasons.push(reason); };
+    // stuck: 4+ runs of one SQL task in the last 2 days, and still not solved
+    for (const r of this.all(`SELECT e.student_id, e.session, e.beat, COUNT(*) AS tries, MAX(e.client_ts) AS at FROM events e
+        WHERE e.verb = 'task_attempted' AND e.client_ts >= ? ${s.sql} GROUP BY e.student_id, e.session, e.beat HAVING tries >= 4`, [new Date(now - 2 * DAY).toISOString(), ...s.params])) {
+      const solved = this.get(`SELECT 1 AS y FROM events WHERE student_id = ? AND session = ? AND beat = ? AND verb = 'task_passed' LIMIT 1`, [r.student_id, r.session, r.beat]);
+      if (solved) continue;
+      const b = this.cat.get(r.session)?.beats.find((x) => x.id === r.beat);
+      add(r.student_id, { kind: 'stuck', rank: 0, at: r.at, text: `Stuck on ${b?.task_id ?? r.beat}`, detail: `${r.tries} tries, not solved`, session: r.session });
+    }
+    // used the full answer (envelope 3) 3+ times in a week: may be guessing their way through
+    for (const r of this.all(`SELECT e.student_id, COUNT(*) AS n, MAX(e.client_ts) AS at FROM events e
+        WHERE e.verb = 'hint_used' AND e.object_id LIKE '%#3' AND e.client_ts >= ? ${s.sql} GROUP BY e.student_id HAVING n >= 3`, [new Date(now - 7 * DAY).toISOString(), ...s.params]))
+      add(r.student_id, { kind: 'answers', rank: 1, at: r.at, text: 'Leaning on answers', detail: `${r.n} full answers this week` });
+    // unhappy: a low rating, or "lost" on a chapter, in the last week
+    const recent = new Date(now - 7 * DAY).toISOString();
+    for (const r of this.all(`SELECT student_id, session, rating, scale, client_ts FROM feedback WHERE client_ts >= ? AND is_guest = 0 AND ((scale = 11 AND rating <= 3) OR (scale = 5 AND rating <= 2))`, [recent]))
+      add(r.student_id, { kind: 'low', rank: 2, at: r.client_ts, text: `${r.rating}/${r.scale} stars, episode ${r.session}`, detail: this.cat.get(r.session)?.title ?? '', session: r.session });
+    for (const r of this.all(`SELECT student_id, session, chapter, client_ts FROM checkpoint_feedback WHERE client_ts >= ? AND is_guest = 0 AND rating = 1`, [recent]))
+      add(r.student_id, { kind: 'lost', rank: 2, at: r.client_ts, text: `Lost in episode ${r.session}`, detail: `chapter ${r.chapter}`, session: r.session });
+    // gone quiet: played, not finished, nothing for 3+ days
+    for (const st of this.students(f)) {
+      if (st.episodes_done >= SESSION_COUNT || !st.last_seen) continue;
+      const days = Math.floor((now - Date.parse(st.last_seen)) / DAY);
+      if (days >= 3) add(st.student_id, { kind: 'quiet', rank: 3, at: st.last_seen, text: `Quiet for ${days} days`, detail: `on ${st.level_title}` });
+    }
+    // signed up a day ago or more, never played a step
+    for (const r of this.notStarted(f)) {
+      if (!r.registered_at || now - Date.parse(r.registered_at) < DAY) continue;
+      add(r.student_id, { kind: 'notstarted', rank: 4, at: r.registered_at, text: 'Signed up, never played', detail: '' });
+    }
+    return [...out.values()].map((x) => ({ ...x, reasons: x.reasons.sort((a, b) => a.rank - b.rank) }))
+      .sort((a, b) => a.reasons[0].rank - b.reasons[0].rank || (a.reasons[0].at < b.reasons[0].at ? 1 : -1));
+  }
+
+  // per student: where they are in each of the 13 episodes, and the stars they gave (for the students table)
+  journeys(f = {}) {
+    const s = this.scope(f);
+    const map = new Map();
+    for (const r of this.all(`SELECT e.student_id, e.session, MAX(e.verb = 'session_completed') AS done FROM events e WHERE e.session > 0 ${s.sql} GROUP BY e.student_id, e.session`, s.params)) {
+      if (!map.has(r.student_id)) map.set(r.student_id, { episodes: Array(SESSION_COUNT).fill(0), stars: [] });
+      map.get(r.student_id).episodes[r.session - 1] = r.done ? 2 : 1;    // 0 not opened · 1 opened · 2 solved
+    }
+    for (const r of this.all(`SELECT student_id, session, rating, scale FROM feedback WHERE is_guest = 0 ORDER BY client_ts`)) {
+      if (!map.has(r.student_id)) map.set(r.student_id, { episodes: Array(SESSION_COUNT).fill(0), stars: [] });
+      map.get(r.student_id).stars.push({ session: r.session, rating: r.rating, scale: r.scale });
+    }
+    return map;
   }
 
   saveRoster(rows, replace = false) {
@@ -647,13 +826,14 @@ export class Analytics {
   // roster students who never opened the game (so the admin can nudge them)
   notStarted(f = {}) {
     const params = f.batch ? [f.batch] : [];
-    return this.all(`SELECT student_id, COALESCE(name, entered_name) AS name, batch, registered_at FROM students s
+    return this.all(`SELECT student_id, COALESCE(name, entered_name) AS name, batch, registered_at, email FROM students s
       WHERE ${f.batch ? 'batch = ? AND' : ''} NOT EXISTS (SELECT 1 FROM events e WHERE e.student_id = s.student_id) ORDER BY name`, params);
   }
 
   exportCsv(f = {}) {
+    // new columns go at the END, so the positions of the existing ones never change
     const cols = ['student_id', 'name', 'batch', 'level', 'level_title', 'level_status', 'episodes_done', 'progress_pct', 'minutes', 'active_days',
-      'attempts', 'tasks_passed', 'accuracy_pct', 'hints', 'traps', 'clues', 'first_seen', 'last_seen'];
+      'attempts', 'tasks_passed', 'accuracy_pct', 'hints', 'traps', 'clues', 'first_seen', 'last_seen', 'email'];
     const q = csvCell;
     const rows = this.students(f).map((r) => ({ ...r, minutes: Math.round(r.seconds / 60) }));
     for (const r of this.notStarted(f)) rows.push({ ...r, level: 0, level_title: 'Not started', level_status: 'not started', episodes_done: 0, progress_pct: 0, minutes: 0 });

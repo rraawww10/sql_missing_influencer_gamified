@@ -112,7 +112,8 @@
           "heading": "Delete All Rows"
         }
       ],
-      "body": "Ira made a `rumours` table from social media. Most of it is noise.\n```sql\nDELETE FROM table_name WHERE condition;   -- deletes matching rows\nDELETE FROM table_name;                   -- deletes ALL rows (table stays)\n```\n"
+      "body": "`DELETE FROM` deletes rows from a table:\n```sql\nDELETE FROM table_name WHERE condition;   -- deletes matching rows\nDELETE FROM table_name;                   -- deletes ALL rows (table stays)\n```\n",
+      "case": "Ira made a `rumours` table from social media. Most of it is noise.\n"
     },
     {
       "id": "S2.20",

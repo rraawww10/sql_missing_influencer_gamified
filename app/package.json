@@ -16,13 +16,17 @@
     "smoke:deploy": "node scripts/smoke-deploy.mjs",
     "e2e:analytics": "node scripts/e2e-analytics.mjs",
     "local-test": "node scripts/local-test.mjs",
-    "make:test-students": "MAKE_TEST_STUDENTS=1 vitest run src/test/makeTestStudents.test.ts"
+    "make:test-students": "MAKE_TEST_STUDENTS=1 vitest run src/test/makeTestStudents.test.ts",
+    "voice:lines": "MAKE_VOICE_LINES=1 vitest run src/ui/kaal/voiceLines.test.ts"
   },
   "dependencies": {
     "@codemirror/lang-sql": "6.10.0",
     "@codemirror/language": "6.12.4",
     "@codemirror/state": "6.7.6",
     "@codemirror/view": "6.43.13",
+    "@fontsource/fredoka": "5.3.0",
+    "@fontsource/jetbrains-mono": "5.3.0",
+    "@fontsource/nunito": "5.3.0",
     "@fontsource/oswald": "5.2.5",
     "@fontsource/space-grotesk": "5.3.0",
     "@fontsource/special-elite": "5.2.5",

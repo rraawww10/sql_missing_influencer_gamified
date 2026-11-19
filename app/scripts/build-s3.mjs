@@ -61,6 +61,9 @@ for (const n of units) copy(path.join(CONTENT, 'units', `u${pad(n)}.json`), path
 const packs = new Map(sessions.map((n) => [n, JSON.parse(fs.readFileSync(path.join(CONTENT, 'sessions', `s${pad(n)}.json`), 'utf8'))]));
 for (const p of packs.values()) copy(path.join(CONTENT, 'case_db/snapshots', `${p.snapshot}.sqlite`), path.join(C, 'snapshots', `${p.snapshot}.sqlite`));
 copy(path.join(CONTENT, 'story/cast.json'), path.join(C, 'cast.json'));
+// Kaal's recorded voice, when there is one (tools/kaal-voice/generate.py)
+if (fs.existsSync(path.join(CONTENT, 'voice/manifest.json')))
+  for (const f of fs.readdirSync(path.join(CONTENT, 'voice')).filter((x) => /\.(json|mp3|wav)$/.test(x))) copy(path.join(CONTENT, 'voice', f), path.join(C, 'voice', f));
 const rm = JSON.parse(fs.readFileSync(path.join(CONTENT, 'reading_materials.json'), 'utf8'));
 const notes = {};
 for (const t of rm.topics) for (const m of t.reading_materials) notes[m.unit_id] = { rm: m.global_sequence, title: m.title, markdown: m.content_markdown };

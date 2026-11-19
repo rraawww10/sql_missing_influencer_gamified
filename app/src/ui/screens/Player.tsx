@@ -1,4 +1,4 @@
-// Plays one episode as a game screen: a HUD with the episode name and a stories-style progress bar on top,
+// Plays one episode as a game screen: a bar with the episode name, the Learn scroll and a step-by-step progress bar on top,
 // ONE step at a time on the stage, and a floating dock with Back / Continue at the bottom (← → keys work too).
 // Finished steps can be opened again from the bar (or the steps sheet) or with Back - read-only, and SQL tasks become a practice run.
 import { ChapterPulse } from '../components/ChapterPulse';
@@ -19,9 +19,13 @@ import { episodeTitle, unitLabel } from '../episodes';
 import { ResetControl } from '../components/ResetControl';
 import { TablesDrawer } from '../components/TablesDrawer';
 import { SoundToggle } from '../components/SoundToggle';
-import { KaalDock } from '../kaal/Kaal';
+import { HINTS_EVENT, onDockAction, setDockContext } from '../kaal/dock';
+import { openReader } from '../reader/store';
+import { ScrollArt } from '../reader/ScrollArt';
+import { Backdrop } from '../design/Backdrop';
+import { Icon } from '../design/Icon';
 import { kaal } from '../kaal/bus';
-import type { KaalEvent } from '../kaal/lines';
+import { SAY, type KaalEvent } from '../kaal/lines';
 import { setSoundStage, sfx } from '../sound';
 import { hush } from '../voice';
 import { VoiceToggle } from '../components/VoiceToggle';
@@ -32,7 +36,7 @@ export function objectiveOf(beat: Beat): string {
   switch (beat.type) {
     case 'task': { const t = plain(beat.ask).split(/(?<=[.?!:])\s/)[0]; return t.length > 90 ? t.slice(0, 88) + '…' : t; }
     case 'activity': { const t = plain(beat.prompt); return t.length > 90 ? t.slice(0, 88) + '…' : t; }
-    case 'check': return 'Answer Kaal’s quick question';
+    case 'check': return 'Answer the quick question';
     case 'clue': return 'Read the evidence your query found - then pin it';
     case 'note': return `Learn the tool: ${beat.rm_ref.heading}`;
     case 'demo': return 'Run the demo and watch the clock';
@@ -73,7 +77,7 @@ const TODO: Partial<Record<Beat['type'], string>> = {
 
 const typing = (el: EventTarget | null) => el instanceof HTMLElement && (el.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) || !!el.closest('.cm-editor'));
 
-export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: { session: number; onExit(): void; onFinished(): void; exitLabel?: string }) {
+export function Player({ session, onExit, onFinished, exitLabel = 'Map' }: { session: number; onExit(): void; onFinished(): void; exitLabel?: string }) {
   const services = useServices();
   const [runner, setRunner] = useState<SessionRunner | null>(null);
   const [error, setError] = useState('');
@@ -106,7 +110,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
     const b = runner.pack.beats[view];
     if (!firstStep.current) sfx('whoosh');
     if (review) { if (firstStep.current) kaal('review', { silent: true }); }
-    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: '{you}! New lead tonight. Stay close, let’s go!' } : {});
+    else if (firstStep.current) kaal(view === 0 ? (session === 1 ? 'intro' : 'hook') : 'resume', view === 0 && session > 1 ? { line: SAY.newLead } : {});
     else if (KAAL_ON[b.type]) kaal(KAAL_ON[b.type]!, { silent: true });
     else if (b.type === 'scene' && view % 4 === 0) kaal('scene', { silent: true });
     firstStep.current = false;
@@ -159,7 +163,7 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
         const c = chapterOf(runner.pack.beats, runner.index - 1);
         setCheckpoint(c.n);
         setPulse({ n: c.n, of: c.of, index: runner.index });
-        kaal('pinned', { line: `Chapter ${c.n} of ${c.of} closed - your progress is saved. Good place for a break, {you}… or keep going?`, silent: true });
+        kaal('pinned', { line: SAY.chapterClosed(c.n, c.of), say: SAY.chapterClosedSay, silent: true });
         setTimeout(() => setCheckpoint(null), 6000);
       }
       setViewAt(null); refresh();
@@ -177,18 +181,30 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
     return () => removeEventListener('keydown', onKey);
   }, [next, back, sheet]);
 
+  // Kaal's dock: what is on screen, and what "open the tables / hints / reading material" mean here
+  const liveBeat = runner?.pack.beats[view];
+  useEffect(() => {
+    setDockContext({ screen: 'play', session, beatType: liveBeat?.type, onTask: liveBeat?.type === 'task' && !review });
+  }, [session, liveBeat?.type, review]);
+  useEffect(() => onDockAction({
+    'open-learn': () => openReader({ session }),
+    'open-tables': () => setSheet('tables'),
+    'open-evidence': () => setSheet('evidence'),
+    'open-hints': () => window.dispatchEvent(new Event(HINTS_EVENT)),
+  }), [session]);
+
   if (error) return (
-    <div className="page"><div className="page-inner" style={{ paddingTop: 40 }}>
-      <div className="panel" role="alert">
-        <p style={{ marginTop: 0 }}>Could not open this episode. {error}</p>
+    <div className="page"><Backdrop /><div className="page-inner narrow">
+      <div className="surface card panel" role="alert">
+        <p>Could not open this episode. {error}</p>
         <div className="row">
           <button className="btn primary" onClick={() => { setError(''); setAttempt((a) => a + 1); }}>Try again</button>
-          <button className="btn" onClick={onExit}>Back</button>
+          <button className="btn ghost" onClick={onExit}>Back</button>
         </div>
       </div>
     </div></div>
   );
-  if (!runner) return <div className="page"><div className="page-inner" style={{ paddingTop: 40 }}><p className="muted">Opening the case file…</p></div></div>;
+  if (!runner) return <div className="page"><Backdrop /><div className="page-inner narrow"><p className="loading">Opening the case file…</p></div></div>;
 
   const beats = runner.pack.beats;
   const beat = beats[view];
@@ -199,11 +215,12 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
   const title = episodeTitle(session, runner.pack.title);
   const pinnedClues = beats.filter((b): b is Extract<Beat, { type: 'clue' }> => b.type === 'clue' && runner.pinned.includes(b.clue_id));
   const pickStep = (i: number) => { setViewAt(i >= runner.index ? null : i); setSheet(null); };
+  const chapter = chapterOf(beats, view);
 
   const stage = (() => {
     switch (beat.type) {
       case 'scene': case 'hook': return <SceneStage runner={runner} beat={beat} index={view} />;
-      case 'note': return <NoteStage beat={beat} />;
+      case 'note': return <NoteStage beat={beat} session={session} />;
       case 'clue': return <ClueStage runner={runner} beat={beat} review={review} onChanged={refresh} />;
       case 'task': return <TaskPanel key={`${beat.id}-${review}`} runner={runner} beat={beat} review={review} onChanged={refresh} onContinue={review ? undefined : next} />;
       case 'check': return <CheckPanel key={beat.id} runner={runner} beat={beat} onChanged={refresh} />;
@@ -211,86 +228,90 @@ export function Player({ session, onExit, onFinished, exitLabel = '← Map' }: {
       case 'demo': return <DemoPanel key={beat.id} runner={runner} beat={beat} onChanged={refresh} />;
     }
   })();
-  const fullBleed = beat.type === 'scene' || beat.type === 'hook';
+  const shape = beat.type === 'task' ? 'wide' : beat.type === 'note' ? 'reading' : beat.type === 'scene' || beat.type === 'hook' ? 'chat' : beat.type === 'clue' ? 'center' : '';
 
   return (
-    <div className={`game beat-${beat.type} chapter-${chapterOf(beats, view).n}`}>
-      <div className="vignette" aria-hidden="true" /><div className="headlight" aria-hidden="true" />
+    <div className={`game beat-${beat.type} chapter-${chapter.n}`}>
+      <Backdrop />
       <header className="hud">
-        <button className="btn small ghost" onClick={onExit} aria-label={exitLabel}><span className="hide-phone">{exitLabel}</span><span className="only-phone" aria-hidden="true">←</span></button>
-        <div className="ep">
-          <span className="clock">🕕 {storyTime(session)}<span className="hide-phone"> · Police Data Cell</span>{multiPart && <> · part {unit!.part} of {unit!.parts}</>}</span>
-          <h1>{title}{unit && !unit.finale && <small>{unitLabel(unit)}</small>}</h1>
-        </div>
-        <div className="tools">
-          <SoundToggle /><VoiceToggle />
-          <button className="hud-stat" onClick={() => setSheet('tables')} aria-label="Open the case database tables">🗄<span className="hide-phone"> Tables</span></button>
-          <button className={`hud-stat pins ${bump ? 'bump' : ''}`} onClick={() => setSheet('evidence')} aria-label={`Evidence: ${runner.pinned.length} clues pinned`}>📌 {runner.pinned.length}</button>
-          <ResetControl session={session} small popover label="↺ Reset" onDone={() => { setRunner(null); setViewAt(null); setAttempt((a) => a + 1); }} />
+        <div className="hud-row">
+          <button className="btn small ghost" onClick={onExit} aria-label={exitLabel}><Icon name="left" /><span className="hide-phone">{exitLabel}</span></button>
+          <div className="ep">
+            <span className="clock"><span className="live-dot" aria-hidden="true" />{storyTime(session)}<span className="hide-phone"> · Police Data Cell</span>{multiPart && <> · part {unit!.part} of {unit!.parts}</>}</span>
+            <h1>{title}{unit && !unit.finale && <small>{unitLabel(unit)}</small>}</h1>
+          </div>
+          <div className="tools">
+            <button className="learn-btn" onClick={() => openReader({ session, focus: 'rm_ref' in beat && beat.rm_ref ? beat.rm_ref : undefined })} aria-label="Learn: open the full reading material" title="Learn: the full reading material for this episode">
+              <ScrollArt size={28} /><span>Learn</span>
+            </button>
+            <button className="hudchip" onClick={() => setSheet('tables')} aria-label="Open the case database tables"><Icon name="db" /><span className="hide-phone">Tables</span></button>
+            <button className={`hudchip pins ${bump ? 'bump' : ''}`} onClick={() => setSheet('evidence')} aria-label={`Evidence: ${runner.pinned.length} clues pinned`}><Icon name="pin" /><b>{runner.pinned.length}</b></button>
+            <SoundToggle /><VoiceToggle />
+            <ResetControl session={session} small popover label="Reset" onDone={() => { setRunner(null); setViewAt(null); setAttempt((a) => a + 1); }} />
+          </div>
         </div>
         <StoryBar runner={runner} viewing={view} onPick={pickStep} />
-        <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, paddingTop: 4 }}>
+        <div className="hud-sub">
           <button className="nowchip" onClick={() => setSheet('steps')} aria-label="Open the list of steps">
-            <span className="ico" aria-hidden="true">{ICON[beat.type]}</span>
+            <Icon name={ICON[beat.type]} />
             <span className="lbl">{KIND[beat.type]}{beatLabel(runner, beat, true) !== KIND[beat.type] && <> · {beatLabel(runner, beat, true)}</>}</span>
             <span className="count">Step {runner.index + 1}/{beats.length}</span>
-            <span className="chapter hide-phone">Ch. {chapterOf(beats, view).n}/{chapterOf(beats, view).of}</span>
+            <span className="chapter hide-phone">Ch. {chapter.n}/{chapter.of}</span>
           </button>
-          {!review && <span className="objective hide-phone" title={objectiveOf(beat)}><b>🎯 Objective</b>{objectiveOf(beat)}</span>}
-          <span className="muted small hide-phone">{beats.filter((b) => runner.beatState(b.id)?.done).length} of {beats.length} done</span>
+          {!review && <span className="objective hide-phone" title={objectiveOf(beat)}><Icon name="target" /><b>Objective</b>{objectiveOf(beat)}</span>}
+          <span className="done-count hide-phone">{beats.filter((b) => runner.beatState(b.id)?.done).length} of {beats.length} done</span>
         </div>
       </header>
 
       <main className="stage">
         {review && (
-          <div className="review-banner strip" role="status">
-            <span>👀 Looking back at an earlier step - <b>{beatLabel(runner, beat, true)}</b>. Nothing here changes your progress.</span>
-            <button className="btn small primary" onClick={() => setViewAt(null)}>Back to current step ⏭</button>
+          <div className="surface review-banner" role="status">
+            <span><Icon name="eye" /> Looking back at an earlier step - <b>{beatLabel(runner, beat, true)}</b>. Nothing here changes your progress.</span>
+            <button className="btn small primary" onClick={() => setViewAt(null)}>Back to current step</button>
           </div>
         )}
         {checkpoint && !review && (
-          <div className="checkpoint" role="status">💾 <b>Chapter {checkpoint} closed · progress saved.</b> <span className="hide-phone">Stop here any time - you’ll continue from this point.</span></div>
+          <div className="checkpoint" role="status"><Icon name="save" /> <b>Chapter {checkpoint} closed · progress saved.</b> <span className="hide-phone">Stop here any time - you’ll continue from this point.</span></div>
         )}
         {pulse && !review && runner.index <= pulse.index + 1 && <ChapterPulse key={`${session}-${pulse.n}`} session={session} chapter={pulse.n} of={pulse.of} />}
         {banner && !review && (
-          <div className="chapter-banner" aria-hidden="true"><small>Chapter</small><b>{banner}</b><span>of {chapterOf(beats, view).of}</span></div>
+          <div className="chapter-banner" aria-hidden="true"><small>Chapter</small><b>{banner}</b><span>of {chapter.of}</span></div>
         )}
         <div className="stage-scroll" ref={scroller}>
-          {fullBleed ? stage : <div key={view} className={`stage-content ${beat.type === 'task' ? 'wide' : beat.type === 'note' ? 'reading' : ''}`} style={beat.type === 'clue' ? { minHeight: '100%', display: 'grid' } : undefined}>{stage}</div>}
+          <div key={view} className={`stage-content ${shape}`}>{stage}</div>
         </div>
 
-        <div className={`dock${fullBleed ? ' floating' : ''}`}>
-          <button className="btn" onClick={back} disabled={view === 0} aria-label="Back to the previous step">← Back</button>
+        <div className="dock">
+          <button className="btn ghost" onClick={back} disabled={view === 0} aria-label="Back to the previous step"><Icon name="left" /> Back</button>
           <div className={`status ${canGo && !review ? 'ok' : ''}`} aria-live="polite">
-            {review ? `Step ${view + 1} of ${beats.length} · review` : canGo ? (last ? (multiPart ? 'Last step - finish this part' : 'Last step - finish the episode') : 'Ready when you are') : TODO[beat.type] ?? ''}
+            {review ? `Step ${view + 1} of ${beats.length} · review` : canGo ? (last ? (multiPart ? 'Last step - finish this part' : 'Last step - finish the episode') : '') : TODO[beat.type] ?? ''}
           </div>
           {review
-            ? <button className="btn primary" onClick={next}>Next ›</button>
-            : <button className="btn primary" disabled={!canGo} onClick={next}>{last ? (multiPart ? 'Finish this part ✓' : 'Finish episode ✓') : <>Continue <span className="arrow">→</span></>}</button>}
+            ? <button className="btn primary" onClick={next}>Next <Icon name="right" /></button>
+            : <button className={`btn primary ${canGo ? 'go' : ''}`} disabled={!canGo} onClick={next}>{last ? (multiPart ? 'Finish this part' : 'Finish episode') : 'Continue'} <Icon name={last ? 'tick' : 'right'} /></button>}
         </div>
       </main>
 
-      <KaalDock />
       {sheet === 'steps' && <Sheet title="Steps in this episode" side="left" onClose={() => setSheet(null)}><StepsList runner={runner} viewing={view} onPick={pickStep} /></Sheet>}
       {sheet === 'tables' && (
         <Sheet title="Case database" wide onClose={() => setSheet(null)}>
-          <p className="muted small" style={{ marginTop: 0 }}>Every table you can query right now{beat.type === 'task' ? ', as they stand at the start of this task' : ''}. Rows and schema.</p>
+          <p className="muted small">Every table you can query right now{beat.type === 'task' ? ', as they stand at the start of this task' : ''}. Rows and schema.</p>
           <TablesDrawer snapshot={runner.pack.snapshot} setup={beat.type === 'task' ? beat.setup : undefined} learnerSql={beat.type === 'task' ? runner.beatState(beat.id).passSql : undefined} />
         </Sheet>
       )}
       {sheet === 'evidence' && (
         <Sheet title="Evidence" onClose={() => setSheet(null)}>
           {pinnedClues.length === 0 && <p className="muted">Nothing pinned in this episode yet. Solve tasks to find evidence.</p>}
-          <div style={{ display: 'grid', gap: 16 }}>
+          <div className="stack">
             {pinnedClues.map((c) => (
-              <article key={c.clue_id} className="evi"><div className="tag">This episode · {c.clue_id}</div><h4>{c.title}</h4><Markdown source={c.body} /></article>
+              <article key={c.clue_id} className="evi"><div className="cap">This episode · {c.clue_id}</div><h4>{c.title}</h4><Markdown source={c.body} /></article>
             ))}
           </div>
           {runner.pack.previously.length > 0 && <>
-            <h3 style={{ margin: '22px 0 10px', fontSize: 15 }}>The case so far</h3>
-            <div style={{ display: 'grid', gap: 16 }}>
+            <h3>The case so far</h3>
+            <div className="stack">
               {runner.pack.previously.map((c) => (
-                <article key={c.clue_id} className="evi briefed"><div className="tag">{c.session === session ? 'Earlier in this episode' : `${episodeTitle(c.session)} · ${storyTime(c.session)}`}</div><h4>{c.title}</h4><Markdown source={c.body} /></article>
+                <article key={c.clue_id} className="evi briefed"><div className="cap">{c.session === session ? 'Earlier in this episode' : `${episodeTitle(c.session)} · ${storyTime(c.session)}`}</div><h4>{c.title}</h4><Markdown source={c.body} /></article>
               ))}
             </div>
           </>}

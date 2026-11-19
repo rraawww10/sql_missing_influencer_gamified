@@ -18,7 +18,8 @@ const base = {
 };
 
 const Scene = z.object({ ...base, type: z.literal('scene'), body: z.string() });
-const Note = z.object({ ...base, type: z.literal('note'), rm_ref: RmRef, body: z.string() });
+// A Case Note: `body` = the learning text (true in any SQL course); `case` = how it ties to tonight's story (optional)
+const Note = z.object({ ...base, type: z.literal('note'), rm_ref: RmRef, body: z.string(), case: z.string().optional() });
 const Hook = z.object({ ...base, type: z.literal('hook'), body: z.string() });
 const Clue = z.object({ ...base, type: z.literal('clue'), clue_id: z.string(), title: z.string(), body: z.string(),
   requires_task: z.string().optional() });

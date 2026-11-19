@@ -1,0 +1,137 @@
+/* Kaal: the detective figure (kaal/Kaal.tsx, an SVG whose parts animate per mood), his corner dock with the speech
+   bubble, and the "Ask Kaal" chat panel (kaal/chat/KaalChat.tsx). */
+
+/* ---------- the figure (moods: idle, think, point, happy, cheer, smirk, oops, whisper; .kaal-talking while he speaks) ---------- */
+.kaal { overflow: visible; display: block; }
+.kaal .kaal-shadow { fill: rgb(0 0 0 / 55%); }
+.kaal .kaal-body { transform-origin: 60px 150px; animation: breathe 3.6s ease-in-out infinite; }
+.kaal .kaal-eye { transform-box: fill-box; transform-origin: center; animation: blinkEye 4.2s infinite; filter: drop-shadow(0 0 3px #ffb547); }
+.kaal .kaal-glow { animation: glowEyes 2.8s ease-in-out infinite; }
+.kaal .kaal-happy-eyes { opacity: 0; filter: drop-shadow(0 0 3px #ffb547); }
+.kaal .kaal-head { transform-origin: 60px 70px; transition: transform .4s var(--spring); }
+.kaal .kaal-hat { transform-origin: 46px 46px; }
+.kaal .kaal-arm { transform-origin: 80px 84px; transition: transform .45s var(--spring); }
+.kaal .kaal-fx text { font: 700 16px var(--display); fill: var(--sun); opacity: 0; }
+.kaal .kaal-q { font-size: 22px; }
+.kaal-think .kaal-arm { transform: rotate(-58deg) translate(-6px, -6px); }
+.kaal-think .kaal-head { transform: rotate(-6deg); }
+.kaal-think .kaal-q { animation: qpop 1.8s ease infinite; }
+.kaal-think .kaal-eye { transform: translateY(-1.5px); }
+.kaal-point .kaal-arm { transform: rotate(-82deg) translate(2px, 0); }
+.kaal-point .kaal-head { transform: rotate(4deg); }
+.kaal-happy .kaal-eye, .kaal-cheer .kaal-eye { opacity: 0; }
+.kaal-happy .kaal-happy-eyes, .kaal-cheer .kaal-happy-eyes { opacity: 1; }
+.kaal-happy .kaal-body { animation: hop .7s ease 1, breathe 3.6s ease-in-out .7s infinite; }
+.kaal-happy .kaal-mouth, .kaal-cheer .kaal-mouth, .kaal-smirk .kaal-mouth { opacity: .9 !important; }
+.kaal-cheer .kaal-body { animation: hop .7s ease 2; }
+.kaal-cheer .kaal-hat { animation: tipHat 1.2s ease 1; }
+.kaal-cheer .kaal-arm { transform: rotate(-120deg) translate(-4px, -8px); }
+.kaal-cheer .kaal-spark { animation: spark 1.2s ease 2; }
+.kaal-cheer .kaal-spark.s2 { animation-delay: .2s; } .kaal-cheer .kaal-spark.s3 { animation-delay: .4s; }
+.kaal-smirk .kaal-eye.l { transform: scaleY(.35); animation: none; }
+.kaal-smirk .kaal-head { transform: rotate(-8deg); }
+.kaal-oops .kaal-head { transform: rotate(10deg) translateY(2px); }
+.kaal-oops .kaal-eye { transform: scale(1.3); animation: none; }
+.kaal-oops .kaal-body { animation: wobble .5s ease 1, breathe 3.6s ease-in-out .5s infinite; }
+.kaal-whisper .kaal-head { transform: translateX(4px) rotate(6deg); }
+.kaal-whisper .kaal-glow { animation-duration: 1.4s; }
+@media (prefers-reduced-motion: reduce) { .kaal * { animation: none !important; } }
+.kaal .kaal-body { filter: drop-shadow(0 0 1.5px rgb(255 255 255 / 85%)); }
+.kaal .kaal-eye { filter: none; transform-box: fill-box; transform-origin: center; animation: blinkEye 4.2s infinite, lookAround 7s ease-in-out infinite; }
+.kaal .kaal-happy-eyes { filter: none; }
+.kaal .kaal-mouth { opacity: 1 !important; transform-box: fill-box; transform-origin: center; transition: transform .2s; }
+.kaal .kaal-brows { transform-box: fill-box; transform-origin: center; transition: transform .3s var(--spring); }
+.kaal .kaal-stache { transform-box: fill-box; transform-origin: center; }
+.kaal .kaal-scarf-tail { transform-box: fill-box; transform-origin: top center; animation: scarfFlap 2.4s ease-in-out infinite; }
+.kaal .kaal-glass { transform-box: view-box; transform-origin: 88px 116px; animation: glassWiggle 5s ease-in-out infinite; }
+.kaal-talking .kaal-mouth { animation: talkMouth .22s ease-in-out infinite alternate; }
+.kaal-talking .kaal-stache { animation: stacheTalk .22s ease-in-out infinite alternate; }
+.kaal-talking .kaal-head { animation: nodTalk .9s ease-in-out infinite; }
+.kaal-happy .kaal-mouth, .kaal-cheer .kaal-mouth { transform: scale(1.5, 1.8); }
+.kaal-happy .kaal-brows, .kaal-cheer .kaal-brows { transform: translateY(-2.5px); }
+.kaal-oops .kaal-brows { transform: translateY(-1px) rotate(4deg); }
+.kaal-think .kaal-brows, .kaal-smirk .kaal-brows { transform: translateY(1px) rotate(-5deg); }
+.kaal-smirk .kaal-mouth { transform: translateX(3px) scale(1.2, .8); }
+.kaal-oops .kaal-mouth { transform: scale(1, 2.2); }
+.kaal-cheer .kaal-body { animation: hop .6s ease 3; }
+@keyframes talkMouth { from { transform: scale(1, .5); } to { transform: scale(1.25, 2.6); } }
+@keyframes stacheTalk { from { transform: translateY(0); } to { transform: translateY(-.8px) scaleX(1.05); } }
+@keyframes nodTalk { 0%, 100% { transform: rotate(0); } 30% { transform: rotate(-3deg) translateY(-.5px); } 70% { transform: rotate(2.5deg); } }
+@keyframes lookAround { 0%, 30%, 100% { translate: 0 0; } 40%, 52% { translate: -1.3px 0; } 62%, 74% { translate: 1.3px -.4px; } }
+@keyframes scarfFlap { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(8deg); } }
+@keyframes glassWiggle { 0%, 70%, 100% { transform: rotate(0); } 78% { transform: rotate(-12deg); } 86% { transform: rotate(8deg); } 92% { transform: rotate(-4deg); } }
+@media (prefers-reduced-motion: reduce) { .kaal-talking .kaal-mouth { animation: none !important; } }
+@keyframes breathe { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.018) translateY(-.6px); } }
+@keyframes blinkEye { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+@keyframes glowEyes { 0%, 100% { opacity: .3; } 50% { opacity: .65; } }
+@keyframes qpop { 0% { opacity: 0; transform: translateY(6px) scale(.6); } 30%, 80% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 30% { transform: translateY(-10px); } 55% { transform: translateY(0); } 70% { transform: translateY(-4px); } }
+@keyframes tipHat { 0%, 100% { transform: rotate(0); } 30%, 60% { transform: translateY(-5px) rotate(-10deg); } }
+@keyframes spark { 0% { opacity: 0; transform: scale(.2) rotate(0); } 50% { opacity: 1; transform: scale(1.2) rotate(90deg); } 100% { opacity: 0; transform: scale(.4) rotate(180deg); } }
+@keyframes wobble { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-3deg); } 75% { transform: rotate(3deg); } }
+
+/* ---------- corner dock: Kaal lives at the bottom right of every screen ---------- */
+.kaal-dock { position: fixed; right: max(14px, env(safe-area-inset-right, 0px)); bottom: max(10px, env(safe-area-inset-bottom, 0px)); z-index: var(--z-kaal);
+  display: flex; flex-direction: column; align-items: flex-end; gap: 8px; pointer-events: none; }
+.kaal-dock > * { pointer-events: auto; }
+.kaal-btn { position: relative; border: 0; background: none; padding: 0; border-radius: 50%; transition: transform .15s; filter: drop-shadow(0 8px 12px rgb(20 8 60 / 45%)); }
+.kaal-btn:hover { transform: scale(1.06) rotate(-3deg); }
+.kaal-ask { position: absolute; left: -6px; top: 2px; display: inline-flex; gap: 5px; align-items: center; background: var(--pink); color: #fff; border-radius: 99px; padding: 4px 10px 4px 7px;
+  font: 600 13px var(--display); box-shadow: 0 4px 0 var(--pink-edge); translate: -60% 0; white-space: nowrap; animation: bob 2.6s ease-in-out infinite; }
+.kaal-dock.chatting .kaal-ask { background: var(--night); box-shadow: 0 4px 0 #000; animation: none; }
+.kaal-bubble { max-width: min(330px, calc(100vw - 40px)); background: #fff; color: var(--ink); border-radius: 20px 20px 6px 20px; padding: 11px 15px; font: 700 15.5px/1.45 var(--body);
+  box-shadow: var(--drop-s); animation: popIn .35s var(--spring); cursor: pointer; }
+.kaal-bubble b { display: block; color: var(--pink-edge); font: 800 11px var(--body); letter-spacing: .1em; text-transform: uppercase; }
+.kaal-dock .kaal-bubble { pointer-events: none; }   /* he never blocks a click: the bubble is only something to read */
+/* inside the player Kaal stands in the bottom band with Back / Continue, so he never covers the work:
+   at the right on a wide screen, in the middle of the band (between the two buttons) on a narrow one */
+.app:has(.game) .kaal-dock { bottom: max(6px, env(safe-area-inset-bottom, 0px)); }
+.app:has(.game) .kaal-btn .kaal { width: 64px; height: auto; }
+@media (max-width: 1000px) {
+  .app:has(.game) .kaal-dock { right: auto; left: 50%; translate: -50% 0; align-items: center; }
+  .app:has(.game) .kaal-btn .kaal { width: 56px; }
+  .app:has(.game) .kaal-ask { left: -4px; top: -4px; translate: -40% 0; padding: 5px 7px; } .app:has(.game) .kaal-ask span { display: none; }
+  .app:has(.game) .kchat-panel { transform-origin: 50% 100%; }
+}
+@media (max-width: 640px) { .kaal-btn .kaal { width: 60px; height: auto; } .kaal-ask span { display: none; } .kaal-ask { padding: 5px 7px; } }
+body.reader-open .kaal-dock { display: none; }
+
+/* ---------- Ask Kaal: the chat panel ---------- */
+.kchat-panel { width: min(380px, calc(100vw - 28px)); height: min(540px, calc(100dvh - 190px)); display: flex; flex-direction: column; overflow: hidden;
+  background: #fff; color: var(--ink); border-radius: var(--r); box-shadow: var(--drop); animation: popIn .3s var(--spring); transform-origin: 100% 100%;
+  --fg: var(--ink); --fg-2: var(--ink-2); --soft: var(--lilac); --soft-fg: var(--ink); --soft-edge: var(--lilac-edge); --line: var(--lilac-line); --code-bg: var(--lilac); --code-fg: var(--ink); }
+/* outside the player Kaal is a smaller chat launcher: the page has its own Kaal card when he has something to say */
+.app:not(:has(.game)) .kaal-btn .kaal { width: 74px; height: auto; }
+.kchat-head { flex: none; display: flex; gap: 10px; align-items: center; padding: 10px 12px 10px 8px; background: linear-gradient(135deg, var(--c1), var(--c2)); color: #fff; }
+.kchat-head .kaal { flex: none; }
+.kchat-title { flex: 1; min-width: 0; }
+.kchat-title h2 { font-size: 20px; text-shadow: 0 2px 0 rgb(0 0 0 / 18%); }
+.kchat-title p { font: 700 12.5px/1.3 var(--body); opacity: .95; }
+.kchat-clear, .kchat-close { border: 0; background: rgb(20 12 60 / 30%); color: #fff; border-radius: 10px; padding: 6px 10px; font: 800 12px var(--body); display: inline-grid; place-items: center; }
+.kchat-close { padding: 6px; }
+.kchat-clear:hover, .kchat-close:hover { background: rgb(20 12 60 / 50%); }
+.kchat-list { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; background: #faf9ff; }
+.kchat-empty { display: grid; gap: 10px; }
+.kchat-row { display: grid; gap: 6px; justify-items: start; animation: rise .3s var(--ease) both; }
+.kchat-row-you { justify-items: end; }
+.kchat-msg { max-width: 88%; border-radius: 18px; padding: 9px 13px; font: 600 15px/1.45 var(--body); }
+.kchat-msg p { margin: 0; } .kchat-msg p + p { margin-top: 6px; }
+.kchat-kaal { background: #fff; color: var(--ink); border-radius: 18px 18px 18px 5px; box-shadow: 0 3px 0 var(--lilac-line); }
+.kchat-you { background: var(--pink); color: #fff; border-radius: 18px 18px 5px 18px; box-shadow: 0 3px 0 var(--pink-edge); }
+.kchat-msg code { font: 600 .9em var(--mono); background: var(--lilac); padding: 1px 6px; border-radius: 6px; }
+.kchat-action { border: 0; background: var(--sun); color: var(--ink); border-radius: 12px; padding: 7px 12px; font: 600 14px var(--display); box-shadow: 0 4px 0 var(--sun-edge);
+  display: inline-flex; gap: 6px; align-items: center; transition: transform .1s; }
+.kchat-action:hover { transform: translateY(-2px); } .kchat-action:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--sun-edge); }
+.kchat-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.kchat-chips button { border: 2px solid var(--lilac-edge); background: #fff; color: var(--ink); border-radius: 99px; padding: 5px 11px; font: 700 13px var(--body); text-align: left; transition: transform .1s, background .1s; }
+.kchat-chips button:hover { background: var(--lilac); transform: translateY(-1px); }
+.kchat-typing { display: inline-flex; gap: 5px; padding: 13px 14px; }
+.kchat-typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); animation: typingDot 1s infinite; }
+.kchat-typing i:nth-child(2) { animation-delay: .15s; } .kchat-typing i:nth-child(3) { animation-delay: .3s; }
+.kchat-form { flex: none; display: flex; gap: 8px; padding: 10px 12px 6px; border-top: 2px solid var(--lilac-line); background: #fff; }
+.kchat-form input { flex: 1; min-width: 0; font: 700 15px var(--body); padding: 10px 13px; border: 3px solid var(--lilac-line); border-radius: 14px; color: var(--ink); background: #faf9ff; }
+.kchat-form input:focus { outline: 0; border-color: var(--pink); }
+.kchat-send { border: 0; background: var(--pink); color: #fff; border-radius: 14px; width: 46px; display: grid; place-items: center; box-shadow: 0 4px 0 var(--pink-edge); transition: transform .1s; }
+.kchat-send:not(:disabled):hover { transform: translateY(-2px); } .kchat-send:disabled { filter: grayscale(.8) opacity(.5); }
+.kchat-note { flex: none; margin: 0; padding: 0 14px 10px; font: 700 11.5px var(--body); color: var(--ink-2); background: #fff; }
+@media (max-width: 640px) { .kchat-panel { height: min(480px, calc(100dvh - 210px)); } }

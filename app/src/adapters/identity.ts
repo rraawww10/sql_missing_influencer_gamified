@@ -1,12 +1,18 @@
-// Student identity without a login: the student types their NAME and NXTWAVE ID once on the start screen.
+// Who is playing on this device. With an analytics server the student has an ACCOUNT (adapters/account.ts): they sign up
+// with name, NxtWave ID, email and a password, or log in with ID + password, and the server's session `token` is kept
+// here with the identity. A build without a server has no accounts: name, ID and email are simply typed once.
 //   * The NxtWave ID is the unique key: events go out as user_id "lms:<ID>", so the analytics server files everything
-//     (progress, time, feedback) under that ID, and a returning student who types the same ID gets their history back.
+//     (progress, time, feedback) under that ID, and only the logged-in student can read or add to it.
 //   * The name replaces "intern" in the story and Kaal's lines (personalize / firstName below).
+//   * The email is required: "Forgot your NxtWave ID?" and "Forgot password" use it.
 // Kept in localStorage, which every episode site shares (one host, one path prefix - see README §Shipping),
 // so the student is asked once per device, not once per episode.
 import type { AuthProvider, GameUser } from '../ports/auth';
 
-export interface Identity { id: string; name: string; at: string }
+export interface Identity { id: string; name: string; email: string; at: string; token?: string }   // token: the server session (account builds)
+// What this device has stored. An identity saved before the email was asked has none (email: null): it is incomplete,
+// and the start screen asks for the email only (ui/identity/IdentityGate.tsx).
+export type SavedIdentity = Omit<Identity, 'email'> & { email: string | null };
 
 const KEY = 'tmi.identity.v1';
 type KV = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
@@ -21,11 +27,24 @@ export function normalizeName(v: string): string | null {
   return n.length >= 2 && n.length <= 60 && /^[\p{L}\p{M}][\p{L}\p{M} .'-]*$/u.test(n) ? n : null;
 }
 
-export function loadIdentity(kv: Pick<KV, 'getItem'> = localStorage): Identity | null {
+// Trimmed and lower-cased; something@domain.tld with no spaces, at most 120 characters. Same rule as the server.
+export function normalizeEmail(v: string): string | null {
+  const e = v.trim().toLowerCase();
+  return e.length <= 120 && /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)*\.[^\s@.]{2,}$/.test(e) ? e : null;
+}
+
+export function loadSavedIdentity(kv: Pick<KV, 'getItem'> = localStorage): SavedIdentity | null {
   try {
-    const v = JSON.parse(kv.getItem(KEY) ?? 'null') as Identity | null;
-    return v && normalizeId(v.id) === v.id && normalizeName(v.name) ? v : null;
+    const v = JSON.parse(kv.getItem(KEY) ?? 'null') as Partial<Identity> | null;
+    if (!v || typeof v.id !== 'string' || typeof v.name !== 'string' || normalizeId(v.id) !== v.id || !normalizeName(v.name)) return null;
+    return { id: v.id, name: v.name, email: typeof v.email === 'string' ? normalizeEmail(v.email) : null, at: typeof v.at === 'string' ? v.at : '',
+      ...(typeof v.token === 'string' && /^[0-9a-f]{64}$/.test(v.token) ? { token: v.token } : {}) };
   } catch { return null; }
+}
+// The signed-in student: a stored identity that is complete (it has an email). Anything less is nobody yet.
+export function loadIdentity(kv: Pick<KV, 'getItem'> = localStorage): Identity | null {
+  const v = loadSavedIdentity(kv);
+  return v?.email ? { ...v, email: v.email } : null;
 }
 export function saveIdentity(i: Identity, kv: Pick<KV, 'setItem'> = localStorage) {
   try { kv.setItem(KEY, JSON.stringify(i)); } catch { /* storage blocked: this page still works, the next one asks again */ }

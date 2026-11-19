@@ -1,6 +1,7 @@
 // Student feedback, stored on the analytics server (same server and database as the progress events, so the dashboard
 // shows it per student):
-//   * the episode card on the solved screen (stars, mood, difficulty, what they liked, a suggestion) → POST /api/feedback
+//   * the episode card on the solved screen (the 11-star ladder, mood, difficulty, what they liked, "what would make it one
+//     star better") → POST /api/feedback
 //   * a quick check-in after every chapter (one tap + an optional suggestion)                         → POST /api/checkpoint
 // Both go through the retrying mailbox (adapters/serverSync.ts), so feedback typed offline is sent later instead of lost.
 // Always posted to the embedding page too ('feedback' / 'checkpoint' messages), and remembered on this device (and restored
@@ -8,10 +9,28 @@
 import { postToParent } from './embed';
 import { checkpointKey, feedbackKey, mailbox } from '../adapters/serverSync';
 
+// scale: 11 = the 11-star ladder below (the card since 2026-11-19); 5 = the old 5-star card (older answers)
 export interface Feedback {
-  user_id: string; session: number; rating: number; mood?: string; difficulty?: 'easy' | 'right' | 'hard';
+  user_id: string; session: number; rating: number; scale?: 5 | 11; mood?: string; difficulty?: 'easy' | 'right' | 'hard';
   liked?: string[]; comment?: string; sound_on?: boolean; client_ts: string;
 }
+
+// The 11-star ladder (Airbnb's 11-star framework, retold for one episode of a SQL game). 5 is what a good class already
+// is: "it worked". 6 and 7 are the delight we design for; 8 to 11 are the far end, there to stretch the imagination.
+// The analytics dashboard (analytics/public/index.html) shows the same words; keep the two lists the same.
+export const LADDER: Record<number, string> = {
+  1: 'I gave up',
+  2: 'Stuck, I needed help',
+  3: 'Confusing in places',
+  4: 'Okay, but hard to follow',
+  5: 'It worked, as expected',
+  6: 'Better than a normal class',
+  7: 'Felt made for me',
+  8: "I didn't want to stop",
+  9: "I'd tell my friends",
+  10: 'One of the best ways I have learnt',
+  11: 'It changed how I see coding',
+};
 export interface Checkpoint { user_id: string; session: number; chapter: number; rating: 1 | 2 | 3 | 4; comment?: string; client_ts: string }
 
 const seen = (k: string) => { try { return !!localStorage.getItem(k); } catch { return false; } };

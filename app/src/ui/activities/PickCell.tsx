@@ -14,7 +14,7 @@ export function PickCell({ beat, locked, reveal, onSubmit }: WidgetProps<Beat>) 
     <div className="pick">
       {!locked && <p className="howto-line">Tap one cell in the table{beat.tables.length > 1 ? 's' : ''} below.</p>}
       {beat.tables.map((t) => (
-        <div key={t.caption} style={{ overflowX: 'auto' }}>
+        <div key={t.caption} className="pick-scroll">
           <table>
             <caption>{t.caption}</caption>
             <thead><tr>{t.columns.map((c) => <th key={c} scope="col">{c}</th>)}</tr></thead>
@@ -34,7 +34,7 @@ export function PickCell({ beat, locked, reveal, onSubmit }: WidgetProps<Beat>) 
           </table>
         </div>
       ))}
-      {!locked && <div className="row"><button className="btn pop" disabled={!cell} onClick={() => cell && onSubmit({ kind: 'pick_cell', ...cell })}>Check</button>{cell && <span className="muted small">Picked: <b>{cell.column}</b> in row {cell.row + 1}</span>}</div>}
+      {!locked && <div className="row check-row"><button className="btn pop" disabled={!cell} onClick={() => cell && onSubmit({ kind: 'pick_cell', ...cell })}>Check</button>{cell && <span className="muted small">Picked: <b>{cell.column}</b> in row {cell.row + 1}</span>}</div>}
     </div>
   );
 }

@@ -31,7 +31,7 @@ export function MatchPairs({ beat, locked, parts, reveal, onSubmit }: WidgetProp
           );
         })}
       </div>
-      {!locked && <div className="row" style={{ marginTop: 14 }}><button className="btn pop" disabled={!complete} onClick={() => onSubmit({ kind: 'match', pairs })}>Check</button></div>}
+      {!locked && <div className="row check-row"><button className="btn pop" disabled={!complete} onClick={() => onSubmit({ kind: 'match', pairs })}>Check</button></div>}
     </div>
   );
 }

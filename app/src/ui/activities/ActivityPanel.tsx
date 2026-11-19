@@ -12,6 +12,7 @@ import { MatchPairs } from './MatchPairs';
 import { OrderSteps } from './OrderSteps';
 import { PickCell } from './PickCell';
 import { MultiSelect } from './MultiSelect';
+import { Icon } from '../design/Icon';
 
 export interface WidgetProps<B extends ActivityBeat> {
   beat: B;
@@ -27,7 +28,11 @@ export function ActivityPanel({ runner, beat, review = false, onChanged }: Props
   const st = runner.beatState(beat.id);
   const [last, setLast] = useState<(ActivityResult & { revealed: boolean; attempts: number }) | null>(null);
   const done = st.done;
-  const reveal = !!st.revealed || (review && done);   // looking back: show the right answer
+  const reveal = !!st.revealed || (review && done);   // the answer was shown to the learner (too many tries), or they are looking back
+  // A finished activity always shows its final arrangement: solved = the learner's own answer (which is the key);
+  // revealed = the key. Without this, coming back to the step after leaving it showed the board empty again.
+  const showKey = done;
+  const total = last ? Object.keys(last.parts).length : 0;
 
   const submit = async (answer: ActivityAnswer) => {
     const r = await runner.answerActivity(answer);
@@ -36,16 +41,15 @@ export function ActivityPanel({ runner, beat, review = false, onChanged }: Props
     onChanged();
   };
 
-  const common = { locked: done, parts: last?.parts, reveal, onSubmit: submit };
+  const common = { locked: done, parts: last?.parts, reveal: showKey, onSubmit: submit };
   const right = last ? Object.values(last.parts).filter(Boolean).length : 0;
-  const total = last ? Object.keys(last.parts).length : 0;
 
   return (
-    <section className="fade-in" aria-label="Activity" style={{ maxWidth: 900, margin: '0 auto', position: 'relative' }}>
+    <section className="quiz wide fade-in" aria-label="Activity">
       {last?.correct && <Confetti count={34} />}
-      <div className="stage-label">🧩 Activity{done && <span className="sticker flat">✓ done</span>}</div>
-      <div className="quiz-q" style={{ fontSize: 'clamp(18px, 2.6vw, 24px)' }}><Markdown source={beat.prompt} /></div>
-      <div className="board">
+      <div className="stage-label"><Icon name="puzzle" /> Activity{done && <span className="pill mint"><Icon name="tick" /> done</span>}</div>
+      <div className="surface card quiz-q"><Markdown source={beat.prompt} /></div>
+      <div className={`surface card board ${done ? 'checked' : ''}`}>
         {beat.kind === 'sort_into' && <SortInto beat={beat} {...common} />}
         {beat.kind === 'match' && <MatchPairs beat={beat} {...common} />}
         {beat.kind === 'order' && <OrderSteps beat={beat} {...common} />}
@@ -53,7 +57,7 @@ export function ActivityPanel({ runner, beat, review = false, onChanged }: Props
         {beat.kind === 'multi_select' && <MultiSelect beat={beat} {...common} />}
       </div>
       <div aria-live="polite">
-        {done && !reveal && <div className="feedback right"><b>✓ Well done.</b> {beat.feedback && <Markdown source={beat.feedback} />}</div>}
+        {done && !reveal && <div className="feedback right"><b>Well done.</b> {beat.feedback && <Markdown source={beat.feedback} />}</div>}
         {done && reveal && <div className="feedback"><b>Here’s the answer.</b> {beat.feedback && <Markdown source={beat.feedback} />}</div>}
         {!done && last && !last.correct && (
           <div className="feedback nope" key={last.attempts}>

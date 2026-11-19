@@ -90,6 +90,8 @@ export function setSoundStage(chapter: number, of: number) {
   if (changed) retuneAmbient();
 }
 
+// the one AudioContext of the page (also used by Kaal's recorded voice, voice.ts); null when sound is off or unsupported
+export function audioContext(): AudioContext | null { return audio(); }
 function audio(): AudioContext | null {
   if (!enabled) return null;
   const AC = (globalThis as { AudioContext?: typeof AudioContext; webkitAudioContext?: typeof AudioContext }).AudioContext

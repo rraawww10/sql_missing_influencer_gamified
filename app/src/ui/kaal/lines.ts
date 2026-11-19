@@ -1,5 +1,5 @@
-// What Inspector Kaal says. Kaal is the learner's partner on the case - a quiet, sharp detective SI Ira Menon
-// assigned to "look after the new intern". He never gives away an answer (the hints do that); he reacts, cheers, nudges and teases - 
+// What Inspector Kaal says. Kaal is the learner's own assistant and partner on the case - a quiet, sharp detective who works
+// for the student (not for SI Ira Menon, and not sent by her). He never gives away an answer (the hints do that); he reacts, cheers, nudges and teases -
 // lively and warm, in plain simple English (no Hindi: many students don't speak it), spoken aloud by voice.ts.
 // Lines live here, in the UI layer, so the episode YAML (and the build's content rules) are untouched.
 // {name} = the mentor's first name, {who} = the speaker, {you} = the student's first name (start screen; adapters/identity.ts). Keep them short: one breath, simple English.
@@ -16,6 +16,10 @@ export const MOOD: Record<KaalEvent, KaalMood> = {
   activityRight: 'happy', activityWrong: 'oops', check: 'think', checkRight: 'happy', checkWrong: 'think', clue: 'whisper',
   pinned: 'cheer', demo: 'point', idle: 'point', solved: 'cheer', resume: 'whisper', review: 'idle',
 };
+
+// Reactions that only comment on a new step (not on something the student did). They never cut off a line Kaal is
+// still saying, and on a phone they are not shown as a bubble.
+export const PASSIVE_EVENTS = new Set<KaalEvent>(['scene', 'note', 'task', 'activity', 'check', 'clue', 'demo', 'hook', 'review', 'resume', 'running']);
 
 export const LINES: Record<KaalEvent, string[]> = {
   intro: [
@@ -36,7 +40,7 @@ export const LINES: Record<KaalEvent, string[]> = {
   hint1: ['Here, a clue for you: read the course note. Everything you need is in it.', 'Here’s your first hint: the course note. Start there.'],
   hint2: ['I’ve sketched half the query. You fill in the blanks!', 'Half done already. You finish it, {you}.'],
   hint3: ['Here’s the full query. Read every line before you run it, okay?', 'Here’s the full answer. Read how it works, then we move on.'],
-  activity: ['Quick one! Trust your gut.', 'Sort this out for me, {you}.', 'A little puzzle. Take your time.'],
+  activity: ['Quick one! Trust your gut.', 'Your turn, {you}. Sort this one out.', 'A little puzzle. Take your time.'],
   activityRight: ['Exactly right!', 'Spot on, {you}!', 'Wow, you’re getting good at this!'],
   activityWrong: ['Not quite. Look again!', 'One more try, you’ve got this.', 'Hmm, think it through once more.'],
   check: ['Quick question, {you}!', 'Let’s see if that stuck.'],
@@ -74,3 +78,44 @@ export const TEASE: Record<number, string> = {
   12: 'Somebody changed her contract tonight. Systems keep logs. Logs remember.',
   13: 'Midnight. 40,000 fans. Last chance, {you}. Let’s bring her home.',
 };
+
+// ---------------------------------------------------------------- lines the screens build (kept here so they can be recorded)
+// Everything Kaal says outside the reactions above. The screens call these; tools/kaal-voice records every one of them
+// (ALL_SPOKEN below), so a line added anywhere else has no recorded voice. `say` is what is spoken when the text on
+// screen carries a number that cannot be recorded in advance.
+export const SAY = {
+  briefing: (star: string) => `I'm Kaal, {you}, and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find ${star}.`,
+  introFirst: () => `${TEASE[1]} Stay close, {you}.`,
+  introBack: (session: number) => `Welcome back, {you}. ${TEASE[session] ?? ''}`.trim(),
+  newLead: '{you}! New lead tonight. Stay close, let’s go!',
+  chapterClosed: (n: number, of: number) => `Chapter ${n} of ${of} closed - your progress is saved. Good place for a break, {you}… or keep going?`,
+  chapterClosedSay: 'Chapter closed - your progress is saved. Good place for a break, {you}… or keep going?',
+  promoted: (rank: string) => `Promoted, {you}! ${rank} now. Wear it well - and don’t go far. The night isn’t over.`,
+  caseClosed: 'We did it, {you}. Every claim backed by a query. Ira says you’ve earned your badge.',
+  goodWork: 'Good work tonight, {you}. File it - and don’t go far. The night isn’t over.',
+  evidence: (n: number) => `${n} piece${n === 1 ? '' : 's'} of evidence, {you}. Read them in order - they show how the night unfolds.`,
+  evidenceSay: 'Your evidence so far, {you}. Read it in order - it shows how the night unfolds.',
+  evidenceEmpty: 'An empty board. Solve a task, pin what you prove, and it starts to fill.',
+  openEpisodeFirst: 'Open an episode first, {you}. That tool lives on the game screen.',
+  notInThisEpisode: 'That page is not part of this episode, {you}. Find it in your course.',
+  voiceOn: 'Kaal here. I’ll talk you through it, {you}.',
+} as const;
+
+// Every line that gets a recording: the template (as the game shows it, "{you}" for the name) and the mood it is said in.
+// `star` is the missing singer's name from the cast (the Briefing line names her); `ranks` are the ranks one can be promoted to.
+export function allSpokenLines(star: string, ranks: string[], episodes = Object.keys(TEASE).map(Number)): { template: string; mood: KaalMood }[] {
+  const out: { template: string; mood: KaalMood }[] = [];
+  for (const e of Object.keys(LINES) as KaalEvent[]) for (const t of LINES[e]) out.push({ template: t, mood: MOOD[e] });
+  for (const n of episodes) {
+    out.push({ template: TEASE[n], mood: 'think' });
+    out.push({ template: SAY.introBack(n), mood: 'think' });
+  }
+  out.push({ template: SAY.introFirst(), mood: 'whisper' }, { template: SAY.briefing(star), mood: 'whisper' }, { template: SAY.newLead, mood: 'whisper' },
+    { template: SAY.chapterClosedSay, mood: 'cheer' }, { template: SAY.caseClosed, mood: 'cheer' }, { template: SAY.goodWork, mood: 'cheer' },
+    { template: SAY.evidenceSay, mood: 'think' }, { template: SAY.evidenceEmpty, mood: 'point' },
+    { template: SAY.openEpisodeFirst, mood: 'point' }, { template: SAY.notInThisEpisode, mood: 'point' }, { template: SAY.voiceOn, mood: 'idle' });
+  for (const r of ranks) out.push({ template: SAY.promoted(r), mood: 'cheer' });
+  const seen = new Set<string>();
+  return out.filter((l) => l.template && !seen.has(l.template) && seen.add(l.template));
+}
+

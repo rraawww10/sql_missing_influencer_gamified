@@ -7,7 +7,10 @@ import { friendlyError } from './components/TaskPanel';
 import { SortInto } from './activities/SortInto';
 import { MatchPairs } from './activities/MatchPairs';
 import { storyTime } from './speakers';
-import type { ActivityBeat } from '../content/types';
+import type { ActivityBeat, CheckBeat } from '../content/types';
+import type { SessionRunner } from '../engine/runner/sessionRunner';
+import { ActivityPanel } from './activities/ActivityPanel';
+import { CheckPanel } from './components/CheckPanel';
 import type { ActivityAnswer } from '../engine/activities/check';
 
 afterEach(cleanup);
@@ -80,5 +83,42 @@ describe('activity widgets', () => {
     expect((screen.getByLabelText('Match for item 1') as HTMLSelectElement).value).toBe('INTEGER');
     expect((screen.getByLabelText('Match for item 2') as HTMLSelectElement).value).toBe('VARCHAR');
     expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
+  });
+});
+
+// Coming back to a step that is already answered (Back, the step bar, leaving and returning): the answer is still there
+describe('finished steps keep their answers on screen', () => {
+  const runnerWith = (state: object, extra: object = {}) => ({ beatState: () => ({ done: true, attempts: 1, hintTier: 0, ...state }), pack: { cast: {} }, ...extra }) as unknown as SessionRunner;
+
+  it('a solved sort activity shows every item in its box again, not an empty board', () => {
+    const beat = { id: 'S1.4', type: 'activity', kind: 'sort_into', prompt: 'Which are data?', buckets: ['Data', 'Not data'], feedback: 'Stored = data.',
+      items: [{ text: 'register', bucket: 'Data' }, { text: 'receipt', bucket: 'Data' }, { text: 'rumour', bucket: 'Not data' }] } as ActivityBeat;
+    render(<ActivityPanel runner={runnerWith({})} beat={beat} onChanged={() => {}} />);          // a fresh mount: nothing remembered in the component
+    expect(screen.getByRole('button', { name: 'Put in Data' }).textContent).toContain('register');
+    expect(screen.getByRole('button', { name: 'Put in Data' }).textContent).toContain('receipt');
+    expect(screen.getByRole('button', { name: 'Put in Not data' }).textContent).toContain('rumour');
+    expect(screen.queryByLabelText('Items to sort')).toBeNull();                                 // nothing left in the tray
+    expect(screen.queryByRole('button', { name: 'Check' })).toBeNull();
+    expect(screen.getByText('Well done.')).toBeTruthy();                                         // solved, so no "Here's the answer"
+  });
+
+  it('a solved matching activity shows the chosen matches', () => {
+    const beat = { id: 'S1.7', type: 'activity', kind: 'match', prompt: 'Match', pairs: [{ left: 'age', right: 'INTEGER' }, { left: 'name', right: 'VARCHAR' }] } as ActivityBeat;
+    render(<ActivityPanel runner={runnerWith({})} beat={beat} onChanged={() => {}} />);
+    expect((screen.getByLabelText('Match for item 1') as HTMLSelectElement).value).toBe('INTEGER');
+    expect((screen.getByLabelText('Match for item 2') as HTMLSelectElement).value).toBe('VARCHAR');
+  });
+
+  it('an answered quick check shows the option that was picked, right or wrong', () => {
+    const beat = { id: 'S1.12', type: 'check', prompt: 'Which is a Relational DBMS?', explain: 'SQLite is relational.',
+      options: [{ text: 'MongoDB' }, { text: 'SQLite', correct: true }, { text: 'Redis' }] } as unknown as CheckBeat;
+    const { unmount, container } = render(<CheckPanel runner={runnerWith({ picked: 2 })} beat={beat} onChanged={() => {}} />);   // they picked Redis
+    expect(container.querySelector('.choice.wrong')?.textContent).toContain('Redis');
+    expect(container.querySelector('.choice.right')?.textContent).toContain('SQLite');
+    expect(screen.getByText(/Not this time\./)).toBeTruthy();
+    unmount();
+    const again = render(<CheckPanel runner={runnerWith({ picked: 1 })} beat={beat} onChanged={() => {}} />);                     // they picked SQLite
+    expect(again.container.querySelector('.choice.wrong')).toBeNull();
+    expect(screen.getByText(/Right\./)).toBeTruthy();
   });
 });

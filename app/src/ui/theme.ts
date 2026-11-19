@@ -1,4 +1,4 @@
-// One look per session: a bright, distinct animated gradient per episode (2026-11-17 feedback: every episode looked the same).
+// One look per session ("Arcade Night", 2026-11-18): the whole page takes the episode's two sky colours (--c1 → --c2 in design/base.css).
 // One look per session. The story runs from 6 PM to midnight, so the sky darkens session by session - 
 // dusk orange → violet → electric blue → neon purple (kept vivid: 2026-11-05 feedback said the old navy was too dark) - and each stage gets an accent colour that fits what happens in it.
 // Motifs hint at the stage without giving away the answer.
@@ -32,5 +32,5 @@ export const themeOf = (session: number): SessionTheme => THEMES[session] ?? THE
 // CSS custom properties for a session (set on a wrapper element)
 export function themeVars(session: number): Record<string, string> {
   const t = themeOf(session);
-  return { '--accent': t.accent, '--on-accent': t.onAccent, '--sky1': t.sky[0], '--sky2': t.sky[1], '--glow': t.glow };
+  return { '--c1': t.sky[0], '--c2': t.sky[1] };
 }

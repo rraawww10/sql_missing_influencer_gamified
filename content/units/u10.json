@@ -78,7 +78,8 @@
         "unit_id": "5a12e93b-c3a5-4204-b31e-de0051a406bd",
         "heading": "Comparison Operators"
       },
-      "body": "Comparison operators help us filter rows:\n\n| Operator | Description |\n|---|---|\n| `=` | Equal to |\n| `<>` | Not equal to |\n| `<` | Less than |\n| `<=` | Less than or equal to |\n| `>` | Greater than |\n| `>=` | Greater than or equal to |\n\nTip: our times look like `'2026-12-12 18:00:00'`. In this format, a later time is \"greater\", so `>=` works on times too.\n"
+      "body": "Comparison operators help us filter rows:\n\n| Operator | Description |\n|---|---|\n| `=` | Equal to |\n| `<>` | Not equal to |\n| `<` | Less than |\n| `<=` | Less than or equal to |\n| `>` | Greater than |\n| `>=` | Greater than or equal to |\n\nTip: in the format `'YYYY-MM-DD HH:MM:SS'`, a later time is \"greater\", so `>=` works on times too.\n",
+      "case": "Our times look like `'2026-12-12 18:00:00'`.\n"
     },
     {
       "id": "S3.3",
