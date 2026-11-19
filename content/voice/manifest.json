@@ -116,8 +116,9 @@
   "ff75b4e8": "ff75b4e8.mp3"
  },
  "lines": 114,
- "model": "chatterbox",
- "paced": 12.5,
+ "model": "elevenlabs/eleven-multilingual-v2",
  "rates": {},
- "voice": "Chatterbox built-in voice"
+ "speed": 0.72,
+ "voice": "Raju (ElevenLabs, via OpenRouter)",
+ "voice_id": "pzxut4zZz4GImZNlqQ3H"
 }

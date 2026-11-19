@@ -1,5 +1,25 @@
 # Kaal's recorded voice
 
+**Current voice (since 2026-11-19): "Raju", an Indian English ElevenLabs voice, recorded through OpenRouter.**
+Chosen by the team after listening to samples: Raju (`pzxut4zZz4GImZNlqQ3H`), speed 0.72 (about 115 words a
+minute), the name said "Kaal". Recorded once with `generate_openrouter.py`; the game plays the clips and never calls
+OpenRouter or ElevenLabs.
+
+    cd app && npm run voice:lines                                                   # after changing a line
+    python3 tools/kaal-voice/generate_openrouter.py --speed 0.72 --respell Kahl=Kaal          # only new / changed lines
+    python3 tools/kaal-voice/generate_openrouter.py --force --speed 0.72 --respell Kahl=Kaal  # every line again
+    ../kaal-voice/venv/bin/python tools/kaal-voice/check.py                         # speech-to-text check
+
+- Key: `../kaal-voice/openrouter.key` (one line, outside the repo) or `$OPENROUTER_API_KEY`. Never commit it.
+- Model `elevenlabs/eleven-multilingual-v2` (the one with a speed setting, 0.7 to 1.2). Billed per character by
+  OpenRouter; all 114 lines are about 6,100 characters.
+- `--respell Kahl=Kaal`: `lines.json` spells the name "Kahl" for the Chatterbox recordings; Raju says "Kaal" right.
+- `pace.py` is for the Chatterbox clips only; Raju's pace comes from `--speed`.
+- Samples the team listened to: `../kaal-voice/raju-samples/`. The earlier Chatterbox recordings are kept in
+  `../kaal-voice/as-recorded/chatterbox/` (to go back: copy them into `content/voice/`, then run `pace.py`).
+
+## Earlier voice: Chatterbox (kept for reference)
+
 Kaal can speak in one custom voice, the same on every device: every line he says is recorded once with
 [Chatterbox](https://github.com/resemble-ai/chatterbox) (open source, MIT, runs on a normal computer) from a short
 sample of a real voice, and shipped as small audio clips. Without the clips the game uses the browser's own voice.
