@@ -10,6 +10,11 @@ services:
     runtime: node
     plan: free
     rootDir: analytics
+    # with a rootDir Render only redeploys for changes inside it; the server also reads the episode packs
+    buildFilter:
+      paths:
+        - analytics/**
+        - content/sessions/**
     buildCommand: echo "no dependencies"
     startCommand: node --no-warnings server.mjs
     healthCheckPath: /health
@@ -28,6 +33,12 @@ services:
     name: tmi-game-demo
     runtime: static
     rootDir: app
+    # the build copies ../content (episodes, reading material, Kaal's voice clips) into the game, so a change
+    # there must redeploy it too (2026-11-19: a voice-only push did not, because only app/ was watched)
+    buildFilter:
+      paths:
+        - app/**
+        - content/**
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
     envVars:
