@@ -148,7 +148,7 @@ describe('restoreFromServer', () => {
     const err = (async () => json({}, 500)) as unknown as typeof fetch;
     expect((await restoreFromServer('https://a.test', 'NW1', local, new MapKV(), { send: err })).ok).toBe(false);
   });
-  it('"login required" from the server is reported, so the start screen asks for the password again', async () => {
+  it('"login required" from the server is reported, so the start screen asks the student to log in again', async () => {
     const local = new MemoryProgressStore();
     const refused = (async () => json({ error: 'login required' }, 401)) as unknown as typeof fetch;
     expect(await restoreFromServer('https://a.test', 'NW1', local, new MapKV(), { send: refused })).toEqual({ ok: false, events: 0, sittings: 0, name: null, unauthorized: true });
@@ -222,41 +222,23 @@ describe('accounts (adapters/account.ts)', () => {
   };
   const OK = { ok: true, student_id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com', token: TOKEN, returning: false };
 
-  it('sign up sends name, ID, email and password and returns the logged-in account', async () => {
+  it('sign up sends name, ID and email (no password) and returns the logged-in account', async () => {
     const { api, calls } = server({ '/api/account/signup': [200, OK] });
-    expect(await api.signup({ id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com', password: 'secret1' }))
+    expect(await api.signup({ id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com' }))
       .toEqual({ ok: true, account: { id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com', token: TOKEN, returning: false } });
-    expect(calls[0]).toEqual({ path: '/api/account/signup', body: { student_id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com', password: 'secret1' } });
+    expect(calls[0]).toEqual({ path: '/api/account/signup', body: { student_id: 'NW1001', name: 'Priya Sharma', email: 'priya@gmail.com' } });
   });
 
-  it('log in: every refusal from the server becomes a reason the start screen can explain', async () => {
-    for (const [status, error, want] of [[401, 'wrong', 'wrong'], [404, 'no account', 'no-account'], [428, 'new password needed', 'new-password-needed'],
-      [429, 'too many', 'too-many'], [400, 'bad id', 'invalid'], [500, 'boom', 'offline']] as const) {
-      const { api } = server({ '/api/account/login': [status, { error }] });
-      expect(await api.login({ id: 'NW1001', password: 'x' }), error).toEqual({ ok: false, error: want });
+  it('log in sends the NxtWave ID or email; every refusal becomes a reason the start screen can explain', async () => {
+    const { api, calls } = server({ '/api/account/login': [200, { ...OK, returning: true }] });
+    expect((await api.login(' priya@gmail.com ')).ok).toBe(true);
+    expect(calls[0]).toEqual({ path: '/api/account/login', body: { who: 'priya@gmail.com' } });
+    for (const [status, error, want] of [[404, 'no account', 'no-account'], [429, 'too many', 'too-many'], [400, 'bad id', 'invalid'], [500, 'boom', 'offline']] as const) {
+      const { api: a } = server({ '/api/account/login': [status, { error }] });
+      expect(await a.login('NW1001'), error).toEqual({ ok: false, error: want });
     }
     const down = accountApi('https://a.test', (async () => { throw new Error('offline'); }) as unknown as typeof fetch);
-    expect(await down.login({ id: 'NW1001', password: 'x' })).toEqual({ ok: false, error: 'offline' });
-    // the teacher's temporary password plus the student's own new one
-    const { api, calls } = server({ '/api/account/login': [200, { ...OK, returning: true }] });
-    await api.login({ id: 'NW1001', password: 'TEMP2345', newPassword: 'my-own-pass' });
-    expect(calls[0].body).toEqual({ student_id: 'NW1001', password: 'TEMP2345', new_password: 'my-own-pass' });
-  });
-
-  it('sign up refusals: the ID is taken, or was used before with another email', async () => {
-    expect(await server({ '/api/account/signup': [409, { error: 'taken' }] }).api.signup({ id: 'NW1001', name: 'X Y', email: 'x@y.com', password: 'secret1' })).toEqual({ ok: false, error: 'taken' });
-    expect(await server({ '/api/account/signup': [409, { error: 'email mismatch' }] }).api.signup({ id: 'NW1001', name: 'X Y', email: 'x@y.com', password: 'secret1' })).toEqual({ ok: false, error: 'email-mismatch' });
-  });
-
-  it('forgot password: a code was emailed, or why not; the code sets a new password', async () => {
-    expect(await server({ '/api/account/forgot': [200, { sent: true, to: 'p*****@gmail.com' }] }).api.forgot('NW1001')).toEqual({ sent: true, to: 'p*****@gmail.com' });
-    expect(await server({ '/api/account/forgot': [200, { sent: false, reason: 'no-mail' }] }).api.forgot('NW1001')).toEqual({ sent: false, reason: 'no-mail' });
-    expect(await server({ '/api/account/forgot': [200, { sent: false, reason: 'no-account' }] }).api.forgot('NW1001')).toEqual({ sent: false, reason: 'no-account' });
-    expect(await server({ '/api/account/forgot': [429, { error: 'too many' }] }).api.forgot('NW1001')).toEqual({ sent: false, reason: 'too-many' });
-    const { api, calls } = server({ '/api/account/reset': [200, { ...OK, returning: true }] });
-    expect((await api.reset({ id: 'NW1001', code: '123456', password: 'brandnew1' })).ok).toBe(true);
-    expect(calls[0].body).toEqual({ student_id: 'NW1001', code: '123456', password: 'brandnew1' });
-    expect(await server({ '/api/account/reset': [401, { error: 'bad code' }] }).api.reset({ id: 'NW1001', code: '000000', password: 'brandnew1' })).toEqual({ ok: false, error: 'bad-code' });
+    expect(await down.login('NW1001')).toEqual({ ok: false, error: 'offline' });
   });
 
   it('the stored identity keeps the token only when it looks like one', () => {

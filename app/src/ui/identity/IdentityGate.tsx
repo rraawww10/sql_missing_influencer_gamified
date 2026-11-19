@@ -1,16 +1,11 @@
 // The start screen: nobody gets into the game before it knows who is playing.
 //
-// With an analytics server (VITE_ANALYTICS_URL) every student has an ACCOUNT, protected by a password:
-//   * Sign up        name, NxtWave ID, personal email (required), password twice → the account is created on the server
-//   * Log in         NxtWave ID + password
-//   * Forgot password        the server emails a 6-digit code to the sign-up email; code + new password logs them in.
-//                            When the server has no mail service, the student is told to ask their teacher, who gives a
-//                            temporary password from the dashboard; logging in with it asks for a new one right away.
-//   * Forgot your NxtWave ID?  the email finds the ID (POST /api/recover); the student then logs in with it
-// The server's session token is stored with the identity (adapters/identity.ts) and sent with everything, so only the
-// logged-in student can read or add to their progress. A stored identity from before accounts (no token) is asked to
-// create its password. After logging in, the student's history is pulled into this device (adapters/serverSync.ts) so
-// episodes, points, clues, an unfinished episode and feedback carry over; every later page load refreshes it first.
+// With an analytics server (VITE_ANALYTICS_URL) students log in WITHOUT a password (the team's choice, 2026-11-19):
+//   * Sign up (first time)   name, NxtWave ID, personal email (required) → the account is made on the server
+//   * Log in                 the NxtWave ID OR the email they signed up with; an unknown one goes to Sign up, prefilled
+// The server's session token is stored with the identity (adapters/identity.ts) and sent with everything. After logging
+// in, the student's history is pulled into this device (adapters/serverSync.ts) so episodes, points, clues, an unfinished
+// episode and feedback carry over; every later page load refreshes it first.
 //
 // Without a server there is nothing to log in to: the screen asks name, NxtWave ID and email once, as before.
 //
@@ -20,7 +15,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { clearIdentity, loadSavedIdentity, normalizeEmail, normalizeId, normalizeName, saveIdentity, setCurrentIdentity,
   type Identity, type SavedIdentity } from '../../adapters/identity';
 import type { RecoverResult, RestoreResult } from '../../adapters/serverSync';
-import { PASSWORD_MIN, validPassword, type AccountApi, type AccountError, type AccountResult } from '../../adapters/account';
+import type { AccountApi, AccountError, AccountResult } from '../../adapters/account';
 import { Kaal } from '../kaal/Kaal';
 import { Backdrop } from '../design/Backdrop';
 import { Icon } from '../design/Icon';
@@ -61,9 +56,8 @@ export function IdentityGate({ deps, children }: { deps: GateDeps; children: Rea
     let relogin = false;
     try { relogin = sessionStorage.getItem(RELOGIN_KEY) === '1'; sessionStorage.removeItem(RELOGIN_KEY); } catch { /* ignore */ }
     if (mine && relogin) return { k: 'auth', mode: 'login', notice: 'Please log in again to continue.', prefill: { id: mine.id } };
-    // played here before accounts existed: the same ID now needs a password
-    if (mine) return { k: 'auth', mode: 'signup', notice: `Welcome back, ${mine.name.split(' ')[0]}. Accounts now have a password. Create yours to keep your progress safe.`,
-      prefill: { id: mine.id, name: mine.name, email: mine.email ?? undefined } };
+    // played on this device before: one tap logs in with the same ID
+    if (mine) return { k: 'auth', mode: 'login', notice: `Welcome back, ${mine.name.split(' ')[0]}. Log in to continue.`, prefill: { id: mine.id } };
     return { k: 'auth', mode: 'login' };
   });
   const [welcome, setWelcome] = useState<string | null>(null);
@@ -76,7 +70,7 @@ export function IdentityGate({ deps, children }: { deps: GateDeps; children: Rea
     setCurrentIdentity(who);
     (async () => {
       const r = await deps.restore(who.id);
-      // the server no longer accepts this device's login (password reset, or logged out everywhere): log in again
+      // the server no longer accepts this device's login (logged out): log in again
       if (r?.unauthorized) {
         const { token: _gone, ...rest } = who;
         saveIdentity(rest);
@@ -104,7 +98,7 @@ export function IdentityGate({ deps, children }: { deps: GateDeps; children: Rea
     </div></div>
   );
   if (phase.k === 'auth' && deps.account) return (
-    <AuthScreen key={`${phase.mode}-${phase.notice ?? ''}`} api={deps.account} recover={deps.urlId ? null : deps.recover} urlId={deps.urlId}
+    <AuthScreen key={`${phase.mode}-${phase.notice ?? ''}`} api={deps.account} urlId={deps.urlId}
       mode={phase.mode} notice={phase.notice} prefill={phase.prefill}
       onDone={(a) => enter({ id: a.id, name: a.name, email: a.email, token: a.token, at: new Date().toISOString() }, a.returning)} />
   );
@@ -129,138 +123,69 @@ function GateShell({ children }: { children: ReactNode }) {
   );
 }
 
-// ---------------------------------------------------------------- accounts: log in, sign up, forgot password, forgot ID
-type View = Mode | 'forgot' | 'code' | 'newpass' | 'findid';
-
+// ---------------------------------------------------------------- log in (ID or email) / sign up
 const MSG: Record<AccountError, string> = {
-  'taken': 'This NxtWave ID already has an account. Log in with your password instead.',
-  'email-mismatch': 'This ID was used before with a different email. Use that email, or ask your teacher for help.',
-  'no-account': 'No account with this ID yet. Sign up first.',
-  'wrong': 'Wrong NxtWave ID or password. Check both and try again.',
-  'new-password-needed': '',
-  'bad-code': 'That code is wrong or too old. Check the email, or ask for a new code.',
-  'too-many': 'Too many tries. Please wait 15 minutes and try again.',
+  'no-account': 'We could not find this NxtWave ID or email. If you are new, sign up below.',
+  'too-many': 'Too many tries. Please wait a few minutes and try again.',
   'invalid': 'Something you typed was not accepted. Check each box and try again.',
   'offline': 'Could not reach the server. Check your internet and try again.',
 };
-const PASS_ERR = `Use at least ${PASSWORD_MIN} letters or numbers.`;
 
-function PasswordField({ id, label, value, onChange, error, autoComplete, autoFocus, hint }: {
-  id: string; label: string; value: string; onChange(v: string): void; error?: string | null; autoComplete: string; autoFocus?: boolean; hint?: string;
-}) {
-  const [show, setShow] = useState(false);
-  return (
-    <div className="gate-field">
-      <label htmlFor={id}><span>{label}</span></label>
-      <div className="gate-pass">
-        <input id={id} type={show ? 'text' : 'password'} required autoFocus={autoFocus} value={value} onChange={(e) => onChange(e.target.value)} maxLength={100}
-          autoComplete={autoComplete} autoCapitalize="none" spellCheck={false} aria-invalid={!!error} aria-describedby={error ? `${id}-err` : hint ? `${id}-hint` : undefined} />
-        <button type="button" className="gate-eye" onClick={() => setShow((s) => !s)} aria-pressed={show} aria-label={show ? 'Hide the password' : 'Show the password'} title={show ? 'Hide' : 'Show'}>
-          <Icon name="eye" />
-        </button>
-      </div>
-      {error ? <small id={`${id}-err`} className="gate-err">{error}</small> : hint ? <small id={`${id}-hint`} className="gate-hint">{hint}</small> : null}
-    </div>
-  );
-}
-
-function AuthScreen({ api, recover, urlId, mode, notice, prefill, onDone }: {
-  api: AccountApi; recover: GateDeps['recover']; urlId: string | null; mode: Mode; notice?: string;
+function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
+  api: AccountApi; urlId: string | null; mode: Mode; notice?: string;
   prefill?: { id?: string; name?: string; email?: string }; onDone(a: Extract<AccountResult, { ok: true }>['account']): void;
 }) {
-  const [view, setView] = useState<View>(mode);
+  const [view, setView] = useState<Mode>(mode);
+  const [who, setWho] = useState(urlId ?? prefill?.id ?? prefill?.email ?? '');
   const [name, setName] = useState(prefill?.name ?? '');
   const [id, setId] = useState(urlId ?? prefill?.id ?? '');
   const [email, setEmail] = useState(prefill?.email ?? '');
-  const [password, setPassword] = useState('');
-  const [again, setAgain] = useState('');
-  const [fresh, setFresh] = useState('');        // the new password (forgot password, temporary password)
-  const [code, setCode] = useState('');
   const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<ReactNode>(null);
   const [info, setInfo] = useState<string | null>(notice ?? null);
-  const [found, setFound] = useState<{ id: string; name: string } | null>(null);
   const alive = useRef(true);
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
 
-  const lockId = !!urlId || (mode === 'signup' && !!prefill?.id);   // the platform, or this device's own earlier progress, fixes the ID
+  const lockId = !!urlId;   // the platform names the student
+  const whoTrim = who.trim(), whoIsEmail = whoTrim.includes('@');
+  const whoOk = whoIsEmail ? normalizeEmail(whoTrim) : normalizeId(whoTrim);
   const nameOk = normalizeName(name), idOk = normalizeId(id), emailOk = normalizeEmail(email);
-  const go = (v: View, keepInfo = false) => { setView(v); setTried(false); setErr(null); if (!keepInfo) setInfo(null); setPassword(''); setAgain(''); setFresh(''); setCode(''); };
+  const go = (v: Mode) => { setView(v); setTried(false); setErr(null); setInfo(null); };
   const run = async (call: () => Promise<AccountResult>) => {
     setBusy(true); setErr(null);
     const r = await call();
     if (!alive.current) return null;
     setBusy(false);
-    if (r.ok) { onDone(r.account); return r; }
+    if (r.ok) onDone(r.account);
     return r;
   };
-  const fail = (e: AccountError) => setErr(
-    e === 'taken' ? <>{MSG.taken} <button type="button" className="linkish" onClick={() => go('login')}>Log in</button></>
-    : e === 'no-account' ? <>{MSG['no-account']} <button type="button" className="linkish" onClick={() => go('signup')}>Sign up</button></>
-    : MSG[e]);
 
   const submitLogin = async (e: FormEvent) => {
     e.preventDefault(); setTried(true);
-    if (busy || !idOk || !password) return;
-    const r = await run(() => api.login({ id: idOk, password }));
-    if (r && !r.ok) { if (r.error === 'new-password-needed') { setView('newpass'); setTried(false); setErr(null); setInfo('That was a temporary password from your teacher. Choose your own password now.'); } else fail(r.error); }
+    if (busy || !whoOk) return;
+    const r = await run(() => api.login(whoTrim));
+    if (!r || r.ok) return;
+    if (r.error === 'no-account') {
+      // new here: Sign up, with what they typed already filled in
+      if (whoIsEmail) setEmail(whoTrim); else setId(whoTrim);
+      setView('signup'); setTried(false); setErr(null);
+      setInfo(`We don't know ${whoTrim} yet. Sign up once - it takes 20 seconds.`);
+    } else setErr(MSG[r.error]);
   };
   const submitSignup = async (e: FormEvent) => {
     e.preventDefault(); setTried(true);
-    if (busy || !nameOk || !idOk || !emailOk || !validPassword(password) || password !== again) return;
-    const r = await run(() => api.signup({ id: idOk, name: nameOk, email: emailOk, password }));
-    if (r && !r.ok) fail(r.error);
-  };
-  const submitNewPass = async (e: FormEvent) => {
-    e.preventDefault(); setTried(true);
-    if (busy || !idOk || !validPassword(fresh) || fresh !== again || fresh === password) return;
-    const r = await run(() => api.login({ id: idOk, password, newPassword: fresh }));
-    if (r && !r.ok) fail(r.error);
-  };
-  const submitForgot = async (e: FormEvent) => {
-    e.preventDefault(); setTried(true);
-    if (busy || !idOk) return;
-    setBusy(true); setErr(null);
-    const r = await api.forgot(idOk);
-    if (!alive.current) return;
-    setBusy(false);
-    if (r.sent) { setView('code'); setTried(false); setInfo(`We emailed a 6-digit code to ${r.to}. It works for 15 minutes.`); return; }
-    setErr(r.reason === 'no-account' ? <>{MSG['no-account']} <button type="button" className="linkish" onClick={() => go('signup')}>Sign up</button></>
-      : r.reason === 'too-many' ? MSG['too-many'] : r.reason === 'offline' ? MSG.offline
-      : 'Ask your teacher to reset your password. They will give you a temporary password to log in with.');
-  };
-  const submitCode = async (e: FormEvent) => {
-    e.preventDefault(); setTried(true);
-    if (busy || !idOk || !/^\d{6}$/.test(code.trim()) || !validPassword(fresh) || fresh !== again) return;
-    const r = await run(() => api.reset({ id: idOk, code: code.trim(), password: fresh }));
-    if (r && !r.ok) fail(r.error);
-  };
-  const submitFindId = async (e: FormEvent) => {
-    e.preventDefault(); setTried(true);
-    if (busy || !emailOk || !recover) return;
-    setBusy(true); setErr(null); setFound(null);
-    const r = await recover(emailOk);
-    if (!alive.current) return;
-    setBusy(false);
-    if (r.k === 'found') setFound({ id: r.id, name: r.name });
-    else setErr(r.k === 'none' ? 'We could not find this email. Check the spelling, or sign up if you are new.' : r.k === 'wait' ? MSG['too-many'] : MSG.offline);
+    if (busy || !nameOk || !idOk || !emailOk) return;
+    const r = await run(() => api.signup({ id: idOk, name: nameOk, email: emailOk }));
+    if (r && !r.ok) setErr(MSG[r.error]);
   };
 
-  const idField = (autoFocus: boolean) => (
-    <div className="gate-field">
-      <label htmlFor="gate-id"><span>NxtWave ID</span></label>
-      <input id="gate-id" required autoFocus={autoFocus && !lockId} readOnly={lockId} value={id} onChange={(e) => setId(e.target.value)} maxLength={64} autoComplete="username"
-        autoCapitalize="characters" spellCheck={false} placeholder="Your NxtWave ID" aria-invalid={tried && !idOk} aria-describedby={tried && !idOk ? 'gate-id-err' : undefined} />
-      {tried && !idOk && <small id="gate-id-err" className="gate-err">Please type your NxtWave ID (letters and numbers, at least 3).</small>}
-    </div>
-  );
   const messages = <>
     {info && <p className="gate-ok" role="status">{info}</p>}
     {err && <p className="gate-err gate-alert" role="alert">{err}</p>}
   </>;
-  const head = (title: string, sub: string, mood: 'point' | 'think' = 'point') => (
-    <div className="gate-head"><Kaal mood={mood} size={74} />
+  const head = (title: string, sub: string) => (
+    <div className="gate-head"><Kaal mood="point" size={74} />
       <div><h1 id="gate-title">{title}</h1><p className="muted small">{sub}</p></div>
     </div>
   );
@@ -276,24 +201,24 @@ function AuthScreen({ api, recover, urlId, mode, notice, prefill, onDone }: {
       {view === 'login' && (
         <form className="gate-card" onSubmit={submitLogin} noValidate aria-labelledby="gate-title">
           {tabs}
-          {head("Who's on the case tonight?", 'Log in with your NxtWave ID and your password.')}
+          {head("Who's on the case tonight?", 'Log in with your NxtWave ID or your email.')}
           {messages}
-          {idField(true)}
-          <PasswordField id="gate-password" label="Password" value={password} onChange={setPassword} autoComplete="current-password" autoFocus={lockId}
-            error={tried && !password ? 'Please type your password.' : null} />
+          <div className="gate-field">
+            <label htmlFor="gate-who"><span>NxtWave ID or email</span></label>
+            <input id="gate-who" required autoFocus={!lockId} readOnly={lockId} value={who} onChange={(e) => setWho(e.target.value)} maxLength={120} autoComplete="username"
+              autoCapitalize="none" spellCheck={false} placeholder="e.g. NW0001234 or priya.sharma@gmail.com" aria-invalid={tried && !whoOk}
+              aria-describedby={tried && !whoOk ? 'gate-who-err' : undefined} />
+            {tried && !whoOk && <small id="gate-who-err" className="gate-err">{whoIsEmail ? EMAIL_ERR : 'Please type your NxtWave ID (letters and numbers, at least 3) or your email.'}</small>}
+          </div>
           <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Checking…' : 'Log in'}</button>
-          <p className="muted small gate-note">
-            <button type="button" className="linkish" onClick={() => go('forgot')}>Forgot password?</button>
-            {recover && <> · <button type="button" className="linkish" onClick={() => go('findid')}>Forgot your NxtWave ID?</button></>}
-            {' '}· New here? <button type="button" className="linkish" onClick={() => go('signup')}>Sign up</button>
-          </p>
+          <p className="muted small gate-note">New here? <button type="button" className="linkish" onClick={() => go('signup')}>Sign up</button></p>
         </form>
       )}
 
       {view === 'signup' && (
         <form className="gate-card" onSubmit={submitSignup} noValidate aria-labelledby="gate-title">
           {tabs}
-          {head('Create your account', 'Your password keeps your progress yours. Nobody else can open your case file.')}
+          {head('Join the case', 'First time here? Tell us who you are. Next time, just your NxtWave ID or email.')}
           {messages}
           <div className="gate-field">
             <label htmlFor="gate-name"><span>Your name</span></label>
@@ -301,78 +226,15 @@ function AuthScreen({ api, recover, urlId, mode, notice, prefill, onDone }: {
               aria-invalid={tried && !nameOk} aria-describedby={tried && !nameOk ? 'gate-name-err' : undefined} />
             {tried && !nameOk && <small id="gate-name-err" className="gate-err">Please type your name (letters and spaces, at least 2).</small>}
           </div>
-          {idField(false)}
+          <div className="gate-field">
+            <label htmlFor="gate-id"><span>NxtWave ID</span></label>
+            <input id="gate-id" required readOnly={lockId} value={id} onChange={(e) => setId(e.target.value)} maxLength={64} autoComplete="username"
+              autoCapitalize="characters" spellCheck={false} placeholder="Your NxtWave ID" aria-invalid={tried && !idOk} aria-describedby={tried && !idOk ? 'gate-id-err' : undefined} />
+            {tried && !idOk && <small id="gate-id-err" className="gate-err">Please type your NxtWave ID (letters and numbers, at least 3).</small>}
+          </div>
           <EmailField value={email} onChange={setEmail} bad={tried && !emailOk} account />
-          <PasswordField id="gate-password" label="Password" value={password} onChange={setPassword} autoComplete="new-password"
-            hint={`At least ${PASSWORD_MIN} letters or numbers. Do not share it.`} error={tried && !validPassword(password) ? PASS_ERR : null} />
-          <PasswordField id="gate-password2" label="Type the password again" value={again} onChange={setAgain} autoComplete="new-password"
-            error={tried && validPassword(password) && password !== again ? 'The two passwords are not the same.' : null} />
-          <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Creating…' : 'Create my account'}</button>
-          <p className="muted small gate-note">Already have an account? <button type="button" className="linkish" onClick={() => go('login')}>Log in</button></p>
-        </form>
-      )}
-
-      {view === 'newpass' && (
-        <form className="gate-card" onSubmit={submitNewPass} noValidate aria-labelledby="gate-title">
-          {head('Choose your password', `Logging in as ${idOk ?? id}.`, 'think')}
-          {messages}
-          <PasswordField id="gate-new-password" label="New password" value={fresh} onChange={setFresh} autoComplete="new-password" autoFocus
-            hint={`At least ${PASSWORD_MIN} letters or numbers. Do not share it.`}
-            error={tried && !validPassword(fresh) ? PASS_ERR : tried && fresh === password ? 'Choose a password that is different from the temporary one.' : null} />
-          <PasswordField id="gate-password2" label="Type the password again" value={again} onChange={setAgain} autoComplete="new-password"
-            error={tried && validPassword(fresh) && fresh !== again ? 'The two passwords are not the same.' : null} />
-          <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save and log in'}</button>
-          <p className="muted small gate-note"><button type="button" className="linkish" onClick={() => go('login')}>Back to log in</button></p>
-        </form>
-      )}
-
-      {view === 'forgot' && (
-        <form className="gate-card" onSubmit={submitForgot} noValidate aria-labelledby="gate-title">
-          {head('Forgot your password?', 'Type your NxtWave ID. We will email a code to the address you signed up with.', 'think')}
-          {messages}
-          {idField(true)}
-          <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Sending…' : 'Send me a code'}</button>
-          <p className="muted small gate-note"><button type="button" className="linkish" onClick={() => go('login')}>Back to log in</button></p>
-        </form>
-      )}
-
-      {view === 'code' && (
-        <form className="gate-card" onSubmit={submitCode} noValidate aria-labelledby="gate-title">
-          {head('Set a new password', `For ${idOk ?? id}. Type the code from the email, then your new password.`, 'think')}
-          {messages}
-          <div className="gate-field">
-            <label htmlFor="gate-code"><span>6-digit code</span></label>
-            <input id="gate-code" required autoFocus inputMode="numeric" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))} autoComplete="one-time-code"
-              placeholder="123456" aria-invalid={tried && !/^\d{6}$/.test(code)} aria-describedby={tried && !/^\d{6}$/.test(code) ? 'gate-code-err' : undefined} />
-            {tried && !/^\d{6}$/.test(code) && <small id="gate-code-err" className="gate-err">Type the 6 digits from the email.</small>}
-          </div>
-          <PasswordField id="gate-new-password" label="New password" value={fresh} onChange={setFresh} autoComplete="new-password"
-            hint={`At least ${PASSWORD_MIN} letters or numbers.`} error={tried && !validPassword(fresh) ? PASS_ERR : null} />
-          <PasswordField id="gate-password2" label="Type the password again" value={again} onChange={setAgain} autoComplete="new-password"
-            error={tried && validPassword(fresh) && fresh !== again ? 'The two passwords are not the same.' : null} />
-          <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Saving…' : 'Save and log in'}</button>
-          <p className="muted small gate-note"><button type="button" className="linkish" onClick={() => go('forgot')}>Send a new code</button> · <button type="button" className="linkish" onClick={() => go('login')}>Back to log in</button></p>
-        </form>
-      )}
-
-      {view === 'findid' && (
-        <form className="gate-card gate-recover" onSubmit={submitFindId} noValidate aria-labelledby="gate-title">
-          {head('Forgot your NxtWave ID?', 'Type the email you signed up with. We will show you your ID.', 'think')}
-          {messages}
-          <div className="gate-field">
-            <label htmlFor="gate-recover-email"><span>Personal email</span></label>
-            <input id="gate-recover-email" type="email" inputMode="email" required autoFocus value={email} onChange={(e) => { setEmail(e.target.value); setFound(null); }} maxLength={120}
-              autoComplete="email" autoCapitalize="none" spellCheck={false} placeholder="e.g. priya.sharma@gmail.com"
-              aria-invalid={tried && !emailOk} aria-describedby={tried && !emailOk ? 'gate-recover-err' : undefined} />
-            {tried && !emailOk && <small id="gate-recover-err" className="gate-err">{EMAIL_ERR}</small>}
-          </div>
-          {found
-            ? <>
-                <p className="gate-ok" role="status">Your NxtWave ID is <b>{found.id}</b> ({found.name}).</p>
-                <button className="btn primary big" type="button" onClick={() => { setId(found.id); go('login'); }}>Log in with this ID</button>
-              </>
-            : <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Looking…' : 'Find my ID'}</button>}
-          <p className="muted small gate-note"><button type="button" className="linkish" onClick={() => go('login')}>Back to log in</button></p>
+          <button className="btn primary big" type="submit" disabled={busy}>{busy ? 'Starting…' : 'Start playing'}</button>
+          <p className="muted small gate-note">Played before? <button type="button" className="linkish" onClick={() => go('login')}>Log in</button></p>
         </form>
       )}
     </GateShell>
@@ -385,7 +247,7 @@ function EmailField({ value, onChange, bad, autoFocus, account = false }: { valu
     <div className="gate-field">
       <label htmlFor="gate-email"><span>Personal email</span></label>
       <small id="gate-email-note" className="gate-required"><strong>Email is required.</strong> {account
-        ? 'Use your personal email - it is how you get back in if you forget your password or your ID.'
+        ? 'Use your personal email - you can log in with it instead of your NxtWave ID.'
         : 'Use your personal email - we use it only to get your progress back if you forget your ID.'}</small>
       <input id="gate-email" type="email" inputMode="email" required autoFocus={autoFocus} value={value} onChange={(e) => onChange(e.target.value)} maxLength={120}
         autoComplete="email" autoCapitalize="none" spellCheck={false} placeholder="e.g. priya.sharma@gmail.com"

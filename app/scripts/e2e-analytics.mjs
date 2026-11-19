@@ -55,7 +55,7 @@ try {
   const errors = [];
   pa.on('pageerror', (e) => errors.push(e.message));
   await pa.goto(`${BASE}/`);
-  await signUp(pa, STUDENT);                                              // a new student makes an account: name, ID, email, password
+  await signUp(pa, STUDENT);                                              // a new student signs up once: name, ID, email
   await pa.locator('.who-chip b').getByText(STUDENT.name, { exact: true }).first().waitFor();
   ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) === STUDENT.id, 'start screen: name + NxtWave ID stored (ID upper-cased)');
   ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).email) === STUDENT.email, 'start screen: email stored (lower-cased)');
@@ -136,22 +136,14 @@ try {
   const pb = await b.newPage();
   pb.on('pageerror', (e) => errors.push(e.message));
   await pb.goto(`${BASE}/`);
-  // somebody else at that computer first: a wrong password, and a sign-up for the same ID, both get nowhere
-  await logIn(pb, STUDENT, 'not-her-password');
-  await pb.getByRole('alert').getByText(/Wrong NxtWave ID or password/).waitFor();
-  await pb.getByRole('tab', { name: 'Sign up' }).click();
-  await pb.getByLabel('Your name').fill('Someone Else');
-  await pb.getByLabel('NxtWave ID').fill(STUDENT.id);
-  await pb.getByLabel('Personal email').fill('someone.else@example.com');
-  await pb.getByLabel('Password', { exact: true }).fill('takeover1');
-  await pb.getByLabel('Type the password again').fill('takeover1');
-  await pb.getByRole('button', { name: 'Create my account' }).click();
-  await pb.getByRole('alert').getByText(/already has an account/).waitFor();
-  ok(await pb.evaluate(() => localStorage.getItem('tmi.identity.v1')) === null, 'a wrong password and a second sign-up for the same ID are both refused');
+  // an unknown ID is sent to Sign up (nothing stored), and the server refuses her history without a login
+  await logIn(pb, STUDENT, 'nw-nobody-99');
+  await pb.getByText(/We don't know nw-nobody-99 yet/).waitFor();
+  ok(await pb.evaluate(() => localStorage.getItem('tmi.identity.v1')) === null, 'an unknown ID goes to Sign up; nothing is stored');
   const peek = await fetch(`${API}/api/history`, { method: 'POST', body: JSON.stringify({ student_id: STUDENT.id }) });
-  ok(peek.status === 401, 'her progress cannot be read from the server without her login');
+  ok(peek.status === 401, 'her progress cannot be read from the server without logging in');
   await pb.getByRole('tab', { name: 'Log in' }).click();
-  await logIn(pb, STUDENT);                                              // the real student: ID + her password
+  await logIn(pb, STUDENT, STUDENT.email.toUpperCase());                 // the real student, with her EMAIL this time (no password)
   await pb.getByText(/Welcome back, Asha! Your case file is restored\./).waitFor();
   ok(true, 'returning student recognised by NxtWave ID ("welcome back")');
   await pb.getByText('1/13').first().waitFor();

@@ -1,13 +1,10 @@
 // Analytics server for SQL: The Missing Influencer — collects the game's progress events and serves the admin dashboard.
 // Zero dependencies: Node 22+ (node:http + the built-in node:sqlite). One SQLite file holds everything.
 //
-//   STUDENT ACCOUNTS (auth.mjs) - an ID with an account can only be read or written with that student's token:
-//   POST /api/account/signup         { student_id, name, email, password } → { token, … }   (409 when the ID already has an account)
-//   POST /api/account/login          { student_id, password [, new_password] } → { token, name, email }
+//   STUDENT LOG-IN (auth.mjs, no password) - an ID with an account is read or written only with a token of that ID:
+//   POST /api/account/signup         { student_id, name, email } → { token, … }   (an ID that has an account is just logged in)
+//   POST /api/account/login          { who } = NxtWave ID or sign-up email → { token, student_id, name, email }   (404 = sign up first)
 //   POST /api/account/logout         { token }
-//   POST /api/account/forgot         { student_id } → emails a 6-digit code (needs RESEND_API_KEY + MAIL_FROM; else "ask your teacher")
-//   POST /api/account/reset          { student_id, code, password } → { token, … }
-//   POST /api/admin/students/:id/reset-password   (admin) → { temp_password }: logs the student in once, then they choose their own
 //
 //   POST /api/events                 the game sends batches of events here ({ events, token }; idempotent by event_id)
 //   POST /api/identify               builds without accounts: { student_id, name, email } → registers / welcomes back
@@ -31,7 +28,6 @@
 //
 // Config (env): ADMIN_PASSWORD (required), PORT=8787, HOST=0.0.0.0 (set 127.0.0.1 when a reverse proxy fronts it),
 // DB_PATH=./data/analytics.sqlite, SESSION_SECRET (random per boot if unset),
-// RESEND_API_KEY + MAIL_FROM (optional: switches "Forgot password" emails on),
 // TZ_OFFSET=+05:30 (what "today" means on the dashboard), CONTENT_DIR=../content/sessions.
 import http from 'node:http';
 import fs from 'node:fs';
@@ -39,7 +35,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { openDb, loadCatalogue, Analytics, ingest, ingestFeedback, ingestCheckpoint, identify, recover, history, saveSitting, parseRoster, normalizeId } from './lib.mjs';
-import { signup, login, logout, requestReset, resetPassword, adminResetPassword, authorize, hasAccount, studentOf, makeMailer } from './auth.mjs';
+import { signup, login, logout, authorize, hasAccount, studentOf } from './auth.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 8787);
@@ -58,7 +54,6 @@ const db = openDb(DB_PATH);
 const catalogue = loadCatalogue(CONTENT_DIR);
 const analytics = new Analytics(db, catalogue, TZ_OFFSET);
 const dashboard = path.join(HERE, 'public', 'index.html');
-const mailer = makeMailer();   // null without RESEND_API_KEY + MAIL_FROM: then teachers reset passwords from the dashboard
 
 
 // ---------------------------------------------------------------- admin session (signed cookie, no server state)
@@ -92,7 +87,7 @@ function clientIp(req) {
 const tries = new Map(), lookups = new Map();
 // Student accounts, per 15 minutes: 8 wrong passwords per ID (so nobody can guess their way into a classmate's account),
 // 3 "forgot password" emails per ID, and roomy per-address limits because a whole classroom shares one address.
-const loginFails = new Map(), accountCalls = new Map(), resetMails = new Map();
+const accountCalls = new Map();
 const note = (log, key) => log.get(key).push(Date.now());
 const LOGIN_REQUIRED = { error: 'login required' };
 function tooManyTries(ip, log = tries, max = 10) {
@@ -186,29 +181,10 @@ const server = http.createServer(async (req, res) => {
       note(accountCalls, ip);
       let body;
       try { body = JSON.parse(await readBody(req, 10_000)); } catch { return send(res, 400, 'bad body', CORS); }
-      const id = normalizeId(body?.student_id) ?? '?';
-      const STATUS = { 'taken': 409, 'email mismatch': 409, 'no account': 404, 'wrong': 401, 'new password needed': 428, 'bad code': 401 };
-      const reply = (r) => send(res, r.error ? (STATUS[r.error] ?? 400) : 200, r, CORS);
-      if (p === '/api/account/signup') return reply(await signup(db, body));
-      if (p === '/api/account/login') {
-        if (tooManyTries(id, loginFails, 8)) return send(res, 429, { error: 'too many' }, CORS);
-        const r = await login(db, body);
-        if (r.error === 'wrong') note(loginFails, id);
-        return reply(r);
-      }
+      const reply = (r) => send(res, r.error ? (r.error === 'no account' ? 404 : 400) : 200, r, CORS);
+      if (p === '/api/account/signup') return reply(signup(db, body));
+      if (p === '/api/account/login') return reply(login(db, body));
       if (p === '/api/account/logout') return reply(logout(db, body));
-      if (p === '/api/account/forgot') {
-        if (tooManyTries(id, resetMails, 3)) return send(res, 429, { error: 'too many' }, CORS);
-        const r = await requestReset(db, body, mailer);
-        if (r.sent) note(resetMails, id);
-        return reply(r);
-      }
-      if (p === '/api/account/reset') {
-        if (tooManyTries(id, loginFails, 8)) return send(res, 429, { error: 'too many' }, CORS);
-        const r = await resetPassword(db, body);
-        if (r.error === 'bad code') note(loginFails, id);
-        return reply(r);
-      }
       return send(res, 404, { error: 'not found' }, CORS);
     }
 
@@ -256,11 +232,6 @@ const server = http.createServer(async (req, res) => {
       let m;
       if ((m = /^\/api\/admin\/students\/(.+)\/timeline$/.exec(p)))
         return send(res, 200, analytics.timeline(decodeURIComponent(m[1]), { limit: Math.min(1000, Number(u.searchParams.get('limit')) || 300), before: u.searchParams.get('before') }));
-      if ((m = /^\/api\/admin\/students\/(.+)\/reset-password$/.exec(p))) {
-        if (req.method !== 'POST') return send(res, 405, { error: 'POST only' });
-        const r = await adminResetPassword(db, decodeURIComponent(m[1]));
-        return send(res, r.error ? 404 : 200, r, { 'cache-control': 'no-store' });
-      }
       if ((m = /^\/api\/admin\/students\/(.+)$/.exec(p))) {
         const s = analytics.student(decodeURIComponent(m[1]));
         return s ? send(res, 200, { ...s, has_account: hasAccount(db, s.student_id) }) : send(res, 404, { error: 'no such student' });

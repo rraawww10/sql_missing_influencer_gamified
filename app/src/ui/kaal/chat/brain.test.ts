@@ -172,11 +172,11 @@ describe('answers are true to the code', () => {
 
   it('saving, another computer, the email and a forgotten ID', async () => {
     expect(await textOf('how is my progress saved')).toMatch(/after every step.*in your account/s);
-    expect(await textOf('can I continue on another computer')).toMatch(/log in with your NxtWave ID and your password/);
-    expect(await textOf('why do you need my email')).toMatch(/personal email and a password.*forget your password or your ID/s);
-    expect(await textOf('is there a password')).toMatch(/has a password, so nobody else can open your case file/);
-    expect(await textOf('I forgot my password')).toMatch(/Forgot password\?.*6-digit code.*Ask your teacher/s);
-    expect(await textOf('i forgot my nxtwave id')).toMatch(/Forgot your NxtWave ID\?.*personal email/s);
+    expect(await textOf('can I continue on another computer')).toMatch(/log in with your NxtWave ID or your email/);
+    expect(await textOf('why do you need my email')).toMatch(/personal email - all three.*the ID or the email/s);
+    expect(await textOf('is there a password')).toMatch(/No password needed/);
+    expect(await textOf('I forgot my password')).toMatch(/no password to remember/);
+    expect(await textOf('i forgot my nxtwave id')).toMatch(/personal email you signed up with instead of the ID/);
     expect(await textOf('how do I switch student')).toContain('“Log out”');
   });
 

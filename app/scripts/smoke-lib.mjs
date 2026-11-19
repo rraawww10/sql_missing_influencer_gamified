@@ -69,12 +69,11 @@ export async function playBeats(f, pack, solutions, hooks = {}) {
 // The start screen comes before everything. Browser checks that aren't about it seed an identity before any page script
 // runs (works for iframes too when called on a context); smoke.mjs fills the real form once.
 //   * a build WITHOUT a server asks name + NxtWave ID + email (signIn below)
-//   * a build WITH a server has accounts: signUp (name, ID, email, password twice) and logIn (ID + password)
+//   * a build WITH a server has accounts: signUp once (name, ID, email) and logIn (NxtWave ID or email, no password)
 // The email is required: an identity seeded without one would stop at the "Add your email" step, so a student given
 // without an email gets one made from their ID.
 export const TEST_STUDENT = { id: 'SMOKE-001', name: 'Smoke Tester', email: 'smoke-001@example.com' };
 export const emailOf = (who) => who.email ?? `${who.id.toLowerCase()}@example.com`;
-export const passwordOf = (who) => who.password ?? `pw-${who.id.toLowerCase()}`;
 export async function seedIdentity(target, who = TEST_STUDENT) {
   await target.addInitScript((w) => {
     try { if (!localStorage.getItem('tmi.identity.v1')) localStorage.setItem('tmi.identity.v1', JSON.stringify({ ...w, at: new Date().toISOString() })); } catch { /* opaque origin */ }
@@ -91,25 +90,20 @@ export async function signIn(f, who = TEST_STUDENT) {
   await f.getByLabel('Personal email').fill(emailOf(who).toUpperCase());                     // stored lower-case
   await f.getByRole('button', { name: /Open the case file/ }).click();
 }
-// An account build: create the account. Empty and mismatched forms are refused first.
+// An account build (no password, 2026-11-19): sign up once with name, ID and email. An empty form is refused first.
 export async function signUp(f, who = TEST_STUDENT) {
   await f.getByRole('tab', { name: 'Sign up' }).click();
-  await f.getByRole('button', { name: 'Create my account' }).click();                        // empty form: every error shown
-  for (const msg of [/Please type your name/, /Please type your NxtWave ID/, /Please type your email/, /Use at least 6 letters or numbers/]) await f.getByText(msg).waitFor();
+  await f.getByRole('button', { name: 'Start playing' }).click();                            // empty form: every error shown
+  for (const msg of [/Please type your name/, /Please type your NxtWave ID/, /Please type your email/]) await f.getByText(msg).waitFor();
   await f.getByLabel('Your name').fill(who.name);
   await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
   await f.getByLabel('Personal email').fill(emailOf(who).toUpperCase());                     // stored lower-case
-  await f.getByLabel('Password', { exact: true }).fill(passwordOf(who));
-  await f.getByLabel('Type the password again').fill(`${passwordOf(who)}x`);
-  await f.getByRole('button', { name: 'Create my account' }).click();
-  await f.getByText('The two passwords are not the same.').waitFor();
-  await f.getByLabel('Type the password again').fill(passwordOf(who));
-  await f.getByRole('button', { name: 'Create my account' }).click();
+  await f.getByRole('button', { name: 'Start playing' }).click();
 }
-export async function logIn(f, who = TEST_STUDENT, password = passwordOf(who)) {
+// Later: log in with the NxtWave ID or the email
+export async function logIn(f, who = TEST_STUDENT, with_ = who.id.toLowerCase()) {
   await f.getByRole('heading', { name: /Who's on the case tonight/ }).waitFor();
-  await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());
-  await f.getByLabel('Password', { exact: true }).fill(password);
+  await f.getByLabel('NxtWave ID or email').fill(with_);
   await f.getByRole('button', { name: 'Log in', exact: true }).last().click();               // the tab has the same name: the submit button is the last one
 }
 

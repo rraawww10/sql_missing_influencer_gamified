@@ -274,9 +274,7 @@ details.ep .inner{padding:8px 12px 12px;overflow-x:auto}
       <input type="search" id="q" placeholder="Search name, ID or email">
       <div class="seg" id="stuSeg" role="group" aria-label="Show"></div>
       <span class="faint" id="count"></span>
-      <button class="btn" id="resetAny" style="margin-left:auto" data-tip="For a student who forgot their password. Gives a temporary one that works once."></button>
     </div>
-    <div id="resetAnyOut" class="card" style="padding:12px 14px;margin-bottom:12px" hidden></div>
     <div class="tablewrap"><table id="studentsTable"></table></div>
   </section>
 
@@ -430,7 +428,6 @@ $('#logout').onclick = async () => { await api('/api/logout', { method: 'POST' }
 $('#refresh').innerHTML = ic('refresh');
 $('#export').innerHTML = `${ic('download')} CSV`;
 $('#fbExport').innerHTML = `${ic('download')} CSV`;
-$('#resetAny').innerHTML = `${ic('key')} Reset a password`;
 
 // ---------------------------------------------------------------- theme
 try { const t = localStorage.getItem('tmi-theme'); if (t) document.documentElement.dataset.theme = t; } catch {}
@@ -607,15 +604,6 @@ function renderStudents() {
   });
   table.querySelectorAll('tr[data-id]').forEach((tr) => tr.onclick = () => openStudent(tr.dataset.id));
 }
-$('#resetAny').onclick = async () => {
-  const id = (prompt("Reset a student's password\n\nThe student's NxtWave ID:") ?? '').trim();
-  if (!id) return;
-  const out = $('#resetAnyOut'); out.hidden = false;
-  try {
-    const r = await api(`/api/admin/students/${encodeURIComponent(id)}/reset-password`, { method: 'POST' });
-    out.innerHTML = `${ic('key')} Temporary password for <b>${esc(r.student_id)}</b>: <b style="font:600 16px ui-monospace,monospace;user-select:all">${esc(r.temp_password)}</b> <span class="muted">Works once, then they choose their own.</span>`;
-  } catch (e) { out.textContent = e.message === 'no such student' ? `No student with the ID "${id}".` : `Could not reset: ${e.message}`; }
-};
 $('#q').oninput = renderStudents;
 
 // ---------------------------------------------------------------- ONE STUDENT: every interaction
@@ -680,20 +668,12 @@ async function openStudent(id) {
     <div style="flex:1;min-width:0"><div id="dTitle" style="font-weight:700;font-size:17px">${esc(name)}</div>
       <div class="faint" style="font-size:12.5px">${[d.student_id, d.email, d.batch].filter(Boolean).map(esc).join(' · ')}</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">
-        <span class="chip ${d.has_account ? 'good' : 'mute'}">${ic(d.has_account ? 'check' : 'x')}${d.has_account ? 'Has a password' : 'No account yet'}</span>
+        <span class="chip ${d.has_account ? 'good' : 'mute'}">${ic(d.has_account ? 'check' : 'x')}${d.has_account ? 'Signed up' : 'Not signed up yet'}</span>
         ${d.logins ? `<span class="chip mute">${ic('login')}${d.logins} log-in${d.logins === 1 ? '' : 's'}</span>` : ''}
         ${d.attention.map(reasonChip).join('')}
       </div></div>
-    <button class="btn small" id="resetPw" data-tip="Gives a temporary password to pass on. It works once.">${ic('key')} Reset password</button>
     <button class="btn small" data-close aria-label="Close">${ic('x')}</button>
-    <div id="resetPwOut" style="flex-basis:100%" hidden></div>`;
-  $('#resetPw').onclick = async () => {
-    if (!confirm(`Reset the password of ${name} (${d.student_id})?\n\nThey are logged out everywhere and must use the temporary password you give them.`)) return;
-    const out = $('#resetPwOut'); out.hidden = false;
-    try { const r = await api(`/api/admin/students/${encodeURIComponent(d.student_id)}/reset-password`, { method: 'POST' });
-      out.innerHTML = `Temporary password: <b style="font:600 15px ui-monospace,monospace;user-select:all">${esc(r.temp_password)}</b> <span class="muted">Works once.</span>`; }
-    catch (e) { out.textContent = `Could not reset: ${e.message}`; }
-  };
+`;
   const mini = (v, l, t) => `<div class="card"${t ? ` data-tip="${esc(t)}"` : ''}><div class="v">${v}</div><div class="l">${l}</div></div>`;
   const stars = d.stars ?? [];
   const maxDay = Math.max(1, ...d.daily.map((x) => x.minutes));
