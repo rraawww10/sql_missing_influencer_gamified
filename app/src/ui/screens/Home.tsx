@@ -1,5 +1,7 @@
 // Case map: tonight's trail from 6 PM to midnight. One round stop per episode; tapping a stop shows that episode
 // in the big panel on top, and the whole page takes its colours. Solved stops get a star, the next one hops, locked ones shake.
+import { BADGES, badgeOf, pinnedBadges, setPinned } from '../badges';
+import { Medal } from '../components/Medal';
 import { useEffect, useState } from 'react';
 import type { SessionIndexEntry } from '../../content/types';
 import { SESSION_COUNT } from '../../engine/progress/derive';
@@ -25,6 +27,8 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
   const solved = progress?.sessions.filter((s) => s.status === 'completed').length ?? 0;
   const nextUp = progress?.sessions.find((s) => s.status === 'available')?.session;
   const [picked, setPicked] = useState<number | null>(null);
+  const [pins, setPins] = useState<number[]>(() => pinnedBadges());
+  useEffect(() => { const on = () => setPins(pinnedBadges()); addEventListener('tmi:badges', on); return () => removeEventListener('tmi:badges', on); }, []);
   const [shake, setShake] = useState<number | null>(null);
   const sel = picked ?? nextUp ?? Math.max(1, Math.min(solved, SESSION_COUNT));
 
@@ -110,6 +114,27 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
             })}
           </ol>
           <div className="hours" aria-hidden="true"><span>6 PM</span><span>7 PM</span><span>8 PM</span><span>9 PM</span><span>10 PM</span><span>11 PM</span><span>12 AM</span></div>
+        </section>
+
+        <section className="badge-wall" aria-label="Badge wall">
+          <div className="row between"><h2 className="shadowed">Your badge wall</h2>
+            <span className="pill">{pins.length} pinned · {progress?.sessions.filter((x) => x.status === 'completed').length ?? 0} of {SESSION_COUNT} earned</span></div>
+          <p className="sub">Solve an episode to earn its badge. 100% = Platinum, 90% = Gold, 70% = Silver, any solve = Bronze. Tap an earned badge to pin it.</p>
+          <div className="badge-grid">
+            {BADGES.map((b, i) => {
+              const n = i + 1, sp = progress?.sessions[i];
+              if (sp?.status !== 'completed') return (
+                <div key={n} className="badge-slot empty"><Medal icon={b.icon} episode={n} size={64} locked /><b>{b.name}</b><small>Episode {n}</small></div>);
+              const bd = badgeOf(n, sp.points), on = pins.includes(n);
+              return (
+                <button key={n} type="button" className={`badge-slot ${on ? 'surface' : ''}`} onClick={() => setPins(setPinned(n, !on))} aria-pressed={on}
+                  aria-label={`${bd.name}, ${bd.tier.name}, ${bd.pct} percent. ${on ? 'Pinned. Tap to unpin.' : 'Tap to pin.'}`}>
+                  <Medal tier={bd.tier.id} icon={bd.icon} episode={n} size={64} shine={on} />
+                  <b>{bd.name}</b><small>{bd.tier.name} · {bd.pct}%</small>
+                  <span className="pin-state"><Icon name="pin" /> {on ? 'Pinned' : 'Tap to pin'}</span>
+                </button>);
+            })}
+          </div>
         </section>
       </div>
     </div>

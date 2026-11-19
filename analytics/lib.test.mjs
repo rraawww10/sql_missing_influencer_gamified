@@ -197,7 +197,7 @@ test('student page: chapters with time, feedback and check-ins; feedback tab sho
   assert.match(a.feedbackCsv({}), /chapter 1: great/);
 });
 
-test('identify with an email: validated, stored lower-case, shown on the dashboard and LAST in the CSV; never sent back', () => {
+test('identify with an email: validated, stored lower-case, shown on the dashboard and in the CSV (after the old columns); never sent back', () => {
   const { db, a } = setup();
   assert.equal(normalizeEmail('  Priya.Sharma+sql@Gmail.COM '), 'priya.sharma+sql@gmail.com');
   for (const bad of ['priya', 'priya@gmail', 'priya@.com', 'pri ya@gmail.com', 'a@b@c.com', `${'x'.repeat(112)}@gmail.com`, 42, null, undefined])
@@ -217,12 +217,12 @@ test('identify with an email: validated, stored lower-case, shown on the dashboa
   assert.equal(a.students().find((s) => s.student_id === 'NW9').email, null);       // played, never gave an email
   assert.equal(a.student('NW1001').email, 'priya@gmail.com');
   const csv = a.exportCsv().split('\n').map((l) => l.split(','));
-  assert.equal(csv[0].at(-1), 'email');
+  assert.deepEqual(csv[0].slice(-2), ['email', 'score_pct']);              // new columns go at the end
   assert.deepEqual(csv[0].slice(0, 4), ['student_id', 'name', 'batch', 'level']);   // the old columns stay where they were
-  assert.equal(csv[0].length, 19);
-  assert.equal(csv.find((r) => r[0] === 'NW1001').at(-1), 'priya@gmail.com');
-  assert.equal(csv.find((r) => r[0] === 'NW9').at(-1), '');
-  assert.equal(csv.find((r) => r[0] === 'NW0002').at(-1), 'ravi@mail.college.ac.in');   // not started, still exported with the email
+  assert.equal(csv[0].length, 20);
+  assert.equal(csv.find((r) => r[0] === 'NW1001').at(-2), 'priya@gmail.com');
+  assert.equal(csv.find((r) => r[0] === 'NW9').at(-2), '');
+  assert.equal(csv.find((r) => r[0] === 'NW0002').at(-2), 'ravi@mail.college.ac.in');   // not started, still exported with the email
 });
 
 test('identify without an email keeps the stored one; a new email replaces it', () => {
@@ -407,4 +407,28 @@ test('attention: stuck on a task, low stars, lost in a chapter, gone quiet, neve
   const st = a.students().find((x) => x.student_id === 'STK1');
   assert.equal(st.journey[tep.n - 1], 1);
   assert.equal(st.journey.length, 13);
+});
+
+test('episode score: best completed attempt out of the episode maximum, with the badge tier; a reset wipes the earlier attempts', () => {
+  const { db, a } = setup();
+  const tep = cat.sessions.find((e) => e.beats.some((b) => b.task_id));
+  identify(db, { student_id: 'NW77', name: 'Score Kid' });
+  const t = (m) => new Date(Date.now() - (100 - m) * 60000).toISOString();
+  const sit = (sid, verb, result, m) => ({ ...ev('lms:NW77', verb, tep.n, { type: 'beat', beat: tep.beats[0].id }, result, t(m)), sitting_id: sid });
+  ingest(db, [
+    sit('A', 'task_passed', { attempts: 1, max_hint_tier: 0 }, 1),      // 13
+    sit('A', 'task_passed', { attempts: 3, max_hint_tier: 3 }, 2),      // 3
+    sit('A', 'clue_pinned', {}, 3),                                     // 2
+    sit('A', 'session_completed', {}, 4),
+    sit('B', 'task_passed', { attempts: 1, max_hint_tier: 0 }, 5),      // a replay that is not finished: does not count
+  ]);
+  let sc = a.episodeScores().get('NW77').get(tep.n);
+  assert.deepEqual({ points: sc.points, max: sc.max }, { points: 18, max: tep.max_points });
+  assert.equal(sc.pct, Math.round(18 / tep.max_points * 100));
+  assert.equal(sc.tier, 'bronze');
+  assert.equal(a.student('NW77').episodes[tep.n - 1].score_pct, sc.pct);
+  assert.equal(a.students().find((x) => x.student_id === 'NW77').scores[tep.n - 1].points, 18);
+  ingest(db, [sit('C', 'session_reset', {}, 6)]);
+  assert.equal(a.episodeScores().get('NW77'), undefined);              // reset: nothing solved any more
+  assert.equal(cat.sessions.reduce((x, e) => x + e.max_points, 0), 1488);
 });

@@ -67,6 +67,14 @@ try {
   } });
   ok(named, 'the story addresses the student by name (no "intern")');
   await pa.getByText(`Solved: ${pack(1).title}`, { exact: true }).waitFor();
+  // the episode score out of 100 % and its badge; pinning puts it on the case map's badge wall
+  const scoreCard = pa.locator('.score-card');
+  await scoreCard.waitFor();
+  ok(/\d+%/.test(await scoreCard.locator('.score-pct').innerText()) && /First Night/.test(await scoreCard.innerText()), 'solved screen: episode score in % and the "First Night" badge');
+  await pa.waitForTimeout(1300);
+  if (process.env.E2E_SHOTS) await scoreCard.screenshot({ path: `${process.env.E2E_SHOTS}/score-card.png` });
+  await scoreCard.getByRole('button', { name: /Pin to my badge wall/ }).click();
+  await scoreCard.getByRole('button', { name: /Pinned to your badge wall/ }).waitFor();
   await pa.getByRole('radio', { name: /^7 of 11/ }).click();
   await pa.getByRole('button', { name: /Fun/ }).click();
   await pa.getByRole('button', { name: /Just right/ }).click();
@@ -74,6 +82,10 @@ try {
   await pa.getByRole('button', { name: /Send feedback/ }).click();
   await pa.getByText(/Noted, Asha\. Thank you!/).waitFor();
   ok(true, 'episode 1 solved, end-of-episode feedback sent');
+  await pa.goto(`${BASE}/#/`);
+  await pa.locator('.badge-wall').getByText('1 pinned').waitFor();
+  ok(true, 'case map: the pinned badge is on the badge wall');
+  if (process.env.E2E_SHOTS) { await pa.locator('.badge-wall').scrollIntoViewIfNeeded(); await pa.waitForTimeout(500); await pa.locator('.badge-wall').screenshot({ path: `${process.env.E2E_SHOTS}/badge-wall.png` }); }
 
   const p2 = pack(2);
   const clueAt = p2.beats.findIndex((b) => b.type === 'clue');
@@ -111,6 +123,7 @@ try {
   ok(!row.email, 'no email asked or stored');
   ok(row.episodes_done === 1 && row.level === 2 && row.beats_done > pack(1).beats.length, `progress: ${row.episodes_done} episode solved, ${row.beats_done} steps done, now on episode ${row.level}`);
   ok(row.seconds > 0, `active time recorded: ${row.seconds} s`);
+  ok(row.scores[0] && row.scores[0].pct > 0 && row.scores[0].max === 21 && row.score_pct > 0, `dashboard: episode 1 score ${row.scores[0]?.pct}% (${row.scores[0]?.tier} badge), game score ${row.score_pct}%`);
   const d = await admin(`/api/admin/students/${STUDENT.id}`);
   ok(d.episodes[0].status === 'completed' && d.episodes[1].status === 'in progress', 'student page: episode 1 solved, episode 2 in progress');
   const e2 = d.episodes[1];

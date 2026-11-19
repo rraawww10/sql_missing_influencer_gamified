@@ -126,6 +126,24 @@ export function openDb(file) {
 
 // ---------------------------------------------------------------- student identity (no login: NxtWave ID + name + email)
 // The id is case-insensitive (stored upper-case); letters, digits and . _ @ - only.
+// ---- episode score out of 100 % and its badge tier: the game's rules (app/src/engine/progress/derive.ts POINTS,
+// app/src/ui/badges.ts). Best completed attempt per episode; a reset wipes what came before it.
+const PTS = { task: 10, firstTry: 3, hint: { 1: 2, 2: 4, 3: 7 }, taskMin: 3, actFirst: 3, actLater: 1, check: 2, clue: 2 };
+const MAX_WEIGHT = { task: PTS.task + PTS.firstTry, activity: PTS.actFirst, demo: PTS.actFirst, check: PTS.check, clue: PTS.clue };
+export const tierOf = (pct) => (pct >= 100 ? 'platinum' : pct >= 90 ? 'gold' : pct >= 70 ? 'silver' : 'bronze');
+function eventPoints(verb, r) {
+  if (verb === 'task_passed') {
+    const tier = Number(r.max_hint_tier ?? 0);
+    let p = PTS.task - (PTS.hint[tier] ?? 0);
+    if (tier === 0 && r.attempts === 1) p += PTS.firstTry;
+    return Math.max(p, PTS.taskMin);
+  }
+  if (verb === 'activity_done') return r.first_try ? PTS.actFirst : PTS.actLater;
+  if (verb === 'check_answered') return r.correct ? PTS.check : 0;
+  if (verb === 'clue_pinned') return PTS.clue;
+  return 0;
+}
+
 export function normalizeId(v) {
   const id = typeof v === 'string' ? v.trim().toUpperCase() : '';
   return /^[A-Z0-9][A-Z0-9._@-]{2,63}$/.test(id) ? id : null;
@@ -234,7 +252,8 @@ export function loadCatalogue(dir) {
       if (b.type === 'clue' && i < pack.beats.length - 1) ch++;
       return x;
     });
-    sessions.push({ n, title: pack.title, minutes: pack.est_minutes ?? pack.minutes_estimate ?? null, beats, chapters: ch });
+    sessions.push({ n, title: pack.title, minutes: pack.est_minutes ?? pack.minutes_estimate ?? null, beats, chapters: ch,
+      max_points: beats.reduce((a, b) => a + (MAX_WEIGHT[b.type] ?? 0), 0) });
   }
   const byN = new Map(sessions.map((s) => [s.n, s]));
   return {
@@ -381,6 +400,39 @@ export class Analytics {
   }
 
   // Per-student rollup used by the overview, the students table and the export
+  // student id -> Map(episode -> { points, max, pct, tier }) for every solved episode
+  episodeScores(only = null) {
+    const rows = this.all(`SELECT student_id, session, sitting_id, verb, result, client_ts FROM events
+      WHERE session > 0 AND verb IN ('task_passed', 'activity_done', 'check_answered', 'clue_pinned', 'session_completed', 'session_reset')
+      ${only ? 'AND student_id = ?' : ''} ORDER BY client_ts`, only ? [only] : []);
+    const by = new Map();
+    for (const r of rows) {
+      const k = `${r.student_id}|${r.session}`;
+      if (!by.has(k)) by.set(k, []);
+      by.get(k).push(r);
+    }
+    const out = new Map();
+    for (const [k, evs] of by) {
+      const [id, n] = [k.slice(0, k.lastIndexOf('|')), Number(k.slice(k.lastIndexOf('|') + 1))];
+      const resetAt = evs.filter((e) => e.verb === 'session_reset').map((e) => e.client_ts).sort().at(-1) ?? '';
+      const sittings = new Map();
+      for (const e of evs) {
+        if (e.verb === 'session_reset' || e.client_ts <= resetAt) continue;
+        const sid = e.sitting_id ?? '-';
+        if (!sittings.has(sid)) sittings.set(sid, { pts: 0, done: false });
+        const st = sittings.get(sid);
+        if (e.verb === 'session_completed') st.done = true;
+        else { let r = {}; try { r = e.result ? JSON.parse(e.result) : {}; } catch { /* bad row */ } st.pts += eventPoints(e.verb, r); }
+      }
+      const best = Math.max(-1, ...[...sittings.values()].filter((x) => x.done).map((x) => x.pts));
+      if (best < 0) continue;
+      const max = this.cat.get(n)?.max_points ?? 0, pctv = max ? Math.min(100, Math.round((best / max) * 100)) : 0;
+      if (!out.has(id)) out.set(id, new Map());
+      out.get(id).set(n, { points: best, max, pct: pctv, tier: tierOf(pctv) });
+    }
+    return out;
+  }
+
   students(f = {}) {
     const s = this.scope(f);
     const rows = this.all(`
@@ -400,6 +452,8 @@ export class Analytics {
     const names = new Map(this.all('SELECT student_id, COALESCE(name, entered_name) AS name, batch, entered_name, registered_at, last_login_at, logins, email FROM students').map((r) => [r.student_id, r]));
     const completed = this.completedBySession(f);
     const journeys = this.journeys(f);
+    const scores = this.episodeScores();
+    const gameMax = this.cat.sessions.reduce((t, x) => t + x.max_points, 0) || 1;
     const total = this.cat.totalBeats;
     return rows.map((r) => {
       const n = names.get(r.student_id);
@@ -416,6 +470,8 @@ export class Analytics {
         accuracy_pct: pct(r.tasks_passed, r.attempts),
         first_seen: r.first_seen, last_seen: r.last_seen,
         journey: journeys.get(r.student_id)?.episodes ?? Array(SESSION_COUNT).fill(0),
+        scores: Array.from({ length: SESSION_COUNT }, (_, i) => scores.get(r.student_id)?.get(i + 1) ?? null),
+        score_pct: Math.round(([...(scores.get(r.student_id)?.values() ?? [])].reduce((t, x) => t + x.points, 0) / gameMax) * 100),
         stars: journeys.get(r.student_id)?.stars ?? [],
       };
     }).sort((a, b) => (a.last_seen < b.last_seen ? 1 : -1));
@@ -525,6 +581,7 @@ export class Analytics {
     const base = this.students({ guests: true }).find((r) => r.student_id === id);
     if (!base) return null;
     const ev = this.all(`SELECT verb, session, beat, object_id, seconds, result, client_ts FROM events WHERE student_id = ? ORDER BY client_ts`, [id]);
+    const myScores = this.episodeScores(id).get(id) ?? new Map();
     const episodes = this.cat.sessions.map((ep) => {
       const mine = ev.filter((e) => e.session === ep.n);
       const done = new Set(mine.filter((e) => DONE_VERBS.includes(e.verb) && e.beat).map((e) => e.beat));
@@ -539,7 +596,8 @@ export class Analytics {
       return {
         n: ep.n, title: ep.title, total_beats: ep.beats.length, beats_done: done.size, progress_pct: pct(done.size, ep.beats.length),
         status: completedAt ? 'completed' : mine.length ? 'in progress' : 'not started',
-        started_at: mine[0]?.client_ts ?? null, completed_at: completedAt, points: result?.points ?? null,
+        started_at: mine[0]?.client_ts ?? null, completed_at: completedAt, points: myScores.get(ep.n)?.points ?? result?.points ?? null,
+        max_points: ep.max_points, score_pct: myScores.get(ep.n)?.pct ?? null, tier: myScores.get(ep.n)?.tier ?? null,
         seconds: mine.reduce((a, e) => a + (e.seconds ?? 0), 0),
         attempts: mine.filter((e) => e.verb === 'task_attempted').length, hints: mine.filter((e) => e.verb === 'hint_used').length,
         traps: mine.filter((e) => e.verb === 'trap_hit').length, resets: mine.filter((e) => e.verb === 'session_reset').length,
@@ -833,7 +891,7 @@ export class Analytics {
   exportCsv(f = {}) {
     // new columns go at the END, so the positions of the existing ones never change
     const cols = ['student_id', 'name', 'batch', 'level', 'level_title', 'level_status', 'episodes_done', 'progress_pct', 'minutes', 'active_days',
-      'attempts', 'tasks_passed', 'accuracy_pct', 'hints', 'traps', 'clues', 'first_seen', 'last_seen', 'email'];
+      'attempts', 'tasks_passed', 'accuracy_pct', 'hints', 'traps', 'clues', 'first_seen', 'last_seen', 'email', 'score_pct'];
     const q = csvCell;
     const rows = this.students(f).map((r) => ({ ...r, minutes: Math.round(r.seconds / 60) }));
     for (const r of this.notStarted(f)) rows.push({ ...r, level: 0, level_title: 'Not started', level_status: 'not started', episodes_done: 0, progress_pct: 0, minutes: 0 });

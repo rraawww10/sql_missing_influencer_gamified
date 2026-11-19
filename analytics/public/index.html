@@ -162,6 +162,9 @@ tr.sel{background:var(--s1-soft)!important}
 .type.task{background:var(--s1-soft);color:var(--s1-hi)}
 tr.hot{background:color-mix(in srgb,var(--warn) 12%,transparent)}
 .flags{display:inline-flex;gap:3px}.flags svg{width:15px;height:15px}
+.tier{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+.tier.platinum{background:linear-gradient(135deg,#4338ca,#06b6d4)}.tier.gold{background:linear-gradient(135deg,#b45309,#f59e0b)}.tier.silver{background:linear-gradient(135deg,#475569,#94a3b8)}.tier.bronze{background:linear-gradient(135deg,#9a3412,#ea580c)}
+.tiers{display:flex;gap:6px;flex-wrap:wrap}
 
 /* journey strip: 13 episodes */
 .jr{display:inline-flex;gap:2px;vertical-align:middle}
@@ -491,8 +494,10 @@ function strip(ep) {
 }
 const stripAxis = () => `<svg viewBox="0 0 300 14" class="plot">${Array.from({ length: 11 }, (_, i) => `<text class="ax" x="${SX(i + 1)}" y="11" text-anchor="middle">${i + 1}</text>`).join('')}</svg>`;
 // the 13-episode journey: empty = not opened, light = opened, blue = solved; the outlined one is where they are now
-const journey = (j, cur, big = false) => `<span class="jr${big ? ' big' : ''}" role="img" aria-label="${j.filter((x) => x === 2).length} of 13 episodes solved">${j.map((x, i) =>
-  `<i class="s${x}${i + 1 === cur ? ' cur' : ''}" data-tip="${esc(`Episode ${i + 1}: ${epTitle(i + 1)}\n${['not opened', 'opened, not solved yet', 'solved'][x]}`)}">${big ? i + 1 : ''}</i>`).join('')}</span>`;
+const TIER_NAME = { platinum: 'Platinum', gold: 'Gold', silver: 'Silver', bronze: 'Bronze' };
+const tierCount = (sc) => { const c = {}; for (const x of sc ?? []) if (x) c[x.tier] = (c[x.tier] ?? 0) + 1; const t = Object.entries(c).map(([k, n]) => `${n} ${TIER_NAME[k]}`).join(', '); return t ? `Badges: ${t}` : 'No badges yet'; };
+const journey = (j, cur, big = false, sc = []) => `<span class="jr${big ? ' big' : ''}" role="img" aria-label="${j.filter((x) => x === 2).length} of 13 episodes solved">${j.map((x, i) =>
+  `<i class="s${x}${i + 1 === cur ? ' cur' : ''}" data-tip="${esc(`Episode ${i + 1}: ${epTitle(i + 1)}\n${['not opened', 'opened, not solved yet', 'solved'][x]}${sc?.[i] ? `\nscore ${sc[i].pct}% · ${TIER_NAME[sc[i].tier]} badge (${sc[i].points}/${sc[i].max})` : ''}`)}">${big ? i + 1 : ''}</i>`).join('')}</span>`;
 const epTitle = (n) => state.overview?.funnel.find((f) => f.n === n)?.title ?? `Episode ${n}`;
 
 // ---------------------------------------------------------------- NOW
@@ -561,7 +566,7 @@ function wireGo(root) {
 const weekAgo = () => Date.now() - 7 * 86400_000;
 const lastStars = (r) => r.stars?.length ? r.stars[r.stars.length - 1] : null;
 const COLS = [
-  ['name', 'Student'], ['journey', 'Journey', '', 'The 13 episodes: blue = solved, light = opened. The outlined one is where they are now.'], ['progress_pct', 'Progress', 'r'],
+  ['name', 'Student'], ['journey', 'Journey', '', 'The 13 episodes: blue = solved, light = opened. The outlined one is where they are now.'], ['progress_pct', 'Progress', 'r'], ['score_pct', 'Score', 'r', 'Points earned out of the whole game (1,488). Each solved episode also gets a badge: Platinum 100%, Gold 90%+, Silver 70%+, Bronze any solve.'],
   ['seconds', 'Time', 'r'], ['accuracy_pct', 'SQL right', 'r', 'Share of SQL runs that were correct'], ['hints', 'Hints', 'r'],
   ['stars', 'Stars', 'r', 'The latest rating they gave (out of 11; older answers out of 5)'], ['last_seen', 'Last active'], ['need', '', '', 'Why they need you'],
 ];
@@ -591,8 +596,8 @@ function renderStudents() {
     <tbody>${rows.map((r) => { const st = lastStars(r), need = state.need.get(r.student_id) ?? [];
       return `<tr class="click" data-id="${esc(r.student_id)}">
       <td><b>${esc(r.name ?? r.student_id)}</b>${r.is_guest ? ' <span class="chip mute">guest</span>' : ''}<div class="faint">${esc(r.student_id)}${r.batch ? ` · ${esc(r.batch)}` : ''}</div></td>
-      <td>${journey(r.journey, r.level)}</td>
-      <td class="r">${pbar(r.progress_pct)}</td><td class="r">${dur(r.seconds)}</td>
+      <td>${journey(r.journey, r.level, false, r.scores)}</td>
+      <td class="r">${pbar(r.progress_pct)}</td><td class="r" data-tip="${esc(tierCount(r.scores))}">${r.scores?.some(Boolean) ? `${r.score_pct}%` : '<span class="faint">-</span>'}</td><td class="r">${dur(r.seconds)}</td>
       <td class="r">${r.attempts ? `${r.accuracy_pct}%` : '-'}</td><td class="r">${r.hints || '-'}</td>
       <td class="r">${st ? starsOf(st.rating, st.scale) : '<span class="faint">-</span>'}</td>
       <td data-tip="${esc(when(r.last_seen))}">${ago(r.last_seen)}</td>
@@ -678,10 +683,11 @@ async function openStudent(id) {
   const stars = d.stars ?? [];
   const maxDay = Math.max(1, ...d.daily.map((x) => x.minutes));
   $('#dBody').innerHTML = `
-    <div class="grid mini">${mini(`${d.progress_pct}%`, 'Progress', `${d.beats_done} steps done`)}${mini(`${d.episodes_done}/13`, 'Episodes solved')}${mini(dur(d.seconds), 'Play time', 'Active time only')}
+    <div class="grid mini">${mini(`${d.progress_pct}%`, 'Progress', `${d.beats_done} steps done`)}${mini(d.scores?.some(Boolean) ? `${d.score_pct}%` : '-', 'Score', 'Points out of the whole game (1,488)')}${mini(`${d.episodes_done}/13`, 'Episodes solved')}${mini(dur(d.seconds), 'Play time', 'Active time only')}
       ${mini(d.active_days, 'Days active')}${mini(d.attempts ? `${d.accuracy_pct}%` : '-', 'SQL right', `${d.tasks_passed} tasks solved, ${d.attempts} runs`)}${mini(`${d.hints}<small class="faint" style="font-size:13px"> / ${d.traps}</small>`, 'Hints / traps')}
       ${mini(stars.length ? starsOf(stars[stars.length - 1].rating, stars[stars.length - 1].scale) : '-', 'Latest stars', stars.map((s) => `Ep ${s.session}: ${s.rating}/${s.scale}`).join('\n'))}</div>
-    <h3>${ic('layers')} Journey</h3>${journey(d.journey, d.level, true)}
+    <h3>${ic('layers')} Journey</h3>${journey(d.journey, d.level, true, d.scores)}
+    <h3>${ic('trophy')} Badges</h3>${d.episodes.some((e) => e.tier) ? `<div class="tiers">${d.episodes.filter((e) => e.tier).map((e) => `<span class="tier ${e.tier}" data-tip="${esc(`${e.title}: ${e.points} of ${e.max_points} points`)}">${ic('star')}Ep ${e.n} · ${TIER_NAME[e.tier]} ${e.score_pct}%</span>`).join('')}</div>` : '<div class="faint">No episode solved yet.</div>'}
     <div class="legend"><span><i style="background:var(--s1)"></i>Solved</span><span><i style="background:var(--s1-2)"></i>Opened</span><span><i style="border:1px solid var(--line)"></i>Not opened</span><span>first played ${when(d.first_seen)} · last active ${ago(d.last_seen)}</span></div>
     <h3>${ic('zap')} Every interaction</h3>
     <div class="seg" id="tlSeg" role="group" aria-label="Show"></div>
@@ -778,12 +784,12 @@ function renderEpisodes() {
   const L = o.ladder, maxS = Math.max(1, ...o.funnel.map((f) => f.started));
   $('#epAll').innerHTML = `<div class="card"><h2>${ic('layers')} All 13 episodes ${info('Click an episode for its steps. Bars: light = opened, blue = solved.')}</h2>
     <div class="tablewrap" style="border:0"><table><thead><tr><th class="nosort">Episode</th><th class="nosort">Opened → solved</th><th class="r nosort">Solved</th><th class="r nosort" data-tip="Average active minutes per student who played it">Avg time</th>
-      <th class="r nosort" data-tip="SQL tasks solved on the first run">1st-try SQL</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="r nosort" data-tip="Median of the 11-star ratings, and the share at 6 or more">Stars</th></tr></thead><tbody>
+      <th class="r nosort" data-tip="SQL tasks solved on the first run">1st-try SQL</th><th class="r nosort">Hints</th><th class="r nosort">Traps</th><th class="r nosort" data-tip="Average episode score of the students who solved it (out of 100%), and how many got Gold or Platinum">Avg score</th><th class="r nosort" data-tip="Median of the 11-star ratings, and the share at 6 or more">Stars</th></tr></thead><tbody>
     ${o.funnel.map((f) => { const e = L.episodes[f.n - 1];
       return `<tr class="click${f.n === state.ep ? ' sel' : ''}" data-ep="${f.n}"><td><b>${f.n}.</b> ${esc(f.title)}</td>
       <td style="min-width:160px"><div class="hb" style="grid-template-columns:1fr auto"><div class="tr" data-tip="${esc(`${f.started} opened · ${f.completed} solved`)}"><b class="lite" style="width:${(f.started / maxS) * 100}%"></b><b style="width:${(f.completed / maxS) * 100}%"></b></div><div class="v">${f.completed}/${f.started}</div></div></td>
       <td class="r">${f.started ? `${f.completion_pct}%` : '-'}</td><td class="r">${f.avg_minutes ? `${f.avg_minutes}m` : '-'}</td><td class="r">${f.attempts ? `${f.first_pass_pct}%` : '-'}</td>
-      <td class="r">${f.hints || '-'}</td><td class="r">${f.traps || '-'}</td><td class="r">${e?.responses ? `<span data-tip="${esc(`${e.responses} answers · average ${e.avg}`)}">${starsOf(e.median, 11)} <span class="faint">${pct(e.delight, e.responses)}%</span></span>` : '-'}</td></tr>`; }).join('')}
+      <td class="r">${f.hints || '-'}</td><td class="r">${f.traps || '-'}</td><td class="r">${(() => { const xs = state.students.map((st) => st.scores?.[f.n - 1]).filter(Boolean); return xs.length ? `<span data-tip="${esc(`${xs.length} solved · ${xs.filter((x) => x.tier === 'gold' || x.tier === 'platinum').length} Gold or Platinum`)}">${Math.round(xs.reduce((t, x) => t + x.pct, 0) / xs.length)}%</span>` : '-'; })()}</td><td class="r">${e?.responses ? `<span data-tip="${esc(`${e.responses} answers · average ${e.avg}`)}">${starsOf(e.median, 11)} <span class="faint">${pct(e.delight, e.responses)}%</span></span>` : '-'}</td></tr>`; }).join('')}
     </tbody></table></div>
     <div class="legend"><span><i style="background:var(--s1-2)"></i>Opened</span><span><i style="background:var(--s1)"></i>Solved</span></div></div>`;
   $('#epAll').querySelectorAll('tr[data-ep]').forEach((tr) => tr.onclick = () => { state.ep = Number(tr.dataset.ep); $('#epPick').value = state.ep; renderEpisodes(); loadEpisode(); $('#epTitle').scrollIntoView({ behavior: 'smooth', block: 'start' }); });

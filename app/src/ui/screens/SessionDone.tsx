@@ -1,4 +1,6 @@
 // Episode solved: confetti, points that count up, the rank bar, new clues, the feedback card (required), and where to go next.
+import { badgeOf, nextTier, pinnedBadges, setPinned } from '../badges';
+import { Medal } from '../components/Medal';
 import { useCallback, useEffect, useState } from 'react';
 import { useProgress } from '../useProgress';
 import { useServices } from '../services';
@@ -45,6 +47,11 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
   const clues = (progress?.evidence ?? []).filter((c) => c.session === session);
   const title = episodeTitle(session, pack?.title);
   const points = useCountUp(p?.points ?? 0);
+  // the episode's score out of 100 % and its badge (whole episodes only; a part of an episode has no badge)
+  const badge = whole?.status === 'completed' && !(pack?.unit && pack.unit.parts > 1) ? badgeOf(session, whole.points) : null;
+  const pctShown = useCountUp(badge?.pct ?? 0);
+  const [pinned, setPinnedState] = useState(() => pinnedBadges().includes(session));
+  const togglePin = () => setPinnedState(setPinned(session, !pinned).includes(session));
   // "Promoted!" once, on the episode that earns a new rank
   const [promoted, setPromoted] = useState<string | null>(null);
   useEffect(() => { if (whole?.status === 'completed' && !promoted) { const r = takePromotion(progress); if (r) setPromoted(r); } }, [progress, whole?.status, promoted]);
@@ -88,6 +95,23 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
                 <div className="stat"><b>{points}</b><span>points</span></div>
                 <div className="stat"><b>{p.hintsUsed}</b><span>hint{p.hintsUsed === 1 ? '' : 's'} used</span></div>
                 <div className="stat"><b>{p.trapsFound}</b><span>trap{p.trapsFound === 1 ? '' : 's'} spotted</span></div>
+              </div>
+            )}
+            {badge && (
+              <div className="surface card score-card pop-in" role="status" aria-label={`Episode score ${badge.pct} percent. ${badge.tier.name} badge: ${badge.name}`}>
+                <Medal tier={badge.tier.id} icon={badge.icon} episode={session} size={110} />
+                <div>
+                  <span className="cap">Episode score · badge earned</span>
+                  <div className="score-line"><span className="score-pct">{pctShown}%</span><span className={`tier-pill ${badge.tier.id}`}><Icon name="medal" /> {badge.tier.name}</span></div>
+                  <h3>{badge.name}</h3>
+                  <div className="score-bar" aria-hidden="true"><i style={{ width: `${badge.pct}%` }} /></div>
+                  <p className="muted small">{badge.points} of {badge.max} points · {badge.tier.line}
+                    {(() => { const up = nextTier(badge.pct); return up ? ` Replay to reach ${up.name} at ${up.min}%.` : ''; })()}</p>
+                  <div className="row">
+                    <button type="button" className={`btn small ${pinned ? 'ghost' : 'primary'}`} onClick={togglePin} aria-pressed={pinned}>
+                      <Icon name="pin" /> {pinned ? 'Pinned to your badge wall' : 'Pin to my badge wall'}</button>
+                  </div>
+                </div>
               </div>
             )}
             {promoted && (

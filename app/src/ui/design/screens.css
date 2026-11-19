@@ -227,3 +227,56 @@ button.person:focus-visible { outline: 3px solid var(--sun); outline-offset: 3px
 /* start screen headline and the ID in the who chip */
 .gate-headline { font: 700 clamp(32px, 5vw, 56px)/1.05 var(--display); text-wrap: balance; }
 .who-chip .who-id { font: 600 12px var(--mono); color: var(--ink-2); background: var(--lilac); border-radius: 99px; padding: 2px 8px; }
+
+/* ---- episode badges (2026-11-19): metal medals by tier, the score ring, the badge wall ---- */
+.medal { --m: 96px; position: relative; display: inline-block; width: var(--m); height: calc(var(--m) * 1.22); flex: none;
+  --a: #f6c79e; --b: #b8693a; --c: #7a3d18; --rib1: #c2410c; --rib2: #fb923c; }
+.medal.silver { --a: #ffffff; --b: #b9c2cf; --c: #6b7686; --rib1: #475569; --rib2: #94a3b8; }
+.medal.gold { --a: #fff3b0; --b: #f2b512; --c: #9a6400; --rib1: #b91c1c; --rib2: #f43f5e; }
+.medal.platinum { --a: #ffffff; --b: #c7d2fe; --c: #6d5bd0; --rib1: #4338ca; --rib2: #06b6d4; }
+.medal.locked { --a: #eef0f6; --b: #d5d9e4; --c: #a6adbd; --rib1: #cfd4df; --rib2: #e3e6ee; opacity: .75; }
+.medal-ribbon { position: absolute; left: 50%; top: 0; width: calc(var(--m) * .62); height: calc(var(--m) * .62); transform: translateX(-50%); }
+.medal-ribbon i { position: absolute; top: 0; width: 46%; height: 100%; background: linear-gradient(180deg, var(--rib1), var(--rib2));
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%); box-shadow: inset 0 0 0 2px rgb(255 255 255 / 18%); }
+.medal-ribbon i:first-child { left: 0; transform: skewX(14deg); } .medal-ribbon i:last-child { right: 0; transform: skewX(-14deg); }
+.medal-disc { position: absolute; left: 0; bottom: 0; width: var(--m); height: var(--m); border-radius: 50%; overflow: hidden;
+  background: radial-gradient(circle at 32% 28%, var(--a) 0 18%, var(--b) 52%, var(--c) 100%);
+  box-shadow: 0 calc(var(--m) * .06) calc(var(--m) * .14) rgb(20 10 40 / 35%), inset 0 0 0 calc(var(--m) * .035) rgb(255 255 255 / 45%); }
+.medal.platinum .medal-disc { background: radial-gradient(circle at 32% 28%, #fff 0 16%, transparent 17%),
+  conic-gradient(from 200deg, #c7d2fe, #a5f3fc, #f5d0fe, #c7d2fe, #fde68a, #a5b4fc, #c7d2fe); }
+.medal-ring { position: absolute; inset: 11%; border-radius: 50%; border: calc(var(--m) * .025) dashed rgb(255 255 255 / 55%); }
+.medal-face { position: absolute; inset: 22%; border-radius: 50%; display: grid; place-items: center; color: var(--c);
+  background: radial-gradient(circle at 40% 30%, rgb(255 255 255 / 85%), rgb(255 255 255 / 35%)); box-shadow: inset 0 2px 6px rgb(0 0 0 / 15%); }
+.medal-face svg { width: 52%; height: 52%; }
+.medal-ep { position: absolute; left: 50%; bottom: 6%; transform: translateX(-50%); font: 800 calc(var(--m) * .12) var(--display); color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 45%); letter-spacing: .02em; }
+.medal.shine .medal-disc::after { content: ''; position: absolute; inset: -40%; background: linear-gradient(115deg, transparent 40%, rgb(255 255 255 / 70%) 50%, transparent 60%);
+  transform: translateX(-100%); animation: medal-shine 3.2s ease-in-out infinite; }
+@keyframes medal-shine { 0%, 55% { transform: translateX(-100%); } 85%, 100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .medal.shine .medal-disc::after { animation: none; } }
+
+.score-card { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: center; padding: 18px 20px; }
+.score-card .medal { animation: medal-in .7s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes medal-in { from { transform: scale(.3) rotate(-20deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.score-card .cap { display: block; margin-bottom: 2px; }
+.score-card h3 { font: 600 22px var(--display); margin: 0; }
+.score-line { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin: 6px 0; }
+.score-pct { font: 700 44px/1 var(--display); background: linear-gradient(135deg, var(--c1, #7c3aed), var(--c2, #db2777)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.score-bar { height: 12px; border-radius: 99px; background: rgb(0 0 0 / 8%); overflow: hidden; margin: 6px 0 8px; }
+.score-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--c1, #7c3aed), var(--c2, #db2777)); transition: width 1.2s ease; }
+.tier-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; border-radius: 99px; font-weight: 800; font-size: 13px; color: #fff; }
+.tier-pill.platinum { background: linear-gradient(135deg, #4338ca, #06b6d4); } .tier-pill.gold { background: linear-gradient(135deg, #b45309, #f59e0b); }
+.tier-pill.silver { background: linear-gradient(135deg, #475569, #94a3b8); } .tier-pill.bronze { background: linear-gradient(135deg, #9a3412, #ea580c); }
+.score-card .row { gap: 8px; flex-wrap: wrap; }
+
+.badge-wall { margin-top: 22px; }
+.badge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 12px; margin-top: 10px; }
+.badge-slot { display: grid; justify-items: center; gap: 6px; padding: 12px 8px 10px; border-radius: 18px; text-align: center; border: 0; font: inherit; color: inherit; cursor: pointer;
+  background: rgb(255 255 255 / 14%); transition: transform .15s ease, background .15s ease; }
+.badge-slot.surface { background: #fff; color: #1e1b3a; box-shadow: 0 0 0 3px #fbbf24, 0 8px 24px rgb(251 191 36 / 45%); }
+.badge-slot.surface .pin-state { color: #b45309; }
+.badge-slot:hover { transform: translateY(-3px); }
+.badge-slot b { font: 600 14px var(--display); line-height: 1.2; }
+.badge-slot small { font-weight: 800; font-size: 12px; opacity: .85; }
+.badge-slot .pin-state { font-size: 11.5px; font-weight: 800; display: inline-flex; gap: 4px; align-items: center; }
+.badge-slot.empty { cursor: default; } .badge-slot.empty:hover { transform: none; }
