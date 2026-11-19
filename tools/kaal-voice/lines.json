@@ -606,10 +606,10 @@
     "show": "A star vanishes six hours before her show. Her phone is off. Let’s see what the data remembers. Stay close, {you}."
   },
   {
-    "key": "730670ce",
-    "text": "I'm Kahl and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find Tara Sen.",
+    "key": "f5738328",
+    "text": "I'm your assistant and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find Tara Sen.",
     "mood": "whisper",
-    "show": "I'm Kaal, {you}, and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find Tara Sen."
+    "show": "I'm your assistant, {you}, and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find Tara Sen."
   },
   {
     "key": "84c390f9",
@@ -660,10 +660,10 @@
     "show": "That page is not part of this episode, {you}. Find it in your course."
   },
   {
-    "key": "47bf034c",
-    "text": "Kahl here. I'll talk you through it.",
+    "key": "b6e58758",
+    "text": "I'm your assistant. I'll talk you through it.",
     "mood": "idle",
-    "show": "Kaal here. I’ll talk you through it, {you}."
+    "show": "I’m your assistant. I’ll talk you through it, {you}."
   },
   {
     "key": "f936ccfc",

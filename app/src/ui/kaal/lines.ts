@@ -84,7 +84,7 @@ export const TEASE: Record<number, string> = {
 // (ALL_SPOKEN below), so a line added anywhere else has no recorded voice. `say` is what is spoken when the text on
 // screen carries a number that cannot be recorded in advance.
 export const SAY = {
-  briefing: (star: string) => `I'm Kaal, {you}, and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find ${star}.`,
+  briefing: (star: string) => `I'm your assistant, {you}, and tonight I work for you. I'll be in the corner of your screen all night. Stuck on a query? Open one of my hint envelopes. Run your query and I'll tell you if it's right. If it's wrong, I'll show you what to fix. Got a question about the game? Tap me and ask. Let's find ${star}.`,
   introFirst: () => `${TEASE[1]} Stay close, {you}.`,
   introBack: (session: number) => `Welcome back, {you}. ${TEASE[session] ?? ''}`.trim(),
   newLead: '{you}! New lead tonight. Stay close, let’s go!',
@@ -98,7 +98,7 @@ export const SAY = {
   evidenceEmpty: 'An empty board. Solve a task, pin what you prove, and it starts to fill.',
   openEpisodeFirst: 'Open an episode first, {you}. That tool lives on the game screen.',
   notInThisEpisode: 'That page is not part of this episode, {you}. Find it in your course.',
-  voiceOn: 'Kaal here. I’ll talk you through it, {you}.',
+  voiceOn: 'I’m your assistant. I’ll talk you through it, {you}.',
 } as const;
 
 // Every line that gets a recording: the template (as the game shows it, "{you}" for the name) and the mood it is said in.
