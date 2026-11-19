@@ -68,6 +68,7 @@ export function SessionIntro({ session, onStart, onBack, onBriefing, standalone 
             <h1 className="shadowed">{title}</h1>
             {unit && !unit.finale && <p className="unit-line"><Icon name="scroll" /> <b>{unitLabel(unit)}</b></p>}
             <p className="teaser">{standalone ? <><b>{pack.headline}</b> {pack.premise}</> : ep.teaser}</p>
+            {!standalone && <p className="ep-story intro">{ep.story}</p>}
             {notice && <p className="notice" role="status">{notice}</p>}
             <div className="row mission-actions">
               <button className="btn primary big go" onClick={onStart}><Icon name="play" /> {resumable ? 'Continue where I left off' : done ? 'Play again' : 'Start the episode'}</button>

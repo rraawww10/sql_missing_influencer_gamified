@@ -146,13 +146,14 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
 
         <section className="section" aria-label="Tonight's timeline">
           <h2 className="shadowed">Tonight, 6 PM to midnight</h2>
-          <p className="sub">Every episode is named after what happens in it. The clock is story time only - there is no real timer.</p>
+          <p className="sub">What happens in each episode, in a few lines. Every episode is open: the story makes most sense in order. The clock is story time only - there is no real timer.</p>
           <ol className="ep-list">
             {EPISODES.map((e, i) => (
               <li key={e.n} className={`surface ep-row rise ${i === 0 ? 'first' : ''}`} style={{ ...themeVars(e.n), '--i': i } as React.CSSProperties}>
                 <span className="ep-n" aria-hidden="true">{e.n}</span>
                 <span className="t">{storyTime(e.n)}</span>
-                <div><h3><span>{e.title}</span>{i === 0 && <span className="pill sun" style={{ marginLeft: 8 }}>start here</span>}</h3><p>{e.teaser}</p></div>
+                <div><h3><span>{e.title}</span>{i === 0 && <span className="pill sun" style={{ marginLeft: 8 }}>start here</span>}</h3><p>{e.teaser}</p>
+                  <p className="ep-story">{e.story}</p></div>
                 <span className="pill wrap learn">{e.learn}</span>
               </li>
             ))}
