@@ -51,6 +51,8 @@ export function chapterOf(beats: Beat[], index: number): { n: number; of: number
   const n = ends.findIndex((e) => index <= e) + 1;
   return { n: n || ends.length, of: ends.length };
 }
+// the chapter check-in is skipped when fewer steps than this are left after the clue (the episode feedback follows)
+export const PULSE_MIN_LEFT = 4;
 const KAAL_ON: Partial<Record<Beat['type'], KaalEvent>> = { note: 'note', task: 'task', activity: 'activity', check: 'check', clue: 'clue', demo: 'demo', hook: 'hook' };
 
 // One runner per session per page load (React StrictMode mounts effects twice in dev)
@@ -162,7 +164,8 @@ export function Player({ session, onExit, onFinished, exitLabel = 'Map' }: { ses
       if (was.type === 'clue') {
         const c = chapterOf(runner.pack.beats, runner.index - 1);
         setCheckpoint(c.n);
-        setPulse({ n: c.n, of: c.of, index: runner.index });
+        // no chapter check-in when the episode ends a few steps later: the episode feedback card comes right after (2026-11-20)
+        if (runner.pack.beats.length - runner.index > PULSE_MIN_LEFT) setPulse({ n: c.n, of: c.of, index: runner.index });
         kaal('pinned', { line: SAY.chapterClosed(c.n, c.of), say: SAY.chapterClosedSay, silent: true });
         setTimeout(() => setCheckpoint(null), 6000);
       }
