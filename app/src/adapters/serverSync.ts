@@ -16,7 +16,7 @@ import { normalizeId, normalizeName } from './identity';
 import { sessionLost, sessionToken, withToken } from './session';
 
 export interface KV { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void }
-interface Item { path: string; body: unknown; key?: string; tries?: number }
+interface Item { path: string; body: unknown; key?: string; tries?: number; token?: string }   // token: the student logged in when it was queued
 
 const MAILBOX_KEY = 'tmi-analytics-mailbox';
 const MAX_ITEMS = 300;
@@ -24,6 +24,7 @@ const MAX_TRIES_ON_REJECT = 1;   // a 4xx means the server will never accept it:
 
 export class Mailbox {
   private sending = false;
+  private again = false;   // a flush asked for while one is running: run once more right after it (2026-11-20 fix: feedback waited a minute, or was lost when the tab closed)
   private timer: ReturnType<typeof setTimeout> | null = null;
   constructor(readonly url: string, private readonly kv: Pick<KV, 'getItem' | 'setItem'>,
               private readonly send: typeof fetch = (...a) => fetch(...a)) {}
@@ -34,7 +35,8 @@ export class Mailbox {
 
   push(path: string, body: unknown, key?: string) {
     const list = key ? this.read().filter((x) => x.key !== key) : this.read();
-    this.write([...list, { path, body, ...(key ? { key } : {}) }]);
+    const token = sessionToken();   // sent with the token of the student who queued it, even if someone else logs in on this browser later
+    this.write([...list, { path, body, ...(key ? { key } : {}), ...(token ? { token } : {}) }]);
   }
   // send soon (several pushes in a row become one flush)
   later(ms = 3000) {
@@ -43,22 +45,30 @@ export class Mailbox {
   }
 
   async flush(opts: { keepalive?: boolean } = {}): Promise<void> {
-    if (this.sending) return;
+    if (this.sending) { this.again = true; return; }
     this.sending = true;
+    this.again = false;
     try {
       for (const item of this.read()) {
         let res: Response;
         try {
           res = await this.send(`${this.url}${item.path}`, { method: 'POST', headers: { 'content-type': 'text/plain' },   // no CORS preflight
-            body: JSON.stringify(withToken(item.body as object)), keepalive: opts.keepalive && JSON.stringify(item.body).length < 60_000 });
+            body: JSON.stringify(item.token ? { ...(item.body as object), token: item.token } : withToken(item.body as object)), keepalive: opts.keepalive && JSON.stringify(item.body).length < 60_000 });
         } catch { return; }                                   // offline: keep everything, retry later
         if (res.status >= 500 || res.status === 429) return;  // server trouble: retry later
-        if (res.status === 401) { sessionLost(); return; }    // not logged in any more: keep it for after the next log-in
+        if (res.status === 401) {
+          // queued by another student on this browser whose session has ended: it can never be sent, drop it and go on
+          if (item.token && sessionToken() && item.token !== sessionToken()) { this.write(this.read().filter((x) => !(x.path === item.path && JSON.stringify(x.body) === JSON.stringify(item.body)))); continue; }
+          sessionLost(); return;                              // not logged in any more: keep it for after the next log-in
+        }
         const same = (x: Item) => x.path === item.path && JSON.stringify(x.body) === JSON.stringify(item.body);
         if (res.ok || (item.tries ?? 0) + 1 > MAX_TRIES_ON_REJECT) this.write(this.read().filter((x) => !same(x)));
         else this.write(this.read().map((x) => (same(x) ? { ...x, tries: (x.tries ?? 0) + 1 } : x)));
       }
-    } finally { this.sending = false; }
+    } finally {
+      this.sending = false;
+      if (this.again && this.read().length) void this.flush(opts);
+    }
   }
 }
 

@@ -190,6 +190,35 @@ describe('the session token goes out with everything, and a refused login keeps 
     expect(box.size()).toBe(0);
   });
 
+  it('an item queued by another student is sent with that student\'s token; refused, it is dropped without logging out the one here now', async () => {
+    const seen: (string | undefined)[] = []; let lost = 0;
+    const send = (async (_u: string, init: RequestInit) => { const b = JSON.parse(String(init.body)); seen.push(b.token); return b.token === 'a'.repeat(64) ? json({ ok: true }) : json({ error: 'login required' }, 401); }) as unknown as typeof fetch;
+    onSessionLost(() => { lost++; });
+    const box = new Mailbox('https://a.test', new MapKV(), send);
+    setSessionToken('b'.repeat(64)); box.push('/api/feedback', { user_id: 'lms:NW2', session: 1, rating: 5 });   // old student, session ended
+    setSessionToken('a'.repeat(64)); box.push('/api/feedback', { user_id: 'lms:NW1', session: 1, rating: 7 });   // the student here now
+    await box.flush();
+    expect(seen).toEqual(['b'.repeat(64), 'a'.repeat(64)]);
+    expect(box.size()).toBe(0);
+    expect(lost).toBe(0);
+  });
+
+  it('a flush asked for while one is running runs again right after it (feedback is not left waiting)', async () => {
+    const paths: string[] = []; let release!: () => void;
+    const gate = new Promise<void>((r) => { release = r; });
+    const send = (async (u: string) => { paths.push(u); if (paths.length === 1) await gate; return json({ ok: true }); }) as unknown as typeof fetch;
+    setSessionToken(TOKEN);
+    const box = new Mailbox('https://a.test', new MapKV(), send);
+    box.push('/api/sitting', { op: 'save' });
+    const first = box.flush();
+    box.push('/api/feedback', { user_id: 'lms:NW1', session: 1, rating: 7 });
+    await box.flush();                       // busy: asks for another round
+    release(); await first;
+    await new Promise((r) => setTimeout(r, 0));
+    expect(paths.map((u) => u.split('a.test')[1])).toEqual(['/api/sitting', '/api/feedback']);
+    expect(box.size()).toBe(0);
+  });
+
   it('events carry the token too, and a 401 keeps them in the outbox', async () => {
     const seen: { events: unknown[]; token?: string }[] = [];
     let status = 200, lost = 0;
