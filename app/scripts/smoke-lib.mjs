@@ -79,6 +79,11 @@ export async function seedIdentity(target, who = TEST_STUDENT) {
     try { if (!localStorage.getItem('tmi.identity.v1')) localStorage.setItem('tmi.identity.v1', JSON.stringify({ ...w, at: new Date().toISOString() })); } catch { /* opaque origin */ }
   }, { ...who, email: emailOf(who) });
 }
+// The "How to play" intro opens by itself on a student's first visit to the case map: skip it (e2e-analytics plays it)
+export async function skipIntro(f, ms = 4000) {
+  const skip = f.getByRole('button', { name: /Skip, I'll explore myself/ });
+  try { await skip.waitFor({ timeout: ms }); await skip.click(); } catch { /* no intro on this screen */ }
+}
 export async function signIn(f, who = TEST_STUDENT) {
   await f.getByRole('heading', { name: /Who's on the case tonight/ }).waitFor();
   await f.getByRole('button', { name: /Open the case file/ }).click();                       // empty form: all three errors shown
@@ -89,6 +94,7 @@ export async function signIn(f, who = TEST_STUDENT) {
   await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
   await f.getByLabel('Personal email').fill(emailOf(who).toUpperCase());                     // stored lower-case
   await f.getByRole('button', { name: /Open the case file/ }).click();
+  if (!f.__noSkipIntro) await skipIntro(f);
 }
 // An account build (no password, no email, 2026-11-19): sign up once with name + ID. An empty form is refused first.
 export async function signUp(f, who = TEST_STUDENT) {
@@ -98,12 +104,14 @@ export async function signUp(f, who = TEST_STUDENT) {
   await f.getByLabel('Your name').fill(who.name);
   await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
   await f.getByRole('button', { name: 'Start playing' }).click();
+  if (!f.__noSkipIntro) await skipIntro(f);
 }
 // Later: log in with the NxtWave ID
 export async function logIn(f, who = TEST_STUDENT, with_ = who.id.toLowerCase()) {
   await f.getByRole('heading', { name: /Who's on the case tonight/ }).waitFor();
   await f.getByLabel('NxtWave ID').fill(with_);
   await f.getByRole('button', { name: 'Log in', exact: true }).last().click();               // the tab has the same name: the submit button is the last one
+  if (!f.__noSkipIntro) await skipIntro(f);
 }
 
 // The end-of-episode feedback is required (2026-11-17): fill it in if the solved screen asks for it.

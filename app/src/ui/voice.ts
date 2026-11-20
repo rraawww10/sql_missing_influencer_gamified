@@ -230,6 +230,16 @@ export function speak(text: string, opts: { mood?: string; say?: string; passive
   // Chrome sometimes needs a tick after cancel()
   setTimeout(() => s.speak(u), 60);
 }
+// How long the recorded clip of this line lasts, in seconds (null: no clip, or no Web Audio). The intro video times
+// each scene with it, so the captions and the pictures stay with the voice.
+export async function clipSeconds(text: string): Promise<number | null> {
+  if (!pack || !hasRecordedVoice()) return null;
+  const key = candidateKeys(text, firstName(currentIdentity()) || 'partner').find((k) => pack!.clips[k]);
+  const ac = audioContext();
+  if (!key || !ac) return null;
+  const buf = await bufferOf(ac, pack.clips[key]);
+  return buf?.duration ?? null;
+}
 export function hush() {
   ticket++;
   synth()?.cancel();

@@ -55,7 +55,22 @@ try {
   const errors = [];
   pa.on('pageerror', (e) => errors.push(e.message));
   await pa.goto(`${BASE}/`);
+  pa.__noSkipIntro = true;                                                // this test plays the intro instead of skipping it
   await signUp(pa, STUDENT);                                              // a new student signs up once: name + ID
+  // first visit: the "How to play" intro opens by itself; play it, see the scenes and captions move on, then close it
+  await pa.getByRole('button', { name: 'Play the intro' }).click();
+  await pa.locator('.iv-caption').getByText(/I'm your assistant on this case/).waitFor();
+  if (process.env.E2E_SHOTS) { await pa.waitForTimeout(1500); await pa.locator('.iv-frame').screenshot({ path: `${process.env.E2E_SHOTS}/intro-1.png` }); }
+  await pa.getByRole('button', { name: 'Next scene' }).click();
+  await pa.getByRole('button', { name: 'Next scene' }).click();
+  await pa.locator('.iv-caption').getByText(/This is your case map/).waitFor();
+  if (process.env.E2E_SHOTS) for (const [n, wait] of [[3, 4500], [5, 5000], [8, 3500]]) {
+    if (n > 3) for (let k = 0; k < (n === 5 ? 2 : 3); k++) await pa.getByRole('button', { name: 'Next scene' }).click();
+    await pa.waitForTimeout(wait); await pa.locator('.iv-frame').screenshot({ path: `${process.env.E2E_SHOTS}/intro-${n}.png` });
+  }
+  await pa.getByRole('button', { name: 'Close the intro' }).click();
+  await pa.locator('.iv').waitFor({ state: 'detached' });
+  ok(true, 'first visit: the "How to play" intro opens by itself, plays its scenes with captions, and closes');
   await pa.locator('.who-chip b').getByText(STUDENT.name, { exact: true }).first().waitFor();
   ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) === STUDENT.id, 'start screen: name + NxtWave ID stored (ID upper-cased)');
 
@@ -84,6 +99,12 @@ try {
   ok(true, 'episode 1 solved, end-of-episode feedback sent');
   await pa.goto(`${BASE}/#/`);
   await pa.locator('.badge-wall').getByText('1 pinned').waitFor();
+  ok(await pa.locator('.iv').count() === 0, 'the intro does not open again once seen');
+  await pa.getByRole('button', { name: /How to play/ }).first().click();
+  await pa.getByRole('button', { name: 'Play the intro' }).waitFor();
+  await pa.keyboard.press('Escape');
+  await pa.locator('.iv').waitFor({ state: 'detached' });
+  ok(true, 'the "How to play" button opens the intro again; Esc closes it');
   ok(true, 'case map: the pinned badge is on the badge wall');
   if (process.env.E2E_SHOTS) { await pa.locator('.badge-wall').scrollIntoViewIfNeeded(); await pa.waitForTimeout(500); await pa.locator('.badge-wall').screenshot({ path: `${process.env.E2E_SHOTS}/badge-wall.png` }); }
 

@@ -103,6 +103,20 @@ export const SAY = {
 
 // Every line that gets a recording: the template (as the game shows it, "{you}" for the name) and the mood it is said in.
 // `star` is the missing singer's name from the cast (the Briefing line names her); `ranks` are the ranks one can be promoted to.
+// The intro video ("How to play", ui/intro/IntroVideo.tsx): one line per scene, in order. Numbers are written as words
+// so the recording and the captions say the same thing.
+export const INTRO_VIDEO: { line: string; mood: KaalMood }[] = [
+  { line: "Hi! I'm your assistant on this case. In ninety seconds, I'll show you how it all works.", mood: 'happy' },
+  { line: "Tara Sen, a famous singer, has vanished. Her concert starts at midnight, and her phone is switched off. You're the new intern at the police data cell, and the city's data is your only witness.", mood: 'think' },
+  { line: 'This is your case map. Thirteen episodes take you from six PM to midnight. Every episode is one part of the night, and you can start with any of them.', mood: 'point' },
+  { line: 'Each episode teaches one SQL idea. Read the short learning card, or open the scroll for the full reading material.', mood: 'think' },
+  { line: "Then you write real SQL on the case database. Run your query, and I'll tell you straight away if it's right.", mood: 'happy' },
+  { line: 'Stuck? Open my hint envelopes, one at a time. Each one costs a few points, but never the task.', mood: 'whisper' },
+  { line: "When your query proves something, pin the clue to your Evidence Board. That's how the case comes together.", mood: 'point' },
+  { line: 'Finish an episode to see your score out of a hundred, and win a badge. Get everything right on the first try for Platinum!', mood: 'cheer' },
+  { line: "And if you have a question, tap me any time and ask. Now, let's find Tara. The clock is ticking!", mood: 'happy' },
+];
+
 export function allSpokenLines(star: string, ranks: string[], episodes = Object.keys(TEASE).map(Number)): { template: string; mood: KaalMood }[] {
   const out: { template: string; mood: KaalMood }[] = [];
   for (const e of Object.keys(LINES) as KaalEvent[]) for (const t of LINES[e]) out.push({ template: t, mood: MOOD[e] });
@@ -115,6 +129,7 @@ export function allSpokenLines(star: string, ranks: string[], episodes = Object.
     { template: SAY.evidenceSay, mood: 'think' }, { template: SAY.evidenceEmpty, mood: 'point' },
     { template: SAY.openEpisodeFirst, mood: 'point' }, { template: SAY.notInThisEpisode, mood: 'point' }, { template: SAY.voiceOn, mood: 'idle' });
   for (const r of ranks) out.push({ template: SAY.promoted(r), mood: 'cheer' });
+  for (const v of INTRO_VIDEO) out.push({ template: v.line, mood: v.mood });
   const seen = new Set<string>();
   return out.filter((l) => l.template && !seen.has(l.template) && seen.add(l.template));
 }

@@ -14,3 +14,4 @@
 @import './stages.css';    /* story chat, Learn cards, clues, checks, activities */
 @import './kaal.css';      /* Kaal's figure, corner dock and chat */
 @import './reader.css';    /* the full-screen reading material */
+@import './intro.css';     /* the "How to play" intro video */

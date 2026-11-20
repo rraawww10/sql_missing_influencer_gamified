@@ -1,5 +1,6 @@
 // Case map: tonight's trail from 6 PM to midnight. One round stop per episode; tapping a stop shows that episode
 // in the big panel on top, and the whole page takes its colours. Solved stops get a star, the next one hops, locked ones shake.
+import { IntroVideo, introSeen } from '../intro/IntroVideo';
 import { BADGES, badgeOf, pinnedBadges, setPinned } from '../badges';
 import { Medal } from '../components/Medal';
 import { useEffect, useState } from 'react';
@@ -27,6 +28,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
   const solved = progress?.sessions.filter((s) => s.status === 'completed').length ?? 0;
   const nextUp = progress?.sessions.find((s) => s.status === 'available')?.session;
   const [picked, setPicked] = useState<number | null>(null);
+  const [intro, setIntro] = useState(() => !introSeen());   // the intro video opens by itself on a student's first visit
   const [pins, setPins] = useState<number[]>(() => pinnedBadges());
   useEffect(() => { const on = () => setPins(pinnedBadges()); addEventListener('tmi:badges', on); return () => removeEventListener('tmi:badges', on); }, []);
   const [shake, setShake] = useState<number | null>(null);
@@ -77,6 +79,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
                 {status === 'completed' ? 'Replay this episode' : status === 'available' ? (solved === 0 ? 'Start this episode' : 'Play this episode') : status === 'soon' ? 'Coming soon' : 'Solve the episode before this one'}
               </button>
               <button className={`btn ${solved === 0 ? 'pop' : 'ghost'}`} onClick={onBriefing}><Icon name="flag" /> {solved === 0 ? 'Read the briefing first' : 'Briefing'}</button>
+              <button className="btn ghost" onClick={() => setIntro(true)}><Icon name="play" /> How to play</button>
             </div>
           </div>
           <div className="surface card epcard" key={`c${sel}`}>
@@ -137,6 +140,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
           </div>
         </section>
       </div>
+      {intro && <IntroVideo onClose={() => setIntro(false)} />}
     </div>
   );
 }

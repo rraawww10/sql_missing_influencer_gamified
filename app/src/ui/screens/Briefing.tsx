@@ -1,6 +1,7 @@
 // The briefing: the page before the first episode. What happened, who you are, how the game works,
 // tonight's timeline (every episode by name and story time), the people in the case, points and ranks, house rules.
 // Standalone (deploy/intro) it is its own site; in the team build it is #/intro.
+import { IntroVideo } from '../intro/IntroVideo';
 import { useEffect, useRef, useState } from 'react';
 import type { CastFile } from '../../content/types';
 import { resolveCastText } from '../../content/types';
@@ -59,6 +60,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
   const people = cast ? ['star', 'mentor', 'analyst', 'sister', 'manager', 'rival', 'fan', 'driver', 'organiser'].filter((k) => cast.people[k]).map((k) => ({ key: k, ...cast.people[k],
     role: resolveCastText(cast.people[k].role, cast), bio: cast.people[k].bio ? resolveCastText(cast.people[k].bio!, cast) : '' })) : [];
   const [who, setWho] = useState<string | null>(null);   // the person card opened (tapped)
+  const [intro, setIntro] = useState(false);
   const star = cast?.people.star?.name ?? 'Tara Sen';
   const hometown = cast?.places?.hometown ?? 'Chandpur';
   const mentor = cast?.people.mentor?.name ?? 'Ira Menon';
@@ -101,6 +103,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
             <div className="row">
               {standalone ? readyButton('go') : <button className="btn primary big go" onClick={onStart}><Icon name="play" /> {`Start the first episode: ${EPISODES[0].title}`}</button>}
             </div>
+            <div className="row"><button className="btn ghost" onClick={() => setIntro(true)}><Icon name="play" /> How to play (90-second intro)</button></div>
             <p className="muted small">No SQL needed to start. You learn everything inside the case.</p>
           </div>
           <div className="phone-stack" aria-hidden="true">
@@ -227,6 +230,7 @@ export function Briefing({ onStart, onBack, standalone = false }: Props) {
             : <button className="btn primary big go" onClick={onStart}><Icon name="play" /> Start: {EPISODES[0].title}</button>}
         </section>
       </div>
+      {intro && <IntroVideo onClose={() => setIntro(false)} />}
     </div>
   );
 }
