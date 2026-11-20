@@ -108,6 +108,12 @@ try {
   ok(true, 'case map: the pinned badge is on the badge wall');
   if (process.env.E2E_SHOTS) { await pa.locator('.badge-wall').scrollIntoViewIfNeeded(); await pa.waitForTimeout(500); await pa.locator('.badge-wall').screenshot({ path: `${process.env.E2E_SHOTS}/badge-wall.png` }); }
 
+  // locks: Episode 3 waits for Episode 2; a typed link to it goes back to the case map, which says how to open it
+  await pa.goto(`${BASE}/#/s/3`);
+  await pa.waitForURL(/#\/$/);
+  await pa.getByRole('button', { name: /^Episode 3:.*locked/ }).click();
+  await pa.getByText(/Solve Episode 2 with at least 50% to open this one/).waitFor();
+  ok(true, 'locks: Episode 3 stays locked until Episode 2 is passed; a typed link goes back to the case map');
   const p2 = pack(2);
   const clueAt = p2.beats.findIndex((b) => b.type === 'clue');
   const STOP = new Error('stop');

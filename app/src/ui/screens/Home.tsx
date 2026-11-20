@@ -1,7 +1,8 @@
 // Case map: tonight's trail from 6 PM to midnight. One round stop per episode; tapping a stop shows that episode
 // in the big panel on top, and the whole page takes its colours. Solved stops get a star, the next one hops, locked ones shake.
+// Only Episode 1 starts open; the next opens once this one is solved with PASS_PCT % (engine/progress/derive.ts).
 import { IntroVideo, introSeen } from '../intro/IntroVideo';
-import { BADGES, badgeOf, pinnedBadges, setPinned } from '../badges';
+import { BADGES, badgeOf, pinnedBadges, setPinned, PASS_PCT, passedEpisode, scorePct, EPISODE_MAX } from '../badges';
 import { Medal } from '../components/Medal';
 import { useEffect, useState } from 'react';
 import type { SessionIndexEntry } from '../../content/types';
@@ -26,7 +27,10 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
   const [built, setBuilt] = useState<SessionIndexEntry[]>([]);
   useEffect(() => { loader.index().then(setBuilt).catch(() => setBuilt([])); }, [loader]);
   const solved = progress?.sessions.filter((s) => s.status === 'completed').length ?? 0;
-  const nextUp = progress?.sessions.find((s) => s.status === 'available')?.session;
+  // an episode solved below the pass mark keeps the next one locked: it is the one to replay
+  const belowPass = (n: number) => { const s = progress?.sessions[n - 1]; return !!s && s.status === 'completed' && n < SESSION_COUNT && !passedEpisode(n, s.points); };
+  const retry = progress?.sessions.find((s) => belowPass(s.session) && progress.sessions[s.session]?.status === 'locked')?.session;
+  const nextUp = progress?.sessions.find((s) => s.status === 'available')?.session ?? retry;
   const [picked, setPicked] = useState<number | null>(null);
   const [intro, setIntro] = useState(() => !introSeen());   // the intro video opens by itself on a student's first visit
   const [pins, setPins] = useState<number[]>(() => pinnedBadges());
@@ -48,7 +52,7 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
 
   const ep = episodeOf(sel);
   const b = built.find((x) => x.session === sel);
-  const p = progress?.sessions[sel - 1];
+  const p = progress?.sessions[sel - 1], p0 = progress?.sessions[sel - 2];
   const status = statusOf(sel);
   const playable = status === 'available' || status === 'completed';
 
@@ -73,10 +77,14 @@ export function Home({ onOpen, onEvidence, onBriefing }: { onOpen(n: number): vo
             </div>
             <h1 className="shadowed">{b?.title ?? ep.title}</h1>
             <p className="teaser">{ep.teaser}</p>
+            {status === 'locked' && sel > 1 && <p className="locknote"><Icon name="lock" /> {statusOf(sel - 1) === 'completed'
+              ? `You scored ${scorePct(p0?.points ?? 0, EPISODE_MAX[sel - 2])}% in Episode ${sel - 1}. Replay it and score at least ${PASS_PCT}% to open this one.`
+              : `Solve Episode ${sel - 1} with at least ${PASS_PCT}% to open this one.`}</p>}
+            {belowPass(sel) && progress?.sessions[sel]?.status === 'locked' && <p className="locknote"><Icon name="lock" /> You scored {scorePct(p?.points ?? 0, EPISODE_MAX[sel - 1])}%. Score at least {PASS_PCT}% to open Episode {sel + 1}. Replay it; your best try counts.</p>}
             <div className="row">
               <button className={`btn primary big ${status === 'available' ? 'go' : ''}`} disabled={!playable} onClick={() => onOpen(sel)}>
                 {playable && <Icon name="play" />}
-                {status === 'completed' ? 'Replay this episode' : status === 'available' ? (solved === 0 ? 'Start this episode' : 'Play this episode') : status === 'soon' ? 'Coming soon' : 'Solve the episode before this one'}
+                {status === 'completed' ? 'Replay this episode' : status === 'available' ? (solved === 0 ? 'Start this episode' : 'Play this episode') : status === 'soon' ? 'Coming soon' : `Pass Episode ${sel - 1} to open`}
               </button>
               <button className={`btn ${solved === 0 ? 'pop' : 'ghost'}`} onClick={onBriefing}><Icon name="flag" /> {solved === 0 ? 'Read the briefing first' : 'Briefing'}</button>
               <button className="btn ghost" onClick={() => setIntro(true)}><Icon name="play" /> How to play</button>

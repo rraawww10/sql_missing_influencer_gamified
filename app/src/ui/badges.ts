@@ -5,12 +5,11 @@
 // Badge tier by score: Platinum 100 % (flawless) · Gold 90 %+ · Silver 70 %+ · Bronze for solving the episode.
 // Each episode has its own badge name; a student can pin earned badges to the badge wall on the case map (kept on this
 // device). The dashboard computes the same score on the server (analytics/lib.mjs `episodeScores`).
-import { POINTS } from '../engine/progress/derive';
+import { POINTS, EPISODE_MAX, scorePct } from '../engine/progress/derive';
 import { currentIdentity } from '../adapters/identity';
 import type { IconName } from './design/Icon';
 
-// most points each episode can give (checked against the packs by badges.test.ts)
-export const EPISODE_MAX = [21, 200, 149, 101, 141, 49, 149, 121, 135, 82, 100, 160, 80];
+export { EPISODE_MAX, scorePct, PASS_PCT, passedEpisode } from '../engine/progress/derive';
 export const GAME_MAX = EPISODE_MAX.reduce((a, b) => a + b, 0);
 
 // the same weights as sittingPoints(): a task's best is 10 + the first-try bonus; a demo counts as an activity done first time
@@ -19,7 +18,6 @@ export function maxPoints(beats: { type: string }[]): number {
     check: POINTS.checkCorrect, clue: POINTS.cluePinned };
   return beats.reduce((a, b) => a + (W[b.type] ?? 0), 0);
 }
-export const scorePct = (points: number, max: number) => (max > 0 ? Math.min(100, Math.round((points / max) * 100)) : 0);
 
 export type Tier = 'platinum' | 'gold' | 'silver' | 'bronze';
 export const TIERS: { id: Tier; name: string; min: number; line: string }[] = [

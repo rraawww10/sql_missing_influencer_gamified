@@ -19,7 +19,7 @@
 // Text rules for every reply: short simple English in Kaal's voice, 1 to 4 short sentences, hyphens (never em dashes),
 // `backticks` only around SQL keywords, no Hindi.
 import type { KaalMood } from '../lines';
-import { POINTS, RANKS, SESSION_COUNT } from '../../../engine/progress/derive';
+import { POINTS, RANKS, SESSION_COUNT, PASS_PCT } from '../../../engine/progress/derive';
 import { MAX_ACTIVITY_TRIES } from '../../../engine/runner/sessionRunner';
 import { EPISODES } from '../../episodes';
 import { storyTime } from '../../speakers';
@@ -575,7 +575,7 @@ const TOPICS: Topic[] = [
     reply: () => say(`On the episode solved screen there is a short feedback card: a rating, how it felt and how the SQL was. Send it and “${UI.next}” unlocks. Writing a suggestion is optional. It all goes straight to the team that builds this case.`, 'think',
       { chips: ['Why is the next episode locked?', 'How do I get promoted?'] }) },
   { id: 'nextlocked', rules: ['next episode lock|not +1', 'episode lock +1', 'lock +1', 'episode not open +1'],
-    reply: () => say(`Two things can keep an episode locked. On the solved screen, send the feedback card first - then “${UI.next}” unlocks. On the case map every episode is open right now - you can start any of them, though the story makes most sense in order.`, 'think',
+    reply: () => say(`Two things can keep an episode locked. On the solved screen, send the feedback card first - then “${UI.next}” unlocks. On the case map, an episode opens when you solve the one before it with at least ${PASS_PCT}% - replay it to raise your score, your best try counts.`, 'think',
       { chips: ['What is the feedback card?', 'What does each episode teach?'] }) },
 
   // ---- the story (no spoilers: only what the briefing tells)
@@ -632,7 +632,7 @@ const TOPICS: Topic[] = [
     reply: () => say('Beginner SQL, from the ground up: tables and `SELECT` first, then `WHERE`, `GROUP BY` and `HAVING`, and later joins, views and subqueries. Every episode teaches a few tools. Ask me about one, like “What does the 5th episode teach?”', 'think',
       { action: ACT.briefing, chips: ['What does the 5th episode teach?', 'Which episode teaches joins?'] }) },
   { id: 'episodes', rules: ['episode +1', 'howmany episode|level|stage +1', 'level|stage howmany|all|list'],
-    reply: () => say(`There are ${EPISODES.length} episodes - one night, from ${storyTime(1)} to midnight. All of them are open, and the story makes most sense in order.\nAsk me about any of them, like “What does the 5th episode teach?”`, 'think',
+    reply: () => say(`There are ${EPISODES.length} episodes - one night, from ${storyTime(1)} to midnight. Episode 1 is open first. Each next one opens when you solve the one before it with at least ${PASS_PCT}%.\nAsk me about any of them, like “What does the 5th episode teach?”`, 'think',
       { action: ACT.map, chips: ['What does the 5th episode teach?', 'How do I get promoted?'] }) },
 
   { id: 'map', rules: ['map +1', 'trail +1', 'episode how open|start|choose|pick|play +1', 'star mean|what stop|episode'],

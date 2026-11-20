@@ -1,5 +1,5 @@
 // Episode solved: confetti, points that count up, the rank bar, new clues, the feedback card (required), and where to go next.
-import { badgeOf, nextTier, pinnedBadges, setPinned } from '../badges';
+import { badgeOf, nextTier, pinnedBadges, setPinned, PASS_PCT } from '../badges';
 import { Medal } from '../components/Medal';
 import { useCallback, useEffect, useState } from 'react';
 import { useProgress } from '../useProgress';
@@ -71,6 +71,8 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
 
   useEffect(() => { const t = setTimeout(() => { sfx('solved'); kaal('solved', { silent: true, mute: true, line: '' }); }, 300); return () => clearTimeout(t); }, []);
   const multiPart = !!unit && unit.parts > 1;
+  // below the pass mark the next episode stays locked: replay this one (the best try counts)
+  const short = !!badge && !standalone && badge.pct < PASS_PCT && session < EPISODE_COUNT;
   const nextN = session + 1 <= EPISODE_COUNT ? session + 1 : null;
   // how far along the rank ladder: from the current rank's threshold to the next one's
   const solvedN = solvedCount(progress);
@@ -139,9 +141,11 @@ export function SessionDone({ session, onNext, onMap, onReset, hasNext, standalo
             <FeedbackCard session={session} onDone={markFb} />
             <div className="surface card next-card">
               {!fbDone && <p className="locknote"><Icon name="lock" /> Send your feedback to unlock the next episode.</p>}
+              {short && <p className="locknote"><Icon name="lock" /> You need at least {PASS_PCT}% to open the next episode. You scored {badge!.pct}%. Play this episode again; your best try counts.</p>}
               <div className="row">
-                {hasNext && <button className="btn primary big go" disabled={!fbDone} onClick={onNext}>Next episode: {episodeOf(session + 1).title} <Icon name="right" /></button>}
-                <button className={`btn ${hasNext ? 'ghost' : 'primary big'}`} disabled={!fbDone} onClick={onMap}>{standalone ? 'See the Evidence Board' : 'Back to the case map'}</button>
+                {short && <button className="btn primary big go" disabled={!fbDone} onClick={onReset}>Play this episode again <Icon name="right" /></button>}
+                {hasNext && !short && <button className="btn primary big go" disabled={!fbDone} onClick={onNext}>Next episode: {episodeOf(session + 1).title} <Icon name="right" /></button>}
+                <button className={`btn ${hasNext || short ? 'ghost' : 'primary big'}`} disabled={!fbDone} onClick={onMap}>{standalone ? 'See the Evidence Board' : 'Back to the case map'}</button>
               </div>
               {nextN && !multiPart && (
                 <div className="next-lead">

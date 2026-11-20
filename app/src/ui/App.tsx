@@ -9,6 +9,7 @@ import { SessionIntro } from './screens/SessionIntro';
 import { SessionDone } from './screens/SessionDone';
 import { EvidenceBoard } from './screens/EvidenceBoard';
 import { useServices } from './services';
+import { deriveProgress } from '../engine/progress/derive';
 import { ThemeScope } from './components/ThemeScope';
 import { KaalDock } from './kaal/Kaal';
 import { onDockAction, setDockContext } from './kaal/dock';
@@ -32,7 +33,7 @@ function parse(hash: string): Route {
 export function App() {
   const [route, setRoute] = useState<Route>(() => parse(location.hash));
   const [built, setBuilt] = useState<number[]>([]);
-  const { loader } = useServices();
+  const { loader, auth, store } = useServices();
   useEffect(() => {
     const on = () => { setRoute(parse(location.hash)); window.scrollTo(0, 0); };
     addEventListener('hashchange', on);
@@ -40,6 +41,16 @@ export function App() {
   }, []);
   useEffect(() => { loader.index().then((i) => setBuilt(i.map((e) => e.session))).catch(() => {}); }, [loader]);
   const go = (hash: string) => { location.hash = hash; };
+  // a locked episode can't be opened from a typed or old link: back to the case map, which says how to open it
+  // (read fresh on every route change: the episode before may have just been passed)
+  useEffect(() => {
+    if (route.name !== 'intro' && route.name !== 'play') return;
+    let live = true;
+    auth.currentUser().then((u) => store.list(u.id)).then((ev) => {
+      if (live && deriveProgress(ev).sessions[route.n - 1]?.status === 'locked') go('#/');
+    }).catch(() => {});
+    return () => { live = false; };
+  }, [route, auth, store]);
 
   // Kaal's dock: which screen is behind him (the player adds the step itself), and where his chat can send the student
   useEffect(() => {

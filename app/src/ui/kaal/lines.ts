@@ -108,7 +108,7 @@ export const SAY = {
 export const INTRO_VIDEO: { line: string; mood: KaalMood }[] = [
   { line: "Hi! I'm your assistant on this case. In ninety seconds, I'll show you how it all works.", mood: 'happy' },
   { line: "Tara Sen, a famous singer, has vanished. Her concert starts at midnight, and her phone is switched off. You're the new intern at the police data cell, and the city's data is your only witness.", mood: 'think' },
-  { line: 'This is your case map. Thirteen episodes take you from six PM to midnight. Every episode is one part of the night, and you can start with any of them.', mood: 'point' },
+  { line: 'This is your case map. Thirteen episodes take you from six PM to midnight. Every episode is one part of the night. Start with the first one, and each next episode opens when you pass the one before it.', mood: 'point' },
   { line: 'Each episode teaches one SQL idea. Read the short learning card, or open the scroll for the full reading material.', mood: 'think' },
   { line: "Then you write real SQL on the case database. Run your query, and I'll tell you straight away if it's right.", mood: 'happy' },
   { line: 'Stuck? Open my hint envelopes, one at a time. Each one costs a few points, but never the task.', mood: 'whisper' },

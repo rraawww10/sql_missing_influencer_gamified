@@ -28,6 +28,8 @@ installButtonFx();
 // into each standalone site; in dev, ?intro=1, ?session=3 or ?unit=11 do the same.
 const meta = (name: string) => document.querySelector(`meta[name="${name}"]`)?.getAttribute('content');
 const query = new URLSearchParams(location.search);
+// team testing: ?unlock opens every episode on this browser, ?lock closes them again (engine/progress/derive.ts)
+try { if (query.has('unlock')) localStorage.setItem('tmi.unlock-all', '1'); if (query.has('lock')) localStorage.removeItem('tmi.unlock-all'); } catch { /* storage blocked */ }
 const SESSION = Number(import.meta.env.VITE_SESSION ?? meta('tmi-session') ?? query.get('session') ?? 0);
 const UNIT = Number(import.meta.env.VITE_UNIT ?? meta('tmi-unit') ?? query.get('unit') ?? 0);
 const INTRO = Number(import.meta.env.VITE_INTRO ?? meta('tmi-intro') ?? query.get('intro') ?? 0);

@@ -28,9 +28,17 @@ export const RANKS = [
 ] as const;
 
 export type SessionStatus = 'locked' | 'available' | 'completed';
-// 2026-11-19, the team's call for the first rollout: every episode can be opened in any order (no locks).
-// Set back to false to make each episode wait for the one before it.
-export const ALL_EPISODES_OPEN = true;
+// 2026-11-20, the team's call: only Episode 1 is open. Each next episode opens once the one before it is solved with
+// at least PASS_PCT % of its points (best try counts; a student below it replays the episode). true = every episode open.
+export const ALL_EPISODES_OPEN = false;
+// team testing: open the game once with ?unlock in the address (?lock undoes it) and every episode is open on that browser
+const openForTesting = () => { try { return globalThis.localStorage?.getItem('tmi.unlock-all') === '1'; } catch { return false; } };
+export const PASS_PCT = 50;
+// most points each episode can give (checked against the packs by ui/badges.test.ts)
+export const EPISODE_MAX = [21, 200, 149, 101, 141, 49, 149, 121, 135, 82, 100, 160, 80];
+export const scorePct = (points: number, max: number) => (max > 0 ? Math.min(100, Math.round((points / max) * 100)) : 0);
+// did this solved episode reach the pass mark (so the next one opens)?
+export const passedEpisode = (session: number, points: number) => scorePct(points, EPISODE_MAX[session - 1] ?? 0) >= PASS_PCT;
 
 export interface SessionProgress {
   session: number;
@@ -151,7 +159,8 @@ export function deriveProgress(all: ProgressEvent[]): Progress {
     } else if (allParts) {
       sessions.push({ session: n, status: 'completed', ...fromParts!, ...partInfo });
     } else {
-      const unlocked = ALL_EPISODES_OPEN || n === 1 || sessions[n - 2]?.status === 'completed' || parts.length > 0;   // a unit played on its own unlocks its session
+      const prev = sessions[n - 2];
+      const unlocked = ALL_EPISODES_OPEN || openForTesting() || n === 1 || (prev?.status === 'completed' && passedEpisode(n - 1, prev.points)) || parts.length > 0;   // a unit played on its own unlocks its session
       sessions.push({ session: n, status: unlocked ? 'available' : 'locked', points: fromParts?.points ?? 0, hintsUsed: 0, trapsFound: 0, completedAt: null, ...partInfo });
     }
   }

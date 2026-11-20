@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { deriveProgress, sittingPoints, POINTS } from './derive';
+import { deriveProgress, sittingPoints, POINTS, PASS_PCT, EPISODE_MAX } from './derive';
 import type { ProgressEvent, Verb } from '../../ports/progress';
 
 let n = 0;
@@ -56,7 +56,7 @@ describe('deriveProgress', () => {
     p = deriveProgress([...two, u('u12', 12, 3, 'clue_pinned', '2026-12-01T10:04:00Z', { title: 'c', body: 'b' }), done(12, 3, '2026-12-01T10:05:00Z')]);
     expect(p.sessions[2]).toMatchObject({ status: 'completed', points: 25, partsDone: 3 });
     expect(p.evidence.map((c) => c.clue_id)).toEqual(['x']);
-    expect(p.sessions[3].status).toBe('available');
+    expect(p.sessions[3].status).toBe('locked');   // 25 of 149 points is below the pass mark
     // reset of one unit
     p = deriveProgress([...two, done(12, 3, '2026-12-01T10:05:00Z'), { ...u('r', 11, 2, 'session_reset', '2026-12-01T11:00:00Z'), object: { type: 'session', id: 'S3', session: 3, unit: 11 } }]);
     expect(p.units.map((x) => x.unit)).toEqual([10, 12]);
@@ -64,6 +64,20 @@ describe('deriveProgress', () => {
     // a whole-session sitting also counts, and never double-counts the parts
     p = deriveProgress([...two, ev('whole', 3, 'task_passed', { attempts: 1, max_hint_tier: 0 }), ev('whole', 3, 'session_completed')]);
     expect(p.sessions[2]).toMatchObject({ status: 'completed', points: 13, partsDone: 2 });
+  });
+
+  it('locks: only Episode 1 is open; the next opens when the one before is solved with the pass mark (best try counts)', () => {
+    const task = (s: string, session: number, tier: number) => ev(s, session, 'task_passed', { attempts: 1, max_hint_tier: tier });
+    expect(deriveProgress([]).sessions.map((s) => s.status)).toEqual(['available', ...Array(12).fill('locked')]);
+    // Episode 1: max 21; one task with every hint = 3 points (14 %) -> solved but below the pass mark
+    let p = deriveProgress([task('a', 1, 3), ev('a', 1, 'session_completed')]);
+    expect(p.sessions[0].status).toBe('completed');
+    expect(p.sessions[1].status).toBe('locked');
+    // a replay at 13 points (62 %) passes; the best try counts
+    p = deriveProgress([task('a', 1, 3), ev('a', 1, 'session_completed'), task('b', 1, 0), ev('b', 1, 'session_completed')]);
+    expect(13 / EPISODE_MAX[0] * 100).toBeGreaterThanOrEqual(PASS_PCT);
+    expect(p.sessions[1].status).toBe('available');
+    expect(p.sessions[2].status).toBe('locked');
   });
 
   it('ranks by completed sessions', () => {
