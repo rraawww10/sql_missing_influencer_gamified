@@ -13,7 +13,7 @@
 // Everything sent carries the logged-in student's token (session.ts); a "login required" answer keeps the item queued.
 import type { ProgressEvent, ProgressStore } from '../ports/progress';
 import { normalizeId, normalizeName } from './identity';
-import { sessionLost, sessionToken, withToken } from './session';
+import { isOtherStudent, sessionLost, sessionToken, withToken } from './session';
 
 export interface KV { getItem(k: string): string | null; setItem(k: string, v: string): void; removeItem(k: string): void }
 interface Item { path: string; body: unknown; key?: string; tries?: number; token?: string }   // token: the student logged in when it was queued
@@ -58,7 +58,7 @@ export class Mailbox {
         if (res.status >= 500 || res.status === 429) return;  // server trouble: retry later
         if (res.status === 401) {
           // queued by another student on this browser whose session has ended: it can never be sent, drop it and go on
-          if (item.token && sessionToken() && item.token !== sessionToken()) { this.write(this.read().filter((x) => !(x.path === item.path && JSON.stringify(x.body) === JSON.stringify(item.body)))); continue; }
+          if ((item.token && sessionToken() && item.token !== sessionToken()) || isOtherStudent((item.body as { user_id?: unknown })?.user_id)) { this.write(this.read().filter((x) => !(x.path === item.path && JSON.stringify(x.body) === JSON.stringify(item.body)))); continue; }
           sessionLost(); return;                              // not logged in any more: keep it for after the next log-in
         }
         const same = (x: Item) => x.path === item.path && JSON.stringify(x.body) === JSON.stringify(item.body);

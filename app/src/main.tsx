@@ -16,7 +16,7 @@ import { EmbedProgressStore, listenForRestore } from './ui/embed';
 import { Outbox, RemoteProgressStore, startHeartbeat } from './adapters/remoteSync';
 import { IdentityAuth, clearIdentity, loadIdentity, loadSavedIdentity, saveIdentity } from './adapters/identity';
 import { accountApi } from './adapters/account';
-import { onSessionLost, setSessionToken, setSignOut } from './adapters/session';
+import { onSessionLost, setCurrentStudent, setSessionToken, setSignOut } from './adapters/session';
 import { Mailbox, SyncedSittingKV, recoverByEmail, restoreFromServer, setMailbox } from './adapters/serverSync';
 import { IdentityGate, type GateDeps } from './ui/identity/IdentityGate';
 import { installButtonFx } from './ui/fx';
@@ -62,6 +62,8 @@ const accounts = ANALYTICS_URL ? accountApi(ANALYTICS_URL) : null;
 // was reset, or this ID got an account on another device), the student is sent back to the log-in screen once;
 // what was queued stays queued and goes out after they log in.
 setSessionToken(loadSavedIdentity()?.token ?? null);
+// whose leftovers are whose: another student's queued items are dropped on a 401, not taken as "logged out"
+setCurrentStudent(() => { try { return loadSavedIdentity()?.id ?? null; } catch { return null; } });
 onSessionLost(() => {
   const saved = loadSavedIdentity();
   if (saved) { const { token: _gone, ...rest } = saved; saveIdentity({ ...rest, email: rest.email ?? '' }); }

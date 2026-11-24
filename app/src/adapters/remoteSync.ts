@@ -8,7 +8,7 @@
 //                        queues a 'heartbeat' with the seconds played and the beat the learner was on. Heartbeats only go
 //                        to the server - they are not part of the local event log, so points and progress are unchanged.
 import type { ProgressEvent, ProgressStore } from '../ports/progress';
-import { sessionLost, withToken } from './session';
+import { isOtherStudent, sessionLost, withToken } from './session';
 
 export interface RemoteEvent extends Omit<ProgressEvent, 'verb'> { verb: ProgressEvent['verb'] | 'heartbeat' }
 
@@ -39,13 +39,23 @@ export class Outbox {
     this.sending = true;
     try {
       for (;;) {
-        const batch = this.read().slice(0, BATCH);
-        if (!batch.length) return;
+        const all = this.read();
+        if (!all.length) return;
+        // one student per batch, so another student's leftovers never block (or log out) the one playing now
+        const first = all[0].user_id;
+        const batch = all.filter((e) => e.user_id === first).slice(0, BATCH);
         const res = await this.send(`${this.url}/api/events`, {
           method: 'POST', headers: { 'content-type': 'text/plain' },   // text/plain: no CORS preflight
           body: JSON.stringify(withToken({ events: batch })), keepalive: opts.keepalive,
         });
-        if (res.status === 401) { sessionLost(); return; }   // not logged in any more: the events wait for the next log-in
+        if (res.status === 401) {
+          if (isOtherStudent(first)) {                        // an earlier student's leftovers on this browser: cannot be sent, drop them
+            const gone = new Set(batch.map((e) => e.event_id));
+            this.write(this.read().filter((e) => !gone.has(e.event_id)));
+            continue;
+          }
+          sessionLost(); return;                              // not logged in any more: the events wait for the next log-in
+        }
         if (!res.ok) return;
         const sent = new Set(batch.map((e) => e.event_id));
         this.write(this.read().filter((e) => !sent.has(e.event_id)));

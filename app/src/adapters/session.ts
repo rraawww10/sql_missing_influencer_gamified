@@ -14,6 +14,17 @@ export function sessionLost() {
   lost = true; token = null;
   onLost?.();
 }
+// Is this queued item another student's (a game user id "lms:<ID>" that is not the one logged in now)? Such leftovers
+// from an earlier log-in on this browser can never be sent with this student's token: the server answers 401 and
+// they must be dropped, NOT treated as "you are logged out" (2026-11-24 fix: a desktop with an old account's
+// leftovers threw the new student back to the log-in screen every few seconds).
+let me: (() => string | null) | null = null;
+export function setCurrentStudent(fn: () => string | null) { me = fn; }
+export function isOtherStudent(userId: unknown): boolean {
+  const id = me?.();
+  return typeof userId === 'string' && userId.startsWith('lms:') && !!id && userId.toUpperCase() !== `lms:${id}`.toUpperCase();
+}
+
 // adds the token to a JSON body that goes to the server (nothing added when nobody is logged in)
 export const withToken = <T extends object>(body: T): T & { token?: string } => (token ? { ...body, token } : body);
 

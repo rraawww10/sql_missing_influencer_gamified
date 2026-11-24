@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
+import { onSessionLost, setCurrentStudent, setSessionToken } from './session';
 import { Outbox, RemoteProgressStore, startHeartbeat, type RemoteEvent } from './remoteSync';
 import { MemoryProgressStore } from './memoryProgressStore';
 import type { ProgressEvent } from '../ports/progress';
@@ -93,5 +94,38 @@ describe('startHeartbeat', () => {
     e.doc.visibilityState = 'hidden'; e.fire('visibilitychange');
     const queued = (box as unknown as { read(): RemoteEvent[] }).read();
     expect(queued[0]).toMatchObject({ verb: 'heartbeat', result: { seconds: 10 } });
+  });
+});
+
+describe('Outbox: another student\'s leftovers on this browser (2026-11-24 fix)', () => {
+  afterEach(() => { setCurrentStudent(() => null); setSessionToken(null); onSessionLost(() => {}); });
+  it('drops the old student\'s events the server refuses, sends the new student\'s, and does NOT log the new student out', async () => {
+    setCurrentStudent(() => 'NEW.STUDENT@GMAIL.COM');
+    setSessionToken('t'.repeat(64));
+    let lost = 0; onSessionLost(() => { lost++; });
+    const got: RemoteEvent[] = [];
+    const send = (async (_u: string, init: RequestInit) => {
+      const events = JSON.parse(init.body as string).events as RemoteEvent[];
+      if (events.some((e) => e.user_id !== 'lms:NEW.STUDENT@GMAIL.COM')) return new Response('', { status: 401 });
+      got.push(...events); return new Response('{}', { status: 200 });
+    }) as unknown as typeof fetch;
+    const kv = new MapKV(), box = new Outbox('https://a.test', kv, send);
+    box.push({ ...ev('old1'), user_id: 'lms:OLD.ACCOUNT@NXTWAVE.CO.IN' });
+    box.push({ ...ev('new1'), user_id: 'lms:NEW.STUDENT@GMAIL.COM' });
+    box.push({ ...ev('old2'), user_id: 'lms:OLD.ACCOUNT@NXTWAVE.CO.IN' });
+    await box.flush();
+    expect(lost).toBe(0);
+    expect(got.map((e) => e.event_id)).toEqual(['new1']);
+    expect(box.size()).toBe(0);
+  });
+  it('a 401 on the logged-in student\'s own events still means "log in again" (they stay queued)', async () => {
+    setCurrentStudent(() => 'NEW.STUDENT@GMAIL.COM');
+    let lost = 0; onSessionLost(() => { lost++; });
+    const send = (async () => new Response('', { status: 401 })) as unknown as typeof fetch;
+    const box = new Outbox('https://a.test', new MapKV(), send);
+    box.push({ ...ev('n1'), user_id: 'lms:NEW.STUDENT@GMAIL.COM' });
+    await box.flush();
+    expect(lost).toBe(1);
+    expect(box.size()).toBe(1);
   });
 });

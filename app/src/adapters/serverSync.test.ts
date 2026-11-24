@@ -4,7 +4,7 @@ import { IdentityAuth, loadIdentity, loadSavedIdentity, normalizeEmail, normaliz
 import { MemoryProgressStore } from './memoryProgressStore';
 import { Outbox } from './remoteSync';
 import { accountApi } from './account';
-import { onSessionLost, sessionToken, setSessionToken } from './session';
+import { onSessionLost, sessionToken, setCurrentStudent, setSessionToken } from './session';
 import { GuestAuth } from './guestAuth';
 import { deriveProgress } from '../engine/progress/derive';
 import type { ProgressEvent } from '../ports/progress';
@@ -199,6 +199,22 @@ describe('the session token goes out with everything, and a refused login keeps 
     setSessionToken('a'.repeat(64)); box.push('/api/feedback', { user_id: 'lms:NW1', session: 1, rating: 7 });   // the student here now
     await box.flush();
     expect(seen).toEqual(['b'.repeat(64), 'a'.repeat(64)]);
+    expect(box.size()).toBe(0);
+    expect(lost).toBe(0);
+  });
+
+  it('an old item with no token from another student (queued before tokens were kept) is dropped, not taken as "logged out"', async () => {
+    let lost = 0; const sent: string[] = [];
+    const send = (async (_u: string, init: RequestInit) => { const b = JSON.parse(String(init.body)); sent.push(b.user_id); return b.user_id === 'lms:NW1' ? json({ ok: true }) : json({ error: 'login required' }, 401); }) as unknown as typeof fetch;
+    onSessionLost(() => { lost++; });
+    const kv = new MapKV();
+    kv.setItem('tmi-analytics-mailbox', JSON.stringify([{ path: '/api/feedback', body: { user_id: 'lms:OLD@MAIL.COM', session: 1, rating: 5 } }]));
+    setCurrentStudent(() => 'NW1'); setSessionToken('a'.repeat(64));
+    const box = new Mailbox('https://a.test', kv, send);
+    box.push('/api/feedback', { user_id: 'lms:NW1', session: 1, rating: 7 });
+    await box.flush();
+    setCurrentStudent(() => null);
+    expect(sent).toEqual(['lms:OLD@MAIL.COM', 'lms:NW1']);
     expect(box.size()).toBe(0);
     expect(lost).toBe(0);
   });
