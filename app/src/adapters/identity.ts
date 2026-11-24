@@ -27,6 +27,20 @@ export function normalizeName(v: string): string | null {
   return n.length >= 2 && n.length <= 60 && /^[\p{L}\p{M}][\p{L}\p{M} .'-]*$/u.test(n) ? n : null;
 }
 
+// Students sign up with name + email only (2026-11-24). The server keys every student by an ID, so the ID is made from
+// the email: upper-cased, any character the ID rule does not allow becomes "_", and a rare email longer than 64
+// characters is cut and given a short hash. The same email always gives the same ID, so signing up twice just logs in.
+export function idFromEmail(email: string): string {
+  let id = email.trim().toUpperCase().replace(/[^A-Z0-9._@-]/g, '_');
+  if (!/^[A-Z0-9]/.test(id)) id = `E${id}`;
+  if (id.length > 64) {
+    let h = 0x811c9dc5;
+    for (const ch of id) h = Math.imul(h ^ ch.charCodeAt(0), 0x01000193) >>> 0;
+    id = `${id.slice(0, 55)}-${h.toString(16).toUpperCase().padStart(8, '0')}`;
+  }
+  return id;
+}
+
 // Trimmed and lower-cased; something@domain.tld with no spaces, at most 120 characters. Same rule as the server.
 export function normalizeEmail(v: string): string | null {
   const e = v.trim().toLowerCase();

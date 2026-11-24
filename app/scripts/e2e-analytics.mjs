@@ -23,7 +23,7 @@ const solutions = (n) => JSON.parse(fs.readFileSync(path.join(CONTENT, `solution
 
 const API_PORT = 8799, WEB_PORT = 4181;
 const API = `http://localhost:${API_PORT}`, BASE = `http://localhost:${WEB_PORT}`;
-const STUDENT = { id: 'NW-E2E-1', name: 'Asha Verma', email: 'asha.verma@example.com' };
+const STUDENT = { id: 'ASHA.VERMA@EXAMPLE.COM', name: 'Asha Verma', email: 'asha.verma@example.com' };   // sign up is name + email; the ID is made from the email
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'tmi-e2e-'));
 const children = [];
 const start = (cmd, args, opts, ready) => new Promise((resolve, reject) => {
@@ -56,7 +56,7 @@ try {
   pa.on('pageerror', (e) => errors.push(e.message));
   await pa.goto(`${BASE}/`);
   pa.__noSkipIntro = true;                                                // this test plays the intro instead of skipping it
-  await signUp(pa, STUDENT);                                              // a new student signs up once: name + ID
+  await signUp(pa, STUDENT);                                              // a new student signs up once: name + email
   // first visit: the "How to play" intro opens by itself; play it, see the scenes and captions move on, then close it
   await pa.getByRole('button', { name: 'Play the intro' }).click();
   await pa.locator('.iv-caption').getByText(/I'm your assistant on this case/).waitFor();
@@ -72,7 +72,7 @@ try {
   await pa.locator('.iv').waitFor({ state: 'detached' });
   ok(true, 'first visit: the "How to play" intro opens by itself, plays its scenes with captions, and closes');
   await pa.locator('.who-chip b').getByText(STUDENT.name, { exact: true }).first().waitFor();
-  ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) === STUDENT.id, 'start screen: name + NxtWave ID stored (ID upper-cased)');
+  ok(await pa.evaluate(() => JSON.parse(localStorage.getItem('tmi.identity.v1')).id) === STUDENT.id, 'start screen: name + email stored (the ID is the upper-cased email)');
 
   await pa.goto(`${BASE}/#/s/1`);
   await pa.getByRole('button', { name: /Start the episode/ }).click();
@@ -146,7 +146,7 @@ try {
   const admin = async (p) => (await fetch(`${API}${p}`, { headers: { cookie } })).json();
   const list = await admin('/api/admin/students?fresh=1');
   const row = list.students.find((s) => s.student_id === STUDENT.id);
-  ok(row && row.name === STUDENT.name && !row.is_guest, 'student listed by NxtWave ID with the typed name');
+  ok(row && row.name === STUDENT.name && !row.is_guest, 'student listed (ID made from the email) with the typed name');
   ok(row.email === STUDENT.email, 'the personal email from sign-up is stored (lower-cased)');
   ok(row.episodes_done === 1 && row.level === 2 && row.beats_done > pack(1).beats.length, `progress: ${row.episodes_done} episode solved, ${row.beats_done} steps done, now on episode ${row.level}`);
   ok(row.seconds > 0, `active time recorded: ${row.seconds} s`);
@@ -175,10 +175,10 @@ try {
   const pb = await b.newPage();
   pb.on('pageerror', (e) => errors.push(e.message));
   await pb.goto(`${BASE}/`);
-  // an unknown ID is sent to Sign up (nothing stored), and the server refuses her history without a login
-  await logIn(pb, STUDENT, 'nw-nobody-99');
-  await pb.getByText(/We don't know nw-nobody-99 yet/).waitFor();
-  ok(await pb.evaluate(() => localStorage.getItem('tmi.identity.v1')) === null, 'an unknown ID goes to Sign up; nothing is stored');
+  // an unknown email is sent to Sign up (nothing stored), and the server refuses her history without a login
+  await logIn(pb, STUDENT, 'nobody.99@example.com');
+  await pb.getByText(/We don't know nobody.99@example.com yet/).waitFor();
+  ok(await pb.evaluate(() => localStorage.getItem('tmi.identity.v1')) === null, 'an unknown email goes to Sign up; nothing is stored');
   const peek = await fetch(`${API}/api/history`, { method: 'POST', body: JSON.stringify({ student_id: STUDENT.id }) });
   ok(peek.status === 401, 'her progress cannot be read from the server without logging in');
   await pb.getByRole('tab', { name: 'Log in' }).click();

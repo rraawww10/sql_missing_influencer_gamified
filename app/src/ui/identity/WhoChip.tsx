@@ -11,17 +11,17 @@ export function WhoChip({ full = false, rank }: { full?: boolean; rank?: string 
   const who = currentIdentity();
   if (!who) return null;
   const sw = async () => {
-    if (!confirm(`Log out? ${who.name} (${who.id}) will be logged out on this computer. Your progress stays saved in your account.`)) return;
+    if (!confirm(`Log out? ${who.name} (${who.email || who.id}) will be logged out on this computer. Your progress stays saved in your account.`)) return;
     await signOut();
     clearIdentity();
     location.reload();
   };
   return (
-    <span className="who-chip" title={`Playing as ${who.name} · NxtWave ID ${who.id}`}>
+    <span className="who-chip" title={`Playing as ${who.name} · ${who.email || who.id}`}>
       <span className="avatar" aria-hidden="true">{initials(who.name)}</span>
       <b>{full ? who.name : who.name.split(' ')[0]}</b>
       {rank && <span className="who-rank hide-phone"><Icon name={rankIcon(rank)} /> {rank}</span>}
-      <span className="who-id hide-phone">{who.id}</span>
+      <span className="who-id hide-phone">{who.email || who.id}</span>
       <button className="linkish" onClick={sw} title="Log out on this computer">Log out</button>
     </span>
   );

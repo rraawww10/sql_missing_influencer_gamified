@@ -69,7 +69,7 @@ export async function playBeats(f, pack, solutions, hooks = {}) {
 // The start screen comes before everything. Browser checks that aren't about it seed an identity before any page script
 // runs (works for iframes too when called on a context); smoke.mjs fills the real form once.
 //   * a build WITHOUT a server asks name + NxtWave ID + email (signIn below)
-//   * a build WITH a server has accounts: signUp once (name + ID + email) and logIn (email or NxtWave ID; no password, no OTP)
+//   * a build WITH a server has accounts: signUp once (name + email; the ID is made from the email) and logIn (email; no password, no OTP)
 // The email is required: an identity seeded without one would stop at the "Add your email" step, so a student given
 // without an email gets one made from their ID.
 export const TEST_STUDENT = { id: 'SMOKE-001', name: 'Smoke Tester', email: 'smoke-001@example.com' };
@@ -96,21 +96,20 @@ export async function signIn(f, who = TEST_STUDENT) {
   await f.getByRole('button', { name: /Open the case file/ }).click();
   if (!f.__noSkipIntro) await skipIntro(f);
 }
-// An account build (no password, no OTP): sign up once with name + ID + any personal email. An empty form is refused first.
+// An account build (no password, no OTP, no NxtWave ID): sign up once with name + any personal email. An empty form is refused first.
 export async function signUp(f, who = TEST_STUDENT) {
   await f.getByRole('tab', { name: 'Sign up' }).click();
   await f.getByRole('button', { name: 'Start playing' }).click();                            // empty form: every error shown
-  for (const msg of [/Please type your name/, /Please type your NxtWave ID/, /Please type your email/]) await f.getByText(msg).waitFor();
+  for (const msg of [/Please type your name/, /Please type your email/]) await f.getByText(msg).waitFor();
   await f.getByLabel('Your name').fill(who.name);
-  await f.getByLabel('NxtWave ID').fill(who.id.toLowerCase());                               // stored upper-case
   await f.getByLabel('Personal email').fill(emailOf(who).toUpperCase());                     // stored lower-case
   await f.getByRole('button', { name: 'Start playing' }).click();
   if (!f.__noSkipIntro) await skipIntro(f);
 }
-// Later: log in with the NxtWave ID (default) or the email (pass it as with_)
-export async function logIn(f, who = TEST_STUDENT, with_ = who.id.toLowerCase()) {
+// Later: log in with the email
+export async function logIn(f, who = TEST_STUDENT, with_ = emailOf(who)) {
   await f.getByRole('heading', { name: /Who's on the case tonight/ }).waitFor();
-  await f.getByLabel('Email or NxtWave ID').fill(with_);
+  await f.getByLabel('Email', { exact: true }).fill(with_);
   await f.getByRole('button', { name: 'Log in', exact: true }).last().click();               // the tab has the same name: the submit button is the last one
   if (!f.__noSkipIntro) await skipIntro(f);
 }
