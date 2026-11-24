@@ -1,4 +1,4 @@
-// Student log-in on the analytics server (analytics/auth.mjs): sign up once (name + NxtWave ID), then log in with the ID (no password).
+// Student log-in on the analytics server (analytics/auth.mjs): sign up once (name + NxtWave ID + personal email), then log in with the email or the ID (no password, no OTP).
 // Every call answers with a small result the start screen can show a message for; nothing here throws.
 import { normalizeEmail, normalizeId, normalizeName } from './identity';
 

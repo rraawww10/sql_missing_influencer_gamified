@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// The start screen. With a server: sign up once (name + NxtWave ID), then log in with the NxtWave ID (no password, no email). Without a server: name + NxtWave ID + email, as before.
+// The start screen. With a server: sign up once (name + NxtWave ID + email), then log in with the email or NxtWave ID (no password, no OTP). Without a server: name + NxtWave ID + email, as before.
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -43,10 +43,10 @@ describe('log in', () => {
     expect(screen.queryByText('the game')).toBeNull();
     expect(screen.queryByLabelText(/password/i)).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Log in' }));
-    expect(screen.getByText(/Please type your NxtWave ID/)).toBeTruthy();
+    expect(screen.getByText(/Please type your email or NxtWave ID/)).toBeTruthy();
     expect(d.account!.login).not.toHaveBeenCalled();
 
-    await type(user, 'NxtWave ID', 'nw1001');
+    await type(user, 'Email or NxtWave ID', 'nw1001');
     await user.click(screen.getByRole('button', { name: 'Log in' }));
     expect(await screen.findByText('the game')).toBeTruthy();
     expect(d.account!.login).toHaveBeenCalledWith('nw1001');
@@ -59,48 +59,72 @@ describe('log in', () => {
   it('an unknown ID goes to Sign up with the ID filled in', async () => {
     const d = deps({ account: api({ login: vi.fn(async (): Promise<AccountResult> => ({ ok: false, error: 'no-account' })) }) }), user = userEvent.setup();
     open(d);
-    await type(user, 'NxtWave ID', 'NW4040');
+    await type(user, 'Email or NxtWave ID', 'NW4040');
     await user.click(screen.getByRole('button', { name: 'Log in' }));
     expect(await screen.findByText(/We don't know NW4040 yet/)).toBeTruthy();
     expect(screen.getByRole('tab', { name: 'Sign up' }).getAttribute('aria-selected')).toBe('true');
     expect((screen.getByLabelText('NxtWave ID') as HTMLInputElement).value).toBe('NW4040');
-    expect(screen.queryByLabelText('Personal email')).toBeNull();
+    expect((screen.getByLabelText('Personal email') as HTMLInputElement).value).toBe('');
     expect(screen.queryByText('the game')).toBeNull();
+  });
+
+  it('logs in with any personal email (no OTP); a badly typed email is explained first', async () => {
+    const d = deps(), user = userEvent.setup();
+    open(d);
+    await type(user, 'Email or NxtWave ID', 'priya@');
+    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    expect(screen.getByText(/Please type your email, like/)).toBeTruthy();
+    expect(d.account!.login).not.toHaveBeenCalled();
+    await type(user, 'Email or NxtWave ID', 'Priya.Sharma@Outlook.com');
+    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    expect(await screen.findByText('the game')).toBeTruthy();
+    expect(d.account!.login).toHaveBeenCalledWith('Priya.Sharma@Outlook.com');
+  });
+
+  it('an unknown email goes to Sign up with the email filled in', async () => {
+    const d = deps({ account: api({ login: vi.fn(async (): Promise<AccountResult> => ({ ok: false, error: 'no-account' })) }) }), user = userEvent.setup();
+    open(d);
+    await type(user, 'Email or NxtWave ID', 'new.student@yahoo.in');
+    await user.click(screen.getByRole('button', { name: 'Log in' }));
+    expect(await screen.findByText(/We don't know new.student@yahoo.in yet/)).toBeTruthy();
+    expect((screen.getByLabelText('Personal email') as HTMLInputElement).value).toBe('new.student@yahoo.in');
+    expect((screen.getByLabelText('NxtWave ID') as HTMLInputElement).value).toBe('');
   });
 
   it('too many tries and no connection are explained', async () => {
     const user = userEvent.setup();
     open(deps({ account: api({ login: vi.fn(async (): Promise<AccountResult> => ({ ok: false, error: 'offline' })) }) }));
-    await type(user, 'NxtWave ID', 'NW1001');
+    await type(user, 'Email or NxtWave ID', 'NW1001');
     await user.click(screen.getByRole('button', { name: 'Log in' }));
     expect((await screen.findByRole('alert')).textContent).toMatch(/Could not reach the server/);
   });
 });
 
 describe('sign up', () => {
-  it('asks only name and NxtWave ID (no password, no email); both are checked before the account is made', async () => {
+  it('asks name, NxtWave ID and any personal email (no password, no OTP); all are checked before the account is made', async () => {
     const d = deps(), user = userEvent.setup();
     open(d);
     await user.click(screen.getByRole('tab', { name: 'Sign up' }));
     expect(screen.queryByLabelText(/password/i)).toBeNull();
-    expect(screen.queryByLabelText('Personal email')).toBeNull();
     await user.click(screen.getByRole('button', { name: 'Start playing' }));
     expect(screen.getByText(/Please type your name/)).toBeTruthy();
     expect(screen.getByText(/Please type your NxtWave ID/)).toBeTruthy();
+    expect(screen.getByText(/Please type your email/)).toBeTruthy();
     expect(d.account!.signup).not.toHaveBeenCalled();
     await type(user, 'Your name', 'Priya Sharma');
     await type(user, 'NxtWave ID', 'nw1001');
+    await type(user, 'Personal email', 'Priya.Sharma@Gmail.com');
     await user.click(screen.getByRole('button', { name: 'Start playing' }));
     expect(await screen.findByText('the game')).toBeTruthy();
-    expect(d.account!.signup).toHaveBeenCalledWith({ id: 'NW1001', name: 'Priya Sharma' });
+    expect(d.account!.signup).toHaveBeenCalledWith({ id: 'NW1001', name: 'Priya Sharma', email: 'priya.sharma@gmail.com' });
   });
 
   it('every input has an id and a label', async () => {
     const user = userEvent.setup();
     open(deps());
-    expect(screen.getByLabelText('NxtWave ID').id).toBe('gate-who');
+    expect(screen.getByLabelText('Email or NxtWave ID').id).toBe('gate-who');
     await user.click(screen.getByRole('tab', { name: 'Sign up' }));
-    for (const [label, id] of [['Your name', 'gate-name'], ['NxtWave ID', 'gate-id']])
+    for (const [label, id] of [['Your name', 'gate-name'], ['NxtWave ID', 'gate-id'], ['Personal email', 'gate-email']])
       expect(screen.getByLabelText(label).id).toBe(id);
   });
 });
@@ -126,7 +150,7 @@ describe('already logged in on this device', () => {
     open(deps({ restore: vi.fn(async () => ({ ok: false, events: 0, sittings: 0, name: null, unauthorized: true })) }));
     expect(await screen.findByText('Please log in again to continue.')).toBeTruthy();
     expect(screen.queryByText('the game')).toBeNull();
-    expect((screen.getByLabelText('NxtWave ID') as HTMLInputElement).value).toBe('NW1001');
+    expect((screen.getByLabelText('Email or NxtWave ID') as HTMLInputElement).value).toBe('NW1001');
     expect(loadSavedIdentity()?.token).toBeUndefined();
   });
 
@@ -135,7 +159,7 @@ describe('already logged in on this device', () => {
     const d = deps(), user = userEvent.setup();
     open(d);
     expect(screen.getByText(/Welcome back, Rishu/)).toBeTruthy();
-    expect((screen.getByLabelText('NxtWave ID') as HTMLInputElement).value).toBe('NW0007816');
+    expect((screen.getByLabelText('Email or NxtWave ID') as HTMLInputElement).value).toBe('NW0007816');
     await user.click(screen.getByRole('button', { name: 'Log in' }));
     expect(await screen.findByText('the game')).toBeTruthy();
     expect(d.account!.login).toHaveBeenCalledWith('NW0007816');
@@ -143,7 +167,7 @@ describe('already logged in on this device', () => {
 
   it('?user_id= fixes the ID', () => {
     open(deps({ urlId: 'nw5005' }));
-    const who = screen.getByLabelText('NxtWave ID') as HTMLInputElement;
+    const who = screen.getByLabelText('Email or NxtWave ID') as HTMLInputElement;
     expect(who.value).toBe('nw5005');
     expect(who.readOnly).toBe(true);
   });

@@ -147,7 +147,7 @@ try {
   const list = await admin('/api/admin/students?fresh=1');
   const row = list.students.find((s) => s.student_id === STUDENT.id);
   ok(row && row.name === STUDENT.name && !row.is_guest, 'student listed by NxtWave ID with the typed name');
-  ok(!row.email, 'no email asked or stored');
+  ok(row.email === STUDENT.email, 'the personal email from sign-up is stored (lower-cased)');
   ok(row.episodes_done === 1 && row.level === 2 && row.beats_done > pack(1).beats.length, `progress: ${row.episodes_done} episode solved, ${row.beats_done} steps done, now on episode ${row.level}`);
   ok(row.seconds > 0, `active time recorded: ${row.seconds} s`);
   ok(row.scores[0] && row.scores[0].pct > 0 && row.scores[0].max === 21 && row.score_pct > 0, `dashboard: episode 1 score ${row.scores[0]?.pct}% (${row.scores[0]?.tier} badge), game score ${row.score_pct}%`);
@@ -182,9 +182,9 @@ try {
   const peek = await fetch(`${API}/api/history`, { method: 'POST', body: JSON.stringify({ student_id: STUDENT.id }) });
   ok(peek.status === 401, 'her progress cannot be read from the server without logging in');
   await pb.getByRole('tab', { name: 'Log in' }).click();
-  await logIn(pb, STUDENT);                                              // the real student: just her NxtWave ID
+  await logIn(pb, STUDENT, 'Asha.Verma@Example.com');                    // the real student: just her email, any case, no OTP
   await pb.getByText(/Welcome back, Asha! Your case file is restored\./).waitFor();
-  ok(true, 'returning student recognised by NxtWave ID ("welcome back")');
+  ok(true, 'returning student logs in with her personal email ("welcome back")');
   await pb.getByText('1/13').first().waitFor();
   ok(true, 'episode 1 shows as solved on the new device');
   await pb.goto(`${BASE}/#/done/1`);
