@@ -112,6 +112,18 @@ describe('sign up', () => {
     expect(d.account!.signup).toHaveBeenCalledWith({ id: 'PRIYA.SHARMA_DB@GMAIL.COM', name: 'Priya Sharma', email: 'priya.sharma+db@gmail.com' });
   });
 
+  it('an email typed as a NxtWave ID in the old sign up blocks its first-choice ID: sign up retries with the second-choice ID', async () => {
+    const signup = vi.fn(async (a: { id: string }): Promise<AccountResult> => (a.id.includes('@') ? { ok: false, error: 'no-account' } : priya()));
+    const d = deps({ account: api({ signup }) }), user = userEvent.setup();
+    open(d);
+    await user.click(screen.getByRole('tab', { name: 'Sign up' }));
+    await type(user, 'Your name', 'Rishu Raj');
+    await type(user, 'Personal email', 'rishuraj.singh@nxtwave.co.in');
+    await user.click(screen.getByRole('button', { name: 'Start playing' }));
+    expect(await screen.findByText('the game')).toBeTruthy();
+    expect(signup.mock.calls.map((c) => c[0].id)).toEqual(['RISHURAJ.SINGH@NXTWAVE.CO.IN', 'RISHURAJ.SINGH.AT.NXTWAVE.CO.IN']);
+  });
+
   it('every input has an id and a label', async () => {
     const user = userEvent.setup();
     open(deps());

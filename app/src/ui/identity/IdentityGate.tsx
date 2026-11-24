@@ -15,7 +15,7 @@
 // Class names the stylesheet themes: gate, gate-card, gate-head, gate-tabs, gate-field, gate-pass, gate-required,
 // gate-err, gate-ok, gate-note, gate-wait, linkish (a text-style button).
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { clearIdentity, idFromEmail, loadSavedIdentity, normalizeEmail, normalizeId, normalizeName, saveIdentity, setCurrentIdentity,
+import { altIdFromEmail, clearIdentity, idFromEmail, loadSavedIdentity, normalizeEmail, normalizeId, normalizeName, saveIdentity, setCurrentIdentity,
   type Identity, type SavedIdentity } from '../../adapters/identity';
 import type { RecoverResult, RestoreResult } from '../../adapters/serverSync';
 import type { AccountApi, AccountError, AccountResult } from '../../adapters/account';
@@ -180,7 +180,12 @@ function AuthScreen({ api, urlId, mode, notice, prefill, onDone }: {
   const submitSignup = async (e: FormEvent) => {
     e.preventDefault(); setTried(true);
     if (busy || !nameOk || !emailOk || !idOk) return;
-    const r = await run(() => api.signup({ id: idOk, name: nameOk, email: emailOk }));
+    const r = await run(async () => {
+      const first = await api.signup({ id: idOk, name: nameOk, email: emailOk });
+      // the email's ID belongs to an old account made with the email typed as a NxtWave ID: use the second-choice ID
+      if (!first.ok && first.error === 'no-account' && !urlId) return api.signup({ id: altIdFromEmail(emailOk), name: nameOk, email: emailOk });
+      return first;
+    });
     if (r && !r.ok) setErr(MSG[r.error]);
   };
 

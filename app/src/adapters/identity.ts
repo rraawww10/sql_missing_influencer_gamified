@@ -41,6 +41,14 @@ export function idFromEmail(email: string): string {
   return id;
 }
 
+// The second-choice ID for an email whose first-choice ID is already taken by an account the server cannot find by
+// email: before 2026-11-24 some people typed their email into the NxtWave ID box, which made an account whose ID is
+// the email but whose email is empty. Signing up again then fails ("no account"), so the game signs up with this ID
+// instead. It has no "@", so the server always finds it by ID too; the same email always gives the same one.
+export function altIdFromEmail(email: string): string {
+  return idFromEmail(email.trim().replace(/@/g, '.at.'));
+}
+
 // Trimmed and lower-cased; something@domain.tld with no spaces, at most 120 characters. Same rule as the server.
 export function normalizeEmail(v: string): string | null {
   const e = v.trim().toLowerCase();
